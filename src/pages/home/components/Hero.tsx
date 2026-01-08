@@ -1,16 +1,4 @@
-import { useState, useEffect } from 'react';
-
 export default function Hero() {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrolled(window.scrollY > 50);
-    };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
   const scrollToSimulator = () => {
     const simulator = document.getElementById('simulator');
     if (simulator) {
@@ -20,24 +8,6 @@ export default function Hero() {
 
   return (
     <section className="relative min-h-screen bg-gradient-to-b from-[#0A1628] via-[#0F1F3A] to-[#1E40AF] overflow-hidden">
-      {/* Navigation */}
-      <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#0A1628]/95 backdrop-blur-md shadow-lg' : 'bg-transparent'}`}>
-        <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center">
-            <img src="https://public.readdy.ai/ai/img_res/f9d4c1ab-ebd4-4e4b-be4d-f4769ec624da.png" alt="TechTime" className="h-10" />
-          </div>
-          <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-white/90 hover:text-[#00D9FF] transition-colors duration-300 text-sm font-medium whitespace-nowrap cursor-pointer">特徴</a>
-            <a href="#systems" className="text-white/90 hover:text-[#00D9FF] transition-colors duration-300 text-sm font-medium whitespace-nowrap cursor-pointer">対応システム</a>
-            <a href="#simulator" className="text-white/90 hover:text-[#00D9FF] transition-colors duration-300 text-sm font-medium whitespace-nowrap cursor-pointer">見積もり</a>
-            <a href="#faq" className="text-white/90 hover:text-[#00D9FF] transition-colors duration-300 text-sm font-medium whitespace-nowrap cursor-pointer">FAQ</a>
-            <button onClick={scrollToSimulator} className="bg-[#00D9FF] text-[#0A1628] px-6 py-2.5 rounded-full text-sm font-semibold hover:bg-[#00F0FF] transition-all duration-300 hover:shadow-lg hover:shadow-[#00D9FF]/50 whitespace-nowrap cursor-pointer">
-              お問い合わせ
-            </button>
-          </div>
-        </div>
-      </nav>
-
       {/* Background Animation */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute inset-0" style={{
