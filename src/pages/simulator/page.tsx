@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function SimulatorPage() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [systemType, setSystemType] = useState('');
   const [users, setUsers] = useState('');
   const [locations, setLocations] = useState('');
@@ -141,47 +142,6 @@ export default function SimulatorPage() {
     }
   ];
 
-  const useCases = [
-    {
-      title: '稟議書作成のため',
-      company: '製造業C社様',
-      quote: '社内システムの刷新を検討していましたが、予算がどれくらい必要か全く分からず、稟議書が作れませんでした。シミュレーターで概算が分かり、無事に予算承認を得られました。'
-    },
-    {
-      title: '複数パターンの比較',
-      company: '小売業D社様',
-      quote: '1拠点だけでスタートするか、最初から全拠点で導入するか悩んでいました。シミュレーターで両方試算して、段階的導入の方がコストメリットがあると判明。経営判断に役立ちました。'
-    },
-    {
-      title: '予算内での機能調整',
-      company: 'サービス業E社様',
-      quote: '予算1,000万円でどこまでできるか知りたかったんです。シミュレーターで色々試して、外部連携を1つ減らせば予算内に収まることが分かりました。'
-    }
-  ];
-
-  const faqs = [
-    {
-      question: '見積もり結果は正式な金額ですか?',
-      answer: 'シミュレーターの結果は概算金額です。実際の開発では要件の詳細により変動がありますが、大きな金額感は把握いただけます。正式見積もりは、要件ヒアリング後に提示いたします。'
-    },
-    {
-      question: '見積もり後、営業から連絡が来ますか?',
-      answer: 'いいえ。シミュレーターは完全に自由にお使いいただけます。お客様からお問い合わせをいただかない限り、営業から連絡することはありません。'
-    },
-    {
-      question: '何度でも試算できますか?',
-      answer: 'はい、何度でも自由に試算いただけます。様々なパターンを試して、最適な条件を見つけてください。'
-    },
-    {
-      question: '個人情報の入力は必要ですか?',
-      answer: '見積もりシミュレーターの利用に個人情報の入力は不要です。匿名でご利用いただけます。'
-    },
-    {
-      question: '複数のシステムを同時に開発する場合は?',
-      answer: 'シミュレーターでは単一システムの見積もりのみ対応しています。複数システムの同時開発では割引を適用できる場合がありますので、お問い合わせください。'
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
       {/* Navigation */}
@@ -194,16 +154,41 @@ export default function SimulatorPage() {
               </div>
               <span className="text-xl font-bold text-white">TechTime</span>
             </Link>
-            <div className="flex items-center gap-8">
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
               <Link to="/#features" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">特徴</Link>
               <Link to="/#systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
-              <Link to="/#simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</Link>
+              <Link to="/simulator" className="text-sm text-[#00D9FF] font-medium whitespace-nowrap">見積もり</Link>
+              <Link to="/blog" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ブログ</Link>
               <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
               <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">会社概要</Link>
-              <Link to="/contact" className="px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap">お問い合わせ</Link>
+              <Link to="/contact" className="px-4 xl:px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm">お問い合わせ</Link>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden text-white p-2"
+              aria-label="メニューを開く"
+            >
+              <i className={`${mobileMenuOpen ? 'ri-close-line' : 'ri-menu-line'} text-2xl`}></i>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
+            <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
+              <Link to="/#features" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">特徴</Link>
+              <Link to="/#systems" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">対応システム</Link>
+              <Link to="/simulator" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#00D9FF] font-medium hover:bg-white/5 rounded-lg transition-colors">見積もり</Link>
+              <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">ブログ</Link>
+              <Link to="/cases" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">開発事例</Link>
+              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">会社概要</Link>
+              <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">お問い合わせ</Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       <div className="pt-20 min-h-screen bg-white">
@@ -525,115 +510,6 @@ export default function SimulatorPage() {
                   </div>
                 </div>
               )}
-            </div>
-          </div>
-        </section>
-
-        {/* Use Cases Section */}
-        <section className="py-32 bg-gradient-to-b from-gray-50 to-white">
-          <div className="max-w-7xl mx-auto px-6">
-            <div className="text-center mb-20">
-              <h2 className="text-5xl lg:text-6xl font-extrabold text-[#0A1628] mb-6">
-                実際の活用例
-              </h2>
-              <div className="w-32 h-1 bg-gradient-to-r from-[#00D9FF] to-[#3B82F6] mx-auto"></div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {useCases.map((useCase, index) => (
-                <div key={index} className="bg-white rounded-2xl shadow-lg p-8">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center">
-                      <i className="ri-user-line text-white text-xl"></i>
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-bold text-[#0A1628]">{useCase.title}</h3>
-                      <p className="text-sm text-gray-500">{useCase.company}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-gray-700 leading-relaxed italic">
-                    「{useCase.quote}」
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* FAQ Section */}
-        <section className="py-32 bg-white">
-          <div className="max-w-4xl mx-auto px-6">
-            <div className="text-center mb-20">
-              <h2 className="text-5xl lg:text-6xl font-extrabold text-[#0A1628] mb-6">
-                よくある質問
-              </h2>
-              <div className="w-32 h-1 bg-gradient-to-r from-[#00D9FF] to-[#3B82F6] mx-auto"></div>
-            </div>
-
-            <div className="space-y-6">
-              {faqs.map((faq, index) => (
-                <div key={index} className="bg-gray-50 rounded-2xl p-8 hover:shadow-lg transition-all duration-300">
-                  <h3 className="text-lg font-bold text-[#0A1628] mb-3 flex items-start gap-3">
-                    <span className="text-[#00D9FF] flex-shrink-0">Q:</span>
-                    <span>{faq.question}</span>
-                  </h3>
-                  <p className="text-base text-gray-700 leading-relaxed pl-8">
-                    <strong className="text-[#3B82F6]">A:</strong> {faq.answer}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* Final CTA Section */}
-        <section className="py-32 bg-gradient-to-br from-[#0A1628] via-[#1E40AF] to-[#3B82F6] relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/20"></div>
-          <div className="max-w-4xl mx-auto px-6 text-center relative z-10">
-            <h2 className="text-4xl lg:text-5xl font-extrabold text-white mb-6">
-              まずは試してみてください
-            </h2>
-            <p className="text-xl text-white/90 mb-8 leading-relaxed">
-              迷ったら、まず試してみることをおすすめします。
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                <i className="ri-money-dollar-circle-line text-3xl text-[#00D9FF] mb-2"></i>
-                <p className="text-sm text-white font-semibold">無料で使える</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                <i className="ri-shield-check-line text-3xl text-[#00D9FF] mb-2"></i>
-                <p className="text-sm text-white font-semibold">個人情報不要</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                <i className="ri-phone-line text-3xl text-[#00D9FF] mb-2"></i>
-                <p className="text-sm text-white font-semibold">営業連絡なし</p>
-              </div>
-              <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4">
-                <i className="ri-refresh-line text-3xl text-[#00D9FF] mb-2"></i>
-                <p className="text-sm text-white font-semibold">何度でも試算OK</p>
-              </div>
-            </div>
-            <p className="text-2xl text-white font-bold mb-8">
-              「どれくらいかかるんだろう?」という疑問が、3分で解決します。
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="#"
-                onClick={(e) => {
-                  e.preventDefault();
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-                className="px-10 py-4 bg-white text-[#1E40AF] text-lg font-bold rounded-full hover:bg-gray-100 transition-all duration-300 whitespace-nowrap cursor-pointer inline-block"
-              >
-                見積もりシミュレーターを試す
-              </a>
-              <Link
-                to="/contact"
-                className="px-10 py-4 bg-transparent border-2 border-white text-white text-lg font-bold rounded-full hover:bg-white/10 transition-all duration-300 whitespace-nowrap cursor-pointer inline-block"
-              >
-                まずは相談したい
-              </Link>
             </div>
           </div>
         </section>
