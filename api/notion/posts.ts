@@ -27,26 +27,17 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { category, perPage = 10 } = req.query;
 
-    const filter: any = {
-      and: [
-        {
-          property: 'Published',
-          checkbox: {
-            equals: true,
-          },
-        },
-      ],
-    };
+    // デバッグ: 環境変数の確認
+    console.log('Environment check:', {
+      hasApiKey: !!NOTION_API_KEY,
+      apiKeyLength: NOTION_API_KEY?.length,
+      hasDatabaseId: !!NOTION_DATABASE_ID,
+      databaseId: NOTION_DATABASE_ID,
+      category,
+      perPage
+    });
 
-    if (category && typeof category === 'string') {
-      filter.and.push({
-        property: 'Category',
-        select: {
-          equals: category,
-        },
-      });
-    }
-
+    // まず全件取得してデータベース構造を確認
     const response = await fetch(`https://api.notion.com/v1/databases/${NOTION_DATABASE_ID}/query`, {
       method: 'POST',
       headers: {
@@ -55,24 +46,37 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        filter,
-        sorts: [
-          {
-            property: 'Created',
-            direction: 'descending',
-          },
-        ],
         page_size: parseInt(perPage as string, 10),
       }),
     });
 
     if (!response.ok) {
       const error = await response.text();
-      console.error('Notion API error:', error);
-      return res.status(response.status).json({ error: 'Notion API error' });
+      console.error('Notion API error:', {
+        status: response.status,
+        statusText: response.statusText,
+        error
+      });
+      return res.status(response.status).json({
+        error: 'Notion API error',
+        details: error,
+        status: response.status
+      });
     }
 
     const data = await response.json();
+
+    // デバッグ: レスポンスの構造を確認
+    console.log('Notion response:', {
+      hasResults: !!data.results,
+      resultsCount: data.results?.length,
+      firstResult: data.results?.[0] ? {
+        id: data.results[0].id,
+        properties: Object.keys(data.results[0].properties || {}),
+        propertiesDetail: data.results[0].properties
+      } : null
+    });
+
     return res.status(200).json(data);
   } catch (error) {
     console.error('Server error:', error);
