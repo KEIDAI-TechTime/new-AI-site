@@ -155,7 +155,7 @@ export default function Home() {
                 </li>
                 <li className="flex items-center gap-2">
                   <i className="ri-mail-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
-                  <a href="mailto:info@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">info@techtime-link.com</a>
+                  <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
                 </li>
               </ul>
             </div>

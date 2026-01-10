@@ -114,7 +114,7 @@ export default function About() {
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">メール</td>
                     <td className="py-6 text-white">
-                      <a href="mailto:info@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">info@techtime-link.com</a>
+                      <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
                     </td>
                   </tr>
                   <tr>
@@ -278,7 +278,7 @@ export default function About() {
                 </li>
                 <li className="flex items-center gap-2">
                   <i className="ri-mail-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
-                  <a href="mailto:info@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">info@techtime-link.com</a>
+                  <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
                 </li>
               </ul>
             </div>

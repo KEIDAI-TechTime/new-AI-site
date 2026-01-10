@@ -205,11 +205,12 @@ export default function Contact() {
               {/* System Type */}
               <div>
                 <label htmlFor="systemType" className="block text-sm font-medium text-gray-300 mb-2">
-                  検討中のシステム種別
+                  検討中のシステム種別 <span className="text-red-400">*</span>
                 </label>
                 <select
                   id="systemType"
                   name="systemType"
+                  required
                   value={formData.systemType}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#00D9FF] transition-colors text-sm cursor-pointer"
@@ -231,11 +232,12 @@ export default function Contact() {
               {/* Budget */}
               <div>
                 <label htmlFor="budget" className="block text-sm font-medium text-gray-300 mb-2">
-                  ご予算
+                  ご予算 <span className="text-red-400">*</span>
                 </label>
                 <select
                   id="budget"
                   name="budget"
+                  required
                   value={formData.budget}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#00D9FF] transition-colors text-sm cursor-pointer"
@@ -253,11 +255,12 @@ export default function Contact() {
               {/* Timeline */}
               <div>
                 <label htmlFor="timeline" className="block text-sm font-medium text-gray-300 mb-2">
-                  希望納期
+                  希望納期 <span className="text-red-400">*</span>
                 </label>
                 <select
                   id="timeline"
                   name="timeline"
+                  required
                   value={formData.timeline}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#00D9FF] transition-colors text-sm cursor-pointer"
@@ -332,8 +335,8 @@ export default function Contact() {
               <p className="text-sm text-gray-400">受付時間：月～金/9～19時</p>
               <div className="flex items-center justify-center gap-3 mt-6">
                 <i className="ri-mail-line text-[#00D9FF] text-xl w-6 h-6 flex items-center justify-center"></i>
-                <a href="mailto:info@techtime-link.com" className="text-white hover:text-[#00D9FF] transition-colors">
-                  info@techtime-link.com
+                <a href="mailto:kdm@techtime-link.com" className="text-white hover:text-[#00D9FF] transition-colors">
+                  kdm@techtime-link.com
                 </a>
               </div>
             </div>
@@ -381,7 +384,7 @@ export default function Contact() {
                 </li>
                 <li className="flex items-center gap-2">
                   <i className="ri-mail-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
-                  <a href="mailto:info@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">info@techtime-link.com</a>
+                  <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
                 </li>
               </ul>
             </div>

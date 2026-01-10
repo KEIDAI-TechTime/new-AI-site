@@ -53,7 +53,7 @@ export default function CTA() {
                 </p>
                 <p className="flex items-center justify-center gap-3 text-lg">
                   <i className="ri-mail-line text-[#00D9FF]"></i>
-                  <span>Email：info@techtime-link.com</span>
+                  <span>Email：kdm@techtime-link.com</span>
                 </p>
               </div>
             </div>

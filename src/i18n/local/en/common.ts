@@ -24,6 +24,6 @@ export default {
 
   // Contact
   'contact.phone': '03-4222-3363',
-  'contact.email': 'info@techtime-link.com',
+  'contact.email': 'kdm@techtime-link.com',
   'contact.businessHours': 'Hours: Mon-Fri 9:00-19:00',
 };
