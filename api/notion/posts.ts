@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const NOTION_API_KEY = process.env.VITE_NOTION_API_KEY || '';
-const NOTION_DATABASE_ID = process.env.VITE_NOTION_DATABASE_ID || '';
+const NOTION_API_KEY = process.env.NOTION_API_KEY || '';
+const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID || '';
 const NOTION_VERSION = '2022-06-28';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -27,6 +27,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
     const { category, perPage = 10 } = req.query;
 
+    // フィルタを構築
     const filter: any = {
       and: [
         {
@@ -38,6 +39,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       ],
     };
 
+    // カテゴリフィルタを追加
     if (category && typeof category === 'string') {
       filter.and.push({
         property: 'Category',
@@ -69,7 +71,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (!response.ok) {
       const error = await response.text();
       console.error('Notion API error:', error);
-      return res.status(response.status).json({ error: 'Notion API error' });
+      return res.status(response.status).json({
+        error: 'Notion API error',
+        details: error
+      });
     }
 
     const data = await response.json();
