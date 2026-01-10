@@ -108,6 +108,7 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
     const title =
       properties.Title?.title?.[0]?.plain_text ||
       properties.Name?.title?.[0]?.plain_text ||
+      properties['名前']?.title?.[0]?.plain_text ||
       'Untitled';
 
     // スラッグを取得
@@ -116,10 +117,10 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
       properties.slug?.rich_text?.[0]?.plain_text ||
       page.id;
 
-    // カテゴリを取得
+    // カテゴリを取得 (multi_selectの最初の値を使用)
     const category =
-      properties.Category?.select?.name ||
-      properties.category?.select?.name ||
+      properties.Category?.multi_select?.[0]?.name ||
+      properties.category?.multi_select?.[0]?.name ||
       'ceo_column';
 
     // カバー画像を取得
