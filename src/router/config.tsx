@@ -7,6 +7,8 @@ import Cases from "../pages/cases/page";
 import SimulatorPage from "../pages/simulator/page";
 import AIDevelopmentPage from "../pages/ai-development/page";
 import QualityAssurancePage from "../pages/quality-assurance/page";
+import Blog from "../pages/blog/page";
+import BlogPost from "../pages/blog/[slug]/page";
 
 const routes: RouteObject[] = [
   {
@@ -24,6 +26,14 @@ const routes: RouteObject[] = [
   {
     path: "/cases",
     element: <Cases />,
+  },
+  {
+    path: "/blog",
+    element: <Blog />,
+  },
+  {
+    path: "/blog/:slug",
+    element: <BlogPost />,
   },
   {
     path: "/simulator",
