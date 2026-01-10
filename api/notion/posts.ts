@@ -56,8 +56,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (category && typeof category === 'string') {
       filter.and.push({
         property: 'Category',
-        multi_select: {
-          contains: category,
+        select: {
+          equals: category,
         },
       });
     }
