@@ -127,10 +127,10 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
       properties.slug?.rich_text?.[0]?.plain_text ||
       page.id;
 
-    // カテゴリを取得 (multi_selectの最初の値を使用)
+    // カテゴリを取得 (selectから取得)
     const category =
-      properties.Category?.multi_select?.[0]?.name ||
-      properties.category?.multi_select?.[0]?.name ||
+      properties.Category?.select?.name ||
+      properties.category?.select?.name ||
       'ceo_column';
 
     // カバー画像を取得
