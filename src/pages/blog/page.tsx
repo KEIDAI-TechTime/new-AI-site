@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { getPosts, BLOG_CATEGORIES, formatDate } from '../../services/notion';
+import { getPosts, BLOG_CATEGORIES, formatDate } from '../../services/notion-api';
 import type { NotionPost } from '../../types/notion';
 
 export default function Blog() {
