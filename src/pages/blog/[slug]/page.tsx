@@ -37,18 +37,21 @@ export default function BlogPost() {
             </Link>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link to="/" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors">ホーム</Link>
-              <Link to="/blog" className="text-sm text-[#00D9FF] font-medium">ブログ</Link>
-              <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors">開発事例</Link>
-              <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors">会社概要</Link>
-              <Link to="/contact" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors">お問い合わせ</Link>
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+              <Link to="/#features" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">特徴</Link>
+              <Link to="/#systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
+              <Link to="/#simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</Link>
+              <Link to="/blog" className="text-sm text-[#00D9FF] font-medium whitespace-nowrap">ブログ</Link>
+              <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
+              <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">会社概要</Link>
+              <Link to="/contact" className="px-4 xl:px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm">お問い合わせ</Link>
             </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden text-white p-2"
+              className="lg:hidden text-white p-2"
+              aria-label="メニューを開く"
             >
               <i className={`${mobileMenuOpen ? 'ri-close-line' : 'ri-menu-line'} text-2xl`}></i>
             </button>
@@ -57,9 +60,11 @@ export default function BlogPost() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
+          <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
             <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">ホーム</Link>
+              <Link to="/#features" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">特徴</Link>
+              <Link to="/#systems" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">対応システム</Link>
+              <Link to="/#simulator" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">見積もり</Link>
               <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#00D9FF] font-medium hover:bg-white/5 rounded-lg transition-colors">ブログ</Link>
               <Link to="/cases" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">開発事例</Link>
               <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">会社概要</Link>
