@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
-import { getPosts, BLOG_CATEGORIES, formatDate } from '../../services/notion';
-import type { NotionPost } from '../../types/notion';
+import { getPosts, BLOG_CATEGORIES, formatDate, stripHtmlTags } from '../../services/wordpress';
+import type { WordPressPost } from '../../types/wordpress';
 
 export default function Blog() {
   const [searchParams] = useSearchParams();
   const category = searchParams.get('category') || undefined;
 
-  const [posts, setPosts] = useState<NotionPost[]>([]);
+  const [posts, setPosts] = useState<WordPressPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -130,12 +130,12 @@ export default function Blog() {
                   to={`/blog/${post.slug}`}
                   className="group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/50 transition-all duration-300 hover:-translate-y-1"
                 >
-                  {/* Cover Image */}
-                  {post.coverImage && (
+                  {/* Featured Image */}
+                  {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
                     <div className="aspect-video overflow-hidden bg-white/5">
                       <img
-                        src={post.coverImage}
-                        alt={post.title}
+                        src={post._embedded['wp:featuredmedia'][0].source_url}
+                        alt={post._embedded['wp:featuredmedia'][0].alt_text || post.title.rendered}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
@@ -144,22 +144,23 @@ export default function Blog() {
                   <div className="p-6">
                     {/* Date & Category */}
                     <div className="flex items-center gap-3 mb-3">
-                      <span className="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
-                      {post.category && BLOG_CATEGORIES[post.category] && (
+                      <span className="text-xs text-gray-400">{formatDate(post.date)}</span>
+                      {post._embedded?.['wp:term']?.[0]?.[0] && (
                         <span className="px-2 py-1 bg-[#00D9FF]/10 text-[#00D9FF] text-xs rounded-full">
-                          {BLOG_CATEGORIES[post.category].name}
+                          {post._embedded['wp:term'][0][0].name}
                         </span>
                       )}
                     </div>
 
                     {/* Title */}
-                    <h3 className="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">
-                      {post.title}
-                    </h3>
+                    <h3
+                      className="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2"
+                      dangerouslySetInnerHTML={{ __html: post.title.rendered }}
+                    />
 
                     {/* Excerpt */}
                     <p className="text-sm text-gray-400 line-clamp-3">
-                      {post.excerpt || post.content.substring(0, 150) + '...'}
+                      {stripHtmlTags(post.excerpt.rendered)}
                     </p>
 
                     {/* Read More */}
