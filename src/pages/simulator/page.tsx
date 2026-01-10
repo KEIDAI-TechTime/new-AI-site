@@ -1,8 +1,13 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 export default function SimulatorPage() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  // ページ表示時に確実にトップにスクロール
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   const [systemType, setSystemType] = useState('');
   const [users, setUsers] = useState('');
   const [locations, setLocations] = useState('');
