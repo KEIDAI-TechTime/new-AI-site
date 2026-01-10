@@ -342,7 +342,7 @@ export async function getCase(id: string): Promise<NotionCase | null> {
   try {
     console.log('[Notion API] Fetching case with id:', id);
 
-    const url = `${API_BASE}/cases/${id}`;
+    const url = `${API_BASE}/case?id=${encodeURIComponent(id)}`;
     const response = await fetch(url);
 
     if (!response.ok) {

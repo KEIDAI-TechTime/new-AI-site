@@ -1,7 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
 const NOTION_API_KEY = process.env.NOTION_API_KEY || '';
-const NOTION_CASES_DATABASE_ID = process.env.NOTION_CASES_DATABASE_ID || '';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   // Set CORS headers
@@ -17,7 +16,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
-  if (!NOTION_API_KEY || !NOTION_CASES_DATABASE_ID) {
+  if (!NOTION_API_KEY) {
     return res.status(500).json({ error: 'Notion API not configured' });
   }
 
