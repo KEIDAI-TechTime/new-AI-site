@@ -57,7 +57,7 @@ export default function SystemTypes() {
   ];
 
   return (
-    <section id="systems" className="pt-40 pb-32 bg-white">
+    <section id="systems" className="py-32 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-20 gap-8">

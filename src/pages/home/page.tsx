@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import Hero from './components/Hero';
+import Features from './components/Features';
 import SystemTypes from './components/SystemTypes';
 import AIDevelopment from './components/AIDevelopment';
 import Simulator from './components/Simulator';
@@ -104,6 +106,8 @@ export default function Home() {
       </nav>
 
       <div className="min-h-screen bg-white">
+        <Hero />
+        <Features />
         <SystemTypes />
         <AIDevelopment />
         <Simulator />
