@@ -1,11 +1,6 @@
-export default function Hero() {
-  const scrollToSimulator = () => {
-    const simulator = document.getElementById('simulator');
-    if (simulator) {
-      simulator.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+import { Link } from 'react-router-dom';
 
+export default function Hero() {
   return (
     <section className="relative min-h-screen bg-gradient-to-b from-[#0A1628] via-[#0F1F3A] to-[#1E40AF] overflow-hidden">
       {/* Background Animation */}
@@ -31,9 +26,9 @@ export default function Hero() {
               人手では日単位を要した設計・開発工程を、AIが数分で初版生成。圧倒的な開発効率化により、これまでにない低価格を実現しました。
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
-              <button onClick={scrollToSimulator} className="bg-[#00D9FF] text-[#0A1628] px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base lg:text-lg font-bold hover:bg-[#00F0FF] transition-all duration-300 hover:shadow-2xl hover:shadow-[#00D9FF]/50 hover:-translate-y-1 cursor-pointer text-center">
+              <Link to="/simulator" className="bg-[#00D9FF] text-[#0A1628] px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base lg:text-lg font-bold hover:bg-[#00F0FF] transition-all duration-300 hover:shadow-2xl hover:shadow-[#00D9FF]/50 hover:-translate-y-1 cursor-pointer text-center">
                 見積もりシミュレーターで概算金額を確認
-              </button>
+              </Link>
               <button className="bg-white/10 backdrop-blur-md text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base lg:text-lg font-bold border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 cursor-pointer text-center">
                 詳しく見る
               </button>

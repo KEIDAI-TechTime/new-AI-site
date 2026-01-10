@@ -1,11 +1,6 @@
-export default function CTA() {
-  const scrollToSimulator = () => {
-    const simulator = document.getElementById('simulator');
-    if (simulator) {
-      simulator.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+import { Link } from 'react-router-dom';
 
+export default function CTA() {
   return (
     <section className="py-32 bg-gradient-to-b from-gray-50 to-white">
       <div className="max-w-7xl mx-auto px-6">
@@ -18,13 +13,13 @@ export default function CTA() {
             御社のシステム開発にかかる費用を、今すぐ確認できます。<br />
             打ち合わせや営業との面談は不要。数分で概算金額がわかります。
           </p>
-          <button 
-            onClick={scrollToSimulator}
+          <Link
+            to="/simulator"
             className="inline-flex items-center gap-3 bg-[#1E40AF] text-white px-12 py-5 rounded-full text-xl font-bold hover:bg-[#3B82F6] transition-all duration-300 hover:shadow-2xl hover:shadow-[#3B82F6]/30 hover:-translate-y-1 whitespace-nowrap cursor-pointer"
           >
             見積もりシミュレーターで概算を確認する
             <i className="ri-arrow-right-line text-2xl"></i>
-          </button>
+          </Link>
         </div>
 
         {/* Contact Section */}

@@ -141,7 +141,7 @@ export default function Home() {
             <div>
               <h4 className="text-white font-semibold mb-4">サービス</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="#simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</a></li>
+                <li><Link to="/simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</Link></li>
                 <li><a href="#systems" className="hover:text-[#00D9FF] transition-colors">対応システム</a></li>
                 <li><a href="#ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</a></li>
               </ul>
