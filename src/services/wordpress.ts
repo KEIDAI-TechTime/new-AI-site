@@ -12,6 +12,7 @@ export const BLOG_CATEGORIES = {
 
 /**
  * ブログ記事一覧を取得
+ * デフォルトでは「case」（事例・実績）カテゴリーを除外し、コラムのみを表示
  */
 export async function getPosts(params?: {
   category?: string;
@@ -32,6 +33,13 @@ export async function getPosts(params?: {
     const categoryObj = categories.find(cat => cat.slug === category);
     if (categoryObj) {
       queryParams.append('categories', categoryObj.id.toString());
+    }
+  } else {
+    // デフォルトでは「case」（事例・実績）カテゴリーを除外
+    const categories = await getCategories();
+    const caseCategory = categories.find(cat => cat.slug === 'case');
+    if (caseCategory) {
+      queryParams.append('categories_exclude', caseCategory.id.toString());
     }
   }
 
