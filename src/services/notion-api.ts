@@ -1,48 +1,16 @@
 import type { NotionPost, BlogCategory } from '../types/notion';
 
-// Notion設定
-const NOTION_API_KEY = import.meta.env.VITE_NOTION_API_KEY || '';
-const NOTION_DATABASE_ID = import.meta.env.VITE_NOTION_DATABASE_ID || '';
-const NOTION_VERSION = '2022-06-28';
+// APIエンドポイント（本番ではVercel Functions、開発では直接API呼び出し）
+const API_BASE = '/api/notion';
 
 // デバッグ用ログ
-console.log('[Notion API] Configuration check:', {
-  hasApiKey: Boolean(NOTION_API_KEY),
-  apiKeyPrefix: NOTION_API_KEY ? NOTION_API_KEY.substring(0, 10) + '...' : 'none',
-  hasDatabaseId: Boolean(NOTION_DATABASE_ID),
-  databaseIdPrefix: NOTION_DATABASE_ID ? NOTION_DATABASE_ID.substring(0, 8) + '...' : 'none',
-});
+console.log('[Notion API] Using API proxy:', API_BASE);
 
 // カテゴリマッピング
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   ceo_column: { slug: 'ceo_column', name: '社長コラム' },
   'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
 } as const;
-
-/**
- * Notion APIにリクエストを送信
- */
-async function notionRequest(endpoint: string, options: RequestInit = {}) {
-  const url = `https://api.notion.com/v1${endpoint}`;
-
-  const response = await fetch(url, {
-    ...options,
-    headers: {
-      'Authorization': `Bearer ${NOTION_API_KEY}`,
-      'Notion-Version': NOTION_VERSION,
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-  });
-
-  if (!response.ok) {
-    const error = await response.text();
-    console.error('[Notion API] Request failed:', { status: response.status, error });
-    throw new Error(`Notion API error: ${response.status}`);
-  }
-
-  return response.json();
-}
 
 /**
  * ブログ記事一覧を取得
@@ -54,54 +22,31 @@ export async function getPosts(params?: {
 }): Promise<NotionPost[]> {
   console.log('[Notion API] getPosts called with params:', params);
 
-  if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
-    console.warn('[Notion API] Cannot fetch posts - missing configuration');
-    return [];
-  }
-
   const { category, perPage = 10 } = params || {};
 
   try {
-    console.log('[Notion API] Querying database via REST API...');
+    console.log('[Notion API] Querying database via API proxy...');
 
-    const filter: any = {
-      and: [
-        {
-          property: 'Published',
-          checkbox: {
-            equals: true,
-          },
-        },
-      ],
-    };
+    const queryParams = new URLSearchParams();
+    if (category) queryParams.set('category', category);
+    queryParams.set('perPage', perPage.toString());
 
-    if (category) {
-      filter.and.push({
-        property: 'Category',
-        select: {
-          equals: category,
-        },
-      });
+    const url = `${API_BASE}/posts?${queryParams.toString()}`;
+    console.log('[Notion API] Fetching from:', url);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[Notion API] Request failed:', { status: response.status, error });
+      return [];
     }
 
-    const response = await notionRequest(`/databases/${NOTION_DATABASE_ID}/query`, {
-      method: 'POST',
-      body: JSON.stringify({
-        filter,
-        sorts: [
-          {
-            property: 'Created',
-            direction: 'descending',
-          },
-        ],
-        page_size: perPage,
-      }),
-    });
-
-    console.log('[Notion API] Found', response.results.length, 'pages in database');
+    const data = await response.json();
+    console.log('[Notion API] Found', data.results.length, 'pages in database');
 
     const posts = await Promise.all(
-      response.results.map(async (page: any) => {
+      data.results.map(async (page: any) => {
         return await convertPageToPost(page);
       })
     );
@@ -125,39 +70,26 @@ export async function getPosts(params?: {
  * 記事詳細を取得
  */
 export async function getPost(slug: string): Promise<NotionPost | null> {
-  if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
-    console.warn('[Notion API] API key or Database ID not configured');
-    return null;
-  }
-
   try {
-    const response = await notionRequest(`/databases/${NOTION_DATABASE_ID}/query`, {
-      method: 'POST',
-      body: JSON.stringify({
-        filter: {
-          and: [
-            {
-              property: 'Slug',
-              rich_text: {
-                equals: slug,
-              },
-            },
-            {
-              property: 'Published',
-              checkbox: {
-                equals: true,
-              },
-            },
-          ],
-        },
-      }),
-    });
+    console.log('[Notion API] Fetching post with slug:', slug);
 
-    if (response.results.length === 0) {
+    const url = `${API_BASE}/post?slug=${encodeURIComponent(slug)}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[Notion API] Request failed:', { status: response.status, error });
       return null;
     }
 
-    const page = response.results[0];
+    const data = await response.json();
+
+    if (data.results.length === 0) {
+      console.log('[Notion API] No post found with slug:', slug);
+      return null;
+    }
+
+    const page = data.results[0];
     return await convertPageToPost(page);
   } catch (error) {
     console.error('[Notion API] Failed to fetch post:', error);
@@ -232,8 +164,17 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
  */
 async function getPageContent(pageId: string): Promise<string> {
   try {
-    const response = await notionRequest(`/blocks/${pageId}/children`);
-    const blocks = response.results;
+    const url = `${API_BASE}/blocks?pageId=${encodeURIComponent(pageId)}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[Notion API] Failed to fetch blocks:', { status: response.status, error });
+      return '';
+    }
+
+    const data = await response.json();
+    const blocks = data.results;
 
     // 簡易的なMarkdown変換
     const markdown = blocks
