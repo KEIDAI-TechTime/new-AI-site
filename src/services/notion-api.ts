@@ -1,4 +1,4 @@
-import type { NotionPost, BlogCategory } from '../types/notion';
+import type { NotionPost, BlogCategory, NotionCase, CaseCategory } from '../types/notion';
 
 // APIエンドポイント（本番ではVercel Functions、開発では直接API呼び出し）
 const API_BASE = '/api/notion';
@@ -10,6 +10,16 @@ console.log('[Notion API] Using API proxy:', API_BASE);
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   ceo_column: { slug: 'ceo_column', name: '社長コラム' },
   'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
+} as const;
+
+// 開発事例のカテゴリマッピング
+export const CASE_CATEGORIES: Record<string, CaseCategory> = {
+  '文書管理': { id: '文書管理', name: '文書管理' },
+  '在庫管理': { id: '在庫管理', name: '在庫管理' },
+  '顧客管理': { id: '顧客管理', name: '顧客管理' },
+  '経営BI': { id: '経営BI', name: '経営BI' },
+  '生産管理': { id: '生産管理', name: '生産管理' },
+  '人事給与': { id: '人事給与', name: '人事給与' },
 } as const;
 
 /**
@@ -289,4 +299,125 @@ export function formatDate(dateString: string): string {
  */
 export function isNotionConfigured(): boolean {
   return Boolean(NOTION_API_KEY && NOTION_DATABASE_ID);
+}
+
+/**
+ * 開発事例一覧を取得
+ */
+export async function getCases(category?: string): Promise<NotionCase[]> {
+  console.log('[Notion API] getCases called with category:', category);
+
+  try {
+    const queryParams = new URLSearchParams();
+    if (category) queryParams.set('category', category);
+
+    const url = `${API_BASE}/cases?${queryParams.toString()}`;
+    console.log('[Notion API] Fetching cases from:', url);
+
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[Notion API] Request failed:', { status: response.status, error });
+      return [];
+    }
+
+    const data = await response.json();
+    console.log('[Notion API] Found', data.results.length, 'cases in database');
+
+    const cases = data.results.map((page: any) => convertPageToCase(page)).filter((c: NotionCase | null): c is NotionCase => c !== null);
+
+    console.log('[Notion API] Returning', cases.length, 'valid cases');
+    return cases;
+  } catch (error) {
+    console.error('[Notion API] Failed to fetch cases:', error);
+    return [];
+  }
+}
+
+/**
+ * NotionページをNotionCase型に変換
+ */
+function convertPageToCase(page: any): NotionCase | null {
+  try {
+    const properties = page.properties;
+
+    // タイトルを取得
+    const title =
+      properties.Title?.title?.[0]?.plain_text ||
+      properties.Name?.title?.[0]?.plain_text ||
+      properties['名前']?.title?.[0]?.plain_text ||
+      'Untitled';
+
+    // カテゴリを取得
+    const category =
+      properties.Category?.select?.name ||
+      properties.category?.select?.name ||
+      '文書管理';
+
+    // 説明を取得
+    const description =
+      properties.Description?.rich_text?.[0]?.plain_text ||
+      properties.description?.rich_text?.[0]?.plain_text ||
+      '';
+
+    // 画像URLを取得
+    const image =
+      properties.Image?.url ||
+      properties.image?.url ||
+      page.cover?.external?.url ||
+      page.cover?.file?.url ||
+      '';
+
+    // 規模を取得
+    const scale =
+      properties.Scale?.select?.name ||
+      properties.scale?.select?.name ||
+      '標準規模';
+
+    // 開発期間を取得
+    const period =
+      properties.Period?.rich_text?.[0]?.plain_text ||
+      properties.period?.rich_text?.[0]?.plain_text ||
+      '';
+
+    // 費用を取得
+    const cost =
+      properties.Cost?.rich_text?.[0]?.plain_text ||
+      properties.cost?.rich_text?.[0]?.plain_text ||
+      '';
+
+    // 導入効果を取得（改行区切りまたはカンマ区切り）
+    const resultsText =
+      properties.Results?.rich_text?.[0]?.plain_text ||
+      properties.results?.rich_text?.[0]?.plain_text ||
+      '';
+    const results = resultsText
+      .split(/\n|,/)
+      .map((r: string) => r.trim())
+      .filter((r: string) => r.length > 0);
+
+    // 公開状態を取得
+    const published = properties.Published?.checkbox ?? true;
+
+    // 表示順序を取得
+    const order = properties.Order?.number || properties.order?.number || 0;
+
+    return {
+      id: page.id,
+      title,
+      category,
+      description,
+      image,
+      scale,
+      period,
+      cost,
+      results,
+      published,
+      order,
+    };
+  } catch (error) {
+    console.error('[Notion API] Failed to convert page to case:', error);
+    return null;
+  }
 }

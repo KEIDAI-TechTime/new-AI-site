@@ -1,11 +1,28 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getCases, CASE_CATEGORIES } from '../../services/notion-api';
+import type { NotionCase } from '../../types/notion';
 
 export default function Cases() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cases, setCases] = useState<NotionCase[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const cases = [
+  // Notionから開発事例を取得
+  useEffect(() => {
+    const fetchCases = async () => {
+      setLoading(true);
+      const data = await getCases();
+      setCases(data);
+      setLoading(false);
+    };
+
+    fetchCases();
+  }, []);
+
+  // フォールバック用のハードコードされたデータ
+  const fallbackCases = [
     {
       id: 1,
       category: '文書管理',
@@ -74,19 +91,17 @@ export default function Cases() {
     }
   ];
 
+  // Notionから取得したデータがない場合はフォールバックデータを使用
+  const displayCases = cases.length > 0 ? cases : fallbackCases;
+
   const categories = [
     { id: 'all', name: 'すべて' },
-    { id: '文書管理', name: '文書管理' },
-    { id: '在庫管理', name: '在庫管理' },
-    { id: '顧客管理', name: '顧客管理' },
-    { id: '経営BI', name: '経営BI' },
-    { id: '生産管理', name: '生産管理' },
-    { id: '人事給与', name: '人事給与' }
+    ...Object.values(CASE_CATEGORIES)
   ];
 
-  const filteredCases = selectedCategory === 'all' 
-    ? cases 
-    : cases.filter(c => c.category === selectedCategory);
+  const filteredCases = selectedCategory === 'all'
+    ? displayCases
+    : displayCases.filter(c => c.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
@@ -180,8 +195,19 @@ export default function Cases() {
       {/* Cases Grid */}
       <div className="pb-32 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8">
-            {filteredCases.map(caseItem => (
+          {loading ? (
+            <div className="text-center py-20">
+              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#00D9FF] border-t-transparent"></div>
+              <p className="text-gray-400 mt-4">読み込み中...</p>
+            </div>
+          ) : filteredCases.length === 0 ? (
+            <div className="text-center py-20">
+              <i className="ri-file-damage-line text-6xl text-gray-600 mb-4"></i>
+              <p className="text-gray-400">開発事例が見つかりませんでした</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-8">
+              {filteredCases.map(caseItem => (
               <div
                 key={caseItem.id}
                 className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/30 transition-all duration-300 group"
@@ -239,8 +265,9 @@ export default function Cases() {
                   </div>
                 </div>
               </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 

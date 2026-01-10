@@ -36,3 +36,28 @@ export interface BlogCategory {
   slug: string;
   name: string;
 }
+
+/**
+ * Notion Case Study
+ */
+export interface NotionCase {
+  id: string;
+  title: string;
+  category: string;
+  description: string;
+  image: string;
+  scale: string;
+  period: string;
+  cost: string;
+  results: string[];
+  published: boolean;
+  order: number;
+}
+
+/**
+ * Case Study Category
+ */
+export interface CaseCategory {
+  id: string;
+  name: string;
+}
