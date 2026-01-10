@@ -29,9 +29,6 @@ export default function Hero() {
               <Link to="/simulator" className="bg-[#00D9FF] text-[#0A1628] px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base lg:text-lg font-bold hover:bg-[#00F0FF] transition-all duration-300 hover:shadow-2xl hover:shadow-[#00D9FF]/50 hover:-translate-y-1 cursor-pointer text-center">
                 見積もりシミュレーターで概算金額を確認
               </Link>
-              <button className="bg-white/10 backdrop-blur-md text-white px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base lg:text-lg font-bold border-2 border-white/30 hover:bg-white/20 hover:border-white/50 transition-all duration-300 cursor-pointer text-center">
-                詳しく見る
-              </button>
             </div>
           </div>
 
