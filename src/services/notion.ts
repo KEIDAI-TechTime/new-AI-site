@@ -83,6 +83,10 @@ export async function getPosts(params?: {
     console.log('[Notion] Querying database...', { category, perPage });
     console.log('[Notion] notion client type:', typeof notion);
     console.log('[Notion] notion.databases:', notion.databases);
+    console.log('[Notion] notion.databases keys:', Object.keys(notion.databases));
+    console.log('[Notion] notion.databases.query type:', typeof notion.databases.query);
+    console.log('[Notion] Database ID:', NOTION_DATABASE_ID);
+
     // Notionデータベースにクエリ
     const response = await notion.databases.query({
       database_id: NOTION_DATABASE_ID,
