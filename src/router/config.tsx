@@ -6,6 +6,7 @@ import About from "../pages/about/page";
 import Cases from "../pages/cases/page";
 import CaseDetail from "../pages/cases/[id]/page";
 import SimulatorPage from "../pages/simulator/page";
+import SystemsPage from "../pages/systems/page";
 import AIDevelopmentPage from "../pages/ai-development/page";
 import QualityAssurancePage from "../pages/quality-assurance/page";
 import Blog from "../pages/blog/page";
@@ -43,6 +44,10 @@ const routes: RouteObject[] = [
   {
     path: "/simulator",
     element: <SimulatorPage />,
+  },
+  {
+    path: "/systems",
+    element: <SystemsPage />,
   },
   {
     path: "/ai-development",

@@ -160,7 +160,7 @@ export default function SimulatorPage() {
               <span className="text-xl font-bold text-white">TechTime</span>
             </Link>
             <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-              <Link to="/#systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
+              <Link to="/systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
               <Link to="/simulator" className="text-sm text-[#00D9FF] font-medium whitespace-nowrap">見積もり</Link>
               <Link to="/blog" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ブログ</Link>
               <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
@@ -183,7 +183,7 @@ export default function SimulatorPage() {
         {mobileMenuOpen && (
           <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
             <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-              <Link to="/#systems" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">対応システム</Link>
+              <Link to="/systems" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">対応システム</Link>
               <Link to="/simulator" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#00D9FF] font-medium hover:bg-white/5 rounded-lg transition-colors">見積もり</Link>
               <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">ブログ</Link>
               <Link to="/cases" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">開発事例</Link>
@@ -537,7 +537,7 @@ export default function SimulatorPage() {
               <h4 className="text-white font-semibold mb-4">サービス</h4>
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><Link to="/simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</Link></li>
-                <li><Link to="/#systems" className="hover:text-[#00D9FF] transition-colors">対応システム</Link></li>
+                <li><Link to="/systems" className="hover:text-[#00D9FF] transition-colors">対応システム</Link></li>
                 <li><Link to="/#ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</Link></li>
               </ul>
             </div>
