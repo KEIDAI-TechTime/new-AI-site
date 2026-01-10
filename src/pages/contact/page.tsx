@@ -14,6 +14,7 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -67,45 +68,92 @@ export default function Contact() {
     <div className="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#0A1628]/95 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                <i className="ri-code-s-slash-line text-xl text-white"></i>
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
+                <i className="ri-code-s-slash-line text-lg sm:text-xl text-white"></i>
               </div>
-              <span className="text-xl font-bold text-white">TechTime</span>
+              <span className="text-lg sm:text-xl font-bold text-white">TechTime</span>
             </Link>
-            <div className="flex items-center gap-8">
+
+            {/* Desktop Menu */}
+            <div className="hidden md:flex items-center gap-6 lg:gap-8">
               <Link to="/" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ホーム</Link>
               <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
               <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">会社概要</Link>
               <Link to="/contact" className="text-sm text-[#00D9FF] font-medium whitespace-nowrap">お問い合わせ</Link>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="md:hidden text-white p-2"
+              aria-label="メニューを開く"
+            >
+              <i className={`${mobileMenuOpen ? 'ri-close-line' : 'ri-menu-line'} text-2xl`}></i>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="md:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
+            <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
+              <Link
+                to="/"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors"
+              >
+                ホーム
+              </Link>
+              <Link
+                to="/cases"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors"
+              >
+                開発事例
+              </Link>
+              <Link
+                to="/about"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors"
+              >
+                会社概要
+              </Link>
+              <Link
+                to="/contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block px-4 py-3 text-[#00D9FF] font-medium hover:bg-white/5 rounded-lg transition-colors"
+              >
+                お問い合わせ
+              </Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
-      <div className="pt-32 pb-20 px-6">
+      <div className="pt-20 sm:pt-24 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 px-4 sm:px-6">
         <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00D9FF]/10 border border-[#00D9FF]/20 mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00D9FF]/10 border border-[#00D9FF]/20 mb-4 sm:mb-6">
             <i className="ri-mail-line text-[#00D9FF]"></i>
-            <span className="text-sm text-[#00D9FF] font-medium">お問い合わせ</span>
+            <span className="text-xs sm:text-sm text-[#00D9FF] font-medium">お問い合わせ</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 sm:mb-6">
             詳しい相談をご希望の方
           </h1>
-          <p className="text-lg text-gray-300 leading-relaxed">
-            要件のヒアリング、詳細見積もり、開発事例のご紹介など、<br />
+          <p className="text-sm sm:text-base lg:text-lg text-gray-300 leading-relaxed">
+            要件のヒアリング、詳細見積もり、開発事例のご紹介など、<br className="hidden sm:block" />
             専門スタッフが丁寧にご対応いたします。
           </p>
         </div>
       </div>
 
       {/* Contact Form */}
-      <div className="pb-32 px-6">
+      <div className="pb-16 sm:pb-24 lg:pb-32 px-4 sm:px-6">
         <div className="max-w-3xl mx-auto">
-          <div className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 md:p-12">
+          <div className="bg-white/5 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-white/10 p-6 sm:p-8 md:p-12">
             <form id="contact-form" data-readdy-form onSubmit={handleSubmit} className="space-y-6">
               {/* Company Name */}
               <div>
