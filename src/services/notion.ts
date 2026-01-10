@@ -6,6 +6,14 @@ import type { NotionPost, BlogCategory } from '../types/notion';
 const NOTION_API_KEY = import.meta.env.VITE_NOTION_API_KEY || '';
 const NOTION_DATABASE_ID = import.meta.env.VITE_NOTION_DATABASE_ID || '';
 
+// デバッグ用ログ（本番環境での問題診断用）
+console.log('[Notion] Configuration check:', {
+  hasApiKey: Boolean(NOTION_API_KEY),
+  apiKeyPrefix: NOTION_API_KEY ? NOTION_API_KEY.substring(0, 10) + '...' : 'none',
+  hasDatabaseId: Boolean(NOTION_DATABASE_ID),
+  databaseIdPrefix: NOTION_DATABASE_ID ? NOTION_DATABASE_ID.substring(0, 8) + '...' : 'none',
+});
+
 // NotionクライアントとMarkdownコンバーターの初期化
 let notion: Client | null = null;
 let n2m: NotionToMarkdown | null = null;
@@ -13,6 +21,9 @@ let n2m: NotionToMarkdown | null = null;
 if (NOTION_API_KEY) {
   notion = new Client({ auth: NOTION_API_KEY });
   n2m = new NotionToMarkdown({ notionClient: notion });
+  console.log('[Notion] Client initialized successfully');
+} else {
+  console.warn('[Notion] API key not found - Notion integration disabled');
 }
 
 // カテゴリマッピング
@@ -29,14 +40,20 @@ export async function getPosts(params?: {
   perPage?: number;
   page?: number;
 }): Promise<NotionPost[]> {
+  console.log('[Notion] getPosts called with params:', params);
+
   if (!notion || !NOTION_DATABASE_ID) {
-    console.warn('Notion API key or Database ID not configured');
+    console.warn('[Notion] Cannot fetch posts - missing configuration', {
+      hasNotion: Boolean(notion),
+      hasDatabaseId: Boolean(NOTION_DATABASE_ID),
+    });
     return [];
   }
 
   const { category, perPage = 10 } = params || {};
 
   try {
+    console.log('[Notion] Querying database...', { category, perPage });
     // Notionデータベースにクエリ
     const response = await notion.databases.query({
       database_id: NOTION_DATABASE_ID,
@@ -70,15 +87,24 @@ export async function getPosts(params?: {
     });
 
     // レスポンスを変換
+    console.log('[Notion] Found', response.results.length, 'pages in database');
     const posts = await Promise.all(
       response.results.map(async (page: any) => {
         return await convertPageToPost(page);
       })
     );
 
-    return posts.filter((post): post is NotionPost => post !== null);
+    const validPosts = posts.filter((post): post is NotionPost => post !== null);
+    console.log('[Notion] Returning', validPosts.length, 'valid posts');
+    return validPosts;
   } catch (error) {
-    console.error('Failed to fetch posts from Notion:', error);
+    console.error('[Notion] Failed to fetch posts:', error);
+    if (error instanceof Error) {
+      console.error('[Notion] Error details:', {
+        message: error.message,
+        name: error.name,
+      });
+    }
     return [];
   }
 }
