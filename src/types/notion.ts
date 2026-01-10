@@ -52,6 +52,7 @@ export interface NotionCase {
   results: string[];
   published: boolean;
   order: number;
+  content?: string; // Markdown content from page blocks
 }
 
 /**

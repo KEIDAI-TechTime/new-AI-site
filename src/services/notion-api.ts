@@ -352,7 +352,16 @@ export async function getCase(id: string): Promise<NotionCase | null> {
     }
 
     const page = await response.json();
-    return convertPageToCase(page);
+    const caseData = convertPageToCase(page);
+
+    if (!caseData) return null;
+
+    // ページコンテンツを取得
+    const content = await getPageContent(page.id);
+    return {
+      ...caseData,
+      content,
+    };
   } catch (error) {
     console.error('[Notion API] Failed to fetch case:', error);
     return null;

@@ -1,5 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { getCase } from '../../../services/notion-api';
 import type { NotionCase } from '../../../types/notion';
 
@@ -174,6 +176,20 @@ export default function CaseDetail() {
             </p>
           </div>
 
+          {/* Detailed Content from Notion Blocks */}
+          {caseData.content && (
+            <div className="mb-12">
+              <h2 className="text-2xl font-bold text-white mb-6">詳細情報</h2>
+              <div className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+                <div className="markdown-content prose prose-invert max-w-none">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {caseData.content}
+                  </ReactMarkdown>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Results */}
           <div className="mb-12">
             <h2 className="text-2xl font-bold text-white mb-6">導入効果</h2>
@@ -221,6 +237,120 @@ export default function CaseDetail() {
           </div>
         </div>
       </div>
+
+      {/* Markdown Styles */}
+      <style>{`
+        .markdown-content {
+          font-size: 1rem;
+          line-height: 1.75;
+          color: #D1D5DB;
+        }
+
+        /* 見出し */
+        .markdown-content h1,
+        .markdown-content h2,
+        .markdown-content h3 {
+          color: #FFFFFF;
+          font-weight: 700;
+          margin-top: 2rem;
+          margin-bottom: 1rem;
+        }
+
+        .markdown-content h1 { font-size: 2rem; }
+        .markdown-content h2 { font-size: 1.5rem; }
+        .markdown-content h3 { font-size: 1.25rem; }
+
+        /* パラグラフ */
+        .markdown-content p {
+          margin-bottom: 1.5rem;
+        }
+
+        /* リスト */
+        .markdown-content ul,
+        .markdown-content ol {
+          margin-bottom: 1.5rem;
+          padding-left: 1.5rem;
+        }
+
+        .markdown-content li {
+          margin-bottom: 0.5rem;
+        }
+
+        /* リンク */
+        .markdown-content a {
+          color: #00D9FF;
+          text-decoration: underline;
+        }
+
+        .markdown-content a:hover {
+          color: #0099FF;
+        }
+
+        /* コード */
+        .markdown-content code {
+          background-color: rgba(255, 255, 255, 0.1);
+          padding: 0.2rem 0.4rem;
+          border-radius: 0.25rem;
+          font-size: 0.875rem;
+          color: #00D9FF;
+        }
+
+        .markdown-content pre {
+          background-color: rgba(255, 255, 255, 0.05);
+          padding: 1rem;
+          border-radius: 0.5rem;
+          overflow-x: auto;
+          margin-bottom: 1.5rem;
+        }
+
+        .markdown-content pre code {
+          background-color: transparent;
+          padding: 0;
+          color: #D1D5DB;
+        }
+
+        /* 引用 */
+        .markdown-content blockquote {
+          border-left: 4px solid #00D9FF;
+          padding-left: 1rem;
+          margin: 1.5rem 0;
+          font-style: italic;
+          color: #9CA3AF;
+        }
+
+        /* 画像 */
+        .markdown-content img {
+          border-radius: 0.5rem;
+          margin: 1.5rem 0;
+        }
+
+        /* テーブル */
+        .markdown-content table {
+          width: 100%;
+          border-collapse: collapse;
+          margin-bottom: 1.5rem;
+        }
+
+        .markdown-content th,
+        .markdown-content td {
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          padding: 0.75rem;
+          text-align: left;
+        }
+
+        .markdown-content th {
+          background-color: rgba(0, 217, 255, 0.1);
+          font-weight: 600;
+          color: #FFFFFF;
+        }
+
+        /* 水平線 */
+        .markdown-content hr {
+          border: none;
+          border-top: 1px solid rgba(255, 255, 255, 0.1);
+          margin: 2rem 0;
+        }
+      `}</style>
 
       {/* Footer */}
       <footer className="border-t border-white/10 bg-[#0A1628]/50 backdrop-blur-xl">
