@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { getPost, formatDate, BLOG_CATEGORIES } from '../../../services/notion';
+import { getPost, formatDate, BLOG_CATEGORIES } from '../../../services/notion-api';
 import type { NotionPost } from '../../../types/notion';
 
 export default function BlogPost() {
