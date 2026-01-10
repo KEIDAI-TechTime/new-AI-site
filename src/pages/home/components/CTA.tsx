@@ -70,12 +70,12 @@ export default function CTA() {
               <h4 className="text-3xl font-bold text-white leading-tight">
                 今すぐ始めましょう
               </h4>
-              <button 
-                onClick={scrollToSimulator}
-                className="px-6 py-3 border-2 border-white/50 text-white rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-md whitespace-nowrap cursor-pointer"
+              <Link
+                to="/simulator"
+                className="inline-block px-6 py-3 border-2 border-white/50 text-white rounded-full hover:bg-white/10 transition-all duration-300 backdrop-blur-md whitespace-nowrap cursor-pointer"
               >
                 見積もりを確認
-              </button>
+              </Link>
             </div>
 
             {/* Services Column */}
