@@ -82,7 +82,7 @@ export default function CTA() {
             <div className="space-y-4">
               <h5 className="text-xl font-bold text-white mb-6">サービス</h5>
               <ul className="space-y-3">
-                {['AI駆動開発', '基幹システム開発', '見積もりシミュレーター', '運用保守サポート', '技術コンサルティング'].map((item, index) => (
+                {['AI駆動開発', '基幹システム開発', '見積もりシミュレーター'].map((item, index) => (
                   <li key={index}>
                     <a href="#" className="text-gray-400 hover:text-[#00D9FF] transition-colors duration-300 text-base cursor-pointer">
                       {item}
@@ -131,11 +131,6 @@ export default function CTA() {
               <p className="text-sm text-gray-400">
                 © 2025 TechTime株式会社. All rights reserved.
               </p>
-              <div className="flex items-center gap-2">
-                <a href="https://readdy.ai/?ref=logo" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-400 hover:text-[#00D9FF] transition-colors duration-300 cursor-pointer">
-                  Powered by Readdy
-                </a>
-              </div>
             </div>
           </div>
         </div>
