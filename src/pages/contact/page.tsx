@@ -329,7 +329,7 @@ export default function Contact() {
                   03-4222-3363
                 </a>
               </div>
-              <p className="text-sm text-gray-400">受付時間：月〜金 9:00〜19:00</p>
+              <p className="text-sm text-gray-400">受付時間：月～金/9～19時</p>
               <div className="flex items-center justify-center gap-3 mt-6">
                 <i className="ri-mail-line text-[#00D9FF] text-xl w-6 h-6 flex items-center justify-center"></i>
                 <a href="mailto:info@techtime-link.com" className="text-white hover:text-[#00D9FF] transition-colors">

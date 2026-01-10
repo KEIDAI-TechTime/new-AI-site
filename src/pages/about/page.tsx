@@ -95,15 +95,20 @@ export default function About() {
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">所在地</td>
                     <td className="py-6 text-white">
-                      〒100-0001<br />
-                      東京都千代田区千代田1-1-1<br />
-                      テックタワー10F
+                      【東京オフィス】<br />
+                      〒150-0002<br />
+                      東京都渋谷区渋谷2-19-15宮益坂ビルディング609<br />
+                      <br />
+                      【大阪オフィス】<br />
+                      〒530-0001<br />
+                      大阪府大阪市北区梅田1丁目2番2号大阪駅前第2ビル12-12
                     </td>
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">電話番号</td>
                     <td className="py-6 text-white">
-                      <a href="tel:0342223363" className="hover:text-[#00D9FF] transition-colors">03-4222-3363</a>
+                      <a href="tel:0342223363" className="hover:text-[#00D9FF] transition-colors">03-4222-3363</a><br />
+                      <span className="text-sm text-gray-400">（月～金/9～19時）</span>
                     </td>
                   </tr>
                   <tr>
