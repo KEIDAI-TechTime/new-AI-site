@@ -57,8 +57,22 @@ export default function SystemTypes() {
   ];
 
   return (
-    <section id="systems" className="py-32 bg-white">
+    <section id="systems" className="pt-40 pb-32 bg-white">
       <div className="max-w-7xl mx-auto px-6">
+        {/* Header */}
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-20 gap-8">
+          <div>
+            <h2 className="text-5xl lg:text-6xl font-extrabold text-[#0A1628] leading-tight">
+              開発対応システム
+            </h2>
+          </div>
+          <div className="max-w-xl">
+            <p className="text-lg text-gray-600 leading-relaxed">
+              企業の基幹業務を支える各種システムをスクラッチ開発。御社の業務フローに完全に適合した、専用システムを構築します。
+            </p>
+          </div>
+        </div>
+
         {/* System Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {systems.map((system) => (

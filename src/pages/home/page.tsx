@@ -1,7 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import Hero from './components/Hero';
-import Features from './components/Features';
 import SystemTypes from './components/SystemTypes';
 import AIDevelopment from './components/AIDevelopment';
 import Simulator from './components/Simulator';
@@ -35,7 +33,6 @@ export default function Home() {
 
             {/* Desktop Menu */}
             <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-              <a href="#features" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">特徴</a>
               <a href="#systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</a>
               <a href="#simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</a>
               <Link to="/blog" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ブログ</Link>
@@ -59,13 +56,6 @@ export default function Home() {
         {mobileMenuOpen && (
           <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
             <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-              <a
-                href="#features"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors"
-              >
-                特徴
-              </a>
               <a
                 href="#systems"
                 onClick={() => setMobileMenuOpen(false)}
@@ -114,8 +104,6 @@ export default function Home() {
       </nav>
 
       <div className="min-h-screen bg-white">
-        <Hero />
-        <Features />
         <SystemTypes />
         <AIDevelopment />
         <Simulator />
