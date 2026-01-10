@@ -20,8 +20,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return;
   }
 
+  // デバッグ: 環境変数の確認
+  console.log('DEBUG - API Key exists:', !!NOTION_API_KEY);
+  console.log('DEBUG - API Key prefix:', NOTION_API_KEY ? NOTION_API_KEY.substring(0, 10) + '...' : 'null');
+  console.log('DEBUG - Blog DB ID exists:', !!NOTION_DATABASE_ID);
+  console.log('DEBUG - Blog DB ID:', NOTION_DATABASE_ID || 'null');
+
   if (!NOTION_API_KEY || !NOTION_DATABASE_ID) {
-    return res.status(500).json({ error: 'Notion API not configured' });
+    return res.status(500).json({
+      error: 'Notion API not configured',
+      details: {
+        hasApiKey: !!NOTION_API_KEY,
+        hasDbId: !!NOTION_DATABASE_ID,
+        apiKeyPrefix: NOTION_API_KEY ? NOTION_API_KEY.substring(0, 10) + '...' : 'null'
+      }
+    });
   }
 
   try {

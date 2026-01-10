@@ -13,12 +13,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(200).end();
   }
 
+  // デバッグ: 環境変数の確認
+  console.log('DEBUG - API Key exists:', !!NOTION_API_KEY);
+  console.log('DEBUG - API Key prefix:', NOTION_API_KEY ? NOTION_API_KEY.substring(0, 10) + '...' : 'null');
+  console.log('DEBUG - Cases DB ID exists:', !!NOTION_CASES_DATABASE_ID);
+  console.log('DEBUG - Cases DB ID:', NOTION_CASES_DATABASE_ID || 'null');
+
   if (!NOTION_API_KEY || !NOTION_CASES_DATABASE_ID) {
     return res.status(500).json({
       error: 'Notion API not configured',
       details: {
         hasApiKey: !!NOTION_API_KEY,
-        hasCasesDbId: !!NOTION_CASES_DATABASE_ID
+        hasCasesDbId: !!NOTION_CASES_DATABASE_ID,
+        apiKeyPrefix: NOTION_API_KEY ? NOTION_API_KEY.substring(0, 10) + '...' : 'null'
       }
     });
   }
