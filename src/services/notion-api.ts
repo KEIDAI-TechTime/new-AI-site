@@ -336,6 +336,30 @@ export async function getCases(category?: string): Promise<NotionCase[]> {
 }
 
 /**
+ * 開発事例詳細を取得
+ */
+export async function getCase(id: string): Promise<NotionCase | null> {
+  try {
+    console.log('[Notion API] Fetching case with id:', id);
+
+    const url = `${API_BASE}/cases/${id}`;
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      const error = await response.text();
+      console.error('[Notion API] Request failed:', { status: response.status, error });
+      return null;
+    }
+
+    const page = await response.json();
+    return convertPageToCase(page);
+  } catch (error) {
+    console.error('[Notion API] Failed to fetch case:', error);
+    return null;
+  }
+}
+
+/**
  * NotionページをNotionCase型に変換
  */
 function convertPageToCase(page: any): NotionCase | null {

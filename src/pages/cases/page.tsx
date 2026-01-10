@@ -208,9 +208,10 @@ export default function Cases() {
           ) : (
             <div className="grid md:grid-cols-2 gap-8">
               {filteredCases.map(caseItem => (
-              <div
+              <Link
                 key={caseItem.id}
-                className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/30 transition-all duration-300 group"
+                to={`/cases/${caseItem.id}`}
+                className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/30 transition-all duration-300 group block"
               >
                 {/* Image */}
                 <div className="relative h-64 overflow-hidden">
@@ -264,7 +265,7 @@ export default function Cases() {
                     </ul>
                   </div>
                 </div>
-              </div>
+              </Link>
               ))}
             </div>
           )}
