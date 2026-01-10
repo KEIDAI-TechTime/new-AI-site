@@ -293,6 +293,8 @@ async function main() {
 
   } catch (error) {
     console.error('❌ Setup failed:', error.message);
+    console.error('Error stack:', error.stack);
+    console.error('Full error:', error);
     process.exit(1);
   }
 }
