@@ -1,5 +1,5 @@
-import { Client } from '@notionhq/client';
-import { NotionToMarkdown } from 'notion-to-md';
+import type { Client } from '@notionhq/client';
+import type { NotionToMarkdown } from 'notion-to-md';
 import type { NotionPost, BlogCategory } from '../types/notion';
 
 // Notion設定
@@ -19,9 +19,9 @@ let notionClient: Client | null = null;
 let n2mInstance: NotionToMarkdown | null = null;
 
 /**
- * Notionクライアントを取得（遅延初期化）
+ * Notionクライアントを取得（遅延初期化＆動的インポート）
  */
-function getNotionClient(): Client | null {
+async function getNotionClient(): Promise<Client | null> {
   if (!NOTION_API_KEY) {
     console.warn('[Notion] API key not found - Notion integration disabled');
     return null;
@@ -29,6 +29,7 @@ function getNotionClient(): Client | null {
 
   if (!notionClient) {
     console.log('[Notion] Initializing Notion client...');
+    const { Client } = await import('@notionhq/client');
     notionClient = new Client({ auth: NOTION_API_KEY });
     console.log('[Notion] Client initialized successfully');
   }
@@ -37,14 +38,15 @@ function getNotionClient(): Client | null {
 }
 
 /**
- * Notion to Markdownコンバーターを取得（遅延初期化）
+ * Notion to Markdownコンバーターを取得（遅延初期化＆動的インポート）
  */
-function getN2M(): NotionToMarkdown | null {
-  const client = getNotionClient();
+async function getN2M(): Promise<NotionToMarkdown | null> {
+  const client = await getNotionClient();
   if (!client) return null;
 
   if (!n2mInstance) {
     console.log('[Notion] Initializing Notion to Markdown converter...');
+    const { NotionToMarkdown } = await import('notion-to-md');
     n2mInstance = new NotionToMarkdown({ notionClient: client });
   }
 
@@ -67,7 +69,7 @@ export async function getPosts(params?: {
 }): Promise<NotionPost[]> {
   console.log('[Notion] getPosts called with params:', params);
 
-  const notion = getNotionClient();
+  const notion = await getNotionClient();
 
   if (!notion || !NOTION_DATABASE_ID) {
     console.warn('[Notion] Cannot fetch posts - missing configuration', {
@@ -146,7 +148,7 @@ export async function getPosts(params?: {
  * 記事詳細を取得
  */
 export async function getPost(slug: string): Promise<NotionPost | null> {
-  const notion = getNotionClient();
+  const notion = await getNotionClient();
 
   if (!notion || !NOTION_DATABASE_ID) {
     console.warn('Notion API key or Database ID not configured');
@@ -191,7 +193,7 @@ export async function getPost(slug: string): Promise<NotionPost | null> {
  * NotionページをNotionPost型に変換
  */
 async function convertPageToPost(page: any): Promise<NotionPost | null> {
-  const n2m = getN2M();
+  const n2m = await getN2M();
   if (!n2m) return null;
 
   try {
