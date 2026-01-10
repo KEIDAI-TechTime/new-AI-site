@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { getPost, formatDate } from '../../../services/wordpress';
-import type { WordPressPost } from '../../../types/wordpress';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { getPost, formatDate, BLOG_CATEGORIES } from '../../../services/notion';
+import type { NotionPost } from '../../../types/notion';
 
 export default function BlogPost() {
   const { slug } = useParams<{ slug: string }>();
-  const [post, setPost] = useState<WordPressPost | null>(null);
+  const [post, setPost] = useState<NotionPost | null>(null);
   const [loading, setLoading] = useState(true);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -97,12 +99,12 @@ export default function BlogPost() {
             </div>
           ) : (
             <article className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
-              {/* Featured Image */}
-              {post._embedded?.['wp:featuredmedia']?.[0]?.source_url && (
+              {/* Cover Image */}
+              {post.coverImage && (
                 <div className="aspect-video overflow-hidden bg-white/5">
                   <img
-                    src={post._embedded['wp:featuredmedia'][0].source_url}
-                    alt={post._embedded['wp:featuredmedia'][0].alt_text || post.title.rendered}
+                    src={post.coverImage}
+                    alt={post.title}
                     className="w-full h-full object-cover"
                   />
                 </div>
@@ -111,41 +113,38 @@ export default function BlogPost() {
               <div className="p-6 sm:p-8 lg:p-12">
                 {/* Meta */}
                 <div className="flex flex-wrap items-center gap-3 mb-6">
-                  <span className="text-sm text-gray-400">{formatDate(post.date)}</span>
-                  {post._embedded?.['wp:term']?.[0]?.map((term) => (
-                    <span
-                      key={term.id}
-                      className="px-3 py-1 bg-[#00D9FF]/10 text-[#00D9FF] text-sm rounded-full"
-                    >
-                      {term.name}
+                  <span className="text-sm text-gray-400">{formatDate(post.createdAt)}</span>
+                  {post.category && BLOG_CATEGORIES[post.category] && (
+                    <span className="px-3 py-1 bg-[#00D9FF]/10 text-[#00D9FF] text-sm rounded-full">
+                      {BLOG_CATEGORIES[post.category].name}
                     </span>
-                  ))}
+                  )}
                 </div>
 
                 {/* Title */}
-                <h1
-                  className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-8"
-                  dangerouslySetInnerHTML={{ __html: post.title.rendered }}
-                />
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-8">
+                  {post.title}
+                </h1>
 
                 {/* Content */}
-                <div
-                  className="wp-content text-gray-300 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: post.content.rendered }}
-                />
+                <div className="markdown-content text-gray-300 leading-relaxed">
+                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                    {post.content}
+                  </ReactMarkdown>
+                </div>
                 <style>{`
-                  .wp-content {
+                  .markdown-content {
                     font-size: 1.125rem;
                     line-height: 1.75;
                   }
 
                   /* 見出し */
-                  .wp-content h1,
-                  .wp-content h2,
-                  .wp-content h3,
-                  .wp-content h4,
-                  .wp-content h5,
-                  .wp-content h6 {
+                  .markdown-content h1,
+                  .markdown-content h2,
+                  .markdown-content h3,
+                  .markdown-content h4,
+                  .markdown-content h5,
+                  .markdown-content h6 {
                     color: white;
                     font-weight: bold;
                     margin-top: 2rem;
@@ -153,70 +152,70 @@ export default function BlogPost() {
                     line-height: 1.3;
                   }
 
-                  .wp-content h1 { font-size: 2.25rem; }
-                  .wp-content h2 { font-size: 1.875rem; }
-                  .wp-content h3 { font-size: 1.5rem; }
-                  .wp-content h4 { font-size: 1.25rem; }
+                  .markdown-content h1 { font-size: 2.25rem; }
+                  .markdown-content h2 { font-size: 1.875rem; }
+                  .markdown-content h3 { font-size: 1.5rem; }
+                  .markdown-content h4 { font-size: 1.25rem; }
 
                   /* 段落 */
-                  .wp-content p {
+                  .markdown-content p {
                     color: #D1D5DB;
                     margin-bottom: 1.5rem;
                   }
 
                   /* リンク */
-                  .wp-content a {
+                  .markdown-content a {
                     color: #00D9FF;
                     text-decoration: none;
                     transition: all 0.2s;
                   }
 
-                  .wp-content a:hover {
+                  .markdown-content a:hover {
                     text-decoration: underline;
                     color: #00F0FF;
                   }
 
                   /* 太字・強調 */
-                  .wp-content strong,
-                  .wp-content b {
+                  .markdown-content strong,
+                  .markdown-content b {
                     color: white;
                     font-weight: 700;
                   }
 
                   /* イタリック */
-                  .wp-content em,
-                  .wp-content i {
+                  .markdown-content em,
+                  .markdown-content i {
                     font-style: italic;
                     color: #E5E7EB;
                   }
 
                   /* リスト */
-                  .wp-content ul,
-                  .wp-content ol {
+                  .markdown-content ul,
+                  .markdown-content ol {
                     margin-left: 1.5rem;
                     margin-bottom: 1.5rem;
                     color: #D1D5DB;
                   }
 
-                  .wp-content ul {
+                  .markdown-content ul {
                     list-style-type: disc;
                   }
 
-                  .wp-content ol {
+                  .markdown-content ol {
                     list-style-type: decimal;
                   }
 
-                  .wp-content li {
+                  .markdown-content li {
                     margin-bottom: 0.5rem;
                     padding-left: 0.5rem;
                   }
 
-                  .wp-content li::marker {
+                  .markdown-content li::marker {
                     color: #00D9FF;
                   }
 
                   /* 画像 */
-                  .wp-content img {
+                  .markdown-content img {
                     border-radius: 1rem;
                     max-width: 100%;
                     height: auto;
@@ -225,27 +224,8 @@ export default function BlogPost() {
                     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
                   }
 
-                  /* WordPress画像クラス */
-                  .wp-content .aligncenter {
-                    display: block;
-                    margin-left: auto;
-                    margin-right: auto;
-                  }
-
-                  .wp-content .alignleft {
-                    float: left;
-                    margin-right: 1.5rem;
-                    margin-bottom: 1rem;
-                  }
-
-                  .wp-content .alignright {
-                    float: right;
-                    margin-left: 1.5rem;
-                    margin-bottom: 1rem;
-                  }
-
                   /* 引用 */
-                  .wp-content blockquote {
+                  .markdown-content blockquote {
                     border-left: 4px solid #00D9FF;
                     padding-left: 1.5rem;
                     margin: 2rem 0;
@@ -257,7 +237,7 @@ export default function BlogPost() {
                   }
 
                   /* コード */
-                  .wp-content code {
+                  .markdown-content code {
                     background: rgba(255, 255, 255, 0.1);
                     color: #00D9FF;
                     padding: 0.25rem 0.5rem;
@@ -266,7 +246,7 @@ export default function BlogPost() {
                     font-size: 0.9em;
                   }
 
-                  .wp-content pre {
+                  .markdown-content pre {
                     background: rgba(255, 255, 255, 0.05);
                     border: 1px solid rgba(255, 255, 255, 0.1);
                     border-radius: 0.5rem;
@@ -275,14 +255,14 @@ export default function BlogPost() {
                     margin: 1.5rem 0;
                   }
 
-                  .wp-content pre code {
+                  .markdown-content pre code {
                     background: none;
                     padding: 0;
                     color: #E5E7EB;
                   }
 
                   /* テーブル */
-                  .wp-content table {
+                  .markdown-content table {
                     width: 100%;
                     border-collapse: collapse;
                     margin: 2rem 0;
@@ -291,87 +271,40 @@ export default function BlogPost() {
                     overflow: hidden;
                   }
 
-                  .wp-content th,
-                  .wp-content td {
+                  .markdown-content th,
+                  .markdown-content td {
                     padding: 0.75rem 1rem;
                     text-align: left;
                     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
                   }
 
-                  .wp-content th {
+                  .markdown-content th {
                     background: rgba(0, 217, 255, 0.1);
                     color: #00D9FF;
                     font-weight: 700;
                   }
 
-                  .wp-content td {
+                  .markdown-content td {
                     color: #D1D5DB;
                   }
 
-                  .wp-content tr:last-child td {
+                  .markdown-content tr:last-child td {
                     border-bottom: none;
                   }
 
                   /* 水平線 */
-                  .wp-content hr {
+                  .markdown-content hr {
                     border: none;
                     border-top: 1px solid rgba(255, 255, 255, 0.1);
                     margin: 2rem 0;
                   }
 
-                  /* WordPress埋め込み */
-                  .wp-content iframe,
-                  .wp-content embed,
-                  .wp-content object {
-                    max-width: 100%;
-                    margin: 2rem auto;
-                    display: block;
-                    border-radius: 0.5rem;
-                  }
-
-                  /* WordPressブロック */
-                  .wp-content .wp-block-image,
-                  .wp-content .wp-block-embed,
-                  .wp-content .wp-block-video {
-                    margin: 2rem 0;
-                  }
-
-                  /* figure */
-                  .wp-content figure {
-                    margin: 2rem 0;
-                  }
-
-                  .wp-content figcaption {
-                    text-align: center;
-                    font-size: 0.875rem;
-                    color: #9CA3AF;
-                    margin-top: 0.5rem;
-                    font-style: italic;
-                  }
-
-                  /* WordPressボタン */
-                  .wp-content .wp-block-button__link {
-                    background: #00D9FF;
-                    color: #0A1628;
-                    padding: 0.75rem 1.5rem;
-                    border-radius: 0.5rem;
-                    text-decoration: none;
-                    display: inline-block;
-                    font-weight: 600;
-                    transition: all 0.2s;
-                  }
-
-                  .wp-content .wp-block-button__link:hover {
-                    background: #00F0FF;
-                    transform: translateY(-2px);
-                  }
-
                   /* 追加のスタイル調整 */
-                  .wp-content > *:first-child {
+                  .markdown-content > *:first-child {
                     margin-top: 0;
                   }
 
-                  .wp-content > *:last-child {
+                  .markdown-content > *:last-child {
                     margin-bottom: 0;
                   }
                 `}</style>
