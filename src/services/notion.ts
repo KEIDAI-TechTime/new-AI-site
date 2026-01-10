@@ -14,16 +14,41 @@ console.log('[Notion] Configuration check:', {
   databaseIdPrefix: NOTION_DATABASE_ID ? NOTION_DATABASE_ID.substring(0, 8) + '...' : 'none',
 });
 
-// NotionクライアントとMarkdownコンバーターの初期化
-let notion: Client | null = null;
-let n2m: NotionToMarkdown | null = null;
+// NotionクライアントとMarkdownコンバーター（遅延初期化）
+let notionClient: Client | null = null;
+let n2mInstance: NotionToMarkdown | null = null;
 
-if (NOTION_API_KEY) {
-  notion = new Client({ auth: NOTION_API_KEY });
-  n2m = new NotionToMarkdown({ notionClient: notion });
-  console.log('[Notion] Client initialized successfully');
-} else {
-  console.warn('[Notion] API key not found - Notion integration disabled');
+/**
+ * Notionクライアントを取得（遅延初期化）
+ */
+function getNotionClient(): Client | null {
+  if (!NOTION_API_KEY) {
+    console.warn('[Notion] API key not found - Notion integration disabled');
+    return null;
+  }
+
+  if (!notionClient) {
+    console.log('[Notion] Initializing Notion client...');
+    notionClient = new Client({ auth: NOTION_API_KEY });
+    console.log('[Notion] Client initialized successfully');
+  }
+
+  return notionClient;
+}
+
+/**
+ * Notion to Markdownコンバーターを取得（遅延初期化）
+ */
+function getN2M(): NotionToMarkdown | null {
+  const client = getNotionClient();
+  if (!client) return null;
+
+  if (!n2mInstance) {
+    console.log('[Notion] Initializing Notion to Markdown converter...');
+    n2mInstance = new NotionToMarkdown({ notionClient: client });
+  }
+
+  return n2mInstance;
 }
 
 // カテゴリマッピング
@@ -42,6 +67,8 @@ export async function getPosts(params?: {
 }): Promise<NotionPost[]> {
   console.log('[Notion] getPosts called with params:', params);
 
+  const notion = getNotionClient();
+
   if (!notion || !NOTION_DATABASE_ID) {
     console.warn('[Notion] Cannot fetch posts - missing configuration', {
       hasNotion: Boolean(notion),
@@ -54,6 +81,8 @@ export async function getPosts(params?: {
 
   try {
     console.log('[Notion] Querying database...', { category, perPage });
+    console.log('[Notion] notion client type:', typeof notion);
+    console.log('[Notion] notion.databases:', notion.databases);
     // Notionデータベースにクエリ
     const response = await notion.databases.query({
       database_id: NOTION_DATABASE_ID,
@@ -113,6 +142,8 @@ export async function getPosts(params?: {
  * 記事詳細を取得
  */
 export async function getPost(slug: string): Promise<NotionPost | null> {
+  const notion = getNotionClient();
+
   if (!notion || !NOTION_DATABASE_ID) {
     console.warn('Notion API key or Database ID not configured');
     return null;
@@ -156,6 +187,7 @@ export async function getPost(slug: string): Promise<NotionPost | null> {
  * NotionページをNotionPost型に変換
  */
 async function convertPageToPost(page: any): Promise<NotionPost | null> {
+  const n2m = getN2M();
   if (!n2m) return null;
 
   try {
