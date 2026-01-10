@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-const NOTION_API_KEY = process.env.VITE_NOTION_API_KEY || '';
-const NOTION_DATABASE_ID = process.env.VITE_NOTION_DATABASE_ID || '';
+const NOTION_API_KEY = process.env.NOTION_API_KEY || '';
+const NOTION_DATABASE_ID = process.env.NOTION_DATABASE_ID || '';
 const NOTION_VERSION = '2022-06-28';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
