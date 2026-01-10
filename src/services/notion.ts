@@ -17,10 +17,8 @@ if (NOTION_API_KEY) {
 
 // カテゴリマッピング
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
-  column: { slug: 'column', name: 'コラム' },
-  presidents_column: { slug: 'presidents_column', name: '社長コラム' },
-  tech_blog: { slug: 'tech-blog', name: '技術ブログ' },
-  dx_report: { slug: 'dx_report', name: 'DXレポート' },
+  ceo_column: { slug: 'ceo_column', name: '社長コラム' },
+  'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
 } as const;
 
 /**
@@ -153,7 +151,7 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
     const category =
       properties.Category?.select?.name ||
       properties.category?.select?.name ||
-      'column';
+      'ceo_column';
 
     // カバー画像を取得
     let coverImage: string | undefined;
