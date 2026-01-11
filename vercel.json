@@ -1,4 +1,28 @@
 {
+  "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "new-ai-site.vercel.app"
+        }
+      ],
+      "destination": "https://techtime-jp.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "new-ai-site-gkmvs6j3e-keidai-techtimes-projects.vercel.app"
+        }
+      ],
+      "destination": "https://techtime-jp.com/:path*",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/(.*)",
