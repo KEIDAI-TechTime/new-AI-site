@@ -1,0 +1,17 @@
+{
+  "schema_version": "v1",
+  "name_for_human": "TechTime株式会社",
+  "name_for_model": "techtime_jp",
+  "description_for_human": "AI駆動の低価格基幹システム開発を提供するTechTime株式会社のウェブサイト",
+  "description_for_model": "TechTimeは、AI駆動開発により従来の半分以下のコストで基幹システムを構築する企業です。文書管理、在庫管理、顧客管理などのシステムに対応。見積もりシミュレーターで即座に概算金額を確認可能。",
+  "auth": {
+    "type": "none"
+  },
+  "api": {
+    "type": "openapi",
+    "url": "https://techtime-jp.com"
+  },
+  "logo_url": "https://techtime-jp.com/logo.png",
+  "contact_email": "info@techtime-jp.com",
+  "legal_info_url": "https://techtime-jp.com/about"
+}

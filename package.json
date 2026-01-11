@@ -5,11 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && tsx scripts/prerender.ts",
+    "build": "vite build && tsx scripts/prerender.ts && tsx scripts/notify-search-engines.ts",
     "build:spa": "vite build",
     "preview": "vite preview",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "type-check": "tsc --noEmit --project tsconfig.app.json"
+    "type-check": "tsc --noEmit --project tsconfig.app.json",
+    "notify": "tsx scripts/notify-search-engines.ts"
   },
   "dependencies": {
     "@notionhq/client": "^5.6.0",
