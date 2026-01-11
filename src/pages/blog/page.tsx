@@ -116,9 +116,31 @@ export default function Blog() {
 
           {/* Blog Posts Grid */}
           {loading ? (
-            <div className="text-center py-20">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#00D9FF] border-t-transparent"></div>
-              <p className="text-gray-400 mt-4">読み込み中...</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[...Array(6)].map((_, i) => (
+                <div key={i} className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden animate-pulse">
+                  {/* Skeleton Cover Image */}
+                  <div className="aspect-video bg-white/10"></div>
+                  <div className="p-6">
+                    {/* Skeleton Date & Category */}
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="h-3 w-20 bg-white/10 rounded"></div>
+                      <div className="h-5 w-16 bg-white/10 rounded-full"></div>
+                    </div>
+                    {/* Skeleton Title */}
+                    <div className="space-y-2 mb-3">
+                      <div className="h-5 w-full bg-white/10 rounded"></div>
+                      <div className="h-5 w-3/4 bg-white/10 rounded"></div>
+                    </div>
+                    {/* Skeleton Excerpt */}
+                    <div className="space-y-2">
+                      <div className="h-3 w-full bg-white/10 rounded"></div>
+                      <div className="h-3 w-full bg-white/10 rounded"></div>
+                      <div className="h-3 w-2/3 bg-white/10 rounded"></div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : posts.length === 0 ? (
             <div className="text-center py-20">

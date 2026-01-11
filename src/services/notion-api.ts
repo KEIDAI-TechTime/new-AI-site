@@ -55,9 +55,10 @@ export async function getPosts(params?: {
     const data = await response.json();
     console.log('[Notion API] Found', data.results.length, 'pages in database');
 
+    // 一覧ページでは本文コンテンツを取得しない（高速化）
     const posts = await Promise.all(
       data.results.map(async (page: any) => {
-        return await convertPageToPost(page);
+        return await convertPageToPost(page, true); // skipContent = true
       })
     );
 
@@ -110,7 +111,7 @@ export async function getPost(slug: string): Promise<NotionPost | null> {
 /**
  * NotionページをNotionPost型に変換
  */
-async function convertPageToPost(page: any): Promise<NotionPost | null> {
+async function convertPageToPost(page: any, skipContent: boolean = false): Promise<NotionPost | null> {
   try {
     const properties = page.properties;
 
@@ -149,8 +150,8 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
     // 公開状態を取得
     const published = properties.Published?.checkbox ?? true;
 
-    // ページコンテンツを取得してMarkdownに変換
-    const content = await getPageContent(page.id);
+    // ページコンテンツを取得してMarkdownに変換（一覧ページではスキップして高速化）
+    const content = skipContent ? '' : await getPageContent(page.id);
 
     return {
       id: page.id,
