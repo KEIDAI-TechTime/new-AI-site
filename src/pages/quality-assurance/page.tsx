@@ -131,12 +131,8 @@ export default function QualityAssurancePage() {
       <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 group cursor-pointer">
-              <img
-                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo.png"
-                alt="TechTime"
-                className="h-8 w-auto"
-              />
+            <Link to="/" className="text-2xl font-bold text-[#0A1628] hover:text-[#1E40AF] transition-colors duration-300">
+              TechTime
             </Link>
             <div className="flex items-center gap-8">
               <Link to="/" className="text-gray-700 hover:text-[#1E40AF] transition-colors duration-300 whitespace-nowrap cursor-pointer">
