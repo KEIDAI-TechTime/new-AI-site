@@ -399,11 +399,8 @@ export default function CaseDetail() {
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-center items-center gap-4">
             <p className="text-sm text-gray-500">© 2025 TechTime株式会社. All rights reserved.</p>
-            <a href="https://readdy.ai/?ref=logo" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-[#00D9FF] transition-colors">
-              Powered by Readdy
-            </a>
           </div>
         </div>
       </footer>

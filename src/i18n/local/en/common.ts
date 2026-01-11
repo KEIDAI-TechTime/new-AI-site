@@ -20,7 +20,6 @@ export default {
   'company.name': 'TechTime',
   'company.tagline': 'Affordable Enterprise Systems through AI-Driven Development',
   'company.copyright': '© 2025 TechTime Inc. All rights reserved.',
-  'company.poweredBy': 'Powered by Readdy',
 
   // Contact
   'contact.phone': '03-4222-3363',
