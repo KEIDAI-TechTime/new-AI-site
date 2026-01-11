@@ -22,20 +22,17 @@ export default function Contact() {
     setSubmitStatus('idle');
 
     try {
-      const formBody = new URLSearchParams();
-      Object.entries(formData).forEach(([key, value]) => {
-        formBody.append(key, value);
-      });
-
-      const response = await fetch('https://readdy.ai/api/form/d53rvljontabvievttfg', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-        body: formBody.toString()
+        body: JSON.stringify(formData)
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         setSubmitStatus('success');
         setFormData({
           company: '',
@@ -49,9 +46,11 @@ export default function Contact() {
         });
       } else {
         setSubmitStatus('error');
+        console.error('Form submission error:', data);
       }
     } catch (error) {
       setSubmitStatus('error');
+      console.error('Network error:', error);
     } finally {
       setIsSubmitting(false);
     }
