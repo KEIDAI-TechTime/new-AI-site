@@ -82,16 +82,12 @@ export default function About() {
                     <td className="py-6 text-white">TechTime株式会社</td>
                   </tr>
                   <tr>
-                    <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">代表取締役</td>
-                    <td className="py-6 text-white">山田 太郎</td>
-                  </tr>
-                  <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">設立</td>
                     <td className="py-6 text-white">2020年4月1日</td>
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">資本金</td>
-                    <td className="py-6 text-white">5,000万円</td>
+                    <td className="py-6 text-white">800万円</td>
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">所在地</td>
@@ -129,7 +125,7 @@ export default function About() {
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">従業員数</td>
-                    <td className="py-6 text-white">45名（2025年1月現在）</td>
+                    <td className="py-6 text-white">18名（2025年1月現在）</td>
                   </tr>
                 </tbody>
               </table>
