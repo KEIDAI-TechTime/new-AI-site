@@ -8,10 +8,11 @@ export default function AIDevelopmentPage() {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-3 group cursor-pointer">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                <i className="ri-code-s-slash-line text-xl text-white"></i>
-              </div>
-              <span className="text-xl font-bold text-white">TechTime</span>
+              <img
+                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                alt="TechTime"
+                className="h-10 w-auto"
+              />
             </Link>
             <div className="flex items-center gap-8">
               <Link to="/#features" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">特徴</Link>
@@ -720,10 +721,11 @@ export default function AIDevelopmentPage() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                  <i className="ri-code-s-slash-line text-xl text-white"></i>
-                </div>
-                <span className="text-xl font-bold text-white">TechTime</span>
+                <img
+                  src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                  alt="TechTime"
+                  className="h-10 w-auto"
+                />
               </div>
               <p className="text-sm text-gray-400">
                 AI駆動開発で実現する<br />圧倒的低価格の基幹システム

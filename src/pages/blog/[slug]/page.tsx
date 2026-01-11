@@ -30,10 +30,11 @@ export default function BlogPost() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                <i className="ri-code-s-slash-line text-lg sm:text-xl text-white"></i>
-              </div>
-              <span className="text-lg sm:text-xl font-bold text-white">TechTime</span>
+              <img
+                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                alt="TechTime"
+                className="h-8 sm:h-10 w-auto"
+              />
             </Link>
 
             {/* Desktop Menu */}
