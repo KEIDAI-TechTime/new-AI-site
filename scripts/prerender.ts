@@ -19,6 +19,10 @@ const pages = {
     title: 'AI駆動開発 | TechTime株式会社',
     description: 'AI技術を活用した革新的な開発手法で、設計からテストまで数分で初版を生成。開発スピードと品質を両立した次世代の開発サービス。',
   },
+  '/quality-assurance': {
+    title: '品質保証 | TechTime株式会社',
+    description: 'TechTimeの品質保証サービス。徹底したテスト体制で、高品質なシステムを提供します。バグの早期発見と継続的な品質改善をサポート。',
+  },
   '/blog': {
     title: 'ブログ | TechTime株式会社',
     description: 'TechTimeの最新情報や技術ブログをお届けします。AI駆動開発、システム開発のノウハウなど、役立つ情報を発信中。',

@@ -12,6 +12,7 @@ const pages = [
   '/systems',
   '/simulator',
   '/ai-development',
+  '/quality-assurance',
   '/blog',
   '/cases',
   '/about',
