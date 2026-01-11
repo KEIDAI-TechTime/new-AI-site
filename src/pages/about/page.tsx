@@ -1,8 +1,83 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function About() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Update page title and meta tags
+    document.title = '会社概要 | TechTime株式会社';
+
+    const updateMeta = (name: string, content: string, property = false) => {
+      const attr = property ? 'property' : 'name';
+      let tag = document.querySelector(`meta[${attr}="${name}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attr, name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    const description = 'TechTime株式会社の会社概要。AI駆動開発で企業の基幹システム開発に革新をもたらします。東京・大阪にオフィスを構え、全国のお客様にサービスを提供しています。';
+    updateMeta('description', description);
+    updateMeta('og:title', '会社概要 | TechTime株式会社', true);
+    updateMeta('og:description', description, true);
+    updateMeta('og:url', 'https://techtime-jp.com/about', true);
+
+    // Add LocalBusiness structured data
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: 'TechTime株式会社',
+      image: 'https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png',
+      '@id': 'https://techtime-jp.com',
+      url: 'https://techtime-jp.com',
+      telephone: '+81-3-4222-3363',
+      email: 'kdm@techtime-link.com',
+      address: [
+        {
+          '@type': 'PostalAddress',
+          streetAddress: '渋谷2-19-15宮益坂ビルディング609',
+          addressLocality: '渋谷区',
+          addressRegion: '東京都',
+          postalCode: '150-0002',
+          addressCountry: 'JP'
+        },
+        {
+          '@type': 'PostalAddress',
+          streetAddress: '梅田1丁目2番2号大阪駅前第2ビル12-12',
+          addressLocality: '大阪市北区',
+          addressRegion: '大阪府',
+          postalCode: '530-0001',
+          addressCountry: 'JP'
+        }
+      ],
+      openingHoursSpecification: {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        opens: '09:00',
+        closes: '19:00'
+      },
+      foundingDate: '2020-04-01'
+    };
+
+    let script = document.querySelector('script[data-type="localbusiness-schema"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.setAttribute('data-type', 'localbusiness-schema');
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(structuredData);
+
+    return () => {
+      const scriptToRemove = document.querySelector('script[data-type="localbusiness-schema"]');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">

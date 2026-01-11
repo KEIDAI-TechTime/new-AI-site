@@ -23,6 +23,80 @@ export default function BlogPost() {
     fetchPost();
   }, [slug]);
 
+  // SEO and Structured Data
+  useEffect(() => {
+    if (!post) return;
+
+    // Update page title
+    document.title = `${post.title} | TechTime ブログ`;
+
+    // Update meta tags
+    const updateMeta = (name: string, content: string, property = false) => {
+      const attr = property ? 'property' : 'name';
+      let tag = document.querySelector(`meta[${attr}="${name}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attr, name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    const description = post.excerpt || post.content.substring(0, 150);
+    updateMeta('description', description);
+    updateMeta('og:title', `${post.title} | TechTime ブログ`, true);
+    updateMeta('og:description', description, true);
+    updateMeta('og:type', 'article', true);
+    updateMeta('og:url', `https://techtime-jp.com/blog/${post.slug}`, true);
+    if (post.coverImage) {
+      updateMeta('og:image', post.coverImage, true);
+    }
+
+    // Add Article structured data
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title,
+      description: description,
+      image: post.coverImage || 'https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png',
+      datePublished: post.createdAt,
+      dateModified: post.updatedAt || post.createdAt,
+      author: {
+        '@type': 'Organization',
+        name: 'TechTime株式会社',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'TechTime株式会社',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png',
+        },
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://techtime-jp.com/blog/${post.slug}`,
+      },
+    };
+
+    let script = document.querySelector('script[data-type="article-schema"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.setAttribute('data-type', 'article-schema');
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(structuredData);
+
+    // Cleanup
+    return () => {
+      const scriptToRemove = document.querySelector('script[data-type="article-schema"]');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [post]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
       {/* Navigation */}

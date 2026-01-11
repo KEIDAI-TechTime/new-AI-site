@@ -1,0 +1,11 @@
+# robots.txt for https://techtime-jp.com
+
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://techtime-jp.com/sitemap.xml
+
+# Disallow admin/internal paths (if any)
+# Disallow: /admin/
+# Disallow: /api/
