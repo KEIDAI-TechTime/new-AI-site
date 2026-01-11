@@ -203,9 +203,55 @@ export default function Blog() {
 
       {/* Footer */}
       <footer className="border-t border-white/10 bg-[#0A1628]/50 backdrop-blur-xl mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="text-center">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <img
+                  src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                  alt="TechTime"
+                  className="h-10 w-auto"
+                />
+              </div>
+              <p className="text-sm text-gray-400">
+                AI駆動開発で実現する<br />圧倒的低価格の基幹システム
+              </p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">サービス</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link to="/simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</Link></li>
+                <li><Link to="/systems" className="hover:text-[#00D9FF] transition-colors">対応システム</Link></li>
+                <li><Link to="/ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">企業情報</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link to="/about" className="hover:text-[#00D9FF] transition-colors">会社概要</Link></li>
+                <li><Link to="/cases" className="hover:text-[#00D9FF] transition-colors">開発事例</Link></li>
+                <li><Link to="/contact" className="hover:text-[#00D9FF] transition-colors">お問い合わせ</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">お問い合わせ</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li className="flex items-center gap-2">
+                  <i className="ri-phone-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
+                  <a href="tel:0342223363" className="hover:text-[#00D9FF] transition-colors">03-4222-3363</a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <i className="ri-mail-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
+                  <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
             <p className="text-sm text-gray-500">© 2025 TechTime株式会社. All rights reserved.</p>
+            <a href="https://readdy.ai/?ref=logo" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-[#00D9FF] transition-colors">
+              Powered by Readdy
+            </a>
           </div>
         </div>
       </footer>
