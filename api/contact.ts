@@ -40,11 +40,11 @@ export default async function handler(
     const resend = new Resend(process.env.RESEND_API_KEY);
 
     // 1. Add to Notion database
-    if (process.env.NOTION_DATABASE_ID) {
+    if (process.env.CONTACT_NOTION_DATABASE_ID) {
       try {
         await notion.pages.create({
           parent: {
-            database_id: process.env.NOTION_DATABASE_ID,
+            database_id: process.env.CONTACT_NOTION_DATABASE_ID,
           },
           properties: {
             '会社名': {

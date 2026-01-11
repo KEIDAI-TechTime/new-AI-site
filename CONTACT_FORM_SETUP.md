@@ -59,26 +59,23 @@ Database ID: a1b2c3d4e5f6g7h8i9j0k1l2m3n4
 
 ---
 
-## ステップ2: Notion APIキーの取得
+## ステップ2: Notion APIキーの確認と設定
 
-### 2.1 Integrationを作成
+### 2.1 既存のIntegrationを使用
 
-1. https://www.notion.so/my-integrations にアクセス
-2. **+ New integration** をクリック
-3. 以下を設定：
-   - **Name**: `TechTime Contact Form`
-   - **Associated workspace**: 使用するワークスペースを選択
-   - **Type**: Internal
-4. **Submit** をクリック
-5. **Internal Integration Secret** をコピー（これがAPIキーです）
+**既にブログ用のNotion Integrationがあるので、それを再利用します。**
 
-### 2.2 データベースに権限を付与
+Vercelの環境変数に `NOTION_API_KEY` が既に設定されているはずです。これをそのまま使用します。
+
+### 2.2 お問い合わせ管理データベースに権限を付与
 
 1. お問い合わせ管理データベースページを開く
 2. 右上の **...** メニューをクリック
-3. **Add connections** を選択
-4. 作成した Integration (`TechTime Contact Form`) を選択
-5. **Confirm** をクリック
+3. **接続** または **Add connections** を選択
+4. 既存の Integration を選択（ブログ用と同じもの）
+5. **確認** または **Confirm** をクリック
+
+**重要:** 同じワークスペース内で同じIntegrationを複数のデータベースに接続できます。
 
 ---
 
@@ -123,13 +120,14 @@ from: 'TechTime お問い合わせ <noreply@techtime-link.com>',
 1. https://vercel.com にアクセス
 2. プロジェクト (`new-AI-site`) を選択
 3. **Settings** → **Environment Variables** を開く
-4. 以下の3つの環境変数を追加：
+4. 以下の2つの環境変数を追加：
 
 | Name | Value | Environment |
 |------|-------|-------------|
-| `NOTION_API_KEY` | `secret_xxxxx...` （ステップ2で取得） | Production, Preview, Development |
-| `NOTION_DATABASE_ID` | `xxxxx...` （ステップ1で取得） | Production, Preview, Development |
+| `CONTACT_NOTION_DATABASE_ID` | `xxxxx...` （ステップ1で取得したお問い合わせ用DBのID） | Production, Preview, Development |
 | `RESEND_API_KEY` | `re_xxxxx...` （ステップ3で取得） | Production, Preview, Development |
+
+**注意:** `NOTION_API_KEY` は既に設定されているので追加不要です。
 
 ### 4.2 再デプロイ
 
@@ -304,12 +302,12 @@ Notionで以下の分析が可能：
 これでお問い合わせフォームの連携が完了しました。
 
 **確認事項:**
-- ✅ Notionデータベースが作成されている
-- ✅ Notion APIキーが取得できている
+- ✅ お問い合わせ管理用Notionデータベースが作成されている
+- ✅ 既存のNotion Integrationに権限を付与している
 - ✅ Resend APIキーが取得できている
-- ✅ Vercelの環境変数が設定されている
+- ✅ Vercelの環境変数（CONTACT_NOTION_DATABASE_ID, RESEND_API_KEY）が設定されている
 - ✅ テスト送信が成功している
 - ✅ Notionにデータが追加されている
-- ✅ メール通知が届いている
+- ✅ kdm@techtime-link.com にメール通知が届いている
 
 すべて完了したら、実際の運用を開始できます！
