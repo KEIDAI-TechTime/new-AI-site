@@ -128,35 +128,23 @@ export default function QualityAssurancePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-white/95 backdrop-blur-sm shadow-sm">
+      <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#0A1628]/95 backdrop-blur-xl border-b border-white/10">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-2 group cursor-pointer">
+            <Link to="/" className="flex items-center gap-3 group cursor-pointer">
               <img
-                src="/images/logo.png"
+                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
                 alt="TechTime"
-                className="h-8 w-auto"
+                className="h-10 w-auto"
               />
             </Link>
             <div className="flex items-center gap-8">
-              <Link to="/" className="text-gray-700 hover:text-[#1E40AF] transition-colors duration-300 whitespace-nowrap cursor-pointer">
-                ホーム
-              </Link>
-              <Link to="/simulator" className="text-gray-700 hover:text-[#1E40AF] transition-colors duration-300 whitespace-nowrap cursor-pointer">
-                見積もり
-              </Link>
-              <Link to="/cases" className="text-gray-700 hover:text-[#1E40AF] transition-colors duration-300 whitespace-nowrap cursor-pointer">
-                事例
-              </Link>
-              <Link to="/about" className="text-gray-700 hover:text-[#1E40AF] transition-colors duration-300 whitespace-nowrap cursor-pointer">
-                会社概要
-              </Link>
-              <Link 
-                to="/contact" 
-                className="px-6 py-2.5 bg-gradient-to-r from-[#00D9FF] to-[#3B82F6] text-white rounded-full hover:shadow-lg transition-all duration-300 whitespace-nowrap cursor-pointer"
-              >
-                お問い合わせ
-              </Link>
+              <Link to="/#features" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">特徴</Link>
+              <Link to="/#systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
+              <Link to="/simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</Link>
+              <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
+              <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">会社概要</Link>
+              <Link to="/contact" className="px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap">お問い合わせ</Link>
             </div>
           </div>
         </div>
