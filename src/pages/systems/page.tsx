@@ -204,7 +204,7 @@ export default function Systems() {
               <ul className="space-y-2 text-sm text-gray-400">
                 <li><Link to="/simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</Link></li>
                 <li><Link to="/systems" className="hover:text-[#00D9FF] transition-colors">対応システム</Link></li>
-                <li><a href="/#ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</a></li>
+                <li><Link to="/ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</Link></li>
               </ul>
             </div>
             <div>
