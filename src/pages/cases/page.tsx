@@ -194,9 +194,56 @@ export default function Cases() {
       <div className="pb-32 px-6">
         <div className="max-w-6xl mx-auto">
           {loading ? (
-            <div className="text-center py-20">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-4 border-[#00D9FF] border-t-transparent"></div>
-              <p className="text-gray-400 mt-4">読み込み中...</p>
+            <div className="grid md:grid-cols-2 gap-8">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden animate-pulse">
+                  {/* Skeleton Image */}
+                  <div className="relative h-64 bg-white/10">
+                    <div className="absolute top-4 left-4">
+                      <div className="h-6 w-24 bg-white/10 rounded-full"></div>
+                    </div>
+                  </div>
+
+                  {/* Skeleton Content */}
+                  <div className="p-8">
+                    {/* Skeleton Title */}
+                    <div className="space-y-2 mb-3">
+                      <div className="h-6 w-full bg-white/10 rounded"></div>
+                      <div className="h-6 w-3/4 bg-white/10 rounded"></div>
+                    </div>
+
+                    {/* Skeleton Description */}
+                    <div className="space-y-2 mb-6">
+                      <div className="h-4 w-full bg-white/10 rounded"></div>
+                      <div className="h-4 w-full bg-white/10 rounded"></div>
+                      <div className="h-4 w-2/3 bg-white/10 rounded"></div>
+                    </div>
+
+                    {/* Skeleton Meta Info */}
+                    <div className="flex flex-wrap gap-4 mb-6 pb-6 border-b border-white/10">
+                      {[...Array(3)].map((_, j) => (
+                        <div key={j} className="flex items-center gap-2">
+                          <div className="h-4 w-4 bg-white/10 rounded"></div>
+                          <div className="h-4 w-20 bg-white/10 rounded"></div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Skeleton Results */}
+                    <div>
+                      <div className="h-4 w-16 bg-white/10 rounded mb-3"></div>
+                      <div className="space-y-2">
+                        {[...Array(3)].map((_, k) => (
+                          <div key={k} className="flex items-start gap-2">
+                            <div className="h-4 w-4 bg-white/10 rounded mt-0.5 flex-shrink-0"></div>
+                            <div className="h-4 flex-1 bg-white/10 rounded"></div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredCases.length === 0 ? (
             <div className="text-center py-20">
