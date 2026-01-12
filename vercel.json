@@ -25,6 +25,10 @@
   ],
   "rewrites": [
     {
+      "source": "/ga4-analytics/:path*",
+      "destination": "https://ga-4-flax.vercel.app/ga4-analytics/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
