@@ -21,11 +21,16 @@
       ],
       "destination": "https://techtime-jp.com/:path*",
       "permanent": true
+    },
+    {
+      "source": "/ga4-analytics",
+      "destination": "/ga4-analytics/",
+      "permanent": true
     }
   ],
   "rewrites": [
     {
-      "source": "/ga4-analytics",
+      "source": "/ga4-analytics/",
       "destination": "https://ga-4-flax.vercel.app/"
     },
     {
