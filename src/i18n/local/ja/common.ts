@@ -20,10 +20,9 @@ export default {
   'company.name': 'TechTime',
   'company.tagline': 'AI駆動開発で実現する圧倒的低価格の基幹システム',
   'company.copyright': '© 2025 TechTime株式会社. All rights reserved.',
-  'company.poweredBy': 'Powered by Readdy',
 
   // Contact
   'contact.phone': '03-4222-3363',
-  'contact.email': 'info@techtime-link.com',
+  'contact.email': 'kdm@techtime-link.com',
   'contact.businessHours': '受付時間：月〜金 9:00〜19:00',
 };

@@ -1,26 +1,132 @@
 import { Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
 
 export default function About() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  useEffect(() => {
+    // Update page title and meta tags
+    document.title = '会社概要 | TechTime株式会社';
+
+    const updateMeta = (name: string, content: string, property = false) => {
+      const attr = property ? 'property' : 'name';
+      let tag = document.querySelector(`meta[${attr}="${name}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attr, name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    const description = 'TechTime株式会社の会社概要。AI駆動開発で企業の基幹システム開発に革新をもたらします。東京・大阪にオフィスを構え、全国のお客様にサービスを提供しています。';
+    updateMeta('description', description);
+    updateMeta('og:title', '会社概要 | TechTime株式会社', true);
+    updateMeta('og:description', description, true);
+    updateMeta('og:url', 'https://techtime-jp.com/about', true);
+
+    // Add LocalBusiness structured data
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'LocalBusiness',
+      name: 'TechTime株式会社',
+      image: 'https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png',
+      '@id': 'https://techtime-jp.com',
+      url: 'https://techtime-jp.com',
+      telephone: '+81-3-4222-3363',
+      email: 'kdm@techtime-link.com',
+      address: [
+        {
+          '@type': 'PostalAddress',
+          streetAddress: '渋谷2-19-15宮益坂ビルディング609',
+          addressLocality: '渋谷区',
+          addressRegion: '東京都',
+          postalCode: '150-0002',
+          addressCountry: 'JP'
+        },
+        {
+          '@type': 'PostalAddress',
+          streetAddress: '梅田1丁目2番2号大阪駅前第2ビル12-12',
+          addressLocality: '大阪市北区',
+          addressRegion: '大阪府',
+          postalCode: '530-0001',
+          addressCountry: 'JP'
+        }
+      ],
+      openingHoursSpecification: {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        opens: '09:00',
+        closes: '19:00'
+      },
+      foundingDate: '2020-04-01'
+    };
+
+    let script = document.querySelector('script[data-type="localbusiness-schema"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.setAttribute('data-type', 'localbusiness-schema');
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(structuredData);
+
+    return () => {
+      const scriptToRemove = document.querySelector('script[data-type="localbusiness-schema"]');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#0A1628]/95 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                <i className="ri-code-s-slash-line text-xl text-white"></i>
-              </div>
-              <span className="text-xl font-bold text-white">TechTime</span>
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
+              <img
+                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                alt="TechTime"
+                className="h-8 sm:h-10 w-auto"
+              />
             </Link>
-            <div className="flex items-center gap-8">
-              <Link to="/" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ホーム</Link>
+
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+              <Link to="/systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
+              <Link to="/simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</Link>
+              <Link to="/blog" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ブログ</Link>
               <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
               <Link to="/about" className="text-sm text-[#00D9FF] font-medium whitespace-nowrap">会社概要</Link>
-              <Link to="/contact" className="px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap">お問い合わせ</Link>
+              <Link to="/contact" className="px-4 xl:px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm">お問い合わせ</Link>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden text-white p-2"
+              aria-label="メニューを開く"
+            >
+              <i className={`${mobileMenuOpen ? 'ri-close-line' : 'ri-menu-line'} text-2xl`}></i>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
+            <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
+              <Link to="/systems" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">対応システム</Link>
+              <Link to="/simulator" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">見積もり</Link>
+              <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">ブログ</Link>
+              <Link to="/cases" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">開発事例</Link>
+              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#00D9FF] font-medium hover:bg-white/5 rounded-lg transition-colors">会社概要</Link>
+              <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">お問い合わせ</Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -51,35 +157,36 @@ export default function About() {
                     <td className="py-6 text-white">TechTime株式会社</td>
                   </tr>
                   <tr>
-                    <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">代表取締役</td>
-                    <td className="py-6 text-white">山田 太郎</td>
-                  </tr>
-                  <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">設立</td>
                     <td className="py-6 text-white">2020年4月1日</td>
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">資本金</td>
-                    <td className="py-6 text-white">5,000万円</td>
+                    <td className="py-6 text-white">800万円</td>
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">所在地</td>
                     <td className="py-6 text-white">
-                      〒100-0001<br />
-                      東京都千代田区千代田1-1-1<br />
-                      テックタワー10F
+                      【東京オフィス】<br />
+                      〒150-0002<br />
+                      東京都渋谷区渋谷2-19-15宮益坂ビルディング609<br />
+                      <br />
+                      【大阪オフィス】<br />
+                      〒530-0001<br />
+                      大阪府大阪市北区梅田1丁目2番2号大阪駅前第2ビル12-12
                     </td>
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">電話番号</td>
                     <td className="py-6 text-white">
-                      <a href="tel:0342223363" className="hover:text-[#00D9FF] transition-colors">03-4222-3363</a>
+                      <a href="tel:0342223363" className="hover:text-[#00D9FF] transition-colors">03-4222-3363</a><br />
+                      <span className="text-sm text-gray-400">（月～金/9～19時）</span>
                     </td>
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">メール</td>
                     <td className="py-6 text-white">
-                      <a href="mailto:info@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">info@techtime-link.com</a>
+                      <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
                     </td>
                   </tr>
                   <tr>
@@ -93,7 +200,7 @@ export default function About() {
                   </tr>
                   <tr>
                     <td className="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">従業員数</td>
-                    <td className="py-6 text-white">45名（2025年1月現在）</td>
+                    <td className="py-6 text-white">18名（2025年1月現在）</td>
                   </tr>
                 </tbody>
               </table>
@@ -193,7 +300,7 @@ export default function About() {
                 お問い合わせ
               </Link>
               <Link
-                to="/#simulator"
+                to="/simulator"
                 className="px-8 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300 whitespace-nowrap"
               >
                 見積もりシミュレーター
@@ -209,10 +316,11 @@ export default function About() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                  <i className="ri-code-s-slash-line text-xl text-white"></i>
-                </div>
-                <span className="text-xl font-bold text-white">TechTime</span>
+                <img
+                  src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                  alt="TechTime"
+                  className="h-10 w-auto"
+                />
               </div>
               <p className="text-sm text-gray-400">
                 AI駆動開発で実現する<br />圧倒的低価格の基幹システム
@@ -221,9 +329,9 @@ export default function About() {
             <div>
               <h4 className="text-white font-semibold mb-4">サービス</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="/#simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</a></li>
+                <li><a href="/simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</a></li>
                 <li><a href="/#systems" className="hover:text-[#00D9FF] transition-colors">対応システム</a></li>
-                <li><a href="/#ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</a></li>
+                <li><Link to="/ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</Link></li>
               </ul>
             </div>
             <div>
@@ -243,16 +351,13 @@ export default function About() {
                 </li>
                 <li className="flex items-center gap-2">
                   <i className="ri-mail-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
-                  <a href="mailto:info@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">info@techtime-link.com</a>
+                  <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
                 </li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-center items-center gap-4">
             <p className="text-sm text-gray-500">© 2025 TechTime株式会社. All rights reserved.</p>
-            <a href="https://readdy.ai/?ref=logo" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-[#00D9FF] transition-colors">
-              Powered by Readdy
-            </a>
           </div>
         </div>
       </footer>

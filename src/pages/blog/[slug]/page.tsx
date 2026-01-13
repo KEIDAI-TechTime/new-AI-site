@@ -23,6 +23,80 @@ export default function BlogPost() {
     fetchPost();
   }, [slug]);
 
+  // SEO and Structured Data
+  useEffect(() => {
+    if (!post) return;
+
+    // Update page title
+    document.title = `${post.title} | TechTime ブログ`;
+
+    // Update meta tags
+    const updateMeta = (name: string, content: string, property = false) => {
+      const attr = property ? 'property' : 'name';
+      let tag = document.querySelector(`meta[${attr}="${name}"]`);
+      if (!tag) {
+        tag = document.createElement('meta');
+        tag.setAttribute(attr, name);
+        document.head.appendChild(tag);
+      }
+      tag.setAttribute('content', content);
+    };
+
+    const description = post.excerpt || post.content.substring(0, 150);
+    updateMeta('description', description);
+    updateMeta('og:title', `${post.title} | TechTime ブログ`, true);
+    updateMeta('og:description', description, true);
+    updateMeta('og:type', 'article', true);
+    updateMeta('og:url', `https://techtime-jp.com/blog/${post.slug}`, true);
+    if (post.coverImage) {
+      updateMeta('og:image', post.coverImage, true);
+    }
+
+    // Add Article structured data
+    const structuredData = {
+      '@context': 'https://schema.org',
+      '@type': 'Article',
+      headline: post.title,
+      description: description,
+      image: post.coverImage || 'https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png',
+      datePublished: post.createdAt,
+      dateModified: post.updatedAt || post.createdAt,
+      author: {
+        '@type': 'Organization',
+        name: 'TechTime株式会社',
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'TechTime株式会社',
+        logo: {
+          '@type': 'ImageObject',
+          url: 'https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png',
+        },
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': `https://techtime-jp.com/blog/${post.slug}`,
+      },
+    };
+
+    let script = document.querySelector('script[data-type="article-schema"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.setAttribute('type', 'application/ld+json');
+      script.setAttribute('data-type', 'article-schema');
+      document.head.appendChild(script);
+    }
+    script.textContent = JSON.stringify(structuredData);
+
+    // Cleanup
+    return () => {
+      const scriptToRemove = document.querySelector('script[data-type="article-schema"]');
+      if (scriptToRemove) {
+        scriptToRemove.remove();
+      }
+    };
+  }, [post]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
       {/* Navigation */}
@@ -30,25 +104,29 @@ export default function BlogPost() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                <i className="ri-code-s-slash-line text-lg sm:text-xl text-white"></i>
-              </div>
-              <span className="text-lg sm:text-xl font-bold text-white">TechTime</span>
+              <img
+                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                alt="TechTime"
+                className="h-8 sm:h-10 w-auto"
+              />
             </Link>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link to="/" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors">ホーム</Link>
-              <Link to="/blog" className="text-sm text-[#00D9FF] font-medium">ブログ</Link>
-              <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors">開発事例</Link>
-              <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors">会社概要</Link>
-              <Link to="/contact" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors">お問い合わせ</Link>
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+              <Link to="/#features" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">特徴</Link>
+              <Link to="/#systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
+              <Link to="/simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</Link>
+              <Link to="/blog" className="text-sm text-[#00D9FF] font-medium whitespace-nowrap">ブログ</Link>
+              <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
+              <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">会社概要</Link>
+              <Link to="/contact" className="px-4 xl:px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm">お問い合わせ</Link>
             </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden text-white p-2"
+              className="lg:hidden text-white p-2"
+              aria-label="メニューを開く"
             >
               <i className={`${mobileMenuOpen ? 'ri-close-line' : 'ri-menu-line'} text-2xl`}></i>
             </button>
@@ -57,9 +135,11 @@ export default function BlogPost() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
+          <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
             <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-              <Link to="/" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">ホーム</Link>
+              <Link to="/#features" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">特徴</Link>
+              <Link to="/#systems" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">対応システム</Link>
+              <Link to="/simulator" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">見積もり</Link>
               <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#00D9FF] font-medium hover:bg-white/5 rounded-lg transition-colors">ブログ</Link>
               <Link to="/cases" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">開発事例</Link>
               <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">会社概要</Link>
@@ -316,8 +396,51 @@ export default function BlogPost() {
 
       {/* Footer */}
       <footer className="border-t border-white/10 bg-[#0A1628]/50 backdrop-blur-xl">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-12">
-          <div className="text-center">
+        <div className="max-w-7xl mx-auto px-6 py-12">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+              <div className="flex items-center gap-3 mb-4">
+                <img
+                  src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                  alt="TechTime"
+                  className="h-10 w-auto"
+                />
+              </div>
+              <p className="text-sm text-gray-400">
+                AI駆動開発で実現する<br />圧倒的低価格の基幹システム
+              </p>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">サービス</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link to="/simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</Link></li>
+                <li><Link to="/systems" className="hover:text-[#00D9FF] transition-colors">対応システム</Link></li>
+                <li><Link to="/ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">企業情報</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li><Link to="/about" className="hover:text-[#00D9FF] transition-colors">会社概要</Link></li>
+                <li><Link to="/cases" className="hover:text-[#00D9FF] transition-colors">開発事例</Link></li>
+                <li><Link to="/contact" className="hover:text-[#00D9FF] transition-colors">お問い合わせ</Link></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="text-white font-semibold mb-4">お問い合わせ</h4>
+              <ul className="space-y-2 text-sm text-gray-400">
+                <li className="flex items-center gap-2">
+                  <i className="ri-phone-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
+                  <a href="tel:0342223363" className="hover:text-[#00D9FF] transition-colors">03-4222-3363</a>
+                </li>
+                <li className="flex items-center gap-2">
+                  <i className="ri-mail-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
+                  <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-center items-center gap-4">
             <p className="text-sm text-gray-500">© 2025 TechTime株式会社. All rights reserved.</p>
           </div>
         </div>

@@ -1,6 +1,28 @@
 {
   "redirects": [
     {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "new-ai-site.vercel.app"
+        }
+      ],
+      "destination": "https://techtime-jp.com/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "new-ai-site-gkmvs6j3e-keidai-techtimes-projects.vercel.app"
+        }
+      ],
+      "destination": "https://techtime-jp.com/:path*",
+      "permanent": true
+    },
+    {
       "source": "/ga4-analytics",
       "destination": "/ga4-analytics/",
       "permanent": true
@@ -12,12 +34,45 @@
       "destination": "https://ga-4-flax.vercel.app/"
     },
     {
-      "source": "/ga4-analytics/:path+",
-      "destination": "https://ga-4-flax.vercel.app/:path+"
+      "source": "/ga4-analytics/:path*",
+      "destination": "https://ga-4-flax.vercel.app/:path*"
     },
     {
       "source": "/(.*)",
       "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
+      ]
+    },
+    {
+      "source": "/robots.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
+      ]
+    },
+    {
+      "source": "/sitemap.xml",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        }
+      ]
     }
   ]
 }

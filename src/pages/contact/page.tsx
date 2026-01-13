@@ -22,20 +22,17 @@ export default function Contact() {
     setSubmitStatus('idle');
 
     try {
-      const formBody = new URLSearchParams();
-      Object.entries(formData).forEach(([key, value]) => {
-        formBody.append(key, value);
-      });
-
-      const response = await fetch('https://readdy.ai/api/form/d53rvljontabvievttfg', {
+      const response = await fetch('/api/contact', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
+          'Content-Type': 'application/json',
         },
-        body: formBody.toString()
+        body: JSON.stringify(formData)
       });
 
-      if (response.ok) {
+      const data = await response.json();
+
+      if (response.ok && data.success) {
         setSubmitStatus('success');
         setFormData({
           company: '',
@@ -49,9 +46,11 @@ export default function Contact() {
         });
       } else {
         setSubmitStatus('error');
+        console.error('Form submission error:', data);
       }
     } catch (error) {
       setSubmitStatus('error');
+      console.error('Network error:', error);
     } finally {
       setIsSubmitting(false);
     }
@@ -71,24 +70,27 @@ export default function Contact() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
             <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                <i className="ri-code-s-slash-line text-lg sm:text-xl text-white"></i>
-              </div>
-              <span className="text-lg sm:text-xl font-bold text-white">TechTime</span>
+              <img
+                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                alt="TechTime"
+                className="h-8 sm:h-10 w-auto"
+              />
             </Link>
 
             {/* Desktop Menu */}
-            <div className="hidden md:flex items-center gap-6 lg:gap-8">
-              <Link to="/" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ホーム</Link>
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+              <Link to="/systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
+              <Link to="/simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</Link>
+              <Link to="/blog" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ブログ</Link>
               <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
               <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">会社概要</Link>
-              <Link to="/contact" className="text-sm text-[#00D9FF] font-medium whitespace-nowrap">お問い合わせ</Link>
+              <Link to="/contact" className="px-4 xl:px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm">お問い合わせ</Link>
             </div>
 
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden text-white p-2"
+              className="lg:hidden text-white p-2"
               aria-label="メニューを開く"
             >
               <i className={`${mobileMenuOpen ? 'ri-close-line' : 'ri-menu-line'} text-2xl`}></i>
@@ -98,36 +100,14 @@ export default function Contact() {
 
         {/* Mobile Menu */}
         {mobileMenuOpen && (
-          <div className="md:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
+          <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
             <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-              <Link
-                to="/"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors"
-              >
-                ホーム
-              </Link>
-              <Link
-                to="/cases"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors"
-              >
-                開発事例
-              </Link>
-              <Link
-                to="/about"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors"
-              >
-                会社概要
-              </Link>
-              <Link
-                to="/contact"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-[#00D9FF] font-medium hover:bg-white/5 rounded-lg transition-colors"
-              >
-                お問い合わせ
-              </Link>
+              <Link to="/systems" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">対応システム</Link>
+              <Link to="/simulator" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">見積もり</Link>
+              <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">ブログ</Link>
+              <Link to="/cases" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">開発事例</Link>
+              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">会社概要</Link>
+              <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">お問い合わせ</Link>
             </div>
           </div>
         )}
@@ -225,11 +205,12 @@ export default function Contact() {
               {/* System Type */}
               <div>
                 <label htmlFor="systemType" className="block text-sm font-medium text-gray-300 mb-2">
-                  検討中のシステム種別
+                  検討中のシステム種別 <span className="text-red-400">*</span>
                 </label>
                 <select
                   id="systemType"
                   name="systemType"
+                  required
                   value={formData.systemType}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#00D9FF] transition-colors text-sm cursor-pointer"
@@ -251,11 +232,12 @@ export default function Contact() {
               {/* Budget */}
               <div>
                 <label htmlFor="budget" className="block text-sm font-medium text-gray-300 mb-2">
-                  ご予算
+                  ご予算 <span className="text-red-400">*</span>
                 </label>
                 <select
                   id="budget"
                   name="budget"
+                  required
                   value={formData.budget}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#00D9FF] transition-colors text-sm cursor-pointer"
@@ -273,11 +255,12 @@ export default function Contact() {
               {/* Timeline */}
               <div>
                 <label htmlFor="timeline" className="block text-sm font-medium text-gray-300 mb-2">
-                  希望納期
+                  希望納期 <span className="text-red-400">*</span>
                 </label>
                 <select
                   id="timeline"
                   name="timeline"
+                  required
                   value={formData.timeline}
                   onChange={handleChange}
                   className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:border-[#00D9FF] transition-colors text-sm cursor-pointer"
@@ -349,11 +332,11 @@ export default function Contact() {
                   03-4222-3363
                 </a>
               </div>
-              <p className="text-sm text-gray-400">受付時間：月〜金 9:00〜19:00</p>
+              <p className="text-sm text-gray-400">受付時間：月～金/9～19時</p>
               <div className="flex items-center justify-center gap-3 mt-6">
                 <i className="ri-mail-line text-[#00D9FF] text-xl w-6 h-6 flex items-center justify-center"></i>
-                <a href="mailto:info@techtime-link.com" className="text-white hover:text-[#00D9FF] transition-colors">
-                  info@techtime-link.com
+                <a href="mailto:kdm@techtime-link.com" className="text-white hover:text-[#00D9FF] transition-colors">
+                  kdm@techtime-link.com
                 </a>
               </div>
             </div>
@@ -367,10 +350,11 @@ export default function Contact() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                  <i className="ri-code-s-slash-line text-xl text-white"></i>
-                </div>
-                <span className="text-xl font-bold text-white">TechTime</span>
+                <img
+                  src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                  alt="TechTime"
+                  className="h-10 w-auto"
+                />
               </div>
               <p className="text-sm text-gray-400">
                 AI駆動開発で実現する<br />圧倒的低価格の基幹システム
@@ -379,9 +363,9 @@ export default function Contact() {
             <div>
               <h4 className="text-white font-semibold mb-4">サービス</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="/#simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</a></li>
-                <li><a href="/#systems" className="hover:text-[#00D9FF] transition-colors">対応システム</a></li>
-                <li><a href="/#ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</a></li>
+                <li><a href="/simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</a></li>
+                <li><a href="/systems" className="hover:text-[#00D9FF] transition-colors">対応システム</a></li>
+                <li><Link to="/ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</Link></li>
               </ul>
             </div>
             <div>
@@ -401,16 +385,13 @@ export default function Contact() {
                 </li>
                 <li className="flex items-center gap-2">
                   <i className="ri-mail-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
-                  <a href="mailto:info@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">info@techtime-link.com</a>
+                  <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
                 </li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-center items-center gap-4">
             <p className="text-sm text-gray-500">© 2025 TechTime株式会社. All rights reserved.</p>
-            <a href="https://readdy.ai/?ref=logo" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-[#00D9FF] transition-colors">
-              Powered by Readdy
-            </a>
           </div>
         </div>
       </footer>

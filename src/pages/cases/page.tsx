@@ -1,10 +1,28 @@
 import { Link } from 'react-router-dom';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { getCases, CASE_CATEGORIES } from '../../services/notion-api';
+import type { NotionCase } from '../../types/notion';
 
 export default function Cases() {
   const [selectedCategory, setSelectedCategory] = useState('all');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [cases, setCases] = useState<NotionCase[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const cases = [
+  // Notionから開発事例を取得
+  useEffect(() => {
+    const fetchCases = async () => {
+      setLoading(true);
+      const data = await getCases();
+      setCases(data);
+      setLoading(false);
+    };
+
+    fetchCases();
+  }, []);
+
+  // フォールバック用のハードコードされたデータ
+  const fallbackCases = [
     {
       id: 1,
       category: '文書管理',
@@ -73,40 +91,66 @@ export default function Cases() {
     }
   ];
 
+  // Notionから取得したデータがない場合はフォールバックデータを使用
+  const displayCases = cases.length > 0 ? cases : fallbackCases;
+
   const categories = [
     { id: 'all', name: 'すべて' },
-    { id: '文書管理', name: '文書管理' },
-    { id: '在庫管理', name: '在庫管理' },
-    { id: '顧客管理', name: '顧客管理' },
-    { id: '経営BI', name: '経営BI' },
-    { id: '生産管理', name: '生産管理' },
-    { id: '人事給与', name: '人事給与' }
+    ...Object.values(CASE_CATEGORIES)
   ];
 
-  const filteredCases = selectedCategory === 'all' 
-    ? cases 
-    : cases.filter(c => c.category === selectedCategory);
+  const filteredCases = selectedCategory === 'all'
+    ? displayCases
+    : displayCases.filter(c => c.category === selectedCategory);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 transition-all duration-300 bg-[#0A1628]/95 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-6 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4">
           <div className="flex items-center justify-between">
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                <i className="ri-code-s-slash-line text-xl text-white"></i>
-              </div>
-              <span className="text-xl font-bold text-white">TechTime</span>
+            <Link to="/" className="flex items-center gap-2 sm:gap-3 group">
+              <img
+                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                alt="TechTime"
+                className="h-8 sm:h-10 w-auto"
+              />
             </Link>
-            <div className="flex items-center gap-8">
-              <Link to="/" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ホーム</Link>
+
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
+              <Link to="/systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</Link>
+              <Link to="/simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</Link>
+              <Link to="/blog" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ブログ</Link>
               <Link to="/cases" className="text-sm text-[#00D9FF] font-medium whitespace-nowrap">開発事例</Link>
               <Link to="/about" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">会社概要</Link>
-              <Link to="/contact" className="px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap">お問い合わせ</Link>
+              <Link to="/contact" className="px-4 xl:px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm">お問い合わせ</Link>
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden text-white p-2"
+              aria-label="メニューを開く"
+            >
+              <i className={`${mobileMenuOpen ? 'ri-close-line' : 'ri-menu-line'} text-2xl`}></i>
+            </button>
           </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
+            <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
+              <Link to="/systems" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">対応システム</Link>
+              <Link to="/simulator" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">見積もり</Link>
+              <Link to="/blog" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">ブログ</Link>
+              <Link to="/cases" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-[#00D9FF] font-medium hover:bg-white/5 rounded-lg transition-colors">開発事例</Link>
+              <Link to="/about" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">会社概要</Link>
+              <Link to="/contact" onClick={() => setMobileMenuOpen(false)} className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors">お問い合わせ</Link>
+            </div>
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -150,11 +194,70 @@ export default function Cases() {
       {/* Cases Grid */}
       <div className="pb-32 px-6">
         <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8">
-            {filteredCases.map(caseItem => (
-              <div
+          {loading ? (
+            <div className="grid md:grid-cols-2 gap-8">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden animate-pulse">
+                  {/* Skeleton Image */}
+                  <div className="relative h-64 bg-white/10">
+                    <div className="absolute top-4 left-4">
+                      <div className="h-6 w-24 bg-white/10 rounded-full"></div>
+                    </div>
+                  </div>
+
+                  {/* Skeleton Content */}
+                  <div className="p-8">
+                    {/* Skeleton Title */}
+                    <div className="space-y-2 mb-3">
+                      <div className="h-6 w-full bg-white/10 rounded"></div>
+                      <div className="h-6 w-3/4 bg-white/10 rounded"></div>
+                    </div>
+
+                    {/* Skeleton Description */}
+                    <div className="space-y-2 mb-6">
+                      <div className="h-4 w-full bg-white/10 rounded"></div>
+                      <div className="h-4 w-full bg-white/10 rounded"></div>
+                      <div className="h-4 w-2/3 bg-white/10 rounded"></div>
+                    </div>
+
+                    {/* Skeleton Meta Info */}
+                    <div className="flex flex-wrap gap-4 mb-6 pb-6 border-b border-white/10">
+                      {[...Array(3)].map((_, j) => (
+                        <div key={j} className="flex items-center gap-2">
+                          <div className="h-4 w-4 bg-white/10 rounded"></div>
+                          <div className="h-4 w-20 bg-white/10 rounded"></div>
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* Skeleton Results */}
+                    <div>
+                      <div className="h-4 w-16 bg-white/10 rounded mb-3"></div>
+                      <div className="space-y-2">
+                        {[...Array(3)].map((_, k) => (
+                          <div key={k} className="flex items-start gap-2">
+                            <div className="h-4 w-4 bg-white/10 rounded mt-0.5 flex-shrink-0"></div>
+                            <div className="h-4 flex-1 bg-white/10 rounded"></div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : filteredCases.length === 0 ? (
+            <div className="text-center py-20">
+              <i className="ri-file-damage-line text-6xl text-gray-600 mb-4"></i>
+              <p className="text-gray-400">開発事例が見つかりませんでした</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 gap-8">
+              {filteredCases.map(caseItem => (
+              <Link
                 key={caseItem.id}
-                className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/30 transition-all duration-300 group"
+                to={`/cases/${caseItem.id}`}
+                className="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/30 transition-all duration-300 group block"
               >
                 {/* Image */}
                 <div className="relative h-64 overflow-hidden">
@@ -208,9 +311,10 @@ export default function Cases() {
                     </ul>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              </Link>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
@@ -225,7 +329,7 @@ export default function Cases() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
-                to="/#simulator"
+                to="/simulator"
                 className="px-8 py-4 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap"
               >
                 見積もりシミュレーター
@@ -247,10 +351,11 @@ export default function Cases() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-lg flex items-center justify-center">
-                  <i className="ri-code-s-slash-line text-xl text-white"></i>
-                </div>
-                <span className="text-xl font-bold text-white">TechTime</span>
+                <img
+                  src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                  alt="TechTime"
+                  className="h-10 w-auto"
+                />
               </div>
               <p className="text-sm text-gray-400">
                 AI駆動開発で実現する<br />圧倒的低価格の基幹システム
@@ -259,9 +364,9 @@ export default function Cases() {
             <div>
               <h4 className="text-white font-semibold mb-4">サービス</h4>
               <ul className="space-y-2 text-sm text-gray-400">
-                <li><a href="/#simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</a></li>
+                <li><a href="/simulator" className="hover:text-[#00D9FF] transition-colors">見積もりシミュレーター</a></li>
                 <li><a href="/#systems" className="hover:text-[#00D9FF] transition-colors">対応システム</a></li>
-                <li><a href="/#ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</a></li>
+                <li><Link to="/ai-development" className="hover:text-[#00D9FF] transition-colors">AI駆動開発</Link></li>
               </ul>
             </div>
             <div>
@@ -281,16 +386,13 @@ export default function Cases() {
                 </li>
                 <li className="flex items-center gap-2">
                   <i className="ri-mail-line text-[#00D9FF] w-4 h-4 flex items-center justify-center"></i>
-                  <a href="mailto:info@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">info@techtime-link.com</a>
+                  <a href="mailto:kdm@techtime-link.com" className="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
                 </li>
               </ul>
             </div>
           </div>
-          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4">
+          <div className="pt-8 border-t border-white/10 flex flex-col md:flex-row justify-center items-center gap-4">
             <p className="text-sm text-gray-500">© 2025 TechTime株式会社. All rights reserved.</p>
-            <a href="https://readdy.ai/?ref=logo" target="_blank" rel="noopener noreferrer" className="text-sm text-gray-500 hover:text-[#00D9FF] transition-colors">
-              Powered by Readdy
-            </a>
           </div>
         </div>
       </footer>
