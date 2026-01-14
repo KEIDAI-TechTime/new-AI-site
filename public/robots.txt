@@ -44,6 +44,10 @@ Allow: /
 # Sitemaps
 Sitemap: https://techtime-jp.com/sitemap.xml
 
+# LLMs.txt - AI向けサイト情報
+# https://llmstxt.org/
+LLMsTxt: https://techtime-jp.com/llms.txt
+
 # Disallow admin/internal paths (if any)
 # Disallow: /admin/
 # Disallow: /api/
