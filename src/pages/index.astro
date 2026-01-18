@@ -95,6 +95,57 @@ const securityItems = [
             </div>
           </div>
 
+          <!-- Right Visual - Desktop Only -->
+          <div class="relative hidden lg:block">
+            <div class="relative transform rotate-6 hover:rotate-3 transition-transform duration-500">
+              <div class="bg-white/10 backdrop-blur-xl rounded-3xl p-8 border border-white/20 shadow-2xl">
+                <img
+                  src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&h=700&fit=crop"
+                  alt="ダッシュボード"
+                  class="w-full h-auto rounded-2xl object-cover"
+                  loading="eager"
+                />
+              </div>
+
+              <!-- Floating Cards -->
+              <div class="absolute -left-8 top-20 bg-white/15 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-xl hero-float">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-xl flex items-center justify-center">
+                    <i class="ri-speed-up-line text-white text-2xl"></i>
+                  </div>
+                  <div>
+                    <p class="text-white font-bold text-sm whitespace-nowrap">開発速度</p>
+                    <p class="text-[#00D9FF] font-bold text-xl whitespace-nowrap">50倍高速</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="absolute -right-8 top-40 bg-white/15 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-xl hero-float-delayed">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-xl flex items-center justify-center">
+                    <i class="ri-money-dollar-circle-line text-white text-2xl"></i>
+                  </div>
+                  <div>
+                    <p class="text-white font-bold text-sm whitespace-nowrap">コスト削減</p>
+                    <p class="text-[#00D9FF] font-bold text-xl whitespace-nowrap">50%以上</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="absolute left-1/2 -translate-x-1/2 bottom-8 bg-white/15 backdrop-blur-xl rounded-2xl p-4 border border-white/20 shadow-xl hero-float">
+                <div class="flex items-center gap-3">
+                  <div class="w-12 h-12 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-xl flex items-center justify-center">
+                    <i class="ri-shield-check-line text-white text-2xl"></i>
+                  </div>
+                  <div>
+                    <p class="text-white font-bold text-sm whitespace-nowrap">品質保証</p>
+                    <p class="text-[#00D9FF] font-bold text-xl whitespace-nowrap">自動テスト</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
           <!-- Mobile Stats -->
           <div class="grid grid-cols-3 gap-3 lg:hidden mt-6">
             <div class="bg-white/10 backdrop-blur-xl rounded-xl p-3 border border-white/20 text-center">
@@ -115,6 +166,19 @@ const securityItems = [
           </div>
         </div>
       </div>
+
+      <style>
+        @keyframes heroFloat {
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-20px); }
+        }
+        .hero-float {
+          animation: heroFloat 3s ease-in-out infinite;
+        }
+        .hero-float-delayed {
+          animation: heroFloat 3s ease-in-out infinite 1.5s;
+        }
+      </style>
     </section>
 
     <div class="bg-white">
