@@ -136,7 +136,12 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
   try {
     const properties = page.properties;
 
-    const title = properties.Title?.title?.[0]?.plain_text || properties.Name?.title?.[0]?.plain_text || 'Untitled';
+    // Support both English and Japanese property names
+    const title =
+      properties.Title?.title?.[0]?.plain_text ||
+      properties.Name?.title?.[0]?.plain_text ||
+      properties['名前']?.title?.[0]?.plain_text ||
+      'Untitled';
     const slug = properties.Slug?.rich_text?.[0]?.plain_text || page.id;
     const category = properties.Category?.select?.name || 'ceo_column';
 
