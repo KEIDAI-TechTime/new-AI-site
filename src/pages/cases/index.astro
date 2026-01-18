@@ -1,78 +1,13 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navigation from '@/components/Navigation.astro';
+import { getCases, CASE_CATEGORIES } from '@/lib/notion-cases';
 
 const title = '開発事例 | TechTime株式会社';
 const description = 'TechTimeが手がけた基幹システム開発の事例をご紹介。様々な業種・規模のプロジェクト実績をご覧いただけます。';
 
-const cases = [
-  {
-    id: 1,
-    category: '文書管理',
-    title: '大手製造業A社様 文書管理システム',
-    description: '全社の技術文書・品質文書を一元管理し、承認ワークフローを自動化。検索性が大幅に向上し、文書管理業務の工数を60%削減。',
-    image: 'https://readdy.ai/api/search-image?query=modern%20office%20workspace%20with%20digital%20document%20management%20system%20displayed%20on%20multiple%20screens%2C%20clean%20organized%20environment%20with%20filing%20cabinets%20and%20computers%2C%20professional%20business%20setting%20with%20natural%20lighting%2C%20minimalist%20design%20with%20blue%20and%20white%20color%20scheme%2C%20high-tech%20atmosphere&width=800&height=600&seq=case1&orientation=landscape',
-    scale: '大規模',
-    period: '6ヶ月',
-    cost: '850万円',
-    results: ['文書検索時間 70%短縮', '承認プロセス 50%高速化', '年間コスト 300万円削減']
-  },
-  {
-    id: 2,
-    category: '在庫管理',
-    title: '物流企業B社様 在庫管理システム',
-    description: '複数拠点の在庫をリアルタイムで可視化し、適正在庫の維持を実現。過剰在庫と欠品を同時に削減し、キャッシュフローが改善。',
-    image: 'https://readdy.ai/api/search-image?query=modern%20warehouse%20with%20automated%20inventory%20management%20system%2C%20organized%20shelves%20with%20products%20and%20barcode%20scanners%2C%20clean%20industrial%20environment%20with%20LED%20lighting%2C%20workers%20using%20tablets%20for%20inventory%20tracking%2C%20efficient%20logistics%20operation%20with%20blue%20accent%20lighting&width=800&height=600&seq=case2&orientation=landscape',
-    scale: '標準規模',
-    period: '4ヶ月',
-    cost: '420万円',
-    results: ['在庫回転率 35%向上', '欠品率 80%削減', '棚卸時間 65%短縮']
-  },
-  {
-    id: 3,
-    category: '顧客管理',
-    title: '商社C社様 顧客・販売管理システム',
-    description: '顧客情報と案件情報を統合管理し、営業活動を可視化。データに基づく戦略的な営業が可能になり、売上が20%向上。',
-    image: 'https://readdy.ai/api/search-image?query=modern%20sales%20office%20with%20customer%20relationship%20management%20dashboard%20on%20large%20monitors%2C%20professional%20business%20environment%20with%20sales%20team%20collaborating%2C%20clean%20workspace%20with%20charts%20and%20analytics%20displays%2C%20contemporary%20office%20design%20with%20natural%20light%20and%20blue%20accent%20colors&width=800&height=600&seq=case3&orientation=landscape',
-    scale: '標準規模',
-    period: '5ヶ月',
-    cost: '580万円',
-    results: ['売上 20%向上', '商談成約率 30%改善', '営業効率 40%向上']
-  },
-  {
-    id: 4,
-    category: '経営BI',
-    title: '小売業D社様 経営ダッシュボード',
-    description: '全店舗の売上・在庫・顧客データをリアルタイムで可視化。経営判断のスピードが向上し、機会損失を最小化。',
-    image: 'https://readdy.ai/api/search-image?query=executive%20office%20with%20large%20business%20intelligence%20dashboard%20displaying%20real-time%20analytics%20and%20KPIs%2C%20modern%20corporate%20environment%20with%20multiple%20screens%20showing%20charts%20and%20graphs%2C%20professional%20setting%20with%20clean%20design%20and%20blue%20data%20visualization%20elements&width=800&height=600&seq=case4&orientation=landscape',
-    scale: '標準規模',
-    period: '3ヶ月',
-    cost: '380万円',
-    results: ['意思決定速度 50%向上', 'データ集計時間 90%削減', '売上予測精度 25%改善']
-  },
-  {
-    id: 5,
-    category: '生産管理',
-    title: '製造業E社様 生産管理システム',
-    description: '生産計画から工程管理、進捗管理まで一元化。リアルタイムな生産状況の把握により、納期遵守率が大幅に向上。',
-    image: 'https://readdy.ai/api/search-image?query=modern%20manufacturing%20facility%20with%20digital%20production%20management%20system%2C%20factory%20floor%20with%20automated%20machinery%20and%20monitoring%20screens%2C%20clean%20industrial%20environment%20with%20workers%20using%20tablets%2C%20efficient%20production%20line%20with%20blue%20LED%20indicators%20and%20organized%20workspace&width=800&height=600&seq=case5&orientation=landscape',
-    scale: '大規模',
-    period: '7ヶ月',
-    cost: '920万円',
-    results: ['納期遵守率 95%達成', '生産効率 30%向上', '在庫コスト 25%削減']
-  },
-  {
-    id: 6,
-    category: '人事給与',
-    title: 'サービス業F社様 人事・給与システム',
-    description: '人事情報管理から給与計算、勤怠管理まで統合。給与計算の自動化により、人事部門の業務負荷が大幅に軽減。',
-    image: 'https://readdy.ai/api/search-image?query=modern%20HR%20office%20with%20human%20resources%20management%20system%20on%20computers%2C%20professional%20workspace%20with%20employee%20data%20dashboards%2C%20clean%20corporate%20environment%20with%20organized%20filing%20and%20digital%20screens%2C%20contemporary%20office%20design%20with%20natural%20lighting%20and%20blue%20interface%20elements&width=800&height=600&seq=case6&orientation=landscape',
-    scale: '標準規模',
-    period: '4ヶ月',
-    cost: '450万円',
-    results: ['給与計算時間 80%削減', '人事業務効率 50%向上', '勤怠管理精度 向上']
-  }
-];
+// Get cases from Notion (or fallback to static data)
+const cases = await getCases();
 
 const categories = [
   { id: 'all', name: 'すべて' },
@@ -127,7 +62,7 @@ const categories = [
       <div class="max-w-6xl mx-auto">
         <div class="grid md:grid-cols-2 gap-8">
           {cases.map((caseItem) => (
-            <div class="case-card bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/30 transition-all duration-500 group" data-category={caseItem.category}>
+            <a href={`/cases/${caseItem.id}`} class="case-card block bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/30 transition-all duration-500 group cursor-pointer" data-category={caseItem.category}>
               <div class="relative h-64 overflow-hidden">
                 <img
                   src={caseItem.image}
@@ -175,8 +110,15 @@ const categories = [
                     ))}
                   </ul>
                 </div>
+
+                <div class="pt-4">
+                  <span class="inline-flex items-center gap-2 text-[#00D9FF] font-medium group-hover:gap-3 transition-all duration-300">
+                    詳細を見る
+                    <i class="ri-arrow-right-line"></i>
+                  </span>
+                </div>
               </div>
-            </div>
+            </a>
           ))}
         </div>
       </div>
@@ -199,9 +141,9 @@ const categories = [
         document.querySelectorAll('.case-card').forEach(card => {
           const cardCategory = card.getAttribute('data-category');
           if (category === 'all' || cardCategory === category) {
-            card.style.display = 'block';
+            (card as HTMLElement).style.display = 'block';
           } else {
-            card.style.display = 'none';
+            (card as HTMLElement).style.display = 'none';
           }
         });
       });

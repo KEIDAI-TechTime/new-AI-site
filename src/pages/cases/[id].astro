@@ -1,0 +1,260 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navigation from '@/components/Navigation.astro';
+import { getCase, getAllCaseIds, CASE_CATEGORIES } from '@/lib/notion-cases';
+
+export async function getStaticPaths() {
+  const ids = await getAllCaseIds();
+  return ids.map((id) => ({ params: { id } }));
+}
+
+const { id } = Astro.params;
+const caseData = await getCase(id as string);
+
+if (!caseData) {
+  return Astro.redirect('/cases');
+}
+
+const title = `${caseData.title} | TechTime株式会社`;
+const description = caseData.description;
+---
+
+<BaseLayout title={title} description={description} ogImage={caseData.image}>
+  <Navigation currentPath="/cases" />
+
+  <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
+    <!-- Back Button -->
+    <div class="pt-24 pb-8 px-6">
+      <div class="max-w-4xl mx-auto">
+        <a
+          href="/cases"
+          class="inline-flex items-center gap-2 text-gray-400 hover:text-[#00D9FF] transition-colors"
+        >
+          <i class="ri-arrow-left-line"></i>
+          <span>開発事例一覧に戻る</span>
+        </a>
+      </div>
+    </div>
+
+    <!-- Hero Image & Title -->
+    <div class="pb-12 px-6">
+      <div class="max-w-4xl mx-auto">
+        <!-- Category Badge -->
+        <div class="mb-6">
+          <span class="inline-block px-4 py-1 bg-[#00D9FF]/20 border border-[#00D9FF]/30 text-[#00D9FF] text-sm font-semibold rounded-full">
+            {caseData.category}
+          </span>
+        </div>
+
+        <!-- Title -->
+        <h1 class="text-3xl md:text-4xl font-bold text-white mb-8">
+          {caseData.title}
+        </h1>
+
+        <!-- Hero Image -->
+        {caseData.image && (
+          <div class="rounded-2xl overflow-hidden mb-8">
+            <img
+              src={caseData.image}
+              alt={caseData.title}
+              class="w-full h-auto object-cover"
+            />
+          </div>
+        )}
+
+        <!-- Meta Info -->
+        <div class="flex flex-wrap gap-6 mb-12 pb-8 border-b border-white/10">
+          <div class="flex items-center gap-2">
+            <i class="ri-bar-chart-line text-[#00D9FF] text-xl"></i>
+            <div>
+              <div class="text-xs text-gray-500">規模</div>
+              <div class="text-sm text-white font-medium">{caseData.scale}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="ri-time-line text-[#00D9FF] text-xl"></i>
+            <div>
+              <div class="text-xs text-gray-500">開発期間</div>
+              <div class="text-sm text-white font-medium">{caseData.period}</div>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <i class="ri-money-dollar-circle-line text-[#00D9FF] text-xl"></i>
+            <div>
+              <div class="text-xs text-gray-500">開発費用</div>
+              <div class="text-sm text-white font-medium">{caseData.cost}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Description -->
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold text-white mb-4">プロジェクト概要</h2>
+          <p class="text-gray-300 text-lg leading-relaxed">
+            {caseData.description}
+          </p>
+        </div>
+
+        <!-- Detailed Content from Notion Blocks -->
+        {caseData.content && (
+          <div class="mb-12">
+            <h2 class="text-2xl font-bold text-white mb-6">詳細情報</h2>
+            <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+              <div class="markdown-content prose prose-invert max-w-none" set:html={caseData.content.replace(/\n/g, '<br />')} />
+            </div>
+          </div>
+        )}
+
+        <!-- Results -->
+        <div class="mb-12">
+          <h2 class="text-2xl font-bold text-white mb-6">導入効果</h2>
+          <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-8">
+            <ul class="space-y-4">
+              {caseData.results.map((result) => (
+                <li class="flex items-start gap-3">
+                  <div class="flex-shrink-0 w-6 h-6 rounded-full bg-[#00D9FF]/20 flex items-center justify-center mt-0.5">
+                    <i class="ri-check-line text-[#00D9FF] text-sm"></i>
+                  </div>
+                  <span class="text-gray-300 text-lg">{result}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA Section -->
+    <div class="pb-32 px-6">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-gradient-to-br from-[#00D9FF]/10 to-[#0099FF]/10 backdrop-blur-xl rounded-3xl border border-[#00D9FF]/20 p-12 text-center">
+          <h2 class="text-2xl md:text-3xl font-bold text-white mb-4">
+            御社のシステム開発も、ぜひご相談ください
+          </h2>
+          <p class="text-gray-300 mb-8">
+            業種・規模を問わず、さまざまなシステム開発に対応しています。<br />
+            まずは見積もりシミュレーターで概算金額をご確認ください。
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a
+              href="/simulator"
+              class="px-8 py-4 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap"
+            >
+              見積もりシミュレーター
+            </a>
+            <a
+              href="/contact"
+              class="px-8 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300 whitespace-nowrap"
+            >
+              詳しく相談する
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  .markdown-content {
+    font-size: 1rem;
+    line-height: 1.75;
+    color: #D1D5DB;
+  }
+
+  .markdown-content :global(h1),
+  .markdown-content :global(h2),
+  .markdown-content :global(h3) {
+    color: #FFFFFF;
+    font-weight: 700;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .markdown-content :global(h1) { font-size: 2rem; }
+  .markdown-content :global(h2) { font-size: 1.5rem; }
+  .markdown-content :global(h3) { font-size: 1.25rem; }
+
+  .markdown-content :global(p) {
+    margin-bottom: 1.5rem;
+  }
+
+  .markdown-content :global(ul),
+  .markdown-content :global(ol) {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .markdown-content :global(li) {
+    margin-bottom: 0.5rem;
+  }
+
+  .markdown-content :global(a) {
+    color: #00D9FF;
+    text-decoration: underline;
+  }
+
+  .markdown-content :global(a:hover) {
+    color: #0099FF;
+  }
+
+  .markdown-content :global(code) {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    color: #00D9FF;
+  }
+
+  .markdown-content :global(pre) {
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+  }
+
+  .markdown-content :global(pre code) {
+    background-color: transparent;
+    padding: 0;
+    color: #D1D5DB;
+  }
+
+  .markdown-content :global(blockquote) {
+    border-left: 4px solid #00D9FF;
+    padding-left: 1rem;
+    margin: 1.5rem 0;
+    font-style: italic;
+    color: #9CA3AF;
+  }
+
+  .markdown-content :global(img) {
+    border-radius: 0.5rem;
+    margin: 1.5rem 0;
+  }
+
+  .markdown-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 1.5rem;
+  }
+
+  .markdown-content :global(th),
+  .markdown-content :global(td) {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 0.75rem;
+    text-align: left;
+  }
+
+  .markdown-content :global(th) {
+    background-color: rgba(0, 217, 255, 0.1);
+    font-weight: 600;
+    color: #FFFFFF;
+  }
+
+  .markdown-content :global(hr) {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin: 2rem 0;
+  }
+</style>
