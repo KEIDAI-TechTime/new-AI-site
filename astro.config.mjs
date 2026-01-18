@@ -28,7 +28,7 @@ export default defineConfig({
       }
     },
     ssr: {
-      noExternal: ['react-markdown']
+      noExternal: ['react-markdown', '@notionhq/client', 'notion-to-md']
     }
   }
 });
