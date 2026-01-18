@@ -1,0 +1,61 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navigation from '@/components/Navigation.astro';
+import SimulatorForm from '@/components/SimulatorForm';
+
+const title = '見積もりシミュレーター | TechTime株式会社';
+const description = 'システム開発の見積もりを即座に確認。プロジェクト規模、開発期間、機能要件を入力するだけで、概算金額をその場で算出します。';
+---
+
+<BaseLayout title={title} description={description}>
+  <Navigation currentPath="/simulator" />
+
+  <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
+    <div class="pt-20 sm:pt-24 lg:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
+      <div class="max-w-4xl mx-auto text-center mb-12">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00D9FF]/10 border border-[#00D9FF]/20 mb-6">
+          <i class="ri-calculator-line text-[#00D9FF]"></i>
+          <span class="text-sm text-[#00D9FF] font-medium">Simulator</span>
+        </div>
+        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-6">見積もりシミュレーター</h1>
+        <p class="text-lg text-gray-300 leading-relaxed">
+          システム種別と規模を選択するだけで、即座に概算見積もりを表示。<br />
+          営業との打ち合わせや見積もり待ちの時間は不要です。
+        </p>
+      </div>
+
+      <div class="max-w-4xl mx-auto">
+        <SimulatorForm client:load />
+      </div>
+
+      <!-- Timeline -->
+      <div class="max-w-4xl mx-auto mt-20 bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 md:p-12">
+        <h2 class="text-2xl font-bold text-white mb-8 text-center">開発期間の目安</h2>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div class="text-center p-6 bg-white/5 rounded-xl">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="ri-time-line text-white text-2xl"></i>
+            </div>
+            <p class="font-bold text-white mb-2">小規模システム</p>
+            <p class="text-3xl font-extrabold text-[#00D9FF]">2〜3ヶ月</p>
+          </div>
+          <div class="text-center p-6 bg-white/5 rounded-xl">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="ri-time-line text-white text-2xl"></i>
+            </div>
+            <p class="font-bold text-white mb-2">標準規模システム</p>
+            <p class="text-3xl font-extrabold text-[#00D9FF]">3〜6ヶ月</p>
+          </div>
+          <div class="text-center p-6 bg-white/5 rounded-xl">
+            <div class="w-16 h-16 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-4">
+              <i class="ri-time-line text-white text-2xl"></i>
+            </div>
+            <p class="font-bold text-white mb-2">大規模システム</p>
+            <p class="text-3xl font-extrabold text-[#00D9FF]">6ヶ月〜</p>
+          </div>
+        </div>
+        <p class="text-center text-sm text-gray-400 mt-6">※システムの複雑度により変動します</p>
+      </div>
+    </div>
+  </div>
+</BaseLayout>

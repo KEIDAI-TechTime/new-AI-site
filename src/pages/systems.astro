@@ -1,0 +1,66 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navigation from '@/components/Navigation.astro';
+
+const title = '対応システム | TechTime株式会社';
+const description = '文書管理、在庫管理、顧客管理など、各種基幹システムに対応。AI駆動開発により、従来の半分以下のコストで高品質なシステムを提供します。';
+
+const systems = [
+  { id: 1, name: '文書管理システム', description: '契約書・請求書・マニュアルなどの企業文書を一元管理。検索性の向上、バージョン管理、アクセス権限制御などの機能を実装します。', features: ['文書の一元管理', '検索機能', 'バージョン管理', 'アクセス権限制御', '承認ワークフロー'] },
+  { id: 2, name: '在庫管理システム', description: 'リアルタイムの在庫把握と発注の最適化を実現。入出庫管理、在庫アラート、棚卸し支援などの機能を提供します。', features: ['入出庫管理', '在庫アラート', '棚卸し支援', '発注最適化', 'ロケーション管理'] },
+  { id: 3, name: '顧客管理システム（CRM）', description: '顧客情報と商談履歴を一元管理。営業活動の効率化、顧客分析、マーケティング支援などを実現します。', features: ['顧客情報管理', '商談履歴', '営業活動管理', '顧客分析', 'マーケティング支援'] },
+  { id: 4, name: '販売管理システム', description: '受注から出荷までをシームレスに管理。見積作成、受注処理、売上管理、請求書発行などの業務を効率化します。', features: ['見積作成', '受注処理', '出荷管理', '売上管理', '請求書発行'] },
+  { id: 5, name: '勤怠管理システム', description: '出退勤打刻から給与計算までを自動化。シフト管理、残業管理、有給管理などの機能を実装します。', features: ['出退勤打刻', 'シフト管理', '残業管理', '有給管理', '給与計算連携'] },
+  { id: 6, name: 'プロジェクト管理システム', description: 'タスク・進捗・リソースを可視化。ガントチャート、タスク管理、工数管理、レポート機能などを提供します。', features: ['タスク管理', '進捗管理', 'ガントチャート', '工数管理', 'レポート機能'] }
+];
+---
+
+<BaseLayout title={title} description={description}>
+  <Navigation currentPath="/systems" />
+
+  <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
+    <div class="pt-32 pb-20 px-6">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00D9FF]/10 border border-[#00D9FF]/20 mb-6">
+          <i class="ri-apps-line text-[#00D9FF]"></i>
+          <span class="text-sm text-[#00D9FF] font-medium">Systems</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">対応システム</h1>
+        <p class="text-lg text-gray-300 leading-relaxed">TechTimeでは、企業の業務効率化を支援する各種基幹システムの開発に対応しています。<br />AI駆動開発により、従来の半分以下のコストで高品質なシステムを提供します。</p>
+      </div>
+    </div>
+
+    <div class="pb-32 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid gap-8">
+          {systems.map((system) => (
+            <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 md:p-10 hover:border-[#00D9FF]/30 transition-all duration-300">
+              <div class="flex items-start gap-6">
+                <div class="w-16 h-16 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-2xl flex items-center justify-center flex-shrink-0">
+                  <span class="text-2xl font-bold text-[#0A1628]">{system.id}</span>
+                </div>
+                <div class="flex-1">
+                  <h2 class="text-2xl font-bold text-white mb-4">{system.name}</h2>
+                  <p class="text-gray-300 leading-relaxed mb-6">{system.description}</p>
+                  <div class="flex flex-wrap gap-2">
+                    {system.features.map((feature) => (
+                      <span class="px-3 py-1 bg-[#00D9FF]/10 text-[#00D9FF] text-sm rounded-full">{feature}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="mt-16 text-center">
+          <p class="text-lg text-gray-400 mb-8">上記以外のシステムも開発可能です。お気軽にご相談ください。</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/contact" class="px-8 py-4 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300">お問い合わせ</a>
+            <a href="/simulator" class="px-8 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">見積もりシミュレーター</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
