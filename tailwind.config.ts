@@ -1,7 +1,12 @@
 import type { Config } from 'tailwindcss';
 
 export default {
-  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
+  content: [
+    './src/**/*.{astro,html,js,jsx,md,mdx,ts,tsx}',
+    './src/pages/**/*.astro',
+    './src/layouts/**/*.astro',
+    './src/components/**/*.{astro,tsx}'
+  ],
   theme: {
     extend: {
       fontFamily: {
