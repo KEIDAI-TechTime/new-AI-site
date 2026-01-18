@@ -12,14 +12,34 @@ export const CASE_CATEGORIES: Record<string, CaseCategory> = {
   '人事給与': { id: '人事給与', name: '人事給与' },
 } as const;
 
-// Initialize Notion client (server-side only)
-const notion = new Client({
-  auth: import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '',
-});
-
-const n2m = new NotionToMarkdown({ notionClient: notion });
-
+// Get environment variables
+const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '';
 const NOTION_CASES_DATABASE_ID = import.meta.env.NOTION_CASES_DATABASE_ID || process.env.NOTION_CASES_DATABASE_ID || '';
+
+// Lazy initialization for Notion client
+let notionClient: Client | null = null;
+let n2mClient: NotionToMarkdown | null = null;
+
+function getNotionClient(): Client | null {
+  if (!NOTION_API_KEY) {
+    return null;
+  }
+  if (!notionClient) {
+    notionClient = new Client({ auth: NOTION_API_KEY });
+  }
+  return notionClient;
+}
+
+function getN2MClient(): NotionToMarkdown | null {
+  const client = getNotionClient();
+  if (!client) {
+    return null;
+  }
+  if (!n2mClient) {
+    n2mClient = new NotionToMarkdown({ notionClient: client });
+  }
+  return n2mClient;
+}
 
 // Static fallback data for when Notion is not configured
 export const STATIC_CASES: NotionCase[] = [
@@ -107,8 +127,7 @@ export const STATIC_CASES: NotionCase[] = [
  * Check if Notion is configured for cases
  */
 export function isNotionCasesConfigured(): boolean {
-  const apiKey = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY;
-  return Boolean(apiKey && NOTION_CASES_DATABASE_ID);
+  return Boolean(NOTION_API_KEY && NOTION_CASES_DATABASE_ID);
 }
 
 /**
@@ -118,6 +137,16 @@ export async function getCases(category?: string): Promise<NotionCase[]> {
   // If Notion is not configured, return static data
   if (!isNotionCasesConfigured()) {
     console.log('[Notion Cases] Database not configured, using static data');
+    let cases = STATIC_CASES;
+    if (category) {
+      cases = cases.filter(c => c.category === category);
+    }
+    return cases;
+  }
+
+  const notion = getNotionClient();
+  if (!notion) {
+    console.log('[Notion Cases] Client not available, using static data');
     let cases = STATIC_CASES;
     if (category) {
       cases = cases.filter(c => c.category === category);
@@ -170,6 +199,11 @@ export async function getCase(id: string): Promise<NotionCase | null> {
     return STATIC_CASES.find(c => c.id === id) || null;
   }
 
+  const notion = getNotionClient();
+  if (!notion) {
+    return STATIC_CASES.find(c => c.id === id) || null;
+  }
+
   try {
     const page = await notion.pages.retrieve({ page_id: id });
     const caseData = await convertPageToCase(page);
@@ -177,8 +211,12 @@ export async function getCase(id: string): Promise<NotionCase | null> {
     if (!caseData) return null;
 
     // Get page content
-    const mdBlocks = await n2m.pageToMarkdown(id);
-    const content = n2m.toMarkdownString(mdBlocks).parent;
+    let content = '';
+    const n2m = getN2MClient();
+    if (n2m) {
+      const mdBlocks = await n2m.pageToMarkdown(id);
+      content = n2m.toMarkdownString(mdBlocks).parent;
+    }
 
     return {
       ...caseData,
@@ -197,6 +235,11 @@ export async function getCase(id: string): Promise<NotionCase | null> {
 export async function getAllCaseIds(): Promise<string[]> {
   // If Notion is not configured, return static IDs
   if (!isNotionCasesConfigured()) {
+    return STATIC_CASES.map(c => c.id);
+  }
+
+  const notion = getNotionClient();
+  if (!notion) {
     return STATIC_CASES.map(c => c.id);
   }
 
