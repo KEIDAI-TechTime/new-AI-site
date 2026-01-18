@@ -13,6 +13,8 @@ export interface NotionPost {
   createdAt: string;
   updatedAt: string;
   published: boolean;
+  source?: 'notion' | 'note';
+  externalUrl?: string;
 }
 
 export interface BlogCategory {
@@ -24,6 +26,7 @@ export interface BlogCategory {
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   ceo_column: { slug: 'ceo_column', name: '社長コラム' },
   'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
+  note: { slug: 'note', name: 'note' },
 };
 
 // Get environment variables
