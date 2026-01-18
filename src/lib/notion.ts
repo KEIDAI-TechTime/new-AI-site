@@ -29,15 +29,21 @@ export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   note: { slug: 'note', name: 'note' },
 };
 
-// Get environment variables
-const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '';
-const NOTION_DATABASE_ID = import.meta.env.NOTION_DATABASE_ID || process.env.NOTION_DATABASE_ID || '';
+/**
+ * Get environment variables (called at runtime to ensure they're available)
+ */
+function getEnvVars() {
+  const apiKey = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '';
+  const databaseId = import.meta.env.NOTION_DATABASE_ID || process.env.NOTION_DATABASE_ID || '';
+  return { apiKey, databaseId };
+}
 
 /**
  * Check if Notion is configured
  */
 function isNotionConfigured(): boolean {
-  return Boolean(NOTION_API_KEY && NOTION_DATABASE_ID);
+  const { apiKey, databaseId } = getEnvVars();
+  return Boolean(apiKey && databaseId);
 }
 
 /**
@@ -45,13 +51,19 @@ function isNotionConfigured(): boolean {
  */
 let notionClient: Client | null = null;
 let n2mClient: NotionToMarkdown | null = null;
+let lastApiKey: string = '';
 
 function getNotionClient(): Client | null {
-  if (!NOTION_API_KEY) {
+  const { apiKey } = getEnvVars();
+  if (!apiKey) {
+    console.warn('[Notion] API key not found');
     return null;
   }
-  if (!notionClient) {
-    notionClient = new Client({ auth: NOTION_API_KEY });
+  // Recreate client if API key changed or not initialized
+  if (!notionClient || lastApiKey !== apiKey) {
+    notionClient = new Client({ auth: apiKey });
+    lastApiKey = apiKey;
+    n2mClient = null; // Reset n2m client too
   }
   return notionClient;
 }
@@ -86,10 +98,11 @@ export async function getPosts(params?: {
   }
 
   const { category, perPage = 10 } = params || {};
+  const { databaseId } = getEnvVars();
 
   try {
     const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
+      database_id: databaseId,
       filter: {
         and: [
           { property: 'Published', checkbox: { equals: true } },
@@ -124,9 +137,11 @@ export async function getPost(slug: string): Promise<NotionPost | null> {
     return null;
   }
 
+  const { databaseId } = getEnvVars();
+
   try {
     const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
+      database_id: databaseId,
       filter: {
         and: [
           { property: 'Slug', rich_text: { equals: slug } },
@@ -160,9 +175,11 @@ export async function getAllPostSlugs(): Promise<string[]> {
     return [];
   }
 
+  const { databaseId } = getEnvVars();
+
   try {
     const response = await notion.databases.query({
-      database_id: NOTION_DATABASE_ID,
+      database_id: databaseId,
       filter: { property: 'Published', checkbox: { equals: true } },
     });
 
