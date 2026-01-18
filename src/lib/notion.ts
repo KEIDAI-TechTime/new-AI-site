@@ -26,14 +26,43 @@ export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
 };
 
-// Initialize Notion client (server-side only)
-const notion = new Client({
-  auth: import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '',
-});
-
-const n2m = new NotionToMarkdown({ notionClient: notion });
-
+// Get environment variables
+const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '';
 const NOTION_DATABASE_ID = import.meta.env.NOTION_DATABASE_ID || process.env.NOTION_DATABASE_ID || '';
+
+/**
+ * Check if Notion is configured
+ */
+function isNotionConfigured(): boolean {
+  return Boolean(NOTION_API_KEY && NOTION_DATABASE_ID);
+}
+
+/**
+ * Create Notion client (lazy initialization)
+ */
+let notionClient: Client | null = null;
+let n2mClient: NotionToMarkdown | null = null;
+
+function getNotionClient(): Client | null {
+  if (!NOTION_API_KEY) {
+    return null;
+  }
+  if (!notionClient) {
+    notionClient = new Client({ auth: NOTION_API_KEY });
+  }
+  return notionClient;
+}
+
+function getN2MClient(): NotionToMarkdown | null {
+  const client = getNotionClient();
+  if (!client) {
+    return null;
+  }
+  if (!n2mClient) {
+    n2mClient = new NotionToMarkdown({ notionClient: client });
+  }
+  return n2mClient;
+}
 
 /**
  * Get blog posts from Notion
@@ -42,8 +71,14 @@ export async function getPosts(params?: {
   category?: string;
   perPage?: number;
 }): Promise<NotionPost[]> {
-  if (!NOTION_DATABASE_ID) {
-    console.warn('[Notion] Database ID not configured');
+  if (!isNotionConfigured()) {
+    console.warn('[Notion] Not configured (missing API key or database ID)');
+    return [];
+  }
+
+  const notion = getNotionClient();
+  if (!notion) {
+    console.warn('[Notion] Client not available');
     return [];
   }
 
@@ -77,7 +112,12 @@ export async function getPosts(params?: {
  * Get single post by slug
  */
 export async function getPost(slug: string): Promise<NotionPost | null> {
-  if (!NOTION_DATABASE_ID) {
+  if (!isNotionConfigured()) {
+    return null;
+  }
+
+  const notion = getNotionClient();
+  if (!notion) {
     return null;
   }
 
@@ -107,7 +147,13 @@ export async function getPost(slug: string): Promise<NotionPost | null> {
  * Get all post slugs for static generation
  */
 export async function getAllPostSlugs(): Promise<string[]> {
-  if (!NOTION_DATABASE_ID) {
+  if (!isNotionConfigured()) {
+    console.warn('[Notion] Not configured, returning empty slugs');
+    return [];
+  }
+
+  const notion = getNotionClient();
+  if (!notion) {
     return [];
   }
 
@@ -136,7 +182,12 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
   try {
     const properties = page.properties;
 
-    const title = properties.Title?.title?.[0]?.plain_text || properties.Name?.title?.[0]?.plain_text || 'Untitled';
+    // Support both English and Japanese property names
+    const title =
+      properties.Title?.title?.[0]?.plain_text ||
+      properties.Name?.title?.[0]?.plain_text ||
+      properties['名前']?.title?.[0]?.plain_text ||
+      'Untitled';
     const slug = properties.Slug?.rich_text?.[0]?.plain_text || page.id;
     const category = properties.Category?.select?.name || 'ceo_column';
 
@@ -151,8 +202,12 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
     const published = properties.Published?.checkbox ?? true;
 
     // Convert page content to Markdown
-    const mdBlocks = await n2m.pageToMarkdown(page.id);
-    const content = n2m.toMarkdownString(mdBlocks).parent;
+    let content = '';
+    const n2m = getN2MClient();
+    if (n2m) {
+      const mdBlocks = await n2m.pageToMarkdown(page.id);
+      content = n2m.toMarkdownString(mdBlocks).parent;
+    }
 
     return {
       id: page.id,

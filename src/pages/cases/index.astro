@@ -1,14 +1,22 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navigation from '@/components/Navigation.astro';
+import { getCases, CASE_CATEGORIES } from '@/lib/notion-cases';
 
 const title = '開発事例 | TechTime株式会社';
 const description = 'TechTimeが手がけた基幹システム開発の事例をご紹介。様々な業種・規模のプロジェクト実績をご覧いただけます。';
 
-const cases = [
-  { id: 1, title: '製造業向け在庫管理システム', industry: '製造業', scale: '中規模', description: '複数拠点の在庫をリアルタイムで一元管理。発注の自動化により在庫コストを30%削減。' },
-  { id: 2, title: '不動産会社向け顧客管理システム', industry: '不動産', scale: '小規模', description: '顧客情報と物件マッチングを効率化。成約率が1.5倍に向上。' },
-  { id: 3, title: '物流会社向け配送管理システム', industry: '物流', scale: '大規模', description: '配送ルートの最適化と進捗の可視化。配送効率が25%改善。' },
+// Get cases from Notion (or fallback to static data)
+const cases = await getCases();
+
+const categories = [
+  { id: 'all', name: 'すべて' },
+  { id: '文書管理', name: '文書管理' },
+  { id: '在庫管理', name: '在庫管理' },
+  { id: '顧客管理', name: '顧客管理' },
+  { id: '経営BI', name: '経営BI' },
+  { id: '生産管理', name: '生産管理' },
+  { id: '人事給与', name: '人事給与' }
 ];
 ---
 
@@ -16,41 +24,129 @@ const cases = [
   <Navigation currentPath="/cases" />
 
   <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
-    <div class="pt-20 sm:pt-24 lg:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
-      <div class="max-w-7xl mx-auto">
-        <div class="text-center mb-12">
-          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">開発事例</h1>
-          <p class="text-gray-300 text-sm sm:text-base max-w-2xl mx-auto">
-            TechTimeが手がけた基幹システム開発の事例をご紹介します。<br />
-            様々な業種・規模のお客様に、AI駆動開発による高品質・低価格なシステムを提供しています。
-          </p>
+    <!-- Hero Section -->
+    <div class="pt-32 pb-20 px-6">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00D9FF]/10 border border-[#00D9FF]/20 mb-6">
+          <i class="ri-briefcase-line text-[#00D9FF]"></i>
+          <span class="text-sm text-[#00D9FF] font-medium">Case Studies</span>
         </div>
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
+          開発事例
+        </h1>
+        <p class="text-lg text-gray-300 leading-relaxed">
+          TechTimeのAI駆動開発により実現した、<br />
+          さまざまな業界・規模のシステム開発事例をご紹介します。
+        </p>
+      </div>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {cases.map((c) => (
-            <div class="group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/50 transition-all duration-300 hover:-translate-y-1">
-              <div class="aspect-video bg-gradient-to-br from-[#1E40AF] to-[#3B82F6] flex items-center justify-center">
-                <i class="ri-building-4-line text-6xl text-white/50"></i>
-              </div>
-              <div class="p-6">
-                <div class="flex items-center gap-2 mb-3">
-                  <span class="px-2 py-1 bg-[#00D9FF]/10 text-[#00D9FF] text-xs rounded-full">{c.industry}</span>
-                  <span class="px-2 py-1 bg-white/10 text-gray-300 text-xs rounded-full">{c.scale}</span>
-                </div>
-                <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors">{c.title}</h3>
-                <p class="text-sm text-gray-400">{c.description}</p>
-              </div>
-            </div>
+    <!-- Category Filter -->
+    <div class="pb-12 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="flex flex-wrap gap-3 justify-center">
+          {categories.map((category, index) => (
+            <button
+              class={`px-6 py-2 rounded-full font-medium transition-all duration-300 whitespace-nowrap category-btn ${index === 0 ? 'bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white shadow-lg shadow-[#00D9FF]/30' : 'bg-white/5 border border-white/10 text-gray-300 hover:bg-white/10'}`}
+              data-category={category.id}
+            >
+              {category.name}
+            </button>
           ))}
         </div>
+      </div>
+    </div>
 
-        <div class="mt-16 text-center">
-          <p class="text-gray-400 mb-8">詳細な事例紹介をご希望の方は、お気軽にお問い合わせください。</p>
-          <a href="/contact" class="inline-block px-8 py-4 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300">
-            お問い合わせ
-          </a>
+    <!-- Cases Grid -->
+    <div class="pb-32 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-8">
+          {cases.map((caseItem) => (
+            <a href={`/cases/${caseItem.id}`} class="case-card block bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/30 transition-all duration-500 group cursor-pointer" data-category={caseItem.category}>
+              <div class="relative h-64 overflow-hidden">
+                <img
+                  src={caseItem.image}
+                  alt={caseItem.title}
+                  class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                />
+                <div class="absolute top-4 left-4">
+                  <span class="px-4 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white text-sm font-semibold rounded-full">
+                    {caseItem.category}
+                  </span>
+                </div>
+              </div>
+
+              <div class="p-8 space-y-6">
+                <h3 class="text-2xl font-bold text-[#00D9FF] group-hover:text-white transition-colors duration-300">
+                  {caseItem.title}
+                </h3>
+                <p class="text-gray-300 leading-relaxed">
+                  {caseItem.description}
+                </p>
+
+                <div class="flex flex-wrap gap-4 text-sm">
+                  <div class="flex items-center gap-2 text-gray-400">
+                    <i class="ri-bar-chart-line text-[#00D9FF]"></i>
+                    <span>{caseItem.scale}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-gray-400">
+                    <i class="ri-time-line text-[#00D9FF]"></i>
+                    <span>開発期間 {caseItem.period}</span>
+                  </div>
+                  <div class="flex items-center gap-2 text-gray-400">
+                    <i class="ri-money-dollar-circle-line text-[#00D9FF]"></i>
+                    <span>{caseItem.cost}</span>
+                  </div>
+                </div>
+
+                <div class="pt-4 border-t border-white/10">
+                  <p class="text-sm font-semibold text-white mb-3">導入効果</p>
+                  <ul class="space-y-2">
+                    {caseItem.results.map((result) => (
+                      <li class="flex items-center gap-2 text-sm text-gray-300">
+                        <i class="ri-check-line text-[#00D9FF]"></i>
+                        <span>{result}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div class="pt-4">
+                  <span class="inline-flex items-center gap-2 text-[#00D9FF] font-medium group-hover:gap-3 transition-all duration-300">
+                    詳細を見る
+                    <i class="ri-arrow-right-line"></i>
+                  </span>
+                </div>
+              </div>
+            </a>
+          ))}
         </div>
       </div>
     </div>
   </div>
+
+  <script>
+    document.querySelectorAll('.category-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = btn.getAttribute('data-category');
+
+        document.querySelectorAll('.category-btn').forEach(b => {
+          b.classList.remove('bg-gradient-to-r', 'from-[#00D9FF]', 'to-[#0099FF]', 'text-white', 'shadow-lg', 'shadow-[#00D9FF]/30');
+          b.classList.add('bg-white/5', 'border', 'border-white/10', 'text-gray-300');
+        });
+
+        btn.classList.remove('bg-white/5', 'border', 'border-white/10', 'text-gray-300');
+        btn.classList.add('bg-gradient-to-r', 'from-[#00D9FF]', 'to-[#0099FF]', 'text-white', 'shadow-lg', 'shadow-[#00D9FF]/30');
+
+        document.querySelectorAll('.case-card').forEach(card => {
+          const cardCategory = card.getAttribute('data-category');
+          if (category === 'all' || cardCategory === category) {
+            (card as HTMLElement).style.display = 'block';
+          } else {
+            (card as HTMLElement).style.display = 'none';
+          }
+        });
+      });
+    });
+  </script>
 </BaseLayout>

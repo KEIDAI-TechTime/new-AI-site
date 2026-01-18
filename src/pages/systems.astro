@@ -6,12 +6,15 @@ const title = '対応システム | TechTime株式会社';
 const description = '文書管理、在庫管理、顧客管理など、各種基幹システムに対応。AI駆動開発により、従来の半分以下のコストで高品質なシステムを提供します。';
 
 const systems = [
-  { id: 1, name: '文書管理システム', description: '契約書・請求書・マニュアルなどの企業文書を一元管理。検索性の向上、バージョン管理、アクセス権限制御などの機能を実装します。', features: ['文書の一元管理', '検索機能', 'バージョン管理', 'アクセス権限制御', '承認ワークフロー'] },
-  { id: 2, name: '在庫管理システム', description: 'リアルタイムの在庫把握と発注の最適化を実現。入出庫管理、在庫アラート、棚卸し支援などの機能を提供します。', features: ['入出庫管理', '在庫アラート', '棚卸し支援', '発注最適化', 'ロケーション管理'] },
-  { id: 3, name: '顧客管理システム（CRM）', description: '顧客情報と商談履歴を一元管理。営業活動の効率化、顧客分析、マーケティング支援などを実現します。', features: ['顧客情報管理', '商談履歴', '営業活動管理', '顧客分析', 'マーケティング支援'] },
-  { id: 4, name: '販売管理システム', description: '受注から出荷までをシームレスに管理。見積作成、受注処理、売上管理、請求書発行などの業務を効率化します。', features: ['見積作成', '受注処理', '出荷管理', '売上管理', '請求書発行'] },
-  { id: 5, name: '勤怠管理システム', description: '出退勤打刻から給与計算までを自動化。シフト管理、残業管理、有給管理などの機能を実装します。', features: ['出退勤打刻', 'シフト管理', '残業管理', '有給管理', '給与計算連携'] },
-  { id: 6, name: 'プロジェクト管理システム', description: 'タスク・進捗・リソースを可視化。ガントチャート、タスク管理、工数管理、レポート機能などを提供します。', features: ['タスク管理', '進捗管理', 'ガントチャート', '工数管理', 'レポート機能'] }
+  { id: 1, name: '文書管理システム', description: '社内文書の一元管理、承認ワークフロー', image: 'https://readdy.ai/api/search-image?query=professional%20document%20management%20system%20interface%20with%20organized%20files%20and%20folders%20on%20clean%20minimal%20light%20background%20modern%20business%20software%20design%20simple%20elegant%20style&width=400&height=400&seq=sys-doc-001&orientation=squarish' },
+  { id: 2, name: '在庫管理システム', description: '入出庫管理、在庫最適化、棚卸機能', image: 'https://readdy.ai/api/search-image?query=modern%20inventory%20management%20system%20dashboard%20with%20warehouse%20shelves%20and%20stock%20data%20visualization%20on%20clean%20minimal%20light%20background%20professional%20logistics%20software%20simple%20elegant%20design&width=400&height=400&seq=sys-inv-002&orientation=squarish' },
+  { id: 3, name: '顧客・販売管理システム', description: '顧客情報管理、案件管理、売上分析', image: 'https://readdy.ai/api/search-image?query=customer%20relationship%20management%20crm%20system%20interface%20with%20sales%20data%20and%20customer%20profiles%20on%20clean%20minimal%20light%20background%20modern%20business%20software%20simple%20elegant%20style&width=400&height=400&seq=sys-crm-003&orientation=squarish' },
+  { id: 4, name: '購買・調達管理システム', description: '発注管理、仕入先管理、購買データ分析', image: 'https://readdy.ai/api/search-image?query=procurement%20and%20purchasing%20management%20system%20with%20supplier%20data%20and%20order%20tracking%20on%20clean%20minimal%20light%20background%20professional%20business%20software%20simple%20elegant%20design&width=400&height=400&seq=sys-proc-004&orientation=squarish' },
+  { id: 5, name: '経営ダッシュボード（BI）', description: '経営指標の可視化、リアルタイムレポート', image: 'https://readdy.ai/api/search-image?query=business%20intelligence%20dashboard%20with%20charts%20graphs%20and%20kpi%20metrics%20visualization%20on%20clean%20minimal%20light%20background%20modern%20analytics%20software%20simple%20elegant%20style&width=400&height=400&seq=sys-bi-005&orientation=squarish' },
+  { id: 6, name: '生産管理システム', description: '生産計画、工程管理、進捗管理', image: 'https://readdy.ai/api/search-image?query=manufacturing%20production%20management%20system%20with%20factory%20floor%20planning%20and%20process%20tracking%20on%20clean%20minimal%20light%20background%20industrial%20software%20simple%20elegant%20design&width=400&height=400&seq=sys-prod-006&orientation=squarish' },
+  { id: 7, name: '倉庫・物流管理システム', description: '入出荷管理、配送管理、ロケーション管理', image: 'https://readdy.ai/api/search-image?query=warehouse%20and%20logistics%20management%20system%20with%20shipping%20tracking%20and%20location%20data%20on%20clean%20minimal%20light%20background%20modern%20supply%20chain%20software%20simple%20elegant%20style&width=400&height=400&seq=sys-wms-007&orientation=squarish' },
+  { id: 8, name: '人事・給与システム', description: '人事情報管理、給与計算、勤怠管理', image: 'https://readdy.ai/api/search-image?query=human%20resources%20and%20payroll%20management%20system%20with%20employee%20data%20and%20attendance%20tracking%20on%20clean%20minimal%20light%20background%20professional%20hr%20software%20simple%20elegant%20design&width=400&height=400&seq=sys-hr-008&orientation=squarish' },
+  { id: 9, name: '原価・会計システム', description: '原価計算、会計処理、財務レポート', image: 'https://readdy.ai/api/search-image?query=cost%20accounting%20and%20financial%20management%20system%20with%20budget%20reports%20and%20expense%20tracking%20on%20clean%20minimal%20light%20background%20professional%20finance%20software%20simple%20elegant%20style&width=400&height=400&seq=sys-acc-009&orientation=squarish' }
 ];
 ---
 
@@ -19,34 +22,43 @@ const systems = [
   <Navigation currentPath="/systems" />
 
   <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
+    <!-- Hero Section -->
     <div class="pt-32 pb-20 px-6">
       <div class="max-w-4xl mx-auto text-center">
         <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00D9FF]/10 border border-[#00D9FF]/20 mb-6">
-          <i class="ri-apps-line text-[#00D9FF]"></i>
+          <i class="ri-stack-line text-[#00D9FF]"></i>
           <span class="text-sm text-[#00D9FF] font-medium">Systems</span>
         </div>
-        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">対応システム</h1>
-        <p class="text-lg text-gray-300 leading-relaxed">TechTimeでは、企業の業務効率化を支援する各種基幹システムの開発に対応しています。<br />AI駆動開発により、従来の半分以下のコストで高品質なシステムを提供します。</p>
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">
+          開発対応システム
+        </h1>
+        <p class="text-lg text-gray-300 leading-relaxed">
+          企業の基幹業務を支える各種システムをスクラッチ開発。<br />
+          御社の業務フローに完全に適合した、専用システムを構築します。
+        </p>
       </div>
     </div>
 
+    <!-- Systems Grid -->
     <div class="pb-32 px-6">
-      <div class="max-w-6xl mx-auto">
-        <div class="grid gap-8">
+      <div class="max-w-7xl mx-auto">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {systems.map((system) => (
-            <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 md:p-10 hover:border-[#00D9FF]/30 transition-all duration-300">
-              <div class="flex items-start gap-6">
-                <div class="w-16 h-16 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-2xl flex items-center justify-center flex-shrink-0">
-                  <span class="text-2xl font-bold text-[#0A1628]">{system.id}</span>
-                </div>
-                <div class="flex-1">
-                  <h2 class="text-2xl font-bold text-white mb-4">{system.name}</h2>
-                  <p class="text-gray-300 leading-relaxed mb-6">{system.description}</p>
-                  <div class="flex flex-wrap gap-2">
-                    {system.features.map((feature) => (
-                      <span class="px-3 py-1 bg-[#00D9FF]/10 text-[#00D9FF] text-sm rounded-full">{feature}</span>
-                    ))}
-                  </div>
+            <div class="group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 cursor-pointer aspect-square">
+              <div class="absolute inset-0 w-full h-full">
+                <img src={system.image} alt={system.name} class="w-full h-full object-cover" />
+              </div>
+              <div class="absolute inset-0 bg-gradient-to-t from-[#0A1628]/90 via-[#0A1628]/50 to-transparent group-hover:from-[#0A1628]/70 group-hover:via-[#0A1628]/30 transition-all duration-500"></div>
+              <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-[#00D9FF] flex items-center justify-center shadow-lg">
+                <span class="text-[#0A1628] font-bold text-lg">{system.id}</span>
+              </div>
+              <div class="absolute bottom-0 left-0 right-0 p-6 space-y-3">
+                <h3 class="text-2xl font-bold text-white">{system.name}</h3>
+                <p class="text-sm text-white/90 leading-relaxed">{system.description}</p>
+                <div class="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
+                  <button class="mt-2 px-6 py-2 rounded-full border-2 border-white/50 text-white text-sm font-semibold hover:bg-white/10 transition-all duration-300 whitespace-nowrap cursor-pointer">
+                    詳細を見る
+                  </button>
                 </div>
               </div>
             </div>
@@ -54,11 +66,9 @@ const systems = [
         </div>
 
         <div class="mt-16 text-center">
-          <p class="text-lg text-gray-400 mb-8">上記以外のシステムも開発可能です。お気軽にご相談ください。</p>
-          <div class="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="/contact" class="px-8 py-4 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300">お問い合わせ</a>
-            <a href="/simulator" class="px-8 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">見積もりシミュレーター</a>
-          </div>
+          <p class="text-lg text-gray-300">
+            上記以外のシステムも開発可能です。お気軽にご相談ください。
+          </p>
         </div>
       </div>
     </div>
