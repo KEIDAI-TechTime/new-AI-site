@@ -37,3 +37,10 @@ build/
 
 # Auto-generated
 auto-imports.d.ts
+
+# Astro
+.astro/
+dist/
+
+# Vercel
+.vercel/

@@ -1,0 +1,70 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navigation from '@/components/Navigation.astro';
+import { getPosts, BLOG_CATEGORIES, formatDate } from '@/lib/notion';
+
+const title = 'ブログ | TechTime株式会社';
+const description = 'TechTimeの最新情報や技術ブログをお届けします。AI駆動開発、システム開発のノウハウなど、役立つ情報を発信中。';
+
+// Fetch posts at build time
+const posts = await getPosts({ perPage: 20 });
+---
+
+<BaseLayout title={title} description={description}>
+  <Navigation currentPath="/blog" />
+
+  <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
+    <div class="pt-20 sm:pt-24 lg:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
+      <div class="max-w-7xl mx-auto">
+        <div class="text-center mb-8">
+          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">ブログ</h1>
+          <p class="text-gray-300 text-sm sm:text-base">TechTimeの最新情報や技術ブログをお届けします</p>
+        </div>
+
+        <!-- Category Filter -->
+        <div class="flex flex-wrap gap-3 justify-center mb-12">
+          <a href="/blog" class="px-4 py-2 rounded-full text-sm font-medium bg-[#00D9FF] text-[#0A1628]">すべて</a>
+          {Object.values(BLOG_CATEGORIES).map((cat) => (
+            <a href={`/blog?category=${cat.slug}`} class="px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-gray-300 hover:bg-white/20 transition-all">
+              {cat.name}
+            </a>
+          ))}
+        </div>
+
+        <!-- Blog Posts Grid -->
+        {posts.length === 0 ? (
+          <div class="text-center py-20">
+            <i class="ri-article-line text-6xl text-gray-600 mb-4"></i>
+            <p class="text-gray-400">記事が見つかりませんでした</p>
+          </div>
+        ) : (
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {posts.map((post) => (
+              <a href={`/blog/${post.slug}`} class="group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/50 transition-all duration-300 hover:-translate-y-1">
+                {post.coverImage && (
+                  <div class="aspect-video overflow-hidden bg-white/5">
+                    <img src={post.coverImage} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  </div>
+                )}
+                <div class="p-6">
+                  <div class="flex items-center gap-3 mb-3">
+                    <span class="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
+                    {post.category && BLOG_CATEGORIES[post.category] && (
+                      <span class="px-2 py-1 bg-[#00D9FF]/10 text-[#00D9FF] text-xs rounded-full">{BLOG_CATEGORIES[post.category].name}</span>
+                    )}
+                  </div>
+                  <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">{post.title}</h3>
+                  <p class="text-sm text-gray-400 line-clamp-3">{post.excerpt || post.content.substring(0, 150) + '...'}</p>
+                  <div class="mt-4 flex items-center text-[#00D9FF] text-sm font-medium">
+                    <span>続きを読む</span>
+                    <i class="ri-arrow-right-line ml-1 group-hover:translate-x-1 transition-transform"></i>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </div>
+</BaseLayout>

@@ -1,0 +1,157 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Navigation from '@/components/Navigation.astro';
+
+const title = '会社概要 | TechTime株式会社';
+const description = 'TechTime株式会社の会社概要。AI駆動開発で企業の基幹システム開発に革新をもたらします。東京・大阪にオフィスを構え、全国のお客様にサービスを提供しています。';
+---
+
+<BaseLayout title={title} description={description}>
+  <Navigation currentPath="/about" />
+
+  <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
+    <!-- Hero Section -->
+    <div class="pt-32 pb-20 px-6">
+      <div class="max-w-4xl mx-auto text-center">
+        <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#00D9FF]/10 border border-[#00D9FF]/20 mb-6">
+          <i class="ri-building-line text-[#00D9FF]"></i>
+          <span class="text-sm text-[#00D9FF] font-medium">About Us</span>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6">会社概要</h1>
+        <p class="text-lg text-gray-300 leading-relaxed">AI駆動開発で、企業の基幹システム開発に革新をもたらす</p>
+      </div>
+    </div>
+
+    <!-- Company Info -->
+    <div class="pb-20 px-6">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden">
+          <div class="p-8 md:p-12">
+            <table class="w-full">
+              <tbody class="divide-y divide-white/10">
+                <tr>
+                  <td class="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">会社名</td>
+                  <td class="py-6 text-white">TechTime株式会社</td>
+                </tr>
+                <tr>
+                  <td class="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">設立</td>
+                  <td class="py-6 text-white">2020年4月1日</td>
+                </tr>
+                <tr>
+                  <td class="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">資本金</td>
+                  <td class="py-6 text-white">800万円</td>
+                </tr>
+                <tr>
+                  <td class="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">所在地</td>
+                  <td class="py-6 text-white">
+                    【東京オフィス】<br />〒150-0002<br />東京都渋谷区渋谷2-19-15宮益坂ビルディング609<br /><br />
+                    【大阪オフィス】<br />〒530-0001<br />大阪府大阪市北区梅田1丁目2番2号大阪駅前第2ビル12-12
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">電話番号</td>
+                  <td class="py-6 text-white">
+                    <a href="tel:0342223363" class="hover:text-[#00D9FF] transition-colors">03-4222-3363</a><br />
+                    <span class="text-sm text-gray-400">（月～金/9～19時）</span>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">メール</td>
+                  <td class="py-6 text-white">
+                    <a href="mailto:kdm@techtime-link.com" class="hover:text-[#00D9FF] transition-colors">kdm@techtime-link.com</a>
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">事業内容</td>
+                  <td class="py-6 text-white">
+                    ・基幹システムの受託開発<br />
+                    ・AI駆動開発ツールの研究開発<br />
+                    ・システム保守運用サービス<br />
+                    ・ITコンサルティング
+                  </td>
+                </tr>
+                <tr>
+                  <td class="py-6 pr-8 text-sm font-medium text-gray-400 align-top whitespace-nowrap">従業員数</td>
+                  <td class="py-6 text-white">18名（2025年1月現在）</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission & Vision -->
+    <div class="pb-20 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="grid md:grid-cols-2 gap-8">
+          <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 md:p-10">
+            <div class="w-14 h-14 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-2xl flex items-center justify-center mb-6">
+              <i class="ri-target-line text-2xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-4">ミッション</h3>
+            <p class="text-gray-300 leading-relaxed">
+              AI技術を活用した革新的な開発手法により、高品質なシステムを圧倒的な低価格で提供し、すべての企業がデジタル化の恩恵を受けられる社会を実現する。
+            </p>
+          </div>
+          <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 md:p-10">
+            <div class="w-14 h-14 bg-gradient-to-br from-[#00D9FF] to-[#0099FF] rounded-2xl flex items-center justify-center mb-6">
+              <i class="ri-eye-line text-2xl text-white"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-white mb-4">ビジョン</h3>
+            <p class="text-gray-300 leading-relaxed">
+              AI駆動開発のパイオニアとして、システム開発業界の常識を変革し、日本のDX推進を加速させるリーディングカンパニーになる。
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Values -->
+    <div class="pb-32 px-6">
+      <div class="max-w-6xl mx-auto">
+        <div class="text-center mb-16">
+          <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">私たちの価値観</h2>
+          <p class="text-gray-300">TechTimeが大切にしている3つの価値観</p>
+        </div>
+        <div class="grid md:grid-cols-3 gap-8">
+          <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 hover:border-[#00D9FF]/30 transition-all duration-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-[#00D9FF]/20 to-[#0099FF]/20 rounded-xl flex items-center justify-center mb-6">
+              <i class="ri-lightbulb-line text-2xl text-[#00D9FF]"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">革新性</h3>
+            <p class="text-gray-300 text-sm leading-relaxed">常に最新のAI技術を取り入れ、従来の開発手法にとらわれない革新的なアプローチで、業界に新しい価値を提供し続けます。</p>
+          </div>
+          <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 hover:border-[#00D9FF]/30 transition-all duration-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-[#00D9FF]/20 to-[#0099FF]/20 rounded-xl flex items-center justify-center mb-6">
+              <i class="ri-shield-check-line text-2xl text-[#00D9FF]"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">品質へのこだわり</h3>
+            <p class="text-gray-300 text-sm leading-relaxed">AIによる効率化を追求しながらも、品質を決して妥協しません。多段階のレビューと自動テストにより、高品質を担保します。</p>
+          </div>
+          <div class="bg-white/5 backdrop-blur-xl rounded-3xl border border-white/10 p-8 hover:border-[#00D9FF]/30 transition-all duration-300">
+            <div class="w-12 h-12 bg-gradient-to-br from-[#00D9FF]/20 to-[#0099FF]/20 rounded-xl flex items-center justify-center mb-6">
+              <i class="ri-heart-line text-2xl text-[#00D9FF]"></i>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-3">顧客第一</h3>
+            <p class="text-gray-300 text-sm leading-relaxed">お客様の業務課題を深く理解し、真に価値あるシステムを提供することを最優先に考えます。長期的なパートナーシップを大切にします。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="pb-32 px-6">
+      <div class="max-w-4xl mx-auto">
+        <div class="bg-gradient-to-br from-[#00D9FF]/10 to-[#0099FF]/10 backdrop-blur-xl rounded-3xl border border-[#00D9FF]/20 p-12 text-center">
+          <h2 class="text-3xl font-bold text-white mb-4">お気軽にご相談ください</h2>
+          <p class="text-gray-300 mb-8">システム開発に関するご相談、お見積もりのご依頼など、<br />専門スタッフが丁寧にご対応いたします。</p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/contact" class="px-8 py-4 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-semibold rounded-xl hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300">お問い合わせ</a>
+            <a href="/simulator" class="px-8 py-4 bg-white/5 border border-white/10 text-white font-semibold rounded-xl hover:bg-white/10 transition-all duration-300">見積もりシミュレーター</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</BaseLayout>
