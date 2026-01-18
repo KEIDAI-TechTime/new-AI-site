@@ -1,6 +1,6 @@
 /**
  * Note.com RSS Integration
- * Fetches articles from note.com via RSS feed
+ * Fetches articles from note.com via RSS feed using rss2json proxy
  */
 
 export interface NotePost {
@@ -22,104 +22,99 @@ export interface NotePost {
 const NOTE_USER_ID = 'techtime_kdm';
 const NOTE_RSS_URL = `https://note.com/${NOTE_USER_ID}/rss`;
 
-/**
- * Parse RSS XML to extract post data
- */
-function parseRSSItem(itemXml: string): NotePost | null {
-  try {
-    // Extract title
-    const titleMatch = itemXml.match(/<title><!\[CDATA\[(.*?)\]\]><\/title>|<title>(.*?)<\/title>/s);
-    const title = titleMatch ? (titleMatch[1] || titleMatch[2] || '').trim() : '';
+// rss2json API (free tier: 10,000 requests/day)
+const RSS2JSON_API = 'https://api.rss2json.com/v1/api.json';
 
-    // Extract link
-    const linkMatch = itemXml.match(/<link>(.*?)<\/link>/);
-    const noteUrl = linkMatch ? linkMatch[1].trim() : '';
+interface Rss2JsonItem {
+  title: string;
+  pubDate: string;
+  link: string;
+  guid: string;
+  author: string;
+  thumbnail: string;
+  description: string;
+  content: string;
+  enclosure?: {
+    link?: string;
+    type?: string;
+  };
+}
 
-    // Extract slug from URL (e.g., https://note.com/techtime_kdm/n/n1234567890ab -> n1234567890ab)
-    const slugMatch = noteUrl.match(/\/n\/([a-zA-Z0-9]+)$/);
-    const slug = slugMatch ? `note-${slugMatch[1]}` : `note-${Date.now()}`;
-
-    // Extract description/excerpt
-    const descMatch = itemXml.match(/<description><!\[CDATA\[(.*?)\]\]><\/description>|<description>(.*?)<\/description>/s);
-    let excerpt = descMatch ? (descMatch[1] || descMatch[2] || '').trim() : '';
-    // Clean HTML tags from excerpt
-    excerpt = excerpt.replace(/<[^>]*>/g, '').substring(0, 200);
-
-    // Extract pubDate
-    const dateMatch = itemXml.match(/<pubDate>(.*?)<\/pubDate>/);
-    const pubDate = dateMatch ? dateMatch[1].trim() : new Date().toISOString();
-    const createdAt = new Date(pubDate).toISOString();
-
-    // Extract media/enclosure for cover image
-    const mediaMatch = itemXml.match(/<media:thumbnail[^>]*url="([^"]+)"|<enclosure[^>]*url="([^"]+)"[^>]*type="image/);
-    const coverImage = mediaMatch ? (mediaMatch[1] || mediaMatch[2]) : undefined;
-
-    // Alternative: try to extract og:image from content
-    let finalCoverImage = coverImage;
-    if (!finalCoverImage) {
-      const imgMatch = itemXml.match(/<img[^>]*src="([^"]+)"/);
-      finalCoverImage = imgMatch ? imgMatch[1] : undefined;
-    }
-
-    if (!title || !noteUrl) {
-      return null;
-    }
-
-    return {
-      id: slug,
-      title,
-      slug,
-      category: 'note',
-      coverImage: finalCoverImage,
-      excerpt: excerpt || title,
-      content: excerpt, // RSS only provides excerpt
-      createdAt,
-      updatedAt: createdAt,
-      published: true,
-      source: 'note',
-      noteUrl,
-    };
-  } catch (error) {
-    console.error('[Note] Failed to parse RSS item:', error);
-    return null;
-  }
+interface Rss2JsonResponse {
+  status: string;
+  feed: {
+    url: string;
+    title: string;
+    link: string;
+    author: string;
+    description: string;
+    image: string;
+  };
+  items: Rss2JsonItem[];
 }
 
 /**
- * Fetch and parse note RSS feed
+ * Convert rss2json item to NotePost
+ */
+function convertToNotePost(item: Rss2JsonItem): NotePost {
+  // Extract slug from URL (e.g., https://note.com/techtime_kdm/n/n1234567890ab -> n1234567890ab)
+  const slugMatch = item.link.match(/\/n\/([a-zA-Z0-9]+)$/);
+  const slug = slugMatch ? `note-${slugMatch[1]}` : `note-${Date.now()}`;
+
+  // Clean HTML tags from description
+  const excerpt = item.description
+    .replace(/<[^>]*>/g, '')
+    .substring(0, 200)
+    .trim();
+
+  // Get cover image from thumbnail or enclosure
+  const coverImage = item.thumbnail || item.enclosure?.link || undefined;
+
+  return {
+    id: slug,
+    title: item.title,
+    slug,
+    category: 'note',
+    coverImage,
+    excerpt: excerpt || item.title,
+    content: excerpt,
+    createdAt: new Date(item.pubDate).toISOString(),
+    updatedAt: new Date(item.pubDate).toISOString(),
+    published: true,
+    source: 'note',
+    noteUrl: item.link,
+  };
+}
+
+/**
+ * Fetch and parse note RSS feed via rss2json proxy
  */
 export async function getNotePosts(limit: number = 10): Promise<NotePost[]> {
   try {
-    console.log('[Note] Fetching RSS from:', NOTE_RSS_URL);
+    const apiUrl = `${RSS2JSON_API}?rss_url=${encodeURIComponent(NOTE_RSS_URL)}`;
+    console.log('[Note] Fetching RSS via rss2json:', NOTE_RSS_URL);
 
-    const response = await fetch(NOTE_RSS_URL, {
+    const response = await fetch(apiUrl, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; TechTime/1.0)',
-        'Accept': 'application/rss+xml, application/xml, text/xml',
+        'Accept': 'application/json',
       },
     });
 
     if (!response.ok) {
-      console.error('[Note] RSS fetch failed:', response.status, response.statusText);
+      console.error('[Note] rss2json fetch failed:', response.status, response.statusText);
       return [];
     }
 
-    const xml = await response.text();
+    const data: Rss2JsonResponse = await response.json();
 
-    // Extract all <item> elements
-    const itemMatches = xml.match(/<item>([\s\S]*?)<\/item>/g);
-    if (!itemMatches) {
-      console.warn('[Note] No items found in RSS feed');
+    if (data.status !== 'ok') {
+      console.error('[Note] rss2json returned error status:', data.status);
       return [];
     }
 
-    const posts: NotePost[] = [];
-    for (const itemXml of itemMatches.slice(0, limit)) {
-      const post = parseRSSItem(itemXml);
-      if (post) {
-        posts.push(post);
-      }
-    }
+    const posts = data.items
+      .slice(0, limit)
+      .map(convertToNotePost);
 
     console.log(`[Note] Fetched ${posts.length} posts from note`);
     return posts;
