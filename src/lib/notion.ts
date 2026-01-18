@@ -1,5 +1,6 @@
-import { Client } from '@notionhq/client';
-import { NotionToMarkdown } from 'notion-to-md';
+/**
+ * Notion API Integration using fetch (no SDK dependency)
+ */
 
 // Types
 export interface NotionPost {
@@ -29,18 +30,17 @@ export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   note: { slug: 'note', name: 'note' },
 };
 
+const NOTION_API_VERSION = '2022-06-28';
+const NOTION_API_BASE = 'https://api.notion.com/v1';
+
 /**
- * Get environment variables (called at runtime to ensure they're available)
+ * Get environment variables
  */
 function getEnvVars() {
-  // Try multiple methods to get env vars (Astro SSR, Vite, Node.js)
   // @ts-ignore
   const apiKey = import.meta.env?.NOTION_API_KEY || process.env?.NOTION_API_KEY || '';
   // @ts-ignore
   const databaseId = import.meta.env?.NOTION_DATABASE_ID || process.env?.NOTION_DATABASE_ID || '';
-
-  console.log('[Notion] Env check - API key exists:', !!apiKey, 'DB ID exists:', !!databaseId);
-
   return { apiKey, databaseId };
 }
 
@@ -53,36 +53,67 @@ function isNotionConfigured(): boolean {
 }
 
 /**
- * Create Notion client (lazy initialization)
+ * Make a request to Notion API
  */
-let notionClient: Client | null = null;
-let n2mClient: NotionToMarkdown | null = null;
-let lastApiKey: string = '';
-
-function getNotionClient(): Client | null {
+async function notionFetch(endpoint: string, options: RequestInit = {}): Promise<any> {
   const { apiKey } = getEnvVars();
-  if (!apiKey) {
-    console.warn('[Notion] API key not found');
-    return null;
+
+  const response = await fetch(`${NOTION_API_BASE}${endpoint}`, {
+    ...options,
+    headers: {
+      'Authorization': `Bearer ${apiKey}`,
+      'Notion-Version': NOTION_API_VERSION,
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(`Notion API error: ${response.status} - ${error}`);
   }
-  // Recreate client if API key changed or not initialized
-  if (!notionClient || lastApiKey !== apiKey) {
-    notionClient = new Client({ auth: apiKey });
-    lastApiKey = apiKey;
-    n2mClient = null; // Reset n2m client too
-  }
-  return notionClient;
+
+  return response.json();
 }
 
-function getN2MClient(): NotionToMarkdown | null {
-  const client = getNotionClient();
-  if (!client) {
-    return null;
-  }
-  if (!n2mClient) {
-    n2mClient = new NotionToMarkdown({ notionClient: client });
-  }
-  return n2mClient;
+/**
+ * Query Notion database
+ */
+async function queryDatabase(databaseId: string, filter?: any, sorts?: any[], pageSize = 10): Promise<any> {
+  const body: any = { page_size: pageSize };
+  if (filter) body.filter = filter;
+  if (sorts) body.sorts = sorts;
+
+  return notionFetch(`/databases/${databaseId}/query`, {
+    method: 'POST',
+    body: JSON.stringify(body),
+  });
+}
+
+/**
+ * Get page blocks (for content)
+ */
+async function getPageBlocks(pageId: string): Promise<any[]> {
+  const response = await notionFetch(`/blocks/${pageId}/children?page_size=100`);
+  return response.results || [];
+}
+
+/**
+ * Convert blocks to simple text content
+ */
+function blocksToText(blocks: any[]): string {
+  return blocks
+    .map((block: any) => {
+      const type = block.type;
+      const content = block[type];
+
+      if (content?.rich_text) {
+        return content.rich_text.map((t: any) => t.plain_text).join('');
+      }
+      return '';
+    })
+    .filter(Boolean)
+    .join('\n\n');
 }
 
 /**
@@ -97,30 +128,33 @@ export async function getPosts(params?: {
     return [];
   }
 
-  const notion = getNotionClient();
-  if (!notion) {
-    console.warn('[Notion] Client not available');
-    return [];
-  }
-
   const { category, perPage = 10 } = params || {};
   const { databaseId } = getEnvVars();
 
   try {
-    const response = await notion.databases.query({
-      database_id: databaseId,
-      filter: {
-        and: [
-          { property: 'Published', checkbox: { equals: true } },
-          ...(category ? [{ property: 'Category', select: { equals: category } }] : []),
-        ],
-      },
-      sorts: [{ property: 'Created', direction: 'descending' }],
-      page_size: perPage,
-    });
+    console.log('[Notion] Fetching posts from database...');
+
+    const filter: any = {
+      and: [
+        { property: 'Published', checkbox: { equals: true } },
+      ],
+    };
+
+    if (category) {
+      filter.and.push({ property: 'Category', select: { equals: category } });
+    }
+
+    const response = await queryDatabase(
+      databaseId,
+      filter,
+      [{ property: 'Created', direction: 'descending' }],
+      perPage
+    );
+
+    console.log(`[Notion] Found ${response.results?.length || 0} posts`);
 
     const posts = await Promise.all(
-      response.results.map(async (page: any) => convertPageToPost(page))
+      (response.results || []).map(async (page: any) => convertPageToPost(page))
     );
 
     return posts.filter((post): post is NotionPost => post !== null);
@@ -138,29 +172,21 @@ export async function getPost(slug: string): Promise<NotionPost | null> {
     return null;
   }
 
-  const notion = getNotionClient();
-  if (!notion) {
-    return null;
-  }
-
   const { databaseId } = getEnvVars();
 
   try {
-    const response = await notion.databases.query({
-      database_id: databaseId,
-      filter: {
-        and: [
-          { property: 'Slug', rich_text: { equals: slug } },
-          { property: 'Published', checkbox: { equals: true } },
-        ],
-      },
+    const response = await queryDatabase(databaseId, {
+      and: [
+        { property: 'Slug', rich_text: { equals: slug } },
+        { property: 'Published', checkbox: { equals: true } },
+      ],
     });
 
-    if (response.results.length === 0) {
+    if (!response.results?.length) {
       return null;
     }
 
-    return await convertPageToPost(response.results[0]);
+    return await convertPageToPost(response.results[0], true);
   } catch (error) {
     console.error('[Notion] Failed to fetch post:', error);
     return null;
@@ -176,23 +202,19 @@ export async function getAllPostSlugs(): Promise<string[]> {
     return [];
   }
 
-  const notion = getNotionClient();
-  if (!notion) {
-    return [];
-  }
-
   const { databaseId } = getEnvVars();
 
   try {
-    const response = await notion.databases.query({
-      database_id: databaseId,
-      filter: { property: 'Published', checkbox: { equals: true } },
-    });
+    const response = await queryDatabase(
+      databaseId,
+      { property: 'Published', checkbox: { equals: true } },
+      undefined,
+      100
+    );
 
-    return response.results
+    return (response.results || [])
       .map((page: any) => {
-        const slug = page.properties.Slug?.rich_text?.[0]?.plain_text || page.id;
-        return slug;
+        return page.properties.Slug?.rich_text?.[0]?.plain_text || page.id;
       })
       .filter(Boolean);
   } catch (error) {
@@ -204,11 +226,10 @@ export async function getAllPostSlugs(): Promise<string[]> {
 /**
  * Convert Notion page to post object
  */
-async function convertPageToPost(page: any): Promise<NotionPost | null> {
+async function convertPageToPost(page: any, includeContent = false): Promise<NotionPost | null> {
   try {
     const properties = page.properties;
 
-    // Support both English and Japanese property names
     const title =
       properties.Title?.title?.[0]?.plain_text ||
       properties.Name?.title?.[0]?.plain_text ||
@@ -227,12 +248,14 @@ async function convertPageToPost(page: any): Promise<NotionPost | null> {
     const excerpt = properties.Excerpt?.rich_text?.[0]?.plain_text;
     const published = properties.Published?.checkbox ?? true;
 
-    // Convert page content to Markdown
     let content = '';
-    const n2m = getN2MClient();
-    if (n2m) {
-      const mdBlocks = await n2m.pageToMarkdown(page.id);
-      content = n2m.toMarkdownString(mdBlocks).parent;
+    if (includeContent) {
+      try {
+        const blocks = await getPageBlocks(page.id);
+        content = blocksToText(blocks);
+      } catch (e) {
+        console.warn('[Notion] Failed to fetch page content:', e);
+      }
     }
 
     return {
