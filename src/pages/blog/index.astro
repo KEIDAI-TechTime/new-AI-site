@@ -23,6 +23,10 @@ const notePostsConverted: NotionPost[] = notePosts.map(post => ({
 // Merge and sort by date (newest first)
 const allPosts = [...notionPosts.map(p => ({ ...p, source: 'notion' as const })), ...notePostsConverted]
   .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+// Serialize posts data for client-side filtering
+const postsData = JSON.stringify(allPosts);
+const categoriesData = JSON.stringify(BLOG_CATEGORIES);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -37,57 +41,127 @@ const allPosts = [...notionPosts.map(p => ({ ...p, source: 'notion' as const }))
         </div>
 
         <!-- Category Filter -->
-        <div class="flex flex-wrap gap-3 justify-center mb-12">
-          <a href="/blog" class="px-4 py-2 rounded-full text-sm font-medium bg-[#00D9FF] text-[#0A1628]">すべて</a>
+        <div class="flex flex-wrap gap-3 justify-center mb-12" id="category-filter">
+          <button data-category="" class="category-btn active px-4 py-2 rounded-full text-sm font-medium bg-[#00D9FF] text-[#0A1628]">すべて</button>
           {Object.values(BLOG_CATEGORIES).map((cat) => (
-            <a href={`/blog?category=${cat.slug}`} class="px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-gray-300 hover:bg-white/20 transition-all">
+            <button data-category={cat.slug} class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-gray-300 hover:bg-white/20 transition-all">
               {cat.name}
-            </a>
+            </button>
           ))}
         </div>
 
         <!-- Blog Posts Grid -->
-        {allPosts.length === 0 ? (
-          <div class="text-center py-20">
-            <i class="ri-article-line text-6xl text-gray-600 mb-4"></i>
-            <p class="text-gray-400">記事が見つかりませんでした</p>
-          </div>
-        ) : (
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {allPosts.map((post) => (
-              <a
-                href={post.source === 'note' ? post.externalUrl : `/blog/${post.slug}`}
-                target={post.source === 'note' ? '_blank' : '_self'}
-                rel={post.source === 'note' ? 'noopener noreferrer' : undefined}
-                class="group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/50 transition-all duration-300 hover:-translate-y-1"
-              >
-                {post.coverImage && (
-                  <div class="aspect-video overflow-hidden bg-white/5">
-                    <img src={post.coverImage} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+        <div id="posts-container">
+          {allPosts.length === 0 ? (
+            <div class="text-center py-20">
+              <i class="ri-article-line text-6xl text-gray-600 mb-4"></i>
+              <p class="text-gray-400">記事が見つかりませんでした</p>
+            </div>
+          ) : (
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="posts-grid">
+              {allPosts.map((post) => (
+                <a
+                  href={post.source === 'note' ? post.externalUrl : `/blog/${post.slug}`}
+                  target={post.source === 'note' ? '_blank' : '_self'}
+                  rel={post.source === 'note' ? 'noopener noreferrer' : undefined}
+                  class="post-card group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/50 transition-all duration-300 hover:-translate-y-1"
+                  data-category={post.category || ''}
+                >
+                  {post.coverImage && (
+                    <div class="aspect-video overflow-hidden bg-white/5">
+                      <img src={post.coverImage} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    </div>
+                  )}
+                  <div class="p-6">
+                    <div class="flex items-center gap-3 mb-3">
+                      <span class="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
+                      {post.category && BLOG_CATEGORIES[post.category] && (
+                        <span class={`px-2 py-1 text-xs rounded-full ${post.source === 'note' ? 'bg-[#41C9B4]/10 text-[#41C9B4]' : 'bg-[#00D9FF]/10 text-[#00D9FF]'}`}>
+                          {post.source === 'note' && <i class="ri-external-link-line mr-1"></i>}
+                          {BLOG_CATEGORIES[post.category].name}
+                        </span>
+                      )}
+                    </div>
+                    <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">{post.title}</h3>
+                    <p class="text-sm text-gray-400 line-clamp-3">{post.excerpt || post.content.substring(0, 150) + '...'}</p>
+                    <div class="mt-4 flex items-center text-[#00D9FF] text-sm font-medium">
+                      <span>{post.source === 'note' ? 'noteで読む' : '続きを読む'}</span>
+                      <i class={`ml-1 group-hover:translate-x-1 transition-transform ${post.source === 'note' ? 'ri-external-link-line' : 'ri-arrow-right-line'}`}></i>
+                    </div>
                   </div>
-                )}
-                <div class="p-6">
-                  <div class="flex items-center gap-3 mb-3">
-                    <span class="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
-                    {post.category && BLOG_CATEGORIES[post.category] && (
-                      <span class={`px-2 py-1 text-xs rounded-full ${post.source === 'note' ? 'bg-[#41C9B4]/10 text-[#41C9B4]' : 'bg-[#00D9FF]/10 text-[#00D9FF]'}`}>
-                        {post.source === 'note' && <i class="ri-external-link-line mr-1"></i>}
-                        {BLOG_CATEGORIES[post.category].name}
-                      </span>
-                    )}
-                  </div>
-                  <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">{post.title}</h3>
-                  <p class="text-sm text-gray-400 line-clamp-3">{post.excerpt || post.content.substring(0, 150) + '...'}</p>
-                  <div class="mt-4 flex items-center text-[#00D9FF] text-sm font-medium">
-                    <span>{post.source === 'note' ? 'noteで読む' : '続きを読む'}</span>
-                    <i class={`ml-1 group-hover:translate-x-1 transition-transform ${post.source === 'note' ? 'ri-external-link-line' : 'ri-arrow-right-line'}`}></i>
-                  </div>
-                </div>
-              </a>
-            ))}
-          </div>
-        )}
+                </a>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <!-- Empty State (hidden by default) -->
+        <div id="empty-state" class="hidden text-center py-20">
+          <i class="ri-article-line text-6xl text-gray-600 mb-4"></i>
+          <p class="text-gray-400">このカテゴリの記事はありません</p>
+        </div>
       </div>
     </div>
   </div>
 </BaseLayout>
+
+<script>
+  // Category filtering
+  document.addEventListener('DOMContentLoaded', () => {
+    const buttons = document.querySelectorAll('.category-btn');
+    const cards = document.querySelectorAll('.post-card');
+    const emptyState = document.getElementById('empty-state');
+    const postsGrid = document.getElementById('posts-grid');
+
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = btn.getAttribute('data-category');
+
+        // Update button styles
+        buttons.forEach(b => {
+          b.classList.remove('active', 'bg-[#00D9FF]', 'text-[#0A1628]');
+          b.classList.add('bg-white/10', 'text-gray-300');
+        });
+        btn.classList.add('active', 'bg-[#00D9FF]', 'text-[#0A1628]');
+        btn.classList.remove('bg-white/10', 'text-gray-300');
+
+        // Filter cards
+        let visibleCount = 0;
+        cards.forEach(card => {
+          const cardCategory = card.getAttribute('data-category');
+          if (!category || cardCategory === category) {
+            (card as HTMLElement).style.display = '';
+            visibleCount++;
+          } else {
+            (card as HTMLElement).style.display = 'none';
+          }
+        });
+
+        // Show/hide empty state
+        if (emptyState && postsGrid) {
+          if (visibleCount === 0) {
+            emptyState.classList.remove('hidden');
+            postsGrid.classList.add('hidden');
+          } else {
+            emptyState.classList.add('hidden');
+            postsGrid.classList.remove('hidden');
+          }
+        }
+
+        // Update URL without reload
+        const url = category ? `/blog?category=${category}` : '/blog';
+        history.pushState({}, '', url);
+      });
+    });
+
+    // Handle initial URL parameter
+    const params = new URLSearchParams(window.location.search);
+    const initialCategory = params.get('category');
+    if (initialCategory) {
+      const targetBtn = document.querySelector(`[data-category="${initialCategory}"]`);
+      if (targetBtn) {
+        (targetBtn as HTMLButtonElement).click();
+      }
+    }
+  });
+</script>
