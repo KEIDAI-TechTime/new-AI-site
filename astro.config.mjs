@@ -29,10 +29,6 @@ export default defineConfig({
     },
     ssr: {
       noExternal: ['react-markdown']
-    },
-    define: {
-      'process.env.NOTION_API_KEY': JSON.stringify(process.env.NOTION_API_KEY),
-      'process.env.NOTION_DATABASE_ID': JSON.stringify(process.env.NOTION_DATABASE_ID),
     }
   }
 });

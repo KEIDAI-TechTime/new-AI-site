@@ -33,8 +33,14 @@ export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
  * Get environment variables (called at runtime to ensure they're available)
  */
 function getEnvVars() {
-  const apiKey = process.env.NOTION_API_KEY || '';
-  const databaseId = process.env.NOTION_DATABASE_ID || '';
+  // Try multiple methods to get env vars (Astro SSR, Vite, Node.js)
+  // @ts-ignore
+  const apiKey = import.meta.env?.NOTION_API_KEY || process.env?.NOTION_API_KEY || '';
+  // @ts-ignore
+  const databaseId = import.meta.env?.NOTION_DATABASE_ID || process.env?.NOTION_DATABASE_ID || '';
+
+  console.log('[Notion] Env check - API key exists:', !!apiKey, 'DB ID exists:', !!databaseId);
+
   return { apiKey, databaseId };
 }
 
