@@ -46,7 +46,7 @@ const description = post.excerpt || post.content.substring(0, 160);
         )}
 
         <!-- Content -->
-        <div class="prose prose-invert prose-lg max-w-none
+        <div class="prose prose-invert prose-lg max-w-none text-gray-300
           prose-headings:text-white prose-headings:font-bold
           prose-p:text-gray-300 prose-p:leading-relaxed
           prose-a:text-[#00D9FF] prose-a:no-underline hover:prose-a:underline
@@ -55,7 +55,8 @@ const description = post.excerpt || post.content.substring(0, 160);
           prose-pre:bg-[#0A1628] prose-pre:border prose-pre:border-white/10
           prose-ul:text-gray-300 prose-ol:text-gray-300
           prose-li:text-gray-300
-          prose-blockquote:border-[#00D9FF] prose-blockquote:text-gray-400"
+          prose-blockquote:border-[#00D9FF] prose-blockquote:text-gray-400
+          [&>*]:text-gray-300 leading-relaxed"
           set:html={post.content.replace(/\n/g, '<br />')} />
 
         <!-- Back Link -->
