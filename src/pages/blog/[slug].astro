@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navigation from '@/components/Navigation.astro';
-import { getPost, getAllPostSlugs, BLOG_CATEGORIES, formatDate } from '@/lib/notion';
+import { getPost, getAllPostSlugs, BLOG_CATEGORIES, formatDate, type TocItem } from '@/lib/notion';
 
 export async function getStaticPaths() {
   const slugs = await getAllPostSlugs();
@@ -45,6 +45,25 @@ const description = post.excerpt || post.content.substring(0, 160);
           </div>
         )}
 
+        <!-- Table of Contents -->
+        {post.toc && post.toc.length > 0 && (
+          <nav class="toc-container mb-12 p-6 bg-gray-50 rounded-xl border border-gray-200">
+            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <i class="ri-list-unordered text-[#00D9FF]"></i>
+              目次
+            </h2>
+            <ul class="toc-list space-y-2">
+              {post.toc.map((item: TocItem) => (
+                <li class={`toc-item toc-level-${item.level}`}>
+                  <a href={`#${item.id}`} class="text-gray-600 hover:text-[#00D9FF] transition-colors">
+                    {item.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
+
         <!-- Content -->
         <div class="blog-content"
           set:html={post.content} />
@@ -62,6 +81,68 @@ const description = post.excerpt || post.content.substring(0, 160);
 </BaseLayout>
 
 <style>
+  /* Table of Contents */
+  .toc-list {
+    list-style: none !important;
+    padding-left: 0 !important;
+  }
+
+  .toc-item {
+    position: relative;
+    padding-left: 1rem;
+  }
+
+  .toc-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.6em;
+    width: 6px;
+    height: 6px;
+    background: #00D9FF;
+    border-radius: 50%;
+  }
+
+  .toc-level-2 {
+    padding-left: 1.5rem;
+  }
+
+  .toc-level-2::before {
+    width: 5px;
+    height: 5px;
+    background: #6b7280;
+  }
+
+  .toc-level-3 {
+    padding-left: 2.5rem;
+  }
+
+  .toc-level-3::before {
+    width: 4px;
+    height: 4px;
+    background: #9ca3af;
+  }
+
+  .toc-item a {
+    text-decoration: none;
+    line-height: 1.6;
+    display: inline-block;
+  }
+
+  .toc-level-1 a {
+    font-weight: 600;
+    font-size: 0.95rem;
+  }
+
+  .toc-level-2 a {
+    font-size: 0.9rem;
+  }
+
+  .toc-level-3 a {
+    font-size: 0.85rem;
+  }
+
+  /* Blog Content */
   .blog-content {
     color: #1f2937 !important;
     font-size: 1.125rem !important;
