@@ -94,9 +94,40 @@ async function queryDatabase(databaseId: string, filter?: any, sorts?: any[], pa
 /**
  * Get page blocks (for content)
  */
+/**
+ * Get all blocks from a page with pagination and nested children
+ */
 async function getPageBlocks(pageId: string): Promise<any[]> {
-  const response = await notionFetch(`/blocks/${pageId}/children?page_size=100`);
-  return response.results || [];
+  const allBlocks: any[] = [];
+  let cursor: string | undefined = undefined;
+
+  // Fetch all blocks with pagination
+  do {
+    const url = cursor
+      ? `/blocks/${pageId}/children?page_size=100&start_cursor=${cursor}`
+      : `/blocks/${pageId}/children?page_size=100`;
+
+    const response = await notionFetch(url);
+    const blocks = response.results || [];
+
+    // Fetch children for blocks that have them
+    for (const block of blocks) {
+      if (block.has_children && block.type !== 'child_page' && block.type !== 'child_database') {
+        try {
+          const children = await getPageBlocks(block.id);
+          block.children = children;
+        } catch (e) {
+          console.warn(`[Notion] Failed to fetch children for block ${block.id}:`, e);
+        }
+      }
+    }
+
+    allBlocks.push(...blocks);
+    cursor = response.has_more ? response.next_cursor : undefined;
+  } while (cursor);
+
+  console.log(`[Notion] Fetched ${allBlocks.length} blocks from page ${pageId}`);
+  return allBlocks;
 }
 
 /**
@@ -154,11 +185,10 @@ function generateSlug(text: string): string {
  * Convert blocks to HTML content with formatting preserved
  * Returns both HTML and table of contents
  */
-function blocksToHtml(blocks: any[]): { html: string; toc: TocItem[] } {
+function blocksToHtml(blocks: any[], headingCounter = { value: 0 }): { html: string; toc: TocItem[] } {
   const htmlParts: string[] = [];
   const toc: TocItem[] = [];
   let currentList: { type: string; items: string[] } | null = null;
-  let headingCounter = 0;
 
   const flushList = () => {
     if (currentList) {
@@ -168,13 +198,28 @@ function blocksToHtml(blocks: any[]): { html: string; toc: TocItem[] } {
     }
   };
 
+  // Helper to process children
+  const processChildren = (block: any): string => {
+    if (block.children && block.children.length > 0) {
+      const childResult = blocksToHtml(block.children, headingCounter);
+      toc.push(...childResult.toc);
+      return childResult.html;
+    }
+    return '';
+  };
+
   for (const block of blocks) {
     const type = block.type;
     const content = block[type];
 
-    // Handle list items
+    // Handle list items with nested children
     if (type === 'bulleted_list_item' || type === 'numbered_list_item') {
-      const itemHtml = richTextToHtml(content?.rich_text);
+      let itemHtml = richTextToHtml(content?.rich_text);
+      // Add nested children if present
+      const childrenHtml = processChildren(block);
+      if (childrenHtml) {
+        itemHtml += childrenHtml;
+      }
       if (currentList && currentList.type === type) {
         currentList.items.push(itemHtml);
       } else {
@@ -188,10 +233,14 @@ function blocksToHtml(blocks: any[]): { html: string; toc: TocItem[] } {
     flushList();
 
     switch (type) {
-      case 'paragraph':
+      case 'paragraph': {
         const pText = richTextToHtml(content?.rich_text);
         if (pText) htmlParts.push(`<p>${pText}</p>`);
+        // Handle paragraph with children (indented content)
+        const pChildren = processChildren(block);
+        if (pChildren) htmlParts.push(`<div class="indent">${pChildren}</div>`);
         break;
+      }
 
       case 'heading_1':
       case 'heading_2':
@@ -199,16 +248,20 @@ function blocksToHtml(blocks: any[]): { html: string; toc: TocItem[] } {
         const level = parseInt(type.split('_')[1]);
         const plainText = content?.rich_text?.map((t: any) => t.plain_text).join('') || '';
         const headingHtml = richTextToHtml(content?.rich_text);
-        const id = `heading-${headingCounter++}-${generateSlug(plainText)}`;
+        const id = `heading-${headingCounter.value++}-${generateSlug(plainText)}`;
 
         toc.push({ id, text: plainText, level });
         htmlParts.push(`<h${level} id="${id}">${headingHtml}</h${level}>`);
         break;
       }
 
-      case 'quote':
-        htmlParts.push(`<blockquote>${richTextToHtml(content?.rich_text)}</blockquote>`);
+      case 'quote': {
+        let quoteHtml = richTextToHtml(content?.rich_text);
+        const quoteChildren = processChildren(block);
+        if (quoteChildren) quoteHtml += quoteChildren;
+        htmlParts.push(`<blockquote>${quoteHtml}</blockquote>`);
         break;
+      }
 
       case 'code':
         const code = content?.rich_text?.map((t: any) => t.plain_text).join('') || '';
@@ -220,16 +273,20 @@ function blocksToHtml(blocks: any[]): { html: string; toc: TocItem[] } {
         htmlParts.push('<hr />');
         break;
 
-      case 'callout':
+      case 'callout': {
         const calloutText = richTextToHtml(content?.rich_text);
         const emoji = content?.icon?.emoji || '💡';
-        htmlParts.push(`<div class="callout"><span class="callout-icon">${emoji}</span><p>${calloutText}</p></div>`);
+        const calloutChildren = processChildren(block);
+        htmlParts.push(`<div class="callout"><span class="callout-icon">${emoji}</span><div><p>${calloutText}</p>${calloutChildren}</div></div>`);
         break;
+      }
 
-      case 'toggle':
+      case 'toggle': {
         const toggleText = richTextToHtml(content?.rich_text);
-        htmlParts.push(`<details><summary>${toggleText}</summary></details>`);
+        const toggleChildren = processChildren(block);
+        htmlParts.push(`<details><summary>${toggleText}</summary>${toggleChildren}</details>`);
         break;
+      }
 
       case 'image':
         let imageUrl = '';
@@ -244,12 +301,56 @@ function blocksToHtml(blocks: any[]): { html: string; toc: TocItem[] } {
         }
         break;
 
+      case 'table': {
+        // Handle table blocks
+        const tableChildren = block.children || [];
+        if (tableChildren.length > 0) {
+          let tableHtml = '<table>';
+          tableChildren.forEach((row: any, rowIndex: number) => {
+            if (row.type === 'table_row') {
+              const cells = row.table_row?.cells || [];
+              const cellTag = rowIndex === 0 && content?.has_column_header ? 'th' : 'td';
+              tableHtml += '<tr>';
+              cells.forEach((cell: any) => {
+                const cellContent = richTextToHtml(cell);
+                tableHtml += `<${cellTag}>${cellContent}</${cellTag}>`;
+              });
+              tableHtml += '</tr>';
+            }
+          });
+          tableHtml += '</table>';
+          htmlParts.push(tableHtml);
+        }
+        break;
+      }
+
+      case 'bookmark': {
+        const bookmarkUrl = content?.url || '';
+        const bookmarkCaption = content?.caption ? richTextToHtml(content.caption) : bookmarkUrl;
+        if (bookmarkUrl) {
+          htmlParts.push(`<p><a href="${bookmarkUrl}" target="_blank" rel="noopener noreferrer">${bookmarkCaption}</a></p>`);
+        }
+        break;
+      }
+
+      case 'embed':
+      case 'video': {
+        const embedUrl = content?.url || content?.external?.url || '';
+        if (embedUrl) {
+          htmlParts.push(`<div class="embed"><iframe src="${embedUrl}" frameborder="0" allowfullscreen></iframe></div>`);
+        }
+        break;
+      }
+
       default:
         // For unknown block types, try to extract text
         if (content?.rich_text) {
           const text = richTextToHtml(content.rich_text);
           if (text) htmlParts.push(`<p>${text}</p>`);
         }
+        // Still process children for unknown types
+        const defaultChildren = processChildren(block);
+        if (defaultChildren) htmlParts.push(defaultChildren);
     }
   }
 
