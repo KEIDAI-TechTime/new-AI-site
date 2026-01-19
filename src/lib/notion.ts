@@ -11,6 +11,7 @@ export interface NotionPost {
   coverImage?: string;
   excerpt?: string;
   content: string;
+  toc?: TocItem[];
   createdAt: string;
   updatedAt: string;
   published: boolean;
@@ -131,17 +132,38 @@ function richTextToHtml(richText: any[]): string {
   }).join('');
 }
 
+export interface TocItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
+/**
+ * Generate slug from text for heading IDs
+ */
+function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\w\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
 /**
  * Convert blocks to HTML content with formatting preserved
+ * Returns both HTML and table of contents
  */
-function blocksToHtml(blocks: any[]): string {
-  const html: string[] = [];
+function blocksToHtml(blocks: any[]): { html: string; toc: TocItem[] } {
+  const htmlParts: string[] = [];
+  const toc: TocItem[] = [];
   let currentList: { type: string; items: string[] } | null = null;
+  let headingCounter = 0;
 
   const flushList = () => {
     if (currentList) {
       const tag = currentList.type === 'bulleted_list_item' ? 'ul' : 'ol';
-      html.push(`<${tag}>${currentList.items.map(item => `<li>${item}</li>`).join('')}</${tag}>`);
+      htmlParts.push(`<${tag}>${currentList.items.map(item => `<li>${item}</li>`).join('')}</${tag}>`);
       currentList = null;
     }
   };
@@ -168,44 +190,45 @@ function blocksToHtml(blocks: any[]): string {
     switch (type) {
       case 'paragraph':
         const pText = richTextToHtml(content?.rich_text);
-        if (pText) html.push(`<p>${pText}</p>`);
+        if (pText) htmlParts.push(`<p>${pText}</p>`);
         break;
 
       case 'heading_1':
-        html.push(`<h1>${richTextToHtml(content?.rich_text)}</h1>`);
-        break;
-
       case 'heading_2':
-        html.push(`<h2>${richTextToHtml(content?.rich_text)}</h2>`);
-        break;
+      case 'heading_3': {
+        const level = parseInt(type.split('_')[1]);
+        const plainText = content?.rich_text?.map((t: any) => t.plain_text).join('') || '';
+        const headingHtml = richTextToHtml(content?.rich_text);
+        const id = `heading-${headingCounter++}-${generateSlug(plainText)}`;
 
-      case 'heading_3':
-        html.push(`<h3>${richTextToHtml(content?.rich_text)}</h3>`);
+        toc.push({ id, text: plainText, level });
+        htmlParts.push(`<h${level} id="${id}">${headingHtml}</h${level}>`);
         break;
+      }
 
       case 'quote':
-        html.push(`<blockquote>${richTextToHtml(content?.rich_text)}</blockquote>`);
+        htmlParts.push(`<blockquote>${richTextToHtml(content?.rich_text)}</blockquote>`);
         break;
 
       case 'code':
         const code = content?.rich_text?.map((t: any) => t.plain_text).join('') || '';
         const lang = content?.language || '';
-        html.push(`<pre><code class="language-${lang}">${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`);
+        htmlParts.push(`<pre><code class="language-${lang}">${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`);
         break;
 
       case 'divider':
-        html.push('<hr />');
+        htmlParts.push('<hr />');
         break;
 
       case 'callout':
         const calloutText = richTextToHtml(content?.rich_text);
         const emoji = content?.icon?.emoji || '💡';
-        html.push(`<div class="callout"><span class="callout-icon">${emoji}</span><p>${calloutText}</p></div>`);
+        htmlParts.push(`<div class="callout"><span class="callout-icon">${emoji}</span><p>${calloutText}</p></div>`);
         break;
 
       case 'toggle':
         const toggleText = richTextToHtml(content?.rich_text);
-        html.push(`<details><summary>${toggleText}</summary></details>`);
+        htmlParts.push(`<details><summary>${toggleText}</summary></details>`);
         break;
 
       case 'image':
@@ -217,7 +240,7 @@ function blocksToHtml(blocks: any[]): string {
         }
         if (imageUrl) {
           const caption = content?.caption ? richTextToHtml(content.caption) : '';
-          html.push(`<figure><img src="${imageUrl}" alt="${caption}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`);
+          htmlParts.push(`<figure><img src="${imageUrl}" alt="${caption}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`);
         }
         break;
 
@@ -225,7 +248,7 @@ function blocksToHtml(blocks: any[]): string {
         // For unknown block types, try to extract text
         if (content?.rich_text) {
           const text = richTextToHtml(content.rich_text);
-          if (text) html.push(`<p>${text}</p>`);
+          if (text) htmlParts.push(`<p>${text}</p>`);
         }
     }
   }
@@ -233,7 +256,7 @@ function blocksToHtml(blocks: any[]): string {
   // Flush any remaining list
   flushList();
 
-  return html.join('\n');
+  return { html: htmlParts.join('\n'), toc };
 }
 
 /**
@@ -369,10 +392,13 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
     const published = properties.Published?.checkbox ?? true;
 
     let content = '';
+    let toc: TocItem[] = [];
     if (includeContent) {
       try {
         const blocks = await getPageBlocks(page.id);
-        content = blocksToHtml(blocks);
+        const result = blocksToHtml(blocks);
+        content = result.html;
+        toc = result.toc;
       } catch (e) {
         console.warn('[Notion] Failed to fetch page content:', e);
       }
@@ -386,6 +412,7 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
       coverImage,
       excerpt,
       content,
+      toc,
       createdAt: page.created_time,
       updatedAt: page.last_edited_time,
       published,
