@@ -193,7 +193,9 @@ function blocksToHtml(blocks: any[], headingCounter = { value: 0 }): { html: str
   const flushList = () => {
     if (currentList) {
       const tag = currentList.type === 'bulleted_list_item' ? 'ul' : 'ol';
-      htmlParts.push(`<${tag}>${currentList.items.map(item => `<li>${item}</li>`).join('')}</${tag}>`);
+      const listHtml = `<${tag}>${currentList.items.map(item => `<li>${item}</li>`).join('')}</${tag}>`;
+      console.log(`[Notion] Flushing list with ${currentList.items.length} items: ${listHtml.substring(0, 100)}...`);
+      htmlParts.push(listHtml);
       currentList = null;
     }
   };
@@ -212,9 +214,13 @@ function blocksToHtml(blocks: any[], headingCounter = { value: 0 }): { html: str
     const type = block.type;
     const content = block[type];
 
+    // Debug: log block types
+    console.log(`[Notion] Block type: ${type}`);
+
     // Handle list items with nested children
     if (type === 'bulleted_list_item' || type === 'numbered_list_item') {
       let itemHtml = richTextToHtml(content?.rich_text);
+      console.log(`[Notion] List item: ${itemHtml.substring(0, 50)}...`);
       // Add nested children if present
       const childrenHtml = processChildren(block);
       if (childrenHtml) {
