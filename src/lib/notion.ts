@@ -99,21 +99,141 @@ async function getPageBlocks(pageId: string): Promise<any[]> {
 }
 
 /**
- * Convert blocks to simple text content
+ * Convert rich text to HTML with formatting
  */
-function blocksToText(blocks: any[]): string {
-  return blocks
-    .map((block: any) => {
-      const type = block.type;
-      const content = block[type];
+function richTextToHtml(richText: any[]): string {
+  if (!richText || !Array.isArray(richText)) return '';
 
-      if (content?.rich_text) {
-        return content.rich_text.map((t: any) => t.plain_text).join('');
+  return richText.map((text: any) => {
+    let content = text.plain_text || '';
+
+    // Escape HTML
+    content = content
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+
+    // Apply annotations
+    if (text.annotations) {
+      if (text.annotations.bold) content = `<strong>${content}</strong>`;
+      if (text.annotations.italic) content = `<em>${content}</em>`;
+      if (text.annotations.strikethrough) content = `<del>${content}</del>`;
+      if (text.annotations.underline) content = `<u>${content}</u>`;
+      if (text.annotations.code) content = `<code>${content}</code>`;
+    }
+
+    // Handle links
+    if (text.href) {
+      content = `<a href="${text.href}" target="_blank" rel="noopener noreferrer">${content}</a>`;
+    }
+
+    return content;
+  }).join('');
+}
+
+/**
+ * Convert blocks to HTML content with formatting preserved
+ */
+function blocksToHtml(blocks: any[]): string {
+  const html: string[] = [];
+  let currentList: { type: string; items: string[] } | null = null;
+
+  const flushList = () => {
+    if (currentList) {
+      const tag = currentList.type === 'bulleted_list_item' ? 'ul' : 'ol';
+      html.push(`<${tag}>${currentList.items.map(item => `<li>${item}</li>`).join('')}</${tag}>`);
+      currentList = null;
+    }
+  };
+
+  for (const block of blocks) {
+    const type = block.type;
+    const content = block[type];
+
+    // Handle list items
+    if (type === 'bulleted_list_item' || type === 'numbered_list_item') {
+      const itemHtml = richTextToHtml(content?.rich_text);
+      if (currentList && currentList.type === type) {
+        currentList.items.push(itemHtml);
+      } else {
+        flushList();
+        currentList = { type, items: [itemHtml] };
       }
-      return '';
-    })
-    .filter(Boolean)
-    .join('\n\n');
+      continue;
+    }
+
+    // Flush any pending list before other content
+    flushList();
+
+    switch (type) {
+      case 'paragraph':
+        const pText = richTextToHtml(content?.rich_text);
+        if (pText) html.push(`<p>${pText}</p>`);
+        break;
+
+      case 'heading_1':
+        html.push(`<h1>${richTextToHtml(content?.rich_text)}</h1>`);
+        break;
+
+      case 'heading_2':
+        html.push(`<h2>${richTextToHtml(content?.rich_text)}</h2>`);
+        break;
+
+      case 'heading_3':
+        html.push(`<h3>${richTextToHtml(content?.rich_text)}</h3>`);
+        break;
+
+      case 'quote':
+        html.push(`<blockquote>${richTextToHtml(content?.rich_text)}</blockquote>`);
+        break;
+
+      case 'code':
+        const code = content?.rich_text?.map((t: any) => t.plain_text).join('') || '';
+        const lang = content?.language || '';
+        html.push(`<pre><code class="language-${lang}">${code.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`);
+        break;
+
+      case 'divider':
+        html.push('<hr />');
+        break;
+
+      case 'callout':
+        const calloutText = richTextToHtml(content?.rich_text);
+        const emoji = content?.icon?.emoji || '💡';
+        html.push(`<div class="callout"><span class="callout-icon">${emoji}</span><p>${calloutText}</p></div>`);
+        break;
+
+      case 'toggle':
+        const toggleText = richTextToHtml(content?.rich_text);
+        html.push(`<details><summary>${toggleText}</summary></details>`);
+        break;
+
+      case 'image':
+        let imageUrl = '';
+        if (content?.type === 'external') {
+          imageUrl = content.external?.url;
+        } else if (content?.type === 'file') {
+          imageUrl = content.file?.url;
+        }
+        if (imageUrl) {
+          const caption = content?.caption ? richTextToHtml(content.caption) : '';
+          html.push(`<figure><img src="${imageUrl}" alt="${caption}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`);
+        }
+        break;
+
+      default:
+        // For unknown block types, try to extract text
+        if (content?.rich_text) {
+          const text = richTextToHtml(content.rich_text);
+          if (text) html.push(`<p>${text}</p>`);
+        }
+    }
+  }
+
+  // Flush any remaining list
+  flushList();
+
+  return html.join('\n');
 }
 
 /**
@@ -252,7 +372,7 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
     if (includeContent) {
       try {
         const blocks = await getPageBlocks(page.id);
-        content = blocksToText(blocks);
+        content = blocksToHtml(blocks);
       } catch (e) {
         console.warn('[Notion] Failed to fetch page content:', e);
       }
