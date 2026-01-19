@@ -13,7 +13,7 @@ const {
   title,
   description,
   canonical = Astro.url.href,
-  ogImage = 'https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png',
+  ogImage = 'https://techtime-jp.com/images/logo-white.png',
   noIndex = false
 } = Astro.props;
 
@@ -25,8 +25,8 @@ const siteUrl = 'https://techtime-jp.com';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/png" href="https://www.techtime-link.com/wp-content/uploads/2025/06/favicon.png" />
-    <link rel="apple-touch-icon" href="https://www.techtime-link.com/wp-content/uploads/2025/06/favicon.png" />
+    <link rel="icon" type="image/png" href="/images/logo.png" />
+    <link rel="apple-touch-icon" href="/images/logo.png" />
 
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -66,7 +66,7 @@ const siteUrl = 'https://techtime-jp.com';
       "@type": "Organization",
       "name": "TechTime株式会社",
       "url": siteUrl,
-      "logo": "https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png",
+      "logo": "https://techtime-jp.com/images/logo-white.png",
       "description": "AI駆動開発で実現する圧倒的低価格の基幹システム開発会社",
       "foundingDate": "2020-04-01",
       "address": [
@@ -119,7 +119,7 @@ const siteUrl = 'https://techtime-jp.com';
           <div>
             <div class="flex items-center gap-3 mb-4">
               <img
-                src="https://www.techtime-link.com/wp-content/uploads/2025/06/rogo_ws.png"
+                src="/images/logo-white.png"
                 alt="TechTime"
                 class="h-10 w-auto"
               />
