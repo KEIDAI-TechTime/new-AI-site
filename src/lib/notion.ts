@@ -229,6 +229,28 @@ function blocksToHtml(blocks: any[], headingCounter = { value: 0 }): { html: str
       continue;
     }
 
+    // Handle quote blocks that start with "- " or "・" as list items
+    if (type === 'quote') {
+      const plainText = content?.rich_text?.map((t: any) => t.plain_text).join('') || '';
+      if (plainText.startsWith('- ') || plainText.startsWith('・')) {
+        // Remove the leading "- " or "・" and convert to list item
+        let itemHtml = richTextToHtml(content?.rich_text);
+        // Remove leading "- " or "・" from the HTML
+        itemHtml = itemHtml.replace(/^[-・]\s*/, '');
+        const childrenHtml = processChildren(block);
+        if (childrenHtml) {
+          itemHtml += childrenHtml;
+        }
+        if (currentList && currentList.type === 'bulleted_list_item') {
+          currentList.items.push(itemHtml);
+        } else {
+          flushList();
+          currentList = { type: 'bulleted_list_item', items: [itemHtml] };
+        }
+        continue;
+      }
+    }
+
     // Flush any pending list before other content
     flushList();
 
