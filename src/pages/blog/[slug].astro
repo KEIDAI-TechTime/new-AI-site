@@ -1,7 +1,8 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navigation from '@/components/Navigation.astro';
-import { getPost, getAllPostSlugs, BLOG_CATEGORIES, formatDate, type TocItem } from '@/lib/notion';
+import { getPost, getAllPostSlugs, getPageRecordMap, BLOG_CATEGORIES, formatDate } from '@/lib/notion';
+import NotionPage from '@/components/NotionPage.astro';
 
 export async function getStaticPaths() {
   const slugs = await getAllPostSlugs();
@@ -15,8 +16,11 @@ if (!post) {
   return Astro.redirect('/blog');
 }
 
+// Get recordMap for react-notion-x
+const recordMap = await getPageRecordMap(post.id);
+
 const title = `${post.title} | TechTime株式会社`;
-const description = post.excerpt || post.content.substring(0, 160);
+const description = post.excerpt || post.title;
 ---
 
 <BaseLayout title={title} description={description} ogImage={post.coverImage}>
@@ -45,28 +49,12 @@ const description = post.excerpt || post.content.substring(0, 160);
           </div>
         )}
 
-        <!-- Table of Contents -->
-        {post.toc && post.toc.length > 0 && (
-          <nav class="toc-container mb-12 p-6 bg-gray-50 rounded-xl border border-gray-200">
-            <h2 class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <i class="ri-list-unordered text-[#00D9FF]"></i>
-              目次
-            </h2>
-            <ul class="toc-list space-y-2">
-              {post.toc.map((item: TocItem) => (
-                <li class={`toc-item toc-level-${item.level}`}>
-                  <a href={`#${item.id}`} class="text-gray-600 hover:text-[#00D9FF] transition-colors">
-                    {item.text}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
+        <!-- Content rendered by react-notion-x -->
+        {recordMap ? (
+          <NotionPage recordMap={recordMap} pageId={post.id} />
+        ) : (
+          <div class="blog-content" set:html={post.content} />
         )}
-
-        <!-- Content -->
-        <div class="blog-content"
-          set:html={post.content} />
 
         <!-- Back Link -->
         <div class="mt-16 pt-8 border-t border-gray-200">
@@ -80,173 +68,123 @@ const description = post.excerpt || post.content.substring(0, 160);
   </div>
 </BaseLayout>
 
-<style>
-  /* Table of Contents */
-  .toc-list {
-    list-style: none !important;
-    padding-left: 0 !important;
+<style is:global>
+  /* react-notion-x styles override */
+  .notion-page {
+    padding: 0 !important;
+    min-height: auto !important;
+    width: 100% !important;
   }
 
-  .toc-item {
-    position: relative;
-    padding-left: 1rem;
+  .notion-page-content {
+    padding: 0 !important;
   }
 
-  .toc-item::before {
-    content: '';
-    position: absolute;
-    left: 0;
-    top: 0.6em;
-    width: 6px;
-    height: 6px;
-    background: #00D9FF;
-    border-radius: 50%;
+  /* Reduce block spacing */
+  .notion-block {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
   }
 
-  .toc-level-2 {
-    padding-left: 1.5rem;
-  }
-
-  .toc-level-2::before {
-    width: 5px;
-    height: 5px;
-    background: #6b7280;
-  }
-
-  .toc-level-3 {
-    padding-left: 2.5rem;
-  }
-
-  .toc-level-3::before {
-    width: 4px;
-    height: 4px;
-    background: #9ca3af;
-  }
-
-  .toc-item a {
-    text-decoration: none;
-    line-height: 1.6;
-    display: inline-block;
-  }
-
-  .toc-level-1 a {
-    font-weight: 600;
-    font-size: 0.95rem;
-  }
-
-  .toc-level-2 a {
-    font-size: 0.9rem;
-  }
-
-  .toc-level-3 a {
-    font-size: 0.85rem;
-  }
-
-  /* Blog Content */
-  .blog-content {
-    color: #1f2937 !important;
+  .notion-text {
     font-size: 1.125rem !important;
-    line-height: 2.2 !important;
-    letter-spacing: 0.02em !important;
-  }
-
-  .blog-content p {
-    margin-bottom: 2rem !important;
+    line-height: 1.8 !important;
     color: #374151 !important;
-    line-height: 2.2 !important;
+    padding: 0.25rem 0 !important;
   }
 
-  .blog-content h1 {
+  .notion-h1 {
     font-size: 2rem !important;
     font-weight: 800 !important;
     color: #111827 !important;
-    margin-top: 3.5rem !important;
-    margin-bottom: 1.5rem !important;
+    margin-top: 2.5rem !important;
+    margin-bottom: 1rem !important;
     padding-bottom: 0.75rem !important;
     border-bottom: 3px solid #00D9FF !important;
-    line-height: 1.4 !important;
   }
 
-  .blog-content h2 {
+  .notion-h2 {
     font-size: 1.5rem !important;
     font-weight: 700 !important;
     color: #111827 !important;
-    margin-top: 3rem !important;
-    margin-bottom: 1.25rem !important;
+    margin-top: 2rem !important;
+    margin-bottom: 0.75rem !important;
     padding-left: 1rem !important;
     border-left: 4px solid #00D9FF !important;
-    line-height: 1.4 !important;
   }
 
-  .blog-content h3 {
+  .notion-h3 {
     font-size: 1.25rem !important;
     font-weight: 700 !important;
     color: #111827 !important;
-    margin-top: 2.5rem !important;
-    margin-bottom: 1rem !important;
-    line-height: 1.4 !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
   }
 
-  .blog-content strong {
-    color: #111827 !important;
-    font-weight: 700 !important;
-    background: linear-gradient(transparent 60%, #fef08a 60%) !important;
-  }
-
-  .blog-content ul,
-  .blog-content ol {
-    margin: 1.5rem 0 !important;
+  /* List styling - tighter spacing */
+  .notion-list {
+    margin: 0.5rem 0 !important;
     padding-left: 1.5rem !important;
   }
 
-  .blog-content li {
-    margin-bottom: 1rem !important;
-    color: #374151 !important;
-    line-height: 2.2 !important;
-    padding-left: 0.5rem !important;
-  }
-
-  .blog-content ul li {
+  .notion-list-disc {
     list-style-type: disc !important;
   }
 
-  .blog-content ul li::marker {
-    color: #00D9FF !important;
-  }
-
-  .blog-content ol li {
+  .notion-list-numbered {
     list-style-type: decimal !important;
   }
 
-  .blog-content ol li::marker {
-    color: #00D9FF !important;
-    font-weight: 600 !important;
-  }
-
-  .blog-content blockquote {
-    border-left: 4px solid #00D9FF !important;
-    padding: 1.25rem 1.5rem !important;
-    margin: 2rem 0 !important;
-    background: #f0f9ff !important;
+  .notion-list li {
+    margin-bottom: 0.25rem !important;
+    padding: 0.125rem 0 !important;
     color: #374151 !important;
-    font-style: normal !important;
+    line-height: 1.7 !important;
+  }
+
+  .notion-list li::marker {
+    color: #00D9FF !important;
+  }
+
+  .notion-quote {
+    border-left: 4px solid #00D9FF !important;
+    padding: 0.75rem 1.25rem !important;
+    margin: 1rem 0 !important;
+    background: #f0f9ff !important;
     border-radius: 0 0.5rem 0.5rem 0 !important;
-    line-height: 2.2 !important;
+    font-style: normal !important;
   }
 
-  .blog-content a {
-    color: #0891b2 !important;
-    text-decoration: underline !important;
-    text-underline-offset: 3px !important;
-    text-decoration-color: #00D9FF !important;
+  .notion-callout {
+    display: flex !important;
+    gap: 0.75rem !important;
+    padding: 1rem 1.25rem !important;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
+    border-radius: 0.75rem !important;
+    margin: 1rem 0 !important;
+    border: 1px solid #bae6fd !important;
   }
 
-  .blog-content a:hover {
-    color: #0e7490 !important;
-    text-decoration-color: #0e7490 !important;
+  .notion-callout-icon {
+    font-size: 1.25rem !important;
+    flex-shrink: 0 !important;
   }
 
-  .blog-content code {
+  .notion-callout-text {
+    margin: 0 !important;
+    line-height: 1.6 !important;
+  }
+
+  .notion-code {
+    background: #1f2937 !important;
+    color: #e5e7eb !important;
+    padding: 1.5rem !important;
+    border-radius: 0.75rem !important;
+    overflow-x: auto !important;
+    margin: 1.5rem 0 !important;
+  }
+
+  .notion-inline-code {
     background: #f3f4f6 !important;
     color: #0891b2 !important;
     padding: 0.2rem 0.4rem !important;
@@ -254,101 +192,84 @@ const description = post.excerpt || post.content.substring(0, 160);
     font-size: 0.9em !important;
   }
 
-  .blog-content pre {
-    background: #1f2937 !important;
-    color: #e5e7eb !important;
-    padding: 1.5rem !important;
-    border-radius: 0.75rem !important;
-    overflow-x: auto !important;
-    margin: 2rem 0 !important;
-  }
-
-  .blog-content pre code {
-    background: transparent !important;
-    color: inherit !important;
-    padding: 0 !important;
-  }
-
-  .blog-content hr {
+  .notion-hr {
     border: none !important;
     border-top: 2px solid #e5e7eb !important;
-    margin: 3rem 0 !important;
-  }
-
-  .blog-content figure {
     margin: 2.5rem 0 !important;
   }
 
-  .blog-content figure img {
-    border-radius: 0.75rem !important;
-    width: 100% !important;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06) !important;
+  .notion-link {
+    color: #0891b2 !important;
+    text-decoration: underline !important;
+    text-underline-offset: 3px !important;
+    text-decoration-color: #00D9FF !important;
   }
 
-  .blog-content figcaption {
-    text-align: center !important;
-    color: #6b7280 !important;
-    font-size: 0.875rem !important;
-    margin-top: 0.75rem !important;
+  .notion-link:hover {
+    color: #0e7490 !important;
   }
 
-  .blog-content .callout {
-    display: flex !important;
-    gap: 0.75rem !important;
-    padding: 1.25rem 1.5rem !important;
-    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
-    border-radius: 0.75rem !important;
-    margin: 2rem 0 !important;
-    border: 1px solid #bae6fd !important;
+  .notion-toggle {
+    margin: 1rem 0 !important;
   }
 
-  .blog-content .callout-icon {
-    font-size: 1.5rem !important;
-    flex-shrink: 0 !important;
+  .notion-toggle-content {
+    padding-left: 1.5rem !important;
+    border-left: 2px solid #e5e7eb !important;
+    margin-left: 0.5rem !important;
   }
 
-  .blog-content .callout p {
-    margin: 0 !important;
-    line-height: 1.7 !important;
-  }
-
-  /* First paragraph after heading - no top margin */
-  .blog-content h1 + p,
-  .blog-content h2 + p,
-  .blog-content h3 + p {
-    margin-top: 0 !important;
-  }
-
-  /* Nested lists */
-  .blog-content ul ul,
-  .blog-content ol ol,
-  .blog-content ul ol,
-  .blog-content ol ul {
-    margin-top: 0.5rem !important;
-    margin-bottom: 0.5rem !important;
-  }
-
-  /* Tables if present */
-  .blog-content table {
+  .notion-table {
     width: 100% !important;
     border-collapse: collapse !important;
-    margin: 2rem 0 !important;
+    margin: 1.5rem 0 !important;
   }
 
-  .blog-content th,
-  .blog-content td {
+  .notion-table th,
+  .notion-table td {
     border: 1px solid #e5e7eb !important;
     padding: 0.75rem 1rem !important;
     text-align: left !important;
   }
 
-  .blog-content th {
+  .notion-table th {
     background: #f9fafb !important;
     font-weight: 600 !important;
-    color: #111827 !important;
   }
 
-  .blog-content tr:nth-child(even) {
+  .notion-asset-wrapper {
+    margin: 1.5rem 0 !important;
+  }
+
+  .notion-asset-wrapper img {
+    border-radius: 0.75rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  .notion-bookmark {
+    display: flex !important;
+    border: 1px solid #e5e7eb !important;
+    border-radius: 0.75rem !important;
+    overflow: hidden !important;
+    margin: 1.5rem 0 !important;
+    text-decoration: none !important;
+  }
+
+  .notion-bookmark:hover {
     background: #f9fafb !important;
+  }
+
+  /* Bold text highlight */
+  .notion-text b,
+  .notion-text strong {
+    color: #111827 !important;
+    font-weight: 700 !important;
+    background: linear-gradient(transparent 60%, #fef08a 60%) !important;
+  }
+
+  /* Hide page title (we show our own) */
+  .notion-page-title,
+  .notion-collection-header {
+    display: none !important;
   }
 </style>
