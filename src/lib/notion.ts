@@ -127,6 +127,17 @@ async function getPageBlocks(pageId: string): Promise<any[]> {
   } while (cursor);
 
   console.log(`[Notion] Fetched ${allBlocks.length} blocks from page ${pageId}`);
+  // Debug: Log block types
+  const typeCounts: Record<string, number> = {};
+  allBlocks.forEach(b => {
+    typeCounts[b.type] = (typeCounts[b.type] || 0) + 1;
+  });
+  console.log(`[Notion] Block types:`, JSON.stringify(typeCounts));
+  // Log first 10 blocks for debugging
+  allBlocks.slice(0, 10).forEach((b, i) => {
+    const text = b[b.type]?.rich_text?.map((t: any) => t.plain_text).join('').substring(0, 40) || '';
+    console.log(`[Notion] Block ${i}: [${b.type}] "${text}"`);
+  });
   return allBlocks;
 }
 
@@ -229,14 +240,14 @@ function blocksToHtml(blocks: any[], headingCounter = { value: 0 }): { html: str
       continue;
     }
 
-    // Handle quote blocks that start with "- " or "・" as list items
-    if (type === 'quote') {
+    // Handle paragraph/quote blocks that start with "- " or "・" as list items
+    if (type === 'paragraph' || type === 'quote') {
       const plainText = content?.rich_text?.map((t: any) => t.plain_text).join('') || '';
-      if (plainText.startsWith('- ') || plainText.startsWith('・')) {
-        // Remove the leading "- " or "・" and convert to list item
+      if (plainText.startsWith('- ') || plainText.startsWith('・') || plainText.startsWith('• ')) {
+        // Remove the leading marker and convert to list item
         let itemHtml = richTextToHtml(content?.rich_text);
-        // Remove leading "- " or "・" from the HTML
-        itemHtml = itemHtml.replace(/^[-・]\s*/, '');
+        // Remove leading "- ", "・", or "• " from the HTML
+        itemHtml = itemHtml.replace(/^[-・•]\s*/, '');
         const childrenHtml = processChildren(block);
         if (childrenHtml) {
           itemHtml += childrenHtml;
