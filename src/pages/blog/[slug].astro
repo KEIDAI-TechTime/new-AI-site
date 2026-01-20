@@ -80,19 +80,25 @@ const description = post.excerpt || post.title;
     padding: 0 !important;
   }
 
+  /* Reduce block spacing */
+  .notion-block {
+    margin-top: 0.25rem !important;
+    margin-bottom: 0.25rem !important;
+  }
+
   .notion-text {
     font-size: 1.125rem !important;
-    line-height: 2 !important;
+    line-height: 1.8 !important;
     color: #374151 !important;
-    margin-bottom: 1rem !important;
+    padding: 0.25rem 0 !important;
   }
 
   .notion-h1 {
     font-size: 2rem !important;
     font-weight: 800 !important;
     color: #111827 !important;
-    margin-top: 3rem !important;
-    margin-bottom: 1.5rem !important;
+    margin-top: 2.5rem !important;
+    margin-bottom: 1rem !important;
     padding-bottom: 0.75rem !important;
     border-bottom: 3px solid #00D9FF !important;
   }
@@ -101,8 +107,8 @@ const description = post.excerpt || post.title;
     font-size: 1.5rem !important;
     font-weight: 700 !important;
     color: #111827 !important;
-    margin-top: 2.5rem !important;
-    margin-bottom: 1.25rem !important;
+    margin-top: 2rem !important;
+    margin-bottom: 0.75rem !important;
     padding-left: 1rem !important;
     border-left: 4px solid #00D9FF !important;
   }
@@ -111,12 +117,13 @@ const description = post.excerpt || post.title;
     font-size: 1.25rem !important;
     font-weight: 700 !important;
     color: #111827 !important;
-    margin-top: 2rem !important;
-    margin-bottom: 1rem !important;
+    margin-top: 1.5rem !important;
+    margin-bottom: 0.5rem !important;
   }
 
+  /* List styling - tighter spacing */
   .notion-list {
-    margin: 1.5rem 0 !important;
+    margin: 0.5rem 0 !important;
     padding-left: 1.5rem !important;
   }
 
@@ -129,9 +136,10 @@ const description = post.excerpt || post.title;
   }
 
   .notion-list li {
-    margin-bottom: 0.75rem !important;
+    margin-bottom: 0.25rem !important;
+    padding: 0.125rem 0 !important;
     color: #374151 !important;
-    line-height: 1.8 !important;
+    line-height: 1.7 !important;
   }
 
   .notion-list li::marker {
@@ -140,8 +148,8 @@ const description = post.excerpt || post.title;
 
   .notion-quote {
     border-left: 4px solid #00D9FF !important;
-    padding: 1rem 1.5rem !important;
-    margin: 1.5rem 0 !important;
+    padding: 0.75rem 1.25rem !important;
+    margin: 1rem 0 !important;
     background: #f0f9ff !important;
     border-radius: 0 0.5rem 0.5rem 0 !important;
     font-style: normal !important;
@@ -150,21 +158,21 @@ const description = post.excerpt || post.title;
   .notion-callout {
     display: flex !important;
     gap: 0.75rem !important;
-    padding: 1.25rem 1.5rem !important;
+    padding: 1rem 1.25rem !important;
     background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%) !important;
     border-radius: 0.75rem !important;
-    margin: 1.5rem 0 !important;
+    margin: 1rem 0 !important;
     border: 1px solid #bae6fd !important;
   }
 
   .notion-callout-icon {
-    font-size: 1.5rem !important;
+    font-size: 1.25rem !important;
     flex-shrink: 0 !important;
   }
 
   .notion-callout-text {
     margin: 0 !important;
-    line-height: 1.7 !important;
+    line-height: 1.6 !important;
   }
 
   .notion-code {
