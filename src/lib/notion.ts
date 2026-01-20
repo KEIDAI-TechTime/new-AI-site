@@ -515,11 +515,35 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
     const slug = properties.Slug?.rich_text?.[0]?.plain_text || page.id;
     const category = properties.Category?.select?.name || 'ceo_column';
 
+    // Get cover image - try to get persistent URL via notion-client
     let coverImage: string | undefined;
-    if (page.cover?.type === 'external') {
-      coverImage = page.cover.external.url;
-    } else if (page.cover?.type === 'file') {
-      coverImage = page.cover.file.url;
+    try {
+      const recordMap = await getPageRecordMap(page.id);
+      if (recordMap) {
+        const block = recordMap.block?.[page.id]?.value;
+        if (block?.format?.page_cover) {
+          const pageCover = block.format.page_cover;
+          // Convert to Notion's image proxy URL for persistence
+          if (pageCover.startsWith('/')) {
+            coverImage = `https://www.notion.so${pageCover}`;
+          } else if (pageCover.startsWith('http')) {
+            // Use Notion's image proxy for external URLs
+            const encodedUrl = encodeURIComponent(pageCover);
+            coverImage = `https://www.notion.so/image/${encodedUrl}?table=block&id=${page.id.replace(/-/g, '')}`;
+          }
+        }
+      }
+    } catch (e) {
+      console.warn('[Notion] Failed to get cover via notion-client, falling back to API:', e);
+    }
+
+    // Fallback to official API cover
+    if (!coverImage) {
+      if (page.cover?.type === 'external') {
+        coverImage = page.cover.external.url;
+      } else if (page.cover?.type === 'file') {
+        coverImage = page.cover.file.url;
+      }
     }
 
     const excerpt = properties.Excerpt?.rich_text?.[0]?.plain_text;
