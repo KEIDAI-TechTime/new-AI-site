@@ -568,3 +568,24 @@ export function formatDate(dateString: string): string {
     day: '2-digit',
   }).format(date);
 }
+
+/**
+ * Get page recordMap for react-notion-x rendering
+ */
+export async function getPageRecordMap(pageId: string): Promise<any> {
+  try {
+    // Use notion-client to get the recordMap
+    const { NotionAPI } = await import('notion-client');
+    const notion = new NotionAPI();
+
+    // Format pageId (remove dashes if present)
+    const formattedId = pageId.replace(/-/g, '');
+
+    const recordMap = await notion.getPage(formattedId);
+    console.log(`[Notion] Fetched recordMap for page ${pageId}`);
+    return recordMap;
+  } catch (error) {
+    console.error('[Notion] Failed to fetch recordMap:', error);
+    return null;
+  }
+}
