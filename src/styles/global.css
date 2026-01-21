@@ -10,3 +10,43 @@ html {
 body {
   font-family: 'Noto Sans JP', 'Inter', sans-serif;
 }
+
+/* =====================================================
+   TAILWIND PREFLIGHT OVERRIDES FOR BLOG CONTENT
+   Reset Tailwind's list-style-none and heading resets
+   for blog/notion content areas
+   ===================================================== */
+@layer base {
+  /* Restore list styles for blog content */
+  .notion-page-wrapper ul,
+  .notion-page-wrapper ol,
+  .blog-content ul,
+  .blog-content ol,
+  .notion-list {
+    list-style: revert;
+  }
+
+  .notion-page-wrapper li,
+  .blog-content li,
+  .notion-list li {
+    display: list-item;
+  }
+
+  /* Restore heading styles */
+  .notion-page-wrapper h1,
+  .notion-page-wrapper h2,
+  .notion-page-wrapper h3,
+  .blog-content h1,
+  .blog-content h2,
+  .blog-content h3 {
+    font-size: revert;
+    font-weight: revert;
+  }
+
+  /* Restore blockquote styles */
+  .notion-page-wrapper blockquote,
+  .blog-content blockquote {
+    margin: revert;
+    padding: revert;
+  }
+}
