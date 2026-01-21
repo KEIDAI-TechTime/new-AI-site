@@ -550,32 +550,35 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
     const slug = properties.Slug?.rich_text?.[0]?.plain_text || page.id;
     const category = properties.Category?.select?.name || 'ceo_column';
 
-    // Get cover image - try to get persistent URL via notion-client
+    // Get cover image - prioritize official API for external URLs (imgBB, etc.)
     let coverImage: string | undefined;
-    try {
-      const recordMap = await getPageRecordMap(page.id);
-      if (recordMap) {
-        const block = recordMap.block?.[page.id]?.value;
-        if (block?.format?.page_cover) {
-          const pageCover = block.format.page_cover;
-          // Convert to persistent proxy URL
-          coverImage = toNotionImageProxy(pageCover, page.id);
-        }
-      }
-    } catch (e) {
-      console.warn('[Notion] Failed to get cover via notion-client, falling back to API:', e);
+
+    // First check official API - external URLs should be used directly
+    if (page.cover?.type === 'external') {
+      // External URLs (imgBB, etc.) - use directly without proxy
+      coverImage = page.cover.external.url;
+      console.log(`[Notion] Using external cover URL: ${coverImage}`);
+    } else if (page.cover?.type === 'file') {
+      // Notion-hosted file - convert to proxy URL
+      const rawUrl = page.cover.file.url;
+      coverImage = toNotionImageProxy(rawUrl, page.id);
+      console.log(`[Notion] Using file cover with proxy: ${coverImage}`);
     }
 
-    // Fallback to official API cover - also convert to persistent URL
+    // Fallback to notion-client if official API doesn't have cover
     if (!coverImage) {
-      let rawUrl: string | undefined;
-      if (page.cover?.type === 'external') {
-        rawUrl = page.cover.external.url;
-      } else if (page.cover?.type === 'file') {
-        rawUrl = page.cover.file.url;
-      }
-      if (rawUrl) {
-        coverImage = toNotionImageProxy(rawUrl, page.id);
+      try {
+        const recordMap = await getPageRecordMap(page.id);
+        if (recordMap) {
+          const block = recordMap.block?.[page.id]?.value;
+          if (block?.format?.page_cover) {
+            const pageCover = block.format.page_cover;
+            coverImage = toNotionImageProxy(pageCover, page.id);
+            console.log(`[Notion] Using recordMap cover: ${coverImage}`);
+          }
+        }
+      } catch (e) {
+        console.warn('[Notion] Failed to get cover via notion-client:', e);
       }
     }
 
