@@ -35,6 +35,34 @@ const NOTION_API_VERSION = '2022-06-28';
 const NOTION_API_BASE = 'https://api.notion.com/v1';
 
 /**
+ * Convert Notion image URL to persistent proxy URL
+ * Notion API returns temporary signed S3 URLs that expire after ~1 hour
+ * This converts them to Notion's image proxy which doesn't expire
+ */
+function toNotionImageProxy(url: string, blockId?: string): string {
+  if (!url) return '';
+
+  // Already a Notion proxy URL - return as is
+  if (url.startsWith('https://www.notion.so/image/')) {
+    return url;
+  }
+
+  // Internal Notion path (starts with /)
+  if (url.startsWith('/')) {
+    return `https://www.notion.so${url}`;
+  }
+
+  // External or S3 URL - convert to proxy format
+  if (url.startsWith('http')) {
+    const encodedUrl = encodeURIComponent(url);
+    const idParam = blockId ? `&id=${blockId.replace(/-/g, '')}` : '';
+    return `https://www.notion.so/image/${encodedUrl}?table=block${idParam}`;
+  }
+
+  return url;
+}
+
+/**
  * Get environment variables
  */
 function getEnvVars() {
@@ -321,7 +349,7 @@ function blocksToHtml(blocks: any[], headingCounter = { value: 0 }): { html: str
         break;
       }
 
-      case 'image':
+      case 'image': {
         let imageUrl = '';
         if (content?.type === 'external') {
           imageUrl = content.external?.url;
@@ -329,10 +357,13 @@ function blocksToHtml(blocks: any[], headingCounter = { value: 0 }): { html: str
           imageUrl = content.file?.url;
         }
         if (imageUrl) {
+          // Convert to persistent proxy URL to avoid expiration
+          const persistentUrl = toNotionImageProxy(imageUrl, block.id);
           const caption = content?.caption ? richTextToHtml(content.caption) : '';
-          htmlParts.push(`<figure><img src="${imageUrl}" alt="${caption}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`);
+          htmlParts.push(`<figure><img src="${persistentUrl}" alt="${caption}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`);
         }
         break;
+      }
 
       case 'table': {
         // Handle table blocks
@@ -523,26 +554,24 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
         const block = recordMap.block?.[page.id]?.value;
         if (block?.format?.page_cover) {
           const pageCover = block.format.page_cover;
-          // Convert to Notion's image proxy URL for persistence
-          if (pageCover.startsWith('/')) {
-            coverImage = `https://www.notion.so${pageCover}`;
-          } else if (pageCover.startsWith('http')) {
-            // Use Notion's image proxy for external URLs
-            const encodedUrl = encodeURIComponent(pageCover);
-            coverImage = `https://www.notion.so/image/${encodedUrl}?table=block&id=${page.id.replace(/-/g, '')}`;
-          }
+          // Convert to persistent proxy URL
+          coverImage = toNotionImageProxy(pageCover, page.id);
         }
       }
     } catch (e) {
       console.warn('[Notion] Failed to get cover via notion-client, falling back to API:', e);
     }
 
-    // Fallback to official API cover
+    // Fallback to official API cover - also convert to persistent URL
     if (!coverImage) {
+      let rawUrl: string | undefined;
       if (page.cover?.type === 'external') {
-        coverImage = page.cover.external.url;
+        rawUrl = page.cover.external.url;
       } else if (page.cover?.type === 'file') {
-        coverImage = page.cover.file.url;
+        rawUrl = page.cover.file.url;
+      }
+      if (rawUrl) {
+        coverImage = toNotionImageProxy(rawUrl, page.id);
       }
     }
 

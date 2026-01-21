@@ -16,6 +16,34 @@ export const CASE_CATEGORIES: Record<string, CaseCategory> = {
 const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '';
 const NOTION_CASES_DATABASE_ID = import.meta.env.NOTION_CASES_DATABASE_ID || process.env.NOTION_CASES_DATABASE_ID || '';
 
+/**
+ * Convert Notion image URL to persistent proxy URL
+ * Notion API returns temporary signed S3 URLs that expire after ~1 hour
+ * This converts them to Notion's image proxy which doesn't expire
+ */
+function toNotionImageProxy(url: string, blockId?: string): string {
+  if (!url) return '';
+
+  // Already a Notion proxy URL - return as is
+  if (url.startsWith('https://www.notion.so/image/')) {
+    return url;
+  }
+
+  // Internal Notion path (starts with /)
+  if (url.startsWith('/')) {
+    return `https://www.notion.so${url}`;
+  }
+
+  // External or S3 URL - convert to proxy format
+  if (url.startsWith('http')) {
+    const encodedUrl = encodeURIComponent(url);
+    const idParam = blockId ? `&id=${blockId.replace(/-/g, '')}` : '';
+    return `https://www.notion.so/image/${encodedUrl}?table=block${idParam}`;
+  }
+
+  return url;
+}
+
 // Lazy initialization for Notion client
 let notionClient: Client | null = null;
 let n2mClient: NotionToMarkdown | null = null;
@@ -280,18 +308,21 @@ async function convertPageToCase(page: any): Promise<NotionCase | null> {
       properties.description?.rich_text?.[0]?.plain_text ||
       '';
 
-    let image =
+    let rawImageUrl =
       properties.Image?.url ||
       properties.image?.url ||
       '';
 
-    if (!image) {
+    if (!rawImageUrl) {
       if (page.cover?.type === 'external') {
-        image = page.cover.external.url;
+        rawImageUrl = page.cover.external.url;
       } else if (page.cover?.type === 'file') {
-        image = page.cover.file.url;
+        rawImageUrl = page.cover.file.url;
       }
     }
+
+    // Convert to persistent proxy URL to avoid expiration
+    const image = rawImageUrl ? toNotionImageProxy(rawImageUrl, page.id) : '';
 
     const scale =
       properties.Scale?.select?.name ||
