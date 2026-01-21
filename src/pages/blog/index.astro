@@ -2,31 +2,16 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navigation from '@/components/Navigation.astro';
 import { getPosts, BLOG_CATEGORIES, formatDate, type NotionPost } from '@/lib/notion';
-import { getNotePosts } from '@/lib/note';
 
 const title = 'ブログ | TechTime株式会社';
 const description = 'TechTimeの最新情報や技術ブログをお届けします。AI駆動開発、システム開発のノウハウなど、役立つ情報を発信中。';
 
-// Fetch posts from both Notion and note at build time
-const [notionPosts, notePosts] = await Promise.all([
-  getPosts({ perPage: 20 }),
-  getNotePosts(10),
-]);
+// Fetch posts from Notion at build time
+const notionPosts = await getPosts({ perPage: 20 });
 
-// Convert note posts to NotionPost format and merge
-const notePostsConverted: NotionPost[] = notePosts.map(post => ({
-  ...post,
-  source: 'note' as const,
-  externalUrl: post.noteUrl,
-}));
-
-// Merge and sort by date (newest first)
-const allPosts = [...notionPosts.map(p => ({ ...p, source: 'notion' as const })), ...notePostsConverted]
+// Sort by date (newest first)
+const allPosts = notionPosts
   .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-// Serialize posts data for client-side filtering
-const postsData = JSON.stringify(allPosts);
-const categoriesData = JSON.stringify(BLOG_CATEGORIES);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -61,9 +46,7 @@ const categoriesData = JSON.stringify(BLOG_CATEGORIES);
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="posts-grid">
               {allPosts.map((post) => (
                 <a
-                  href={post.source === 'note' ? post.externalUrl : `/blog/${post.slug}`}
-                  target={post.source === 'note' ? '_blank' : '_self'}
-                  rel={post.source === 'note' ? 'noopener noreferrer' : undefined}
+                  href={`/blog/${post.slug}`}
                   class="post-card group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/50 transition-all duration-300 hover:-translate-y-1"
                   data-category={post.category || ''}
                 >
@@ -76,8 +59,7 @@ const categoriesData = JSON.stringify(BLOG_CATEGORIES);
                     <div class="flex items-center gap-3 mb-3">
                       <span class="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
                       {post.category && BLOG_CATEGORIES[post.category] && (
-                        <span class={`px-2 py-1 text-xs rounded-full ${post.source === 'note' ? 'bg-[#41C9B4]/10 text-[#41C9B4]' : 'bg-[#00D9FF]/10 text-[#00D9FF]'}`}>
-                          {post.source === 'note' && <i class="ri-external-link-line mr-1"></i>}
+                        <span class="px-2 py-1 text-xs rounded-full bg-[#00D9FF]/10 text-[#00D9FF]">
                           {BLOG_CATEGORIES[post.category].name}
                         </span>
                       )}
@@ -85,8 +67,8 @@ const categoriesData = JSON.stringify(BLOG_CATEGORIES);
                     <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">{post.title}</h3>
                     <p class="text-sm text-gray-400 line-clamp-3">{post.excerpt || post.content.substring(0, 150) + '...'}</p>
                     <div class="mt-4 flex items-center text-[#00D9FF] text-sm font-medium">
-                      <span>{post.source === 'note' ? 'noteで読む' : '続きを読む'}</span>
-                      <i class={`ml-1 group-hover:translate-x-1 transition-transform ${post.source === 'note' ? 'ri-external-link-line' : 'ri-arrow-right-line'}`}></i>
+                      <span>続きを読む</span>
+                      <i class="ri-arrow-right-line ml-1 group-hover:translate-x-1 transition-transform"></i>
                     </div>
                   </div>
                 </a>
