@@ -1,5 +1,8 @@
 import { Client } from '@notionhq/client';
 import { NotionToMarkdown } from 'notion-to-md';
+import { createHash } from 'crypto';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
+import { join } from 'path';
 import type { NotionCase, CaseCategory } from '../types/notion';
 
 // Category mapping
@@ -16,32 +19,62 @@ export const CASE_CATEGORIES: Record<string, CaseCategory> = {
 const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '';
 const NOTION_CASES_DATABASE_ID = import.meta.env.NOTION_CASES_DATABASE_ID || process.env.NOTION_CASES_DATABASE_ID || '';
 
+// Image cache directory
+const IMAGE_CACHE_DIR = 'public/images/cases';
+
 /**
- * Convert Notion image URL to persistent proxy URL
- * Notion API returns temporary signed S3 URLs that expire after ~1 hour
- * This converts them to Notion's image proxy which doesn't expire
+ * Download and cache image locally
  */
-function toNotionImageProxy(url: string, blockId?: string): string {
+async function cacheImage(url: string, prefix: string = 'img'): Promise<string> {
   if (!url) return '';
 
-  // Already a Notion proxy URL - return as is
-  if (url.startsWith('https://www.notion.so/image/')) {
+  // Skip if already a local path
+  if (url.startsWith('/images/')) {
     return url;
   }
 
-  // Internal Notion path (starts with /)
-  if (url.startsWith('/')) {
-    return `https://www.notion.so${url}`;
-  }
+  try {
+    const hash = createHash('md5').update(url).digest('hex').substring(0, 12);
+    const ext = getImageExtension(url);
+    const filename = `${prefix}-${hash}${ext}`;
+    const localPath = `/${IMAGE_CACHE_DIR.replace('public', '')}/${filename}`;
+    const fullPath = join(process.cwd(), IMAGE_CACHE_DIR, filename);
 
-  // External or S3 URL - convert to proxy format
-  if (url.startsWith('http')) {
-    const encodedUrl = encodeURIComponent(url);
-    const idParam = blockId ? `&id=${blockId.replace(/-/g, '')}` : '';
-    return `https://www.notion.so/image/${encodedUrl}?table=block${idParam}`;
-  }
+    const cacheDir = join(process.cwd(), IMAGE_CACHE_DIR);
+    if (!existsSync(cacheDir)) {
+      mkdirSync(cacheDir, { recursive: true });
+    }
 
-  return url;
+    if (existsSync(fullPath)) {
+      return localPath;
+    }
+
+    console.log(`[Cases Image] Downloading: ${url.substring(0, 60)}...`);
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TechTime/1.0)' },
+    });
+
+    if (!response.ok) {
+      console.warn(`[Cases Image] Failed to download: ${response.status}`);
+      return '';
+    }
+
+    const buffer = Buffer.from(await response.arrayBuffer());
+    writeFileSync(fullPath, buffer);
+    console.log(`[Cases Image] Cached: ${filename}`);
+
+    return localPath;
+  } catch (error) {
+    console.warn(`[Cases Image] Error:`, error);
+    return '';
+  }
+}
+
+function getImageExtension(url: string): string {
+  const urlWithoutParams = url.split('?')[0];
+  const match = urlWithoutParams.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
+  if (match) return `.${match[1].toLowerCase()}`;
+  return '.jpg';
 }
 
 // Lazy initialization for Notion client
@@ -321,8 +354,8 @@ async function convertPageToCase(page: any): Promise<NotionCase | null> {
       }
     }
 
-    // Convert to persistent proxy URL to avoid expiration
-    const image = rawImageUrl ? toNotionImageProxy(rawImageUrl, page.id) : '';
+    // Download and cache image locally
+    const image = rawImageUrl ? await cacheImage(rawImageUrl, `case-${page.id.substring(0, 8)}`) : '';
 
     const scale =
       properties.Scale?.select?.name ||
