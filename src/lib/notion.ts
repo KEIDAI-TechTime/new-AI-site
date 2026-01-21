@@ -646,12 +646,31 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
     const slug = properties.Slug?.rich_text?.[0]?.plain_text || page.id;
     const category = properties.Category?.select?.name || 'ceo_column';
 
-    // Get cover image URL from API
+    // Get cover image URL - prioritize "ファイル&メディア" property, then page cover
     let rawCoverUrl: string | undefined;
-    if (page.cover?.type === 'external') {
-      rawCoverUrl = page.cover.external.url;
-    } else if (page.cover?.type === 'file') {
-      rawCoverUrl = page.cover.file.url;
+
+    // Try "ファイル&メディア" property first (most reliable)
+    const filesProperty = properties['ファイル&メディア'] || properties['ファイル＆メディア'] || properties['Files'] || properties['files'];
+    if (filesProperty?.files?.length > 0) {
+      const firstFile = filesProperty.files[0];
+      if (firstFile.type === 'file') {
+        rawCoverUrl = firstFile.file?.url;
+      } else if (firstFile.type === 'external') {
+        rawCoverUrl = firstFile.external?.url;
+      }
+      console.log(`[Notion] Using ファイル&メディア property for: ${title}`);
+    }
+
+    // Fallback to page cover
+    if (!rawCoverUrl) {
+      if (page.cover?.type === 'external') {
+        rawCoverUrl = page.cover.external.url;
+      } else if (page.cover?.type === 'file') {
+        rawCoverUrl = page.cover.file.url;
+      }
+      if (rawCoverUrl) {
+        console.log(`[Notion] Using page cover for: ${title}`);
+      }
     }
 
     // Download and cache cover image locally
