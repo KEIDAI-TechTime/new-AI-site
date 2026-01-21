@@ -28,7 +28,6 @@ export interface BlogCategory {
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   ceo_column: { slug: 'ceo_column', name: '社長コラム' },
   'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
-  note: { slug: 'note', name: 'note' },
 };
 
 const NOTION_API_VERSION = '2022-06-28';
@@ -52,11 +51,16 @@ function toNotionImageProxy(url: string, blockId?: string): string {
     return `https://www.notion.so${url}`;
   }
 
-  // External or S3 URL - convert to proxy format
+  // External URL (not S3) - return as is, these don't expire
+  if (url.startsWith('http') && !url.includes('amazonaws.com') && !url.includes('s3.')) {
+    return url;
+  }
+
+  // S3 URL - convert to proxy format with cache parameter
   if (url.startsWith('http')) {
     const encodedUrl = encodeURIComponent(url);
     const idParam = blockId ? `&id=${blockId.replace(/-/g, '')}` : '';
-    return `https://www.notion.so/image/${encodedUrl}?table=block${idParam}`;
+    return `https://www.notion.so/image/${encodedUrl}?table=block${idParam}&cache=v2`;
   }
 
   return url;
