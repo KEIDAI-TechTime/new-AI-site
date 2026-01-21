@@ -1,8 +1,5 @@
 import { Client } from '@notionhq/client';
 import { NotionToMarkdown } from 'notion-to-md';
-import { createHash } from 'crypto';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
 import type { NotionCase, CaseCategory } from '../types/notion';
 
 // Category mapping
@@ -19,62 +16,16 @@ export const CASE_CATEGORIES: Record<string, CaseCategory> = {
 const NOTION_API_KEY = import.meta.env.NOTION_API_KEY || process.env.NOTION_API_KEY || '';
 const NOTION_CASES_DATABASE_ID = import.meta.env.NOTION_CASES_DATABASE_ID || process.env.NOTION_CASES_DATABASE_ID || '';
 
-// Image cache directory
-const IMAGE_CACHE_DIR = 'public/images/cases';
-
 /**
- * Download and cache image locally
+ * Convert image URL to use wsrv.nl proxy service
  */
-async function cacheImage(url: string, prefix: string = 'img'): Promise<string> {
+function toImageProxy(url: string): string {
   if (!url) return '';
-
-  // Skip if already a local path
-  if (url.startsWith('/images/')) {
+  if (url.startsWith('https://wsrv.nl') || url.startsWith('/images/')) {
     return url;
   }
-
-  try {
-    const hash = createHash('md5').update(url).digest('hex').substring(0, 12);
-    const ext = getImageExtension(url);
-    const filename = `${prefix}-${hash}${ext}`;
-    const localPath = `/${IMAGE_CACHE_DIR.replace('public', '')}/${filename}`;
-    const fullPath = join(process.cwd(), IMAGE_CACHE_DIR, filename);
-
-    const cacheDir = join(process.cwd(), IMAGE_CACHE_DIR);
-    if (!existsSync(cacheDir)) {
-      mkdirSync(cacheDir, { recursive: true });
-    }
-
-    if (existsSync(fullPath)) {
-      return localPath;
-    }
-
-    console.log(`[Cases Image] Downloading: ${url.substring(0, 60)}...`);
-    const response = await fetch(url, {
-      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; TechTime/1.0)' },
-    });
-
-    if (!response.ok) {
-      console.warn(`[Cases Image] Failed to download: ${response.status}`);
-      return '';
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-    writeFileSync(fullPath, buffer);
-    console.log(`[Cases Image] Cached: ${filename}`);
-
-    return localPath;
-  } catch (error) {
-    console.warn(`[Cases Image] Error:`, error);
-    return '';
-  }
-}
-
-function getImageExtension(url: string): string {
-  const urlWithoutParams = url.split('?')[0];
-  const match = urlWithoutParams.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
-  if (match) return `.${match[1].toLowerCase()}`;
-  return '.jpg';
+  const encodedUrl = encodeURIComponent(url);
+  return `https://wsrv.nl/?url=${encodedUrl}&default=1`;
 }
 
 // Lazy initialization for Notion client
@@ -354,8 +305,8 @@ async function convertPageToCase(page: any): Promise<NotionCase | null> {
       }
     }
 
-    // Download and cache image locally
-    const image = rawImageUrl ? await cacheImage(rawImageUrl, `case-${page.id.substring(0, 8)}`) : '';
+    // Convert to proxy URL for reliable delivery
+    const image = rawImageUrl ? toImageProxy(rawImageUrl) : '';
 
     const scale =
       properties.Scale?.select?.name ||

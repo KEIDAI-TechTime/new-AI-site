@@ -2,10 +2,6 @@
  * Notion API Integration using fetch (no SDK dependency)
  */
 
-import { createHash } from 'crypto';
-import { writeFileSync, existsSync, mkdirSync } from 'fs';
-import { join } from 'path';
-
 // Types
 export interface NotionPost {
   id: string;
@@ -35,78 +31,21 @@ export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
 const NOTION_API_VERSION = '2022-06-28';
 const NOTION_API_BASE = 'https://api.notion.com/v1';
 
-// Image cache directory
-const IMAGE_CACHE_DIR = 'public/images/blog';
-
 /**
- * Download and cache image locally
- * Returns the local path to the cached image
+ * Convert image URL to use wsrv.nl proxy service
+ * This ensures images are always accessible and cached
  */
-async function cacheImage(url: string, prefix: string = 'img'): Promise<string> {
+function toImageProxy(url: string): string {
   if (!url) return '';
 
-  // Skip if already a local path
-  if (url.startsWith('/images/')) {
+  // Skip if already using proxy or local path
+  if (url.startsWith('https://wsrv.nl') || url.startsWith('/images/')) {
     return url;
   }
 
-  try {
-    // Create hash from URL for filename
-    const hash = createHash('md5').update(url).digest('hex').substring(0, 12);
-    const ext = getImageExtension(url);
-    const filename = `${prefix}-${hash}${ext}`;
-    const localPath = `/${IMAGE_CACHE_DIR.replace('public', '')}/${filename}`;
-    const fullPath = join(process.cwd(), IMAGE_CACHE_DIR, filename);
-
-    // Ensure cache directory exists
-    const cacheDir = join(process.cwd(), IMAGE_CACHE_DIR);
-    if (!existsSync(cacheDir)) {
-      mkdirSync(cacheDir, { recursive: true });
-    }
-
-    // Check if already cached
-    if (existsSync(fullPath)) {
-      console.log(`[Image] Using cached: ${filename}`);
-      return localPath;
-    }
-
-    // Download image
-    console.log(`[Image] Downloading: ${url.substring(0, 80)}...`);
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; TechTime/1.0)',
-      },
-    });
-
-    if (!response.ok) {
-      console.warn(`[Image] Failed to download (${response.status}): ${url.substring(0, 80)}`);
-      return '';
-    }
-
-    const buffer = Buffer.from(await response.arrayBuffer());
-    writeFileSync(fullPath, buffer);
-    console.log(`[Image] Cached: ${filename} (${Math.round(buffer.length / 1024)}KB)`);
-
-    return localPath;
-  } catch (error) {
-    console.warn(`[Image] Error caching image:`, error);
-    return '';
-  }
-}
-
-/**
- * Get image file extension from URL
- */
-function getImageExtension(url: string): string {
-  const urlWithoutParams = url.split('?')[0];
-  const match = urlWithoutParams.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
-  if (match) return `.${match[1].toLowerCase()}`;
-
-  // Default to jpg for Notion images
-  if (url.includes('notion') || url.includes('s3.us-west')) {
-    return '.jpg';
-  }
-  return '.jpg';
+  // Use wsrv.nl image proxy (free, reliable, caches images)
+  const encodedUrl = encodeURIComponent(url);
+  return `https://wsrv.nl/?url=${encodedUrl}&default=1`;
 }
 
 /**
@@ -268,63 +207,10 @@ function generateSlug(text: string): string {
 }
 
 /**
- * Extract all image URLs from blocks recursively
- */
-function extractImageUrls(blocks: any[]): string[] {
-  const urls: string[] = [];
-
-  for (const block of blocks) {
-    const type = block.type;
-    const content = block[type];
-
-    if (type === 'image') {
-      let imageUrl = '';
-      if (content?.type === 'external') {
-        imageUrl = content.external?.url;
-      } else if (content?.type === 'file') {
-        imageUrl = content.file?.url;
-      }
-      if (imageUrl) urls.push(imageUrl);
-    }
-
-    // Recursively process children
-    if (block.children && block.children.length > 0) {
-      urls.push(...extractImageUrls(block.children));
-    }
-  }
-
-  return urls;
-}
-
-/**
- * Cache all images and return a URL mapping
- */
-async function cacheAllImages(urls: string[]): Promise<Map<string, string>> {
-  const mapping = new Map<string, string>();
-
-  // Process images in parallel with limit
-  const batchSize = 5;
-  for (let i = 0; i < urls.length; i += batchSize) {
-    const batch = urls.slice(i, i + batchSize);
-    const results = await Promise.all(
-      batch.map(async (url) => {
-        const localPath = await cacheImage(url, 'content');
-        return { url, localPath };
-      })
-    );
-    results.forEach(({ url, localPath }) => {
-      if (localPath) mapping.set(url, localPath);
-    });
-  }
-
-  return mapping;
-}
-
-/**
  * Convert blocks to HTML content with formatting preserved
  * Returns both HTML and table of contents
  */
-function blocksToHtml(blocks: any[], headingCounter = { value: 0 }, imageMapping?: Map<string, string>): { html: string; toc: TocItem[] } {
+function blocksToHtml(blocks: any[], headingCounter = { value: 0 }): { html: string; toc: TocItem[] } {
   const htmlParts: string[] = [];
   const toc: TocItem[] = [];
   let currentList: { type: string; items: string[] } | null = null;
@@ -340,7 +226,7 @@ function blocksToHtml(blocks: any[], headingCounter = { value: 0 }, imageMapping
   // Helper to process children
   const processChildren = (block: any): string => {
     if (block.children && block.children.length > 0) {
-      const childResult = blocksToHtml(block.children, headingCounter, imageMapping);
+      const childResult = blocksToHtml(block.children, headingCounter);
       toc.push(...childResult.toc);
       return childResult.html;
     }
@@ -457,10 +343,10 @@ function blocksToHtml(blocks: any[], headingCounter = { value: 0 }, imageMapping
           imageUrl = content.file?.url;
         }
         if (imageUrl) {
-          // Use cached local path if available
-          const finalUrl = imageMapping?.get(imageUrl) || imageUrl;
+          // Use image proxy for reliable delivery
+          const proxyUrl = toImageProxy(imageUrl);
           const caption = content?.caption ? richTextToHtml(content.caption) : '';
-          htmlParts.push(`<figure><img src="${finalUrl}" alt="${caption}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`);
+          htmlParts.push(`<figure><img src="${proxyUrl}" alt="${caption}" />${caption ? `<figcaption>${caption}</figcaption>` : ''}</figure>`);
         }
         break;
       }
@@ -673,12 +559,8 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
       }
     }
 
-    // Download and cache cover image locally
-    let coverImage: string | undefined;
-    if (rawCoverUrl) {
-      const cachedCover = await cacheImage(rawCoverUrl, `cover-${slug}`);
-      coverImage = cachedCover || undefined;
-    }
+    // Convert cover image URL to proxy URL
+    const coverImage = rawCoverUrl ? toImageProxy(rawCoverUrl) : undefined;
 
     const excerpt = properties.Excerpt?.rich_text?.[0]?.plain_text;
     const published = properties.Published?.checkbox ?? true;
@@ -688,12 +570,7 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
     if (includeContent) {
       try {
         const blocks = await getPageBlocks(page.id);
-
-        // Extract and cache all content images
-        const imageUrls = extractImageUrls(blocks);
-        const imageMapping = await cacheAllImages(imageUrls);
-
-        const result = blocksToHtml(blocks, { value: 0 }, imageMapping);
+        const result = blocksToHtml(blocks);
         content = result.html;
         toc = result.toc;
       } catch (e) {
