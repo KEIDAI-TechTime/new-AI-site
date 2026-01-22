@@ -10,6 +10,7 @@ console.log('[Notion API] Using API proxy:', API_BASE);
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   ceo_column: { slug: 'ceo_column', name: '社長コラム' },
   'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
+  'regional-dx': { slug: 'regional-dx', name: '地域DX' },
 } as const;
 
 // 開発事例のカテゴリマッピング
