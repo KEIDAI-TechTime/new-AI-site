@@ -28,6 +28,7 @@ export interface BlogCategory {
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   ceo_column: { slug: 'ceo_column', name: '社長コラム' },
   'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
+  'regional-dx': { slug: 'regional-dx', name: '地域DX' },
 };
 
 const NOTION_API_VERSION = '2022-06-28';
