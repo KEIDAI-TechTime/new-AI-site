@@ -133,6 +133,37 @@ function getCommonOptionPrice(commonKey: string, optionKey: string): Selection |
   return null;
 }
 
+// Client-side keyword fallback for when API is unavailable
+const clientCategories = [
+  { id: "reservation", name: "予約システム", keywords: ["予約", "受付", "来店", "送迎", "サロン", "飲食店", "施設", "会議室"] },
+  { id: "inventory", name: "在庫管理", keywords: ["在庫", "商品管理", "部品", "棚卸"] },
+  { id: "warehouse", name: "倉庫・物流", keywords: ["倉庫", "物流", "配送", "出荷", "入荷", "ピッキング"] },
+  { id: "crm_sfa", name: "顧客・販売", keywords: ["顧客", "CRM", "営業", "売上", "見積", "受注"] },
+  { id: "procurement", name: "購買・調達", keywords: ["購買", "調達", "発注", "仕入"] },
+  { id: "bi", name: "BI", keywords: ["BI", "ダッシュボード", "見える化", "分析", "レポート", "経営", "KPI"] },
+  { id: "production", name: "生産管理", keywords: ["生産", "製造", "工場", "工程", "品質"] },
+  { id: "hr", name: "人事・給与", keywords: ["人事", "給与", "勤怠", "採用", "評価", "社員"] },
+  { id: "accounting", name: "原価・会計", keywords: ["原価", "会計", "経理", "財務", "コスト"] },
+  { id: "document", name: "文書管理", keywords: ["文書", "書類", "申請", "ワークフロー", "承認", "稟議"] },
+  { id: "ec", name: "EC", keywords: ["EC", "通販", "ネットショップ", "オンライン販売", "カート"] },
+  { id: "regional_dx", name: "地域DX", keywords: ["地域", "自治体", "MaaS", "観光", "防災"] },
+  { id: "homepage", name: "ホームページ", keywords: ["ホームページ", "Webサイト", "コーポレートサイト", "HP"] },
+];
+
+function clientKeywordFallback(input: string): { category_id: string; category_name: string; confidence: string } {
+  let best = { id: '', name: '', score: 0 };
+  for (const cat of clientCategories) {
+    let score = 0;
+    for (const kw of cat.keywords) {
+      if (input.includes(kw)) score++;
+    }
+    if (score > best.score) best = { id: cat.id, name: cat.name, score };
+  }
+  if (best.score >= 2) return { category_id: best.id, category_name: best.name, confidence: 'high' };
+  if (best.score === 1) return { category_id: best.id, category_name: best.name, confidence: 'medium' };
+  return { category_id: '', category_name: '', confidence: 'low' };
+}
+
 export default function SimulatorChat() {
   const [session, setSession] = useState<EstimateSession>({
     system: null,
@@ -508,12 +539,41 @@ export default function SimulatorChat() {
         }]);
       }
     } catch {
+      // Use client-side keyword fallback when API is unavailable
+      const fallback = clientKeywordFallback(inputText);
+      setIsAnalyzing(false);
+
+      if (fallback.confidence === 'high' || fallback.confidence === 'medium') {
+        const entryOptions = (decisionTree as any).entry_point.options;
+        const matchedOption = entryOptions.find((o: any) => o.key === fallback.category_id);
+
+        if (matchedOption) {
+          if (fallback.confidence === 'high') {
+            setMessages(prev => [...prev, {
+              id: `bot-ai-${Date.now()}`,
+              type: 'bot',
+              text: `「${fallback.category_name}」に関するご相談ですね。詳しくお伺いします。`,
+            }]);
+            navigateToStep(matchedOption.next, { ...session });
+          } else {
+            setMessages(prev => [...prev, {
+              id: `bot-ai-${Date.now()}`,
+              type: 'bot',
+              text: `「${fallback.category_name}」に関するご相談でしょうか？`,
+              questionId: 'ai_confirm',
+            }]);
+            setSession(prev => ({ ...prev, currentStep: 'ai_confirm' }));
+            setMultiSelected([matchedOption.next]);
+          }
+          return;
+        }
+      }
+
       setMessages(prev => [...prev, {
         id: `bot-error-${Date.now()}`,
         type: 'bot',
-        text: 'すみません、解析中にエラーが発生しました。選択肢からお選びください。',
+        text: 'もう少し詳しく教えていただけますか？下記の選択肢から選んでください。',
       }]);
-      setIsAnalyzing(false);
       setSession(prev => ({ ...prev, currentStep: 'start' }));
       setMessages(prev => [...prev, {
         id: `bot-restart-${Date.now()}`,
