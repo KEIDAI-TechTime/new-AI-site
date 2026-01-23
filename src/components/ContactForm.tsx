@@ -129,7 +129,7 @@ export default function ContactForm() {
 
       {submitStatus === 'success' && (
         <div className="p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
-          <p className="text-green-400 text-sm text-center">お問い合わせを受け付けました。担当者より3営業日以内にご連絡いたします。</p>
+          <p className="text-green-400 text-sm text-center">お問い合わせを受け付けました。担当者より24時間以内にご連絡いたします。</p>
         </div>
       )}
       {submitStatus === 'error' && (
