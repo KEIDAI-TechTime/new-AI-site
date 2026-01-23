@@ -1,7 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navigation from '@/components/Navigation.astro';
-import SimulatorForm from '@/components/SimulatorForm';
+import SimulatorChat from '@/components/SimulatorChat';
 
 const title = '見積もりシミュレーター | TechTime - 打ち合わせ不要で概算金額がわかる';
 const description = 'システム開発の見積もりを即座に確認。システム種別と規模を選択するだけで、概算金額をその場で算出。営業との打ち合わせや見積もり待ちは不要です。';
@@ -128,15 +128,15 @@ const benefits = [
               <div class="w-24 h-24 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-6">
                 <span class="text-4xl font-extrabold text-white">1</span>
               </div>
-              <h3 class="text-2xl font-bold text-[#0A1628] mb-4">システム種別を選択</h3>
-              <p class="text-gray-600">開発したいシステムを選びます</p>
+              <h3 class="text-2xl font-bold text-[#0A1628] mb-4">お困りごとを選択</h3>
+              <p class="text-gray-600">チャット形式で質問に答えるだけ</p>
             </div>
             <div class="text-center">
               <div class="w-24 h-24 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-6">
                 <span class="text-4xl font-extrabold text-white">2</span>
               </div>
-              <h3 class="text-2xl font-bold text-[#0A1628] mb-4">条件を選択</h3>
-              <p class="text-gray-600">ユーザー数、拠点数、機能の複雑度などを選択</p>
+              <h3 class="text-2xl font-bold text-[#0A1628] mb-4">機能・規模を選択</h3>
+              <p class="text-gray-600">必要な機能や利用人数をボタンで選択</p>
             </div>
             <div class="text-center">
               <div class="w-24 h-24 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-6">
@@ -148,13 +148,13 @@ const benefits = [
           </div>
 
           <!-- Simulator -->
-          <div class="max-w-5xl mx-auto bg-gradient-to-br from-gray-50 to-white rounded-3xl shadow-2xl p-10 lg:p-16">
+          <div class="max-w-3xl mx-auto">
             <div class="text-center mb-8">
               <h3 class="text-3xl font-bold text-[#0A1628] mb-4">今すぐ試してみる</h3>
-              <p class="text-gray-600">すべての項目を選択して、概算見積もりを表示します</p>
+              <p class="text-gray-600">質問に答えるだけで、概算見積もりを表示します</p>
             </div>
 
-            <SimulatorForm client:load />
+            <SimulatorChat client:load />
           </div>
         </div>
       </section>
