@@ -181,12 +181,14 @@ export default function SimulatorChat() {
   const [freeText, setFreeText] = useState('');
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [estimateResult, setEstimateResult] = useState<EstimateResult | null>(null);
-  const chatEndRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
   const [isInitialized, setIsInitialized] = useState(false);
 
   const scrollToBottom = useCallback(() => {
     setTimeout(() => {
-      chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+      if (chatContainerRef.current) {
+        chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+      }
     }, 100);
   }, []);
 
@@ -860,7 +862,7 @@ export default function SimulatorChat() {
         </div>
 
         {/* Messages */}
-        <div className="p-6 space-y-4 max-h-[600px] overflow-y-auto">
+        <div ref={chatContainerRef} className="p-6 space-y-4 max-h-[600px] overflow-y-auto">
           {messages.map((msg) => (
             <div
               key={msg.id}
@@ -894,7 +896,6 @@ export default function SimulatorChat() {
           {!isAnalyzing && renderOptions()}
           {renderResult()}
 
-          <div ref={chatEndRef} />
         </div>
       </div>
 
