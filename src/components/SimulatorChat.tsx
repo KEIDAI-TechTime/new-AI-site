@@ -645,10 +645,9 @@ export default function SimulatorChat() {
   };
 
   const renderOptions = () => {
-    const question = getCurrentQuestion();
-    if (!question || showResult) return null;
+    if (showResult) return null;
 
-    // Handle AI confirmation
+    // Handle AI confirmation (before question check since ai_confirm is not in decision tree)
     if (session.currentStep === 'ai_confirm') {
       return (
         <div className="flex gap-3 flex-wrap mt-4">
@@ -667,6 +666,9 @@ export default function SimulatorChat() {
         </div>
       );
     }
+
+    const question = getCurrentQuestion();
+    if (!question) return null;
 
     // Free text input
     if (question.type === 'free_text') {
