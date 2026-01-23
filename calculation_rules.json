@@ -1,0 +1,176 @@
+{
+  "version": "1.0",
+  "last_updated": "2025-01-23",
+  "scale_factors": {
+    "users": {
+      "description": "利用者数による規模係数",
+      "types": {
+        "users_and_locations": {
+          "〜50人": 1.0,
+          "51〜200人": 1.1,
+          "201〜1000人": 1.2,
+          "1001人以上": 1.4
+        },
+        "users_large": {
+          "〜5000人": 1.0,
+          "5001〜20000人": 1.2,
+          "20001〜100000人": 1.4,
+          "100001人以上": 1.7
+        }
+      }
+    },
+    "locations": {
+      "description": "拠点数による規模係数",
+      "values": {
+        "1拠点": 1.0,
+        "2-5拠点": 1.15,
+        "6-10拠点": 1.3,
+        "10拠点以上": 1.5
+      }
+    },
+    "deadline": {
+      "description": "納期による係数（ホームページのみ適用）",
+      "values": {
+        "3ヶ月以内": 1.3,
+        "6ヶ月以内": 1.1,
+        "12ヶ月以内": 1.0,
+        "急がない": 0.95
+      }
+    }
+  },
+  "calculation_formula": {
+    "description": "最終見積もり計算式",
+    "formula": "(base_price + sum(option_prices) + external_link_price + data_migration_price) × user_factor × location_factor × deadline_factor",
+    "steps": [
+      {
+        "step": 1,
+        "name": "機能小計",
+        "formula": "base_price + sum(option_prices)",
+        "description": "ベース価格 + 選択したオプション価格の合計"
+      },
+      {
+        "step": 2,
+        "name": "共通オプション加算",
+        "formula": "機能小計 + external_link_price + data_migration_price",
+        "description": "外部連携とデータ移行の価格を加算"
+      },
+      {
+        "step": 3,
+        "name": "規模係数適用",
+        "formula": "共通オプション加算後 × user_factor × location_factor",
+        "description": "利用者数と拠点数の係数を乗算（該当する場合のみ）"
+      },
+      {
+        "step": 4,
+        "name": "納期係数適用",
+        "formula": "規模係数適用後 × deadline_factor",
+        "description": "納期係数を乗算（ホームページのみ）"
+      }
+    ],
+    "rounding": {
+      "method": "ceil",
+      "unit": 1,
+      "description": "万円単位で切り上げ"
+    }
+  },
+  "output_format": {
+    "price_types": [
+      {"key": "min", "label": "最小構成", "description": "必要最小限の機能"},
+      {"key": "std", "label": "標準構成", "description": "おすすめ", "recommended": true},
+      {"key": "max", "label": "フル構成", "description": "高度な機能含む"}
+    ],
+    "display_format": {
+      "prefix": "約",
+      "suffix": "万円〜",
+      "example": "約560万円〜"
+    }
+  },
+  "system_scale_type_mapping": {
+    "予約システム": "users_large",
+    "在庫管理": "users_and_locations",
+    "倉庫・物流": "users_and_locations",
+    "顧客・販売": "users_and_locations",
+    "購買・調達": "users_and_locations",
+    "BI": "users_and_locations",
+    "生産管理": "users_and_locations",
+    "人事・給与": "users_and_locations",
+    "原価・会計": "users_and_locations",
+    "文書管理": "users_and_locations",
+    "EC": "users_large",
+    "地域DX": "users_large",
+    "ホームページ": "deadline_only"
+  },
+  "validation_rules": {
+    "base_selection": {
+      "required": true,
+      "max_count": 1,
+      "error_message": "ベースを1つ選択してください"
+    },
+    "option_selection": {
+      "required": false,
+      "allow_none": true,
+      "none_key": "なし"
+    },
+    "common_options": {
+      "external_link": {"required": true, "default": "なし"},
+      "data_migration": {"required": true, "default": "なし"}
+    },
+    "scale_selection": {
+      "users": {"required_if": "scale_type != deadline_only"},
+      "locations": {"required_if": "scale_type == users_and_locations"},
+      "deadline": {"required_if": "scale_type == deadline_only"}
+    }
+  },
+  "example_calculations": [
+    {
+      "name": "予約システム（乗り物・送迎）の例",
+      "system": "予約システム",
+      "selections": {
+        "base": "乗り物・送迎",
+        "options": ["スマホアプリ", "電話（オペレーター）", "AI配車最適化", "決済"],
+        "external_link": "1システム",
+        "data_migration": "中規模",
+        "users": "5001〜20000人"
+      },
+      "calculation": {
+        "base": {"min": 72, "std": 120, "max": 192},
+        "options_total": {
+          "スマホアプリ": {"min": 50, "std": 80, "max": 120},
+          "電話（オペレーター）": {"min": 20, "std": 35, "max": 55},
+          "AI配車最適化": {"min": 100, "std": 180, "max": 300},
+          "決済": {"min": 35, "std": 60, "max": 100}
+        },
+        "external_link": {"min": 20, "std": 35, "max": 55},
+        "data_migration": {"min": 20, "std": 35, "max": 55},
+        "subtotal": {"min": 317, "std": 545, "max": 877},
+        "user_factor": 1.2,
+        "location_factor": 1.0,
+        "final": {"min": 381, "std": 654, "max": 1053}
+      }
+    },
+    {
+      "name": "ホームページの例",
+      "system": "ホームページ",
+      "selections": {
+        "base": "基本サイト",
+        "options": ["6〜10ページ", "CMS（更新機能）", "SEO対策"],
+        "external_link": "1システム",
+        "data_migration": "中規模",
+        "deadline": "6ヶ月以内"
+      },
+      "calculation": {
+        "base": {"min": 6, "std": 10, "max": 16},
+        "options_total": {
+          "6〜10ページ": {"min": 6, "std": 10, "max": 16},
+          "CMS（更新機能）": {"min": 6, "std": 10, "max": 16},
+          "SEO対策": {"min": 6, "std": 10, "max": 16}
+        },
+        "external_link": {"min": 20, "std": 35, "max": 55},
+        "data_migration": {"min": 20, "std": 35, "max": 55},
+        "subtotal": {"min": 64, "std": 110, "max": 174},
+        "deadline_factor": 1.1,
+        "final": {"min": 71, "std": 121, "max": 192}
+      }
+    }
+  ]
+}

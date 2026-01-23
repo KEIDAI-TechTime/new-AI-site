@@ -1,0 +1,241 @@
+{
+  "version": "1.0",
+  "currency": "万円",
+  "last_updated": "2025-01-23",
+  "systems": {
+    "予約システム": {
+      "system_id": "reservation",
+      "bases": [
+        {"key": "来店予約", "label": "来店予約（飲食店・サロン等）", "min": 36, "std": 60, "max": 96},
+        {"key": "施設・会議室", "label": "施設・会議室の利用予約", "min": 36, "std": 60, "max": 96},
+        {"key": "乗り物・送迎", "label": "乗り物・送迎の予約", "min": 72, "std": 120, "max": 192},
+        {"key": "イベント", "label": "イベント・セミナーの参加予約", "min": 30, "std": 50, "max": 80}
+      ],
+      "options": [
+        {"key": "スマホアプリ", "label": "スマホアプリ", "min": 50, "std": 80, "max": 120, "category": "予約方法"},
+        {"key": "Webサイト", "label": "Webサイト", "min": 20, "std": 30, "max": 50, "category": "予約方法"},
+        {"key": "LINE", "label": "LINE", "min": 25, "std": 40, "max": 60, "category": "予約方法"},
+        {"key": "電話（オペレーター）", "label": "電話（オペレーター対応）", "min": 20, "std": 35, "max": 55, "category": "予約方法"},
+        {"key": "電話（自動音声）", "label": "電話（自動音声・IVR）", "min": 35, "std": 60, "max": 90, "category": "予約方法"},
+        {"key": "住民割引", "label": "住民割引（地域限定）", "min": 30, "std": 50, "max": 80, "category": "認証"},
+        {"key": "高齢者割引", "label": "高齢者・障がい者割引", "min": 20, "std": 35, "max": 55, "category": "認証"},
+        {"key": "マイナンバーカード", "label": "マイナンバーカード連携", "min": 50, "std": 80, "max": 130, "category": "認証"},
+        {"key": "会員登録のみ", "label": "会員登録のみ", "min": 10, "std": 20, "max": 30, "category": "認証"},
+        {"key": "経路検索", "label": "経路検索・乗り換え案内", "min": 60, "std": 100, "max": 160, "category": "MaaS機能", "condition": "乗り物・送迎"},
+        {"key": "バスロケ", "label": "リアルタイム位置表示（バスロケ）", "min": 35, "std": 60, "max": 100, "category": "MaaS機能", "condition": "乗り物・送迎"},
+        {"key": "AI配車最適化", "label": "AI配車最適化", "min": 100, "std": 180, "max": 300, "category": "MaaS機能", "condition": "乗り物・送迎"},
+        {"key": "決済", "label": "決済（クレジット・電子マネー）", "min": 35, "std": 60, "max": 100, "category": "MaaS機能", "condition": "乗り物・送迎"},
+        {"key": "交通系IC", "label": "交通系IC連携", "min": 45, "std": 80, "max": 130, "category": "MaaS機能", "condition": "乗り物・送迎"}
+      ],
+      "scale_type": "users_large"
+    },
+    "在庫管理": {
+      "system_id": "inventory",
+      "bases": [
+        {"key": "商品・製品", "label": "商品・製品の在庫", "min": 48, "std": 80, "max": 128},
+        {"key": "原材料・部品", "label": "原材料・部品の在庫", "min": 60, "std": 100, "max": 160}
+      ],
+      "options": [
+        {"key": "ハンディターミナル", "label": "ハンディターミナル", "min": 30, "std": 50, "max": 80, "category": "読取方法"},
+        {"key": "スマホ読み取り", "label": "スマホで読み取り", "min": 20, "std": 35, "max": 55, "category": "読取方法"},
+        {"key": "自動発注あり", "label": "自動発注", "min": 40, "std": 70, "max": 110, "category": "通知・発注"},
+        {"key": "通知のみ", "label": "通知のみ", "min": 15, "std": 25, "max": 40, "category": "通知・発注"},
+        {"key": "ロット管理", "label": "ロット管理", "min": 25, "std": 45, "max": 70, "category": "追加機能"},
+        {"key": "棚卸機能", "label": "棚卸機能", "min": 20, "std": 35, "max": 55, "category": "追加機能"},
+        {"key": "複数倉庫対応", "label": "複数倉庫対応", "min": 30, "std": 50, "max": 80, "category": "追加機能"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "倉庫・物流": {
+      "system_id": "warehouse",
+      "bases": [
+        {"key": "入荷・検品", "label": "入荷・検品", "min": 48, "std": 80, "max": 128}
+      ],
+      "options": [
+        {"key": "ロケーション管理", "label": "棚入れ・ロケーション管理", "min": 30, "std": 50, "max": 80, "category": "機能"},
+        {"key": "ピッキング・出荷", "label": "ピッキング・出荷", "min": 30, "std": 50, "max": 80, "category": "機能"},
+        {"key": "配送・配車", "label": "配送・配車管理", "min": 40, "std": 70, "max": 110, "category": "機能"},
+        {"key": "返品処理", "label": "返品処理", "min": 15, "std": 25, "max": 40, "category": "機能"},
+        {"key": "トラッキング", "label": "トラッキング（追跡）", "min": 25, "std": 45, "max": 70, "category": "機能"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "顧客・販売": {
+      "system_id": "crm_sfa",
+      "bases": [
+        {"key": "顧客情報・履歴", "label": "お客様の連絡先・対応履歴（CRM）", "min": 42, "std": 70, "max": 112},
+        {"key": "見積・受注・売上", "label": "見積もり・受注・売上（SFA）", "min": 60, "std": 100, "max": 160},
+        {"key": "両方（統合）", "label": "両方（統合）", "min": 90, "std": 150, "max": 240}
+      ],
+      "options": [
+        {"key": "一斉メール配信", "label": "顧客への一斉メール配信", "min": 15, "std": 25, "max": 40, "category": "機能"},
+        {"key": "案件進捗管理", "label": "案件の進捗管理（パイプライン）", "min": 20, "std": 35, "max": 55, "category": "機能"},
+        {"key": "見積書・請求書作成", "label": "見積書・請求書の作成", "min": 25, "std": 45, "max": 70, "category": "機能"},
+        {"key": "売上レポート", "label": "売上レポート・分析", "min": 20, "std": 35, "max": 55, "category": "機能"},
+        {"key": "名刺管理", "label": "名刺管理", "min": 15, "std": 25, "max": 40, "category": "機能"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "購買・調達": {
+      "system_id": "procurement",
+      "bases": [
+        {"key": "発注書管理", "label": "発注書の作成・管理", "min": 48, "std": 80, "max": 128}
+      ],
+      "options": [
+        {"key": "仕入先管理", "label": "仕入先の管理・比較", "min": 20, "std": 35, "max": 55, "category": "機能"},
+        {"key": "納期管理", "label": "納期管理・督促", "min": 15, "std": 25, "max": 40, "category": "機能"},
+        {"key": "購買分析", "label": "購買データの分析", "min": 25, "std": 40, "max": 65, "category": "機能"},
+        {"key": "見積依頼管理", "label": "見積もり依頼の管理", "min": 20, "std": 30, "max": 50, "category": "機能"},
+        {"key": "承認ワークフロー", "label": "承認ワークフロー", "min": 30, "std": 50, "max": 80, "category": "機能"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "BI": {
+      "system_id": "bi",
+      "bases": [
+        {"key": "売上・利益", "label": "売上・利益の推移", "min": 36, "std": 60, "max": 96}
+      ],
+      "options": [
+        {"key": "部門別分析", "label": "部門別・商品別の実績", "min": 25, "std": 40, "max": 65, "category": "分析"},
+        {"key": "予実比較", "label": "予算と実績の比較", "min": 30, "std": 50, "max": 80, "category": "分析"},
+        {"key": "在庫状況", "label": "在庫状況", "min": 20, "std": 35, "max": 55, "category": "分析"},
+        {"key": "生産・稼働率", "label": "生産状況・稼働率", "min": 25, "std": 45, "max": 70, "category": "分析"},
+        {"key": "人件費・経費", "label": "人件費・経費", "min": 20, "std": 35, "max": 55, "category": "分析"},
+        {"key": "リアルタイム更新", "label": "リアルタイム更新", "min": 40, "std": 70, "max": 110, "category": "更新頻度"},
+        {"key": "日次更新", "label": "日次更新", "min": 20, "std": 35, "max": 55, "category": "更新頻度"},
+        {"key": "週次・月次", "label": "週次・月次更新", "min": 10, "std": 20, "max": 30, "category": "更新頻度"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "生産管理": {
+      "system_id": "production",
+      "bases": [
+        {"key": "生産計画", "label": "生産計画の作成・調整", "min": 90, "std": 150, "max": 240}
+      ],
+      "options": [
+        {"key": "工程進捗管理", "label": "製造工程の進捗管理", "min": 35, "std": 60, "max": 100, "category": "機能"},
+        {"key": "作業指示・実績", "label": "作業指示・実績の記録", "min": 30, "std": 50, "max": 80, "category": "機能"},
+        {"key": "品質・不良管理", "label": "品質管理・不良管理", "min": 25, "std": 45, "max": 70, "category": "機能"},
+        {"key": "設備稼働管理", "label": "設備の稼働管理", "min": 30, "std": 50, "max": 80, "category": "機能"},
+        {"key": "原価把握", "label": "原価の把握", "min": 40, "std": 70, "max": 110, "category": "機能"},
+        {"key": "タブレット", "label": "タブレット入力", "min": 20, "std": 35, "max": 55, "category": "入力方法"},
+        {"key": "バーコード・QR", "label": "バーコード・QRコード", "min": 25, "std": 40, "max": 65, "category": "入力方法"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "人事・給与": {
+      "system_id": "hr",
+      "bases": [
+        {"key": "社員基本情報", "label": "社員の基本情報・履歴", "min": 30, "std": 50, "max": 80}
+      ],
+      "options": [
+        {"key": "勤怠管理", "label": "勤怠（出退勤・残業・有給）", "min": 30, "std": 50, "max": 80, "category": "機能"},
+        {"key": "給与計算", "label": "給与計算・明細", "min": 50, "std": 90, "max": 150, "category": "機能"},
+        {"key": "採用管理", "label": "採用管理", "min": 25, "std": 45, "max": 70, "category": "機能"},
+        {"key": "評価・目標管理", "label": "評価・目標管理", "min": 30, "std": 50, "max": 80, "category": "機能"},
+        {"key": "研修・資格管理", "label": "研修・資格管理", "min": 20, "std": 35, "max": 55, "category": "機能"},
+        {"key": "ICカード打刻", "label": "ICカード打刻", "min": 20, "std": 35, "max": 55, "category": "打刻方法", "condition": "勤怠管理"},
+        {"key": "スマホ・GPS打刻", "label": "スマホ・GPS打刻", "min": 15, "std": 25, "max": 40, "category": "打刻方法", "condition": "勤怠管理"},
+        {"key": "PC打刻", "label": "パソコン打刻", "min": 10, "std": 15, "max": 25, "category": "打刻方法", "condition": "勤怠管理"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "原価・会計": {
+      "system_id": "accounting",
+      "bases": [
+        {"key": "製品別原価", "label": "製品ごとの原価把握", "min": 72, "std": 120, "max": 192},
+        {"key": "案件別原価", "label": "案件ごとの原価把握", "min": 60, "std": 100, "max": 160}
+      ],
+      "options": [
+        {"key": "会計処理", "label": "会計処理の効率化", "min": 40, "std": 70, "max": 110, "category": "機能"},
+        {"key": "財務レポート", "label": "財務レポート作成", "min": 25, "std": 45, "max": 70, "category": "機能"},
+        {"key": "予算管理", "label": "予算管理", "min": 30, "std": 50, "max": 80, "category": "機能"},
+        {"key": "部門別会計", "label": "部門別会計", "min": 25, "std": 40, "max": 65, "category": "機能"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "文書管理": {
+      "system_id": "document",
+      "bases": [
+        {"key": "契約書・見積書", "label": "契約書・見積書・請求書", "min": 36, "std": 60, "max": 96},
+        {"key": "社内申請書", "label": "社内申請書（稟議・経費など）", "min": 42, "std": 70, "max": 112},
+        {"key": "マニュアル・規程", "label": "マニュアル・規程類", "min": 30, "std": 50, "max": 80},
+        {"key": "図面・設計書", "label": "図面・設計書", "min": 48, "std": 80, "max": 128}
+      ],
+      "options": [
+        {"key": "複雑（多段階）", "label": "複雑な承認フロー（多段階）", "min": 40, "std": 70, "max": 110, "category": "承認"},
+        {"key": "シンプル", "label": "シンプルな承認フロー", "min": 20, "std": 30, "max": 50, "category": "承認"},
+        {"key": "バージョン管理", "label": "バージョン管理", "min": 20, "std": 35, "max": 55, "category": "機能"},
+        {"key": "全文検索", "label": "全文検索", "min": 25, "std": 45, "max": 70, "category": "機能"},
+        {"key": "電子署名", "label": "電子署名", "min": 30, "std": 50, "max": 80, "category": "機能"}
+      ],
+      "scale_type": "users_and_locations"
+    },
+    "EC": {
+      "system_id": "ec",
+      "bases": [
+        {"key": "物販", "label": "物販（発送が必要）", "min": 30, "std": 50, "max": 80},
+        {"key": "デジタル商品", "label": "デジタル商品（ダウンロード等）", "min": 18, "std": 30, "max": 48},
+        {"key": "サブスク", "label": "サブスクリプション（定期購入）", "min": 36, "std": 60, "max": 96}
+      ],
+      "options": [
+        {"key": "カート・決済", "label": "カート・決済", "min": 40, "std": 70, "max": 110, "category": "機能"},
+        {"key": "在庫連携", "label": "在庫連携", "min": 25, "std": 45, "max": 70, "category": "機能"},
+        {"key": "クーポン・ポイント", "label": "クーポン・ポイント", "min": 20, "std": 35, "max": 55, "category": "機能"},
+        {"key": "レビュー機能", "label": "レビュー機能", "min": 15, "std": 25, "max": 40, "category": "機能"},
+        {"key": "複数配送先", "label": "複数配送先", "min": 15, "std": 25, "max": 40, "category": "機能"}
+      ],
+      "scale_type": "users_large"
+    },
+    "地域DX": {
+      "system_id": "regional_dx",
+      "bases": [
+        {"key": "交通・MaaS", "label": "交通・移動の不便解消（MaaS）", "min": 120, "std": 200, "max": 320},
+        {"key": "観光・周遊", "label": "観光・周遊の促進", "min": 72, "std": 120, "max": 192},
+        {"key": "買い物支援", "label": "地域の買い物支援", "min": 48, "std": 80, "max": 128},
+        {"key": "行政デジタル化", "label": "行政手続きのデジタル化", "min": 108, "std": 180, "max": 288},
+        {"key": "防災・見守り", "label": "防災・見守り", "min": 72, "std": 120, "max": 192}
+      ],
+      "options": [
+        {"key": "地域ポイント", "label": "地域ポイント", "min": 40, "std": 70, "max": 110, "category": "機能"}
+      ],
+      "scale_type": "users_large"
+    },
+    "ホームページ": {
+      "system_id": "homepage",
+      "bases": [
+        {"key": "基本サイト", "label": "基本サイト", "min": 6, "std": 10, "max": 16}
+      ],
+      "options": [
+        {"key": "〜5ページ", "label": "〜5ページ", "min": 0, "std": 0, "max": 0, "category": "ページ数"},
+        {"key": "6〜10ページ", "label": "6〜10ページ", "min": 6, "std": 10, "max": 16, "category": "ページ数"},
+        {"key": "11〜20ページ", "label": "11〜20ページ", "min": 12, "std": 20, "max": 32, "category": "ページ数"},
+        {"key": "21ページ以上", "label": "21ページ以上", "min": 21, "std": 35, "max": 56, "category": "ページ数"},
+        {"key": "CMS（更新機能）", "label": "CMS（自分で更新できる機能）", "min": 6, "std": 10, "max": 16, "category": "機能"},
+        {"key": "多言語対応", "label": "多言語対応", "min": 9, "std": 15, "max": 24, "category": "機能"},
+        {"key": "SEO対策", "label": "SEO対策", "min": 6, "std": 10, "max": 16, "category": "機能"}
+      ],
+      "scale_type": "deadline_only"
+    }
+  },
+  "common_options": {
+    "external_link": {
+      "label": "外部システム連携",
+      "options": [
+        {"key": "1システム", "label": "1システムと連携", "min": 20, "std": 35, "max": 55},
+        {"key": "2-3システム", "label": "2〜3システムと連携", "min": 40, "std": 70, "max": 110},
+        {"key": "4システム以上", "label": "4システム以上と連携", "min": 70, "std": 120, "max": 200},
+        {"key": "なし", "label": "特に不要", "min": 0, "std": 0, "max": 0}
+      ]
+    },
+    "data_migration": {
+      "label": "データ移行",
+      "options": [
+        {"key": "大規模", "label": "大量にある（大規模）", "min": 40, "std": 70, "max": 110},
+        {"key": "中規模", "label": "そこそこある（中規模）", "min": 20, "std": 35, "max": 55},
+        {"key": "小規模", "label": "少しある（小規模）", "min": 10, "std": 15, "max": 25},
+        {"key": "なし", "label": "ほぼない", "min": 0, "std": 0, "max": 0}
+      ]
+    }
+  }
+}

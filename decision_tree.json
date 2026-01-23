@@ -1,0 +1,629 @@
+{
+  "version": "1.0",
+  "last_updated": "2025-01-23",
+  "entry_point": {
+    "question_id": "start",
+    "question": "どんなお困りごとを解決したいですか？",
+    "type": "single",
+    "options": [
+      {"key": "reservation", "label": "予約・受付をネットでできるようにしたい", "next": "reservation_base"},
+      {"key": "inventory", "label": "モノの数や場所を把握したい", "next": "inventory_base"},
+      {"key": "warehouse", "label": "倉庫の入出荷・配送を管理したい", "next": "warehouse_options"},
+      {"key": "crm_sfa", "label": "お客様の情報や売上を管理したい", "next": "crm_sfa_base"},
+      {"key": "procurement", "label": "仕入れ・発注を効率化したい", "next": "procurement_options"},
+      {"key": "bi", "label": "経営状況を見える化したい", "next": "bi_options"},
+      {"key": "production", "label": "工場の生産を管理したい", "next": "production_options"},
+      {"key": "hr", "label": "社員の勤怠・給与を管理したい", "next": "hr_options"},
+      {"key": "accounting", "label": "コストや会計を管理したい", "next": "accounting_base"},
+      {"key": "document", "label": "書類・申請の管理を楽にしたい", "next": "document_base"},
+      {"key": "ec", "label": "ネットで商品を販売したい", "next": "ec_base"},
+      {"key": "regional_dx", "label": "地域・公共の課題を解決したい", "next": "regional_dx_base"},
+      {"key": "homepage", "label": "会社のホームページを作りたい", "next": "homepage_pages"},
+      {"key": "other", "label": "上記に当てはまらない／複数ある", "next": "ai_analysis"}
+    ]
+  },
+  "questions": {
+    "reservation_base": {
+      "system": "予約システム",
+      "question_id": "reservation_base",
+      "question": "何の予約ですか？",
+      "type": "single",
+      "selection_type": "base",
+      "options": [
+        {"key": "来店予約", "label": "来店予約（飲食店・サロン等）", "next": "reservation_method"},
+        {"key": "施設・会議室", "label": "施設・会議室の利用予約", "next": "reservation_method"},
+        {"key": "乗り物・送迎", "label": "乗り物・送迎の予約", "next": "reservation_method"},
+        {"key": "イベント", "label": "イベント・セミナーの参加予約", "next": "reservation_method"}
+      ]
+    },
+    "reservation_method": {
+      "system": "予約システム",
+      "question_id": "reservation_method",
+      "question": "予約方法は？（複数選択可）",
+      "type": "multiple",
+      "max_selections": 3,
+      "selection_type": "option",
+      "filter_category": "予約方法",
+      "options": [
+        {"key": "スマホアプリ", "label": "スマホアプリ"},
+        {"key": "Webサイト", "label": "Webサイト"},
+        {"key": "LINE", "label": "LINE"},
+        {"key": "電話（オペレーター）", "label": "電話（オペレーター対応）"},
+        {"key": "電話（自動音声）", "label": "電話（自動音声・IVR）"}
+      ],
+      "next": "reservation_auth"
+    },
+    "reservation_auth": {
+      "system": "予約システム",
+      "question_id": "reservation_auth",
+      "question": "利用者の認証・割引は？",
+      "type": "single",
+      "selection_type": "option",
+      "filter_category": "認証",
+      "options": [
+        {"key": "会員登録のみ", "label": "会員登録のみ"},
+        {"key": "住民割引", "label": "住民割引（地域限定）"},
+        {"key": "高齢者割引", "label": "高齢者・障がい者割引"},
+        {"key": "マイナンバーカード", "label": "マイナンバーカード連携"},
+        {"key": "なし", "label": "認証不要"}
+      ],
+      "next": "reservation_maas_check"
+    },
+    "reservation_maas_check": {
+      "system": "予約システム",
+      "question_id": "reservation_maas_check",
+      "question": null,
+      "type": "conditional",
+      "condition": {
+        "check": "base_selection",
+        "equals": "乗り物・送迎",
+        "true_next": "reservation_maas_options",
+        "false_next": "common_external_link"
+      }
+    },
+    "reservation_maas_options": {
+      "system": "予約システム",
+      "question_id": "reservation_maas_options",
+      "question": "その他必要な機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "filter_category": "MaaS機能",
+      "options": [
+        {"key": "経路検索", "label": "経路検索・乗り換え案内"},
+        {"key": "バスロケ", "label": "リアルタイム位置表示（バスロケ）"},
+        {"key": "AI配車最適化", "label": "AI配車最適化"},
+        {"key": "決済", "label": "決済（クレジット・電子マネー）"},
+        {"key": "交通系IC", "label": "交通系IC連携"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "inventory_base": {
+      "system": "在庫管理",
+      "question_id": "inventory_base",
+      "question": "何を管理したいですか？",
+      "type": "single",
+      "selection_type": "base",
+      "options": [
+        {"key": "商品・製品", "label": "商品・製品の在庫"},
+        {"key": "原材料・部品", "label": "原材料・部品の在庫"}
+      ],
+      "next": "inventory_barcode"
+    },
+    "inventory_barcode": {
+      "system": "在庫管理",
+      "question_id": "inventory_barcode",
+      "question": "バーコード・QRコードでの管理は？",
+      "type": "single",
+      "selection_type": "option",
+      "filter_category": "読取方法",
+      "options": [
+        {"key": "ハンディターミナル", "label": "ハンディターミナルを使いたい"},
+        {"key": "スマホ読み取り", "label": "スマホで読み取りたい"},
+        {"key": "なし", "label": "不要、手入力でOK"}
+      ],
+      "next": "inventory_alert"
+    },
+    "inventory_alert": {
+      "system": "在庫管理",
+      "question_id": "inventory_alert",
+      "question": "在庫が少なくなったときの通知・発注は？",
+      "type": "single",
+      "selection_type": "option",
+      "filter_category": "通知・発注",
+      "options": [
+        {"key": "自動発注あり", "label": "自動発注まで欲しい"},
+        {"key": "通知のみ", "label": "通知だけ欲しい"},
+        {"key": "なし", "label": "不要"}
+      ],
+      "next": "inventory_additional"
+    },
+    "inventory_additional": {
+      "system": "在庫管理",
+      "question_id": "inventory_additional",
+      "question": "その他必要な機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "filter_category": "追加機能",
+      "options": [
+        {"key": "ロット管理", "label": "ロット管理"},
+        {"key": "棚卸機能", "label": "棚卸機能"},
+        {"key": "複数倉庫対応", "label": "複数倉庫対応"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "warehouse_options": {
+      "system": "倉庫・物流",
+      "question_id": "warehouse_options",
+      "question": "必要な機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "auto_base": "入荷・検品",
+      "options": [
+        {"key": "ロケーション管理", "label": "棚入れ・ロケーション管理"},
+        {"key": "ピッキング・出荷", "label": "ピッキング・出荷"},
+        {"key": "配送・配車", "label": "配送・配車管理"},
+        {"key": "返品処理", "label": "返品処理"},
+        {"key": "トラッキング", "label": "トラッキング（追跡）"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "crm_sfa_base": {
+      "system": "顧客・販売",
+      "question_id": "crm_sfa_base",
+      "question": "主に何を管理したいですか？",
+      "type": "single",
+      "selection_type": "base",
+      "options": [
+        {"key": "顧客情報・履歴", "label": "お客様の連絡先・対応履歴"},
+        {"key": "見積・受注・売上", "label": "見積もり・受注・売上"},
+        {"key": "両方（統合）", "label": "両方"}
+      ],
+      "next": "crm_sfa_options"
+    },
+    "crm_sfa_options": {
+      "system": "顧客・販売",
+      "question_id": "crm_sfa_options",
+      "question": "欲しい機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "options": [
+        {"key": "一斉メール配信", "label": "顧客への一斉メール配信"},
+        {"key": "案件進捗管理", "label": "案件の進捗管理（パイプライン）"},
+        {"key": "見積書・請求書作成", "label": "見積書・請求書の作成"},
+        {"key": "売上レポート", "label": "売上レポート・分析"},
+        {"key": "名刺管理", "label": "名刺管理"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "procurement_options": {
+      "system": "購買・調達",
+      "question_id": "procurement_options",
+      "question": "どんな業務を効率化したいですか？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "auto_base": "発注書管理",
+      "options": [
+        {"key": "仕入先管理", "label": "仕入先の管理・比較"},
+        {"key": "納期管理", "label": "納期管理・督促"},
+        {"key": "購買分析", "label": "購買データの分析"},
+        {"key": "見積依頼管理", "label": "見積もり依頼の管理"},
+        {"key": "承認ワークフロー", "label": "承認ワークフロー"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "bi_options": {
+      "system": "BI",
+      "question_id": "bi_options",
+      "question": "何を見える化したいですか？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "auto_base": "売上・利益",
+      "filter_category": "分析",
+      "options": [
+        {"key": "部門別分析", "label": "部門別・商品別の実績"},
+        {"key": "予実比較", "label": "予算と実績の比較"},
+        {"key": "在庫状況", "label": "在庫状況"},
+        {"key": "生産・稼働率", "label": "生産状況・稼働率"},
+        {"key": "人件費・経費", "label": "人件費・経費"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "bi_update_frequency"
+    },
+    "bi_update_frequency": {
+      "system": "BI",
+      "question_id": "bi_update_frequency",
+      "question": "データの更新頻度は？",
+      "type": "single",
+      "selection_type": "option",
+      "filter_category": "更新頻度",
+      "options": [
+        {"key": "リアルタイム更新", "label": "リアルタイム（常に最新）"},
+        {"key": "日次更新", "label": "日次更新"},
+        {"key": "週次・月次", "label": "週次・月次更新"}
+      ],
+      "next": "common_external_link"
+    },
+    "production_options": {
+      "system": "生産管理",
+      "question_id": "production_options",
+      "question": "管理したいことは？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "auto_base": "生産計画",
+      "filter_category": "機能",
+      "options": [
+        {"key": "工程進捗管理", "label": "製造工程の進捗管理"},
+        {"key": "作業指示・実績", "label": "作業指示・実績の記録"},
+        {"key": "品質・不良管理", "label": "品質管理・不良管理"},
+        {"key": "設備稼働管理", "label": "設備の稼働管理"},
+        {"key": "原価把握", "label": "原価の把握"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "production_input"
+    },
+    "production_input": {
+      "system": "生産管理",
+      "question_id": "production_input",
+      "question": "現場での入力方法は？",
+      "type": "single",
+      "selection_type": "option",
+      "filter_category": "入力方法",
+      "options": [
+        {"key": "タブレット", "label": "タブレット"},
+        {"key": "バーコード・QR", "label": "バーコード・QRコード"},
+        {"key": "なし", "label": "パソコンのみ／まだ決めていない"}
+      ],
+      "next": "common_external_link"
+    },
+    "hr_options": {
+      "system": "人事・給与",
+      "question_id": "hr_options",
+      "question": "何を管理したいですか？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "auto_base": "社員基本情報",
+      "filter_category": "機能",
+      "options": [
+        {"key": "勤怠管理", "label": "勤怠（出退勤・残業・有給）"},
+        {"key": "給与計算", "label": "給与計算・明細"},
+        {"key": "採用管理", "label": "採用管理"},
+        {"key": "評価・目標管理", "label": "評価・目標管理"},
+        {"key": "研修・資格管理", "label": "研修・資格管理"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "hr_attendance_check"
+    },
+    "hr_attendance_check": {
+      "system": "人事・給与",
+      "question_id": "hr_attendance_check",
+      "question": null,
+      "type": "conditional",
+      "condition": {
+        "check": "option_selected",
+        "option": "勤怠管理",
+        "true_next": "hr_clock_method",
+        "false_next": "common_external_link"
+      }
+    },
+    "hr_clock_method": {
+      "system": "人事・給与",
+      "question_id": "hr_clock_method",
+      "question": "勤怠の打刻方法は？",
+      "type": "single",
+      "selection_type": "option",
+      "filter_category": "打刻方法",
+      "options": [
+        {"key": "ICカード打刻", "label": "ICカード"},
+        {"key": "スマホ・GPS打刻", "label": "スマホ・GPS"},
+        {"key": "PC打刻", "label": "パソコン"},
+        {"key": "なし", "label": "まだ決めていない"}
+      ],
+      "next": "common_external_link"
+    },
+    "accounting_base": {
+      "system": "原価・会計",
+      "question_id": "accounting_base",
+      "question": "何をしたいですか？",
+      "type": "single",
+      "selection_type": "base",
+      "options": [
+        {"key": "製品別原価", "label": "製品ごとの原価を把握したい"},
+        {"key": "案件別原価", "label": "案件ごとの原価を把握したい"}
+      ],
+      "next": "accounting_options"
+    },
+    "accounting_options": {
+      "system": "原価・会計",
+      "question_id": "accounting_options",
+      "question": "その他必要な機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "options": [
+        {"key": "会計処理", "label": "会計処理の効率化"},
+        {"key": "財務レポート", "label": "財務レポート作成"},
+        {"key": "予算管理", "label": "予算管理"},
+        {"key": "部門別会計", "label": "部門別会計"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "document_base": {
+      "system": "文書管理",
+      "question_id": "document_base",
+      "question": "どんな書類を管理したいですか？",
+      "type": "single",
+      "selection_type": "base",
+      "options": [
+        {"key": "契約書・見積書", "label": "契約書・見積書・請求書"},
+        {"key": "社内申請書", "label": "社内申請書（稟議・経費など）"},
+        {"key": "マニュアル・規程", "label": "マニュアル・規程類"},
+        {"key": "図面・設計書", "label": "図面・設計書"}
+      ],
+      "next": "document_approval"
+    },
+    "document_approval": {
+      "system": "文書管理",
+      "question_id": "document_approval",
+      "question": "承認フローは必要ですか？",
+      "type": "single",
+      "selection_type": "option",
+      "filter_category": "承認",
+      "options": [
+        {"key": "複雑（多段階）", "label": "複雑（多段階の承認）"},
+        {"key": "シンプル", "label": "シンプルなものでいい"},
+        {"key": "なし", "label": "不要、保管だけできれば"}
+      ],
+      "next": "document_additional"
+    },
+    "document_additional": {
+      "system": "文書管理",
+      "question_id": "document_additional",
+      "question": "その他必要な機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "filter_category": "機能",
+      "options": [
+        {"key": "バージョン管理", "label": "バージョン管理"},
+        {"key": "全文検索", "label": "全文検索"},
+        {"key": "電子署名", "label": "電子署名"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "ec_base": {
+      "system": "EC",
+      "question_id": "ec_base",
+      "question": "どんな商品を売りますか？",
+      "type": "single",
+      "selection_type": "base",
+      "options": [
+        {"key": "物販", "label": "物販（発送が必要）"},
+        {"key": "デジタル商品", "label": "デジタル商品（ダウンロード等）"},
+        {"key": "サブスク", "label": "サブスクリプション（定期購入）"}
+      ],
+      "next": "ec_options"
+    },
+    "ec_options": {
+      "system": "EC",
+      "question_id": "ec_options",
+      "question": "必要な機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "options": [
+        {"key": "カート・決済", "label": "カート・決済"},
+        {"key": "在庫連携", "label": "在庫連携"},
+        {"key": "クーポン・ポイント", "label": "クーポン・ポイント"},
+        {"key": "レビュー機能", "label": "レビュー機能"},
+        {"key": "複数配送先", "label": "複数配送先"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "regional_dx_base": {
+      "system": "地域DX",
+      "question_id": "regional_dx_base",
+      "question": "どんな課題を解決したいですか？",
+      "type": "single",
+      "selection_type": "base",
+      "options": [
+        {"key": "交通・MaaS", "label": "交通・移動の不便解消（MaaS）"},
+        {"key": "観光・周遊", "label": "観光・周遊の促進"},
+        {"key": "買い物支援", "label": "地域の買い物支援"},
+        {"key": "行政デジタル化", "label": "行政手続きのデジタル化"},
+        {"key": "防災・見守り", "label": "防災・見守り"}
+      ],
+      "next": "regional_dx_options"
+    },
+    "regional_dx_options": {
+      "system": "地域DX",
+      "question_id": "regional_dx_options",
+      "question": "その他必要な機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "options": [
+        {"key": "地域ポイント", "label": "地域ポイント"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "homepage_pages": {
+      "system": "ホームページ",
+      "question_id": "homepage_pages",
+      "question": "ページ数は？",
+      "type": "single",
+      "selection_type": "option",
+      "auto_base": "基本サイト",
+      "filter_category": "ページ数",
+      "options": [
+        {"key": "〜5ページ", "label": "〜5ページ"},
+        {"key": "6〜10ページ", "label": "6〜10ページ"},
+        {"key": "11〜20ページ", "label": "11〜20ページ"},
+        {"key": "21ページ以上", "label": "21ページ以上"}
+      ],
+      "next": "homepage_options"
+    },
+    "homepage_options": {
+      "system": "ホームページ",
+      "question_id": "homepage_options",
+      "question": "必要な機能は？（複数選択可）",
+      "type": "multiple",
+      "selection_type": "option",
+      "filter_category": "機能",
+      "options": [
+        {"key": "CMS（更新機能）", "label": "CMS（自分で更新できる機能）"},
+        {"key": "多言語対応", "label": "多言語対応"},
+        {"key": "SEO対策", "label": "SEO対策"},
+        {"key": "なし", "label": "特になし"}
+      ],
+      "next": "common_external_link"
+    },
+    "common_external_link": {
+      "system": null,
+      "question_id": "common_external_link",
+      "question": "他のシステムとの連携は必要ですか？",
+      "type": "single",
+      "selection_type": "common",
+      "common_key": "external_link",
+      "options": [
+        {"key": "1システム", "label": "1システムと連携"},
+        {"key": "2-3システム", "label": "2〜3システムと連携"},
+        {"key": "4システム以上", "label": "4システム以上と連携"},
+        {"key": "なし", "label": "特に不要"}
+      ],
+      "next": "common_data_migration"
+    },
+    "common_data_migration": {
+      "system": null,
+      "question_id": "common_data_migration",
+      "question": "既存システムからのデータ移行は？",
+      "type": "single",
+      "selection_type": "common",
+      "common_key": "data_migration",
+      "options": [
+        {"key": "大規模", "label": "大量にある（大規模）"},
+        {"key": "中規模", "label": "そこそこある（中規模）"},
+        {"key": "小規模", "label": "少しある（小規模）"},
+        {"key": "なし", "label": "ほぼない"}
+      ],
+      "next": "common_users"
+    },
+    "common_users": {
+      "system": null,
+      "question_id": "common_users",
+      "question": "利用する人数は？",
+      "type": "single",
+      "selection_type": "scale",
+      "scale_key": "users",
+      "options_by_scale_type": {
+        "users_and_locations": [
+          {"key": "〜50人", "label": "〜50人"},
+          {"key": "51〜200人", "label": "51〜200人"},
+          {"key": "201〜1000人", "label": "201〜1,000人"},
+          {"key": "1001人以上", "label": "1,001人以上"}
+        ],
+        "users_large": [
+          {"key": "〜5000人", "label": "〜5,000人"},
+          {"key": "5001〜20000人", "label": "5,001〜20,000人"},
+          {"key": "20001〜100000人", "label": "20,001〜100,000人"},
+          {"key": "100001人以上", "label": "100,001人以上"}
+        ],
+        "deadline_only": null
+      },
+      "next": "common_locations_check"
+    },
+    "common_locations_check": {
+      "system": null,
+      "question_id": "common_locations_check",
+      "question": null,
+      "type": "conditional",
+      "condition": {
+        "check": "scale_type",
+        "equals": "users_and_locations",
+        "true_next": "common_locations",
+        "false_next": "common_deadline_check"
+      }
+    },
+    "common_locations": {
+      "system": null,
+      "question_id": "common_locations",
+      "question": "拠点数は？",
+      "type": "single",
+      "selection_type": "scale",
+      "scale_key": "locations",
+      "options": [
+        {"key": "1拠点", "label": "1拠点"},
+        {"key": "2-5拠点", "label": "2〜5拠点"},
+        {"key": "6-10拠点", "label": "6〜10拠点"},
+        {"key": "10拠点以上", "label": "10拠点以上"}
+      ],
+      "next": "common_deadline_check"
+    },
+    "common_deadline_check": {
+      "system": null,
+      "question_id": "common_deadline_check",
+      "question": null,
+      "type": "conditional",
+      "condition": {
+        "check": "scale_type",
+        "equals": "deadline_only",
+        "true_next": "common_deadline",
+        "false_next": "result"
+      }
+    },
+    "common_deadline": {
+      "system": null,
+      "question_id": "common_deadline",
+      "question": "希望の納期は？",
+      "type": "single",
+      "selection_type": "scale",
+      "scale_key": "deadline",
+      "options": [
+        {"key": "3ヶ月以内", "label": "3ヶ月以内"},
+        {"key": "6ヶ月以内", "label": "6ヶ月以内"},
+        {"key": "12ヶ月以内", "label": "12ヶ月以内"},
+        {"key": "急がない", "label": "急がない"}
+      ],
+      "next": "result"
+    },
+    "ai_analysis": {
+      "system": null,
+      "question_id": "ai_analysis",
+      "question": "実現したいことを教えてください",
+      "type": "free_text",
+      "placeholder": "例：田舎のお年寄りが電話でも予約できて、家族がスマホで状況確認できる送迎サービスを作りたい",
+      "ai_enabled": true,
+      "next": "dynamic"
+    },
+    "result": {
+      "system": null,
+      "question_id": "result",
+      "question": null,
+      "type": "result",
+      "next": null
+    }
+  },
+  "ai_analysis_config": {
+    "model": "claude-3-haiku",
+    "system_prompt": "あなたはシステム開発見積もりアシスタントです。ユーザーの入力を解析し、最も適切なシステムカテゴリを特定してください。",
+    "categories": [
+      {"id": "reservation", "name": "予約システム", "keywords": ["予約", "受付", "来店", "送迎", "乗り物", "イベント", "セミナー"]},
+      {"id": "inventory", "name": "在庫管理", "keywords": ["在庫", "商品管理", "部品", "原材料", "棚卸"]},
+      {"id": "warehouse", "name": "倉庫・物流", "keywords": ["倉庫", "物流", "配送", "出荷", "入荷", "ピッキング"]},
+      {"id": "crm_sfa", "name": "顧客・販売", "keywords": ["顧客", "CRM", "営業", "売上", "見積", "受注"]},
+      {"id": "procurement", "name": "購買・調達", "keywords": ["購買", "調達", "発注", "仕入", "サプライヤー"]},
+      {"id": "bi", "name": "BI", "keywords": ["BI", "ダッシュボード", "見える化", "分析", "レポート", "経営"]},
+      {"id": "production", "name": "生産管理", "keywords": ["生産", "製造", "工場", "工程", "MES"]},
+      {"id": "hr", "name": "人事・給与", "keywords": ["人事", "給与", "勤怠", "採用", "評価"]},
+      {"id": "accounting", "name": "原価・会計", "keywords": ["原価", "会計", "経理", "財務", "コスト"]},
+      {"id": "document", "name": "文書管理", "keywords": ["文書", "書類", "申請", "ワークフロー", "承認"]},
+      {"id": "ec", "name": "EC", "keywords": ["EC", "通販", "ネットショップ", "オンライン販売", "カート"]},
+      {"id": "regional_dx", "name": "地域DX", "keywords": ["地域", "自治体", "MaaS", "観光", "防災", "行政"]},
+      {"id": "homepage", "name": "ホームページ", "keywords": ["ホームページ", "Webサイト", "コーポレートサイト", "HP"]}
+    ]
+  }
+}
