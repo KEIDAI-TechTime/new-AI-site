@@ -74,16 +74,21 @@ export default function ContactForm() {
         <label htmlFor="systemType" className={labelClass}>検討中のシステム種別 <span className="text-red-400">*</span></label>
         <select id="systemType" name="systemType" required value={formData.systemType} onChange={handleChange} className={inputClass + " cursor-pointer"}>
           <option value="" className="bg-[#0A1628]">選択してください</option>
-          <option value="文書管理システム" className="bg-[#0A1628]">文書管理システム</option>
+          <option value="予約・受付システム" className="bg-[#0A1628]">予約・受付システム</option>
           <option value="在庫管理システム" className="bg-[#0A1628]">在庫管理システム</option>
+          <option value="倉庫・物流管理システム" className="bg-[#0A1628]">倉庫・物流管理システム</option>
           <option value="顧客・販売管理システム" className="bg-[#0A1628]">顧客・販売管理システム</option>
           <option value="購買・調達管理システム" className="bg-[#0A1628]">購買・調達管理システム</option>
           <option value="経営ダッシュボード（BI）" className="bg-[#0A1628]">経営ダッシュボード（BI）</option>
           <option value="生産管理システム" className="bg-[#0A1628]">生産管理システム</option>
-          <option value="倉庫・物流管理システム" className="bg-[#0A1628]">倉庫・物流管理システム</option>
           <option value="人事・給与システム" className="bg-[#0A1628]">人事・給与システム</option>
           <option value="原価・会計システム" className="bg-[#0A1628]">原価・会計システム</option>
-          <option value="その他" className="bg-[#0A1628]">その他</option>
+          <option value="文書管理システム" className="bg-[#0A1628]">文書管理システム</option>
+          <option value="ECサイト・ネットショップ" className="bg-[#0A1628]">ECサイト・ネットショップ</option>
+          <option value="地域DX・MaaS" className="bg-[#0A1628]">地域DX・MaaS</option>
+          <option value="ホームページ作成" className="bg-[#0A1628]">ホームページ作成</option>
+          <option value="複数システムの連携" className="bg-[#0A1628]">複数システムの連携</option>
+          <option value="その他・わからない" className="bg-[#0A1628]">その他・わからない</option>
         </select>
       </div>
 
