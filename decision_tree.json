@@ -1,6 +1,6 @@
 {
   "version": "1.0",
-  "last_updated": "2025-01-23",
+  "last_updated": "2025-01-24",
   "entry_point": {
     "question_id": "start",
     "question": "どんなお困りごとを解決したいですか？",
@@ -460,8 +460,7 @@
       "auto_base": "基本サイト",
       "filter_category": "ページ数",
       "options": [
-        {"key": "〜5ページ", "label": "〜5ページ"},
-        {"key": "6〜10ページ", "label": "6〜10ページ"},
+        {"key": "〜10ページ", "label": "〜10ページ"},
         {"key": "11〜20ページ", "label": "11〜20ページ"},
         {"key": "21ページ以上", "label": "21ページ以上"}
       ],
