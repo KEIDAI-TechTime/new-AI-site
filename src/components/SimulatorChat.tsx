@@ -125,16 +125,7 @@ function getPriceForOption(system: string, key: string): Selection | null {
   return null;
 }
 
-function getCommonOptionPrice(commonKey: string, optionKey: string, system?: string | null): Selection | null {
-  // Check system-specific override first
-  if (system) {
-    const systemData = (priceMaster as any).systems[system];
-    if (systemData?.common_overrides?.[commonKey]) {
-      const override = systemData.common_overrides[commonKey].find((o: any) => o.key === optionKey);
-      if (override) return { key: override.key, min: override.min, std: override.std, max: override.max };
-    }
-  }
-  // Fall back to global common options
+function getCommonOptionPrice(commonKey: string, optionKey: string): Selection | null {
   const commonOptions = (priceMaster as any).common_options[commonKey];
   if (!commonOptions) return null;
   const option = commonOptions.options.find((o: any) => o.key === optionKey);
@@ -361,7 +352,7 @@ export default function SimulatorChat() {
     } else if (question.selection_type === 'common') {
       const commonKey = question.common_key;
       if (option.key !== 'なし') {
-        const price = getCommonOptionPrice(commonKey, option.key, updatedSession.system);
+        const price = getCommonOptionPrice(commonKey, option.key);
         if (commonKey === 'external_link') {
           updatedSession.commonSelections = { ...updatedSession.commonSelections, externalLink: price };
         } else if (commonKey === 'data_migration') {
