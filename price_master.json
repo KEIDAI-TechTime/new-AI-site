@@ -1,7 +1,7 @@
 {
   "version": "1.0",
   "currency": "万円",
-  "last_updated": "2025-01-23",
+  "last_updated": "2025-01-24",
   "systems": {
     "予約システム": {
       "system_id": "reservation",
@@ -204,13 +204,12 @@
     "ホームページ": {
       "system_id": "homepage",
       "bases": [
-        {"key": "基本サイト", "label": "基本サイト", "min": 6, "std": 10, "max": 16}
+        {"key": "基本サイト", "label": "基本サイト", "min": 10, "std": 15, "max": 22}
       ],
       "options": [
-        {"key": "〜5ページ", "label": "〜5ページ", "min": 0, "std": 0, "max": 0, "category": "ページ数"},
-        {"key": "6〜10ページ", "label": "6〜10ページ", "min": 6, "std": 10, "max": 16, "category": "ページ数"},
-        {"key": "11〜20ページ", "label": "11〜20ページ", "min": 12, "std": 20, "max": 32, "category": "ページ数"},
-        {"key": "21ページ以上", "label": "21ページ以上", "min": 21, "std": 35, "max": 56, "category": "ページ数"},
+        {"key": "〜10ページ", "label": "〜10ページ", "min": 0, "std": 0, "max": 0, "category": "ページ数"},
+        {"key": "11〜20ページ", "label": "11〜20ページ", "min": 5, "std": 8, "max": 10, "category": "ページ数"},
+        {"key": "21ページ以上", "label": "21ページ以上", "min": 10, "std": 15, "max": 18, "category": "ページ数"},
         {"key": "CMS（更新機能）", "label": "CMS（自分で更新できる機能）", "min": 6, "std": 10, "max": 16, "category": "機能"},
         {"key": "多言語対応", "label": "多言語対応", "min": 9, "std": 15, "max": 24, "category": "機能"},
         {"key": "SEO対策", "label": "SEO対策", "min": 6, "std": 10, "max": 16, "category": "機能"}
