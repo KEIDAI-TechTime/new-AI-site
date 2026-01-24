@@ -214,7 +214,15 @@
         {"key": "多言語対応", "label": "多言語対応", "min": 9, "std": 15, "max": 24, "category": "機能"},
         {"key": "SEO対策", "label": "SEO対策", "min": 6, "std": 10, "max": 16, "category": "機能"}
       ],
-      "scale_type": "deadline_only"
+      "scale_type": "deadline_only",
+      "common_overrides": {
+        "external_link": [
+          {"key": "1システム", "min": 10, "std": 15, "max": 22},
+          {"key": "2-3システム", "min": 18, "std": 28, "max": 40},
+          {"key": "4システム以上", "min": 30, "std": 45, "max": 65},
+          {"key": "なし", "min": 0, "std": 0, "max": 0}
+        ]
+      }
     }
   },
   "common_options": {
