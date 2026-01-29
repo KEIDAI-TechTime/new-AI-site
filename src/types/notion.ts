@@ -21,6 +21,8 @@ export interface NotionPost {
   title: string;
   slug: string;
   category: string;
+  subCategory?: string;
+  tags?: string[];
   coverImage?: string;
   excerpt?: string;
   content: string; // Markdown content
@@ -33,6 +35,15 @@ export interface NotionPost {
  * Blog Categories
  */
 export interface BlogCategory {
+  slug: string;
+  name: string;
+  subCategories?: BlogSubCategory[];
+}
+
+/**
+ * Blog Sub Categories
+ */
+export interface BlogSubCategory {
   slug: string;
   name: string;
 }

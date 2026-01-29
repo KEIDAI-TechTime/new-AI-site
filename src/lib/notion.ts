@@ -8,6 +8,8 @@ export interface NotionPost {
   title: string;
   slug: string;
   category?: string;
+  subCategory?: string;
+  tags?: string[];
   coverImage?: string;
   excerpt?: string;
   content: string;
@@ -19,16 +21,64 @@ export interface NotionPost {
   externalUrl?: string;
 }
 
-export interface BlogCategory {
+export interface BlogSubCategory {
   slug: string;
   name: string;
 }
 
-// Category mapping
+export interface BlogCategory {
+  slug: string;
+  name: string;
+  subCategories?: BlogSubCategory[];
+}
+
+// Category mapping with subcategories
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
-  ceo_column: { slug: 'ceo_column', name: '社長コラム' },
-  'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
-  'regional-dx': { slug: 'regional-dx', name: '地域DX' },
+  'system-dev': {
+    slug: 'system-dev',
+    name: 'システム開発',
+    subCategories: [
+      { slug: '見積もり・発注', name: '見積もり・発注' },
+      { slug: '開発手法・進め方', name: '開発手法・進め方' },
+      { slug: '運用・保守', name: '運用・保守' },
+      { slug: 'AI活用', name: 'AI活用' },
+    ],
+  },
+  'management-dx': {
+    slug: 'management-dx',
+    name: '経営・DX',
+    subCategories: [
+      { slug: 'IT投資・コスト', name: 'IT投資・コスト' },
+      { slug: '業務改善・DX推進', name: '業務改善・DX推進' },
+      { slug: '地域ビジネス', name: '地域ビジネス' },
+    ],
+  },
+  'industry': {
+    slug: 'industry',
+    name: '業界研究',
+    subCategories: [
+      { slug: 'SIer・ベンダー', name: 'SIer・ベンダー' },
+      { slug: '業界構造・商習慣', name: '業界構造・商習慣' },
+      { slug: '海外比較', name: '海外比較' },
+    ],
+  },
+  'career': {
+    slug: 'career',
+    name: 'キャリア',
+    subCategories: [
+      { slug: '就職・転職', name: '就職・転職' },
+      { slug: 'スキル・働き方', name: 'スキル・働き方' },
+    ],
+  },
+  'ceo-column': {
+    slug: 'ceo-column',
+    name: '社長コラム',
+    subCategories: [],
+  },
+  // Legacy categories for backwards compatibility
+  'ceo_column': { slug: 'ceo_column', name: '社長コラム', subCategories: [] },
+  'tech-blog': { slug: 'tech-blog', name: '技術ブログ', subCategories: [] },
+  'regional-dx': { slug: 'regional-dx', name: '地域DX', subCategories: [] },
 };
 
 const NOTION_API_VERSION = '2022-06-28';
@@ -549,7 +599,10 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
       properties['名前']?.title?.[0]?.plain_text ||
       'Untitled';
     const slug = properties.Slug?.rich_text?.[0]?.plain_text || page.id;
-    const category = properties.Category?.select?.name || 'ceo_column';
+    const category = properties.Category?.select?.name || '';
+    const subCategory = properties.SubCategory?.select?.name || properties['サブカテゴリ']?.select?.name || '';
+    const tags = properties.Tags?.multi_select?.map((tag: any) => tag.name) ||
+                 properties['タグ']?.multi_select?.map((tag: any) => tag.name) || [];
 
     // Get cover image - prioritize official API for external URLs (imgBB, etc.)
     let coverImage: string | undefined;
@@ -604,6 +657,8 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
       title,
       slug,
       category,
+      subCategory,
+      tags,
       coverImage,
       excerpt,
       content,
