@@ -224,18 +224,18 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
                         <img src={post.coverImage} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
                       </div>
                     )}
-                    <div class="p-6 bg-[#F8FAFC] rounded-b-2xl">
+                    <div class="p-6 bg-[#1E293B]">
                       <div class="flex items-center gap-3 mb-3">
-                        <span class="text-xs text-gray-500">{formatDate(post.createdAt)}</span>
+                        <span class="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
                         {post.category && BLOG_CATEGORIES[post.category] && (
-                          <span class="px-2 py-1 text-xs rounded-full bg-[#0099FF]/10 text-[#0077CC]">
+                          <span class="px-2 py-1 text-xs rounded-full bg-[#00D9FF]/10 text-[#00D9FF]">
                             {BLOG_CATEGORIES[post.category].name}
                           </span>
                         )}
                       </div>
-                      <h3 class="text-lg font-bold text-gray-800 mb-3 group-hover:text-[#0077CC] transition-colors line-clamp-2">{post.title}</h3>
-                      <p class="text-sm text-gray-600 line-clamp-3">{post.excerpt || ''}</p>
-                      <div class="mt-4 flex items-center text-[#0099FF] text-sm font-medium">
+                      <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">{post.title}</h3>
+                      <p class="text-sm text-gray-300 line-clamp-3">{post.excerpt || ''}</p>
+                      <div class="mt-4 flex items-center text-[#00D9FF] text-sm font-medium">
                         <span>続きを読む</span>
                         <i class="ri-arrow-right-line ml-1 group-hover:translate-x-1 transition-transform"></i>
                       </div>
