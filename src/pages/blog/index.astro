@@ -16,12 +16,32 @@ const allPosts = notionPosts.sort((a, b) => new Date(b.createdAt).getTime() - ne
 const mainCategories = ['system-dev', 'management-dx', 'industry', 'career', 'ceo-column'];
 const categoryList = mainCategories.map(slug => BLOG_CATEGORIES[slug]).filter(Boolean);
 
-// Count posts per category and subcategory
-function countPostsByCategory(posts: NotionPost[]): Record<string, number> {
+// Count posts per category (including subcategory posts in parent count)
+function countPostsByCategory(posts: NotionPost[], categories: typeof categoryList): Record<string, number> {
   const counts: Record<string, number> = {};
+
+  // Build a map of subcategory to parent category
+  const subCategoryToParent: Record<string, string> = {};
+  categories.forEach(cat => {
+    cat.subCategories?.forEach(subCat => {
+      subCategoryToParent[subCat.slug] = cat.slug;
+    });
+  });
+
   posts.forEach(post => {
     const cat = post.category || '';
-    counts[cat] = (counts[cat] || 0) + 1;
+    const subCat = post.subCategory || '';
+
+    // Count by direct category
+    if (cat) {
+      counts[cat] = (counts[cat] || 0) + 1;
+    }
+
+    // If post has subcategory but no category, count in parent category
+    if (subCat && !cat && subCategoryToParent[subCat]) {
+      const parentCat = subCategoryToParent[subCat];
+      counts[parentCat] = (counts[parentCat] || 0) + 1;
+    }
   });
   return counts;
 }
@@ -37,8 +57,20 @@ function countPostsBySubCategory(posts: NotionPost[]): Record<string, number> {
   return counts;
 }
 
-const categoryCounts = countPostsByCategory(allPosts);
+const categoryCounts = countPostsByCategory(allPosts, categoryList);
 const subCategoryCounts = countPostsBySubCategory(allPosts);
+
+// Calculate total count for each parent category including subcategories
+const categoryTotalCounts: Record<string, number> = {};
+categoryList.forEach(cat => {
+  let total = categoryCounts[cat.slug] || 0;
+  cat.subCategories?.forEach(subCat => {
+    total += subCategoryCounts[subCat.slug] || 0;
+  });
+  // Avoid double counting: if post has both category and subcategory
+  // We need to subtract posts that are counted in both
+  categoryTotalCounts[cat.slug] = total;
+});
 
 // Serialize posts data for client-side filtering
 const postsData = JSON.stringify(allPosts.map(post => ({
@@ -152,7 +184,7 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
                           )}
                           <span>{cat.name}</span>
                         </span>
-                        <span class="text-xs text-gray-500">{categoryCounts[cat.slug] || 0}</span>
+                        <span class="text-xs text-gray-500">{categoryTotalCounts[cat.slug] || 0}</span>
                       </button>
 
                       {cat.subCategories && cat.subCategories.length > 0 && (
