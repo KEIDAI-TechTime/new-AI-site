@@ -6,9 +6,30 @@ const API_BASE = '/api/notion';
 // デバッグ用ログ
 console.log('[Notion API] Using API proxy:', API_BASE);
 
-// カテゴリマッピング
+// カテゴリマッピング（サブカテゴリ付き）
 export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
-  ceo_column: { slug: 'ceo_column', name: '社長コラム' },
+  'system-dev': {
+    slug: 'system-dev',
+    name: 'システム開発',
+  },
+  'management-dx': {
+    slug: 'management-dx',
+    name: '経営・DX',
+  },
+  'industry': {
+    slug: 'industry',
+    name: '業界研究',
+  },
+  'career': {
+    slug: 'career',
+    name: 'キャリア',
+  },
+  'ceo-column': {
+    slug: 'ceo-column',
+    name: '社長コラム',
+  },
+  // Legacy categories for backwards compatibility
+  'ceo_column': { slug: 'ceo_column', name: '社長コラム' },
   'tech-blog': { slug: 'tech-blog', name: '技術ブログ' },
   'regional-dx': { slug: 'regional-dx', name: '地域DX' },
 } as const;
@@ -133,7 +154,19 @@ async function convertPageToPost(page: any, skipContent: boolean = false): Promi
     const category =
       properties.Category?.select?.name ||
       properties.category?.select?.name ||
-      'ceo_column';
+      '';
+
+    // サブカテゴリを取得
+    const subCategory =
+      properties.SubCategory?.select?.name ||
+      properties['サブカテゴリ']?.select?.name ||
+      '';
+
+    // タグを取得 (multi_selectから取得)
+    const tags =
+      properties.Tags?.multi_select?.map((tag: any) => tag.name) ||
+      properties['タグ']?.multi_select?.map((tag: any) => tag.name) ||
+      [];
 
     // カバー画像を取得
     let coverImage: string | undefined;
@@ -159,6 +192,8 @@ async function convertPageToPost(page: any, skipContent: boolean = false): Promi
       title,
       slug,
       category,
+      subCategory,
+      tags,
       coverImage,
       excerpt,
       content,

@@ -1,16 +1,64 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Navigation from '@/components/Navigation.astro';
-import { getPosts, BLOG_CATEGORIES, formatDate, type NotionPost } from '@/lib/notion';
+import { getPosts, BLOG_CATEGORIES, formatDate, type NotionPost, type BlogCategory } from '@/lib/notion';
 
 const title = 'ブログ | TechTime株式会社';
 const description = 'TechTimeの最新情報や技術ブログをお届けします。AI駆動開発、システム開発のノウハウなど、役立つ情報を発信中。';
 
 // Fetch posts from Notion at build time
-const notionPosts = await getPosts({ perPage: 20 });
+const notionPosts = await getPosts({ perPage: 100 });
 
 // Sort by date (newest first)
 const allPosts = notionPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+// Get main categories (excluding legacy ones)
+const mainCategories = ['system-dev', 'management-dx', 'industry', 'career', 'ceo-column'];
+const categoryList = mainCategories.map(slug => BLOG_CATEGORIES[slug]).filter(Boolean);
+
+// Count posts per category and subcategory
+function countPostsByCategory(posts: NotionPost[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  posts.forEach(post => {
+    const cat = post.category || '';
+    counts[cat] = (counts[cat] || 0) + 1;
+  });
+  return counts;
+}
+
+function countPostsBySubCategory(posts: NotionPost[]): Record<string, number> {
+  const counts: Record<string, number> = {};
+  posts.forEach(post => {
+    const subCat = post.subCategory || '';
+    if (subCat) {
+      counts[subCat] = (counts[subCat] || 0) + 1;
+    }
+  });
+  return counts;
+}
+
+const categoryCounts = countPostsByCategory(allPosts);
+const subCategoryCounts = countPostsBySubCategory(allPosts);
+
+// Serialize posts data for client-side filtering
+const postsData = JSON.stringify(allPosts.map(post => ({
+  id: post.id,
+  title: post.title,
+  slug: post.slug,
+  category: post.category || '',
+  subCategory: post.subCategory || '',
+  tags: post.tags || [],
+  coverImage: post.coverImage || '',
+  excerpt: post.excerpt || '',
+  createdAt: post.createdAt,
+})));
+
+// Serialize category data
+const categoryData = JSON.stringify(categoryList.map(cat => ({
+  slug: cat.slug,
+  name: cat.name,
+  subCategories: cat.subCategories || [],
+})));
 ---
 
 <BaseLayout title={title} description={description}>
@@ -19,130 +67,620 @@ const allPosts = notionPosts.sort((a, b) => new Date(b.createdAt).getTime() - ne
   <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
     <div class="pt-20 sm:pt-24 lg:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
       <div class="max-w-7xl mx-auto">
+        <!-- Header -->
         <div class="text-center mb-8">
           <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">ブログ</h1>
           <p class="text-gray-300 text-sm sm:text-base">TechTimeの最新情報や技術ブログをお届けします</p>
         </div>
 
-        <!-- Category Filter -->
-        <div class="flex flex-wrap gap-3 justify-center mb-12" id="category-filter">
-          <button data-category="" class="category-btn active px-4 py-2 rounded-full text-sm font-medium bg-[#00D9FF] text-[#0A1628]">すべて</button>
-          {Object.values(BLOG_CATEGORIES).map((cat) => (
-            <button data-category={cat.slug} class="category-btn px-4 py-2 rounded-full text-sm font-medium bg-white/10 text-gray-300 hover:bg-white/20 transition-all">
-              {cat.name}
-            </button>
-          ))}
+        <!-- Mobile Filter Toggle -->
+        <div class="lg:hidden mb-6">
+          <button
+            id="mobile-filter-toggle"
+            class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-xl rounded-xl border border-white/10 text-white hover:bg-white/20 transition-all"
+          >
+            <i class="ri-filter-3-line text-lg"></i>
+            <span>フィルター・検索</span>
+            <i class="ri-arrow-down-s-line text-lg transition-transform" id="mobile-filter-icon"></i>
+          </button>
         </div>
 
-        <!-- Blog Posts Grid -->
-        <div id="posts-container">
-          {allPosts.length === 0 ? (
-            <div class="text-center py-20">
-              <i class="ri-article-line text-6xl text-gray-600 mb-4"></i>
-              <p class="text-gray-400">記事が見つかりませんでした</p>
-            </div>
-          ) : (
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="posts-grid">
-              {allPosts.map((post) => (
-                <a
-                  href={`/blog/${post.slug}`}
-                  class="post-card group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-[#00D9FF]/50 transition-all duration-300 hover:-translate-y-1"
-                  data-category={post.category || ''}
+        <div class="flex flex-col lg:flex-row gap-8">
+          <!-- Sidebar -->
+          <aside id="sidebar" class="hidden lg:block w-full lg:w-72 flex-shrink-0">
+            <div class="sticky top-24 space-y-6">
+              <!-- Search Box -->
+              <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
+                <div class="relative">
+                  <input
+                    type="text"
+                    id="search-input"
+                    placeholder="キーワード検索..."
+                    class="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#00D9FF]/50 focus:ring-1 focus:ring-[#00D9FF]/50 transition-all"
+                  />
+                  <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                </div>
+              </div>
+
+              <!-- Sort Options -->
+              <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
+                <h3 class="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                  <i class="ri-sort-desc text-[#00D9FF]"></i>
+                  並び替え
+                </h3>
+                <div class="flex flex-col gap-2">
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="sort" value="newest" checked class="accent-[#00D9FF]" />
+                    <span class="text-sm text-gray-300">新着順</span>
+                  </label>
+                  <label class="flex items-center gap-2 cursor-pointer">
+                    <input type="radio" name="sort" value="category" class="accent-[#00D9FF]" />
+                    <span class="text-sm text-gray-300">カテゴリ順</span>
+                  </label>
+                </div>
+              </div>
+
+              <!-- Category Navigation -->
+              <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
+                <h3 class="text-sm font-semibold text-white mb-3 flex items-center gap-2">
+                  <i class="ri-folder-line text-[#00D9FF]"></i>
+                  カテゴリ
+                </h3>
+
+                <!-- All Posts -->
+                <button
+                  class="category-main-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium bg-[#00D9FF]/20 text-[#00D9FF] mb-2"
+                  data-category=""
                 >
-                  {post.coverImage && (
-                    <div class="aspect-video overflow-hidden bg-white/5">
-                      <img src={post.coverImage} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                    </div>
-                  )}
-                  <div class="p-6">
-                    <div class="flex items-center gap-3 mb-3">
-                      <span class="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
-                      {post.category && BLOG_CATEGORIES[post.category] && (
-                        <span class="px-2 py-1 text-xs rounded-full bg-[#00D9FF]/10 text-[#00D9FF]">
-                          {BLOG_CATEGORIES[post.category].name}
+                  <span class="flex items-center justify-between">
+                    <span>すべての記事</span>
+                    <span class="text-xs bg-[#00D9FF]/20 px-2 py-0.5 rounded-full">{allPosts.length}</span>
+                  </span>
+                </button>
+
+                <!-- Category List -->
+                <div id="category-list" class="space-y-1">
+                  {categoryList.map((cat) => (
+                    <div class="category-item">
+                      <button
+                        class="category-main-btn w-full text-left px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center justify-between"
+                        data-category={cat.slug}
+                      >
+                        <span class="flex items-center gap-2">
+                          {cat.subCategories && cat.subCategories.length > 0 && (
+                            <i class="ri-arrow-right-s-line category-arrow text-gray-500 transition-transform"></i>
+                          )}
+                          <span>{cat.name}</span>
                         </span>
+                        <span class="text-xs text-gray-500">{categoryCounts[cat.slug] || 0}</span>
+                      </button>
+
+                      {cat.subCategories && cat.subCategories.length > 0 && (
+                        <div class="subcategory-list hidden pl-6 mt-1 space-y-1">
+                          {cat.subCategories.map((subCat) => (
+                            <button
+                              class="subcategory-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:bg-white/10 hover:text-gray-200 transition-colors flex items-center justify-between"
+                              data-category={cat.slug}
+                              data-subcategory={subCat.slug}
+                            >
+                              <span>{subCat.name}</span>
+                              <span class="text-xs text-gray-600">{subCategoryCounts[subCat.slug] || 0}</span>
+                            </button>
+                          ))}
+                        </div>
                       )}
                     </div>
-                    <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">{post.title}</h3>
-                    <p class="text-sm text-gray-400 line-clamp-3">{post.excerpt || post.content.substring(0, 150) + '...'}</p>
-                    <div class="mt-4 flex items-center text-[#00D9FF] text-sm font-medium">
-                      <span>続きを読む</span>
-                      <i class="ri-arrow-right-line ml-1 group-hover:translate-x-1 transition-transform"></i>
-                    </div>
-                  </div>
-                </a>
-              ))}
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
-        </div>
+          </aside>
 
-        <!-- Empty State (hidden by default) -->
-        <div id="empty-state" class="hidden text-center py-20">
-          <i class="ri-article-line text-6xl text-gray-600 mb-4"></i>
-          <p class="text-gray-400">このカテゴリの記事はありません</p>
+          <!-- Main Content -->
+          <main class="flex-1 min-w-0">
+            <!-- Active Filters & View Toggle -->
+            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <!-- Active Filters -->
+              <div id="active-filters" class="flex flex-wrap gap-2">
+                <!-- Dynamically populated -->
+              </div>
+
+              <!-- View Toggle -->
+              <div class="flex items-center gap-2 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 p-1">
+                <button
+                  id="view-grid"
+                  class="view-toggle-btn active p-2 rounded-lg text-[#00D9FF] bg-[#00D9FF]/10"
+                  title="グリッド表示"
+                >
+                  <i class="ri-grid-fill text-lg"></i>
+                </button>
+                <button
+                  id="view-list"
+                  class="view-toggle-btn p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                  title="リスト表示"
+                >
+                  <i class="ri-list-check text-lg"></i>
+                </button>
+              </div>
+            </div>
+
+            <!-- Posts Container -->
+            <div id="posts-container">
+              <!-- Grid View (default) -->
+              <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                {allPosts.map((post) => (
+                  <a
+                    href={`/blog/${post.slug}`}
+                    class="post-card group bg-[#1E3A5F] backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden hover:border-[#00D9FF]/50 hover:shadow-lg hover:shadow-[#00D9FF]/10 transition-all duration-300 hover:-translate-y-1"
+                    data-id={post.id}
+                    data-category={post.category || ''}
+                    data-subcategory={post.subCategory || ''}
+                    data-tags={JSON.stringify(post.tags || [])}
+                    data-title={post.title}
+                    data-date={post.createdAt}
+                  >
+                    {post.coverImage && (
+                      <div class="aspect-video overflow-hidden bg-white/5">
+                        <img src={post.coverImage} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
+                      </div>
+                    )}
+                    <div class="p-6 bg-[#273449]">
+                      <div class="flex items-center gap-3 mb-3">
+                        <span class="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
+                        {post.category && BLOG_CATEGORIES[post.category] && (
+                          <span class="px-2 py-1 text-xs rounded-full bg-[#00D9FF]/10 text-[#00D9FF]">
+                            {BLOG_CATEGORIES[post.category].name}
+                          </span>
+                        )}
+                      </div>
+                      <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">{post.title}</h3>
+                      <p class="text-sm text-gray-300 line-clamp-3">{post.excerpt || ''}</p>
+                      <div class="mt-4 flex items-center text-[#00D9FF] text-sm font-medium">
+                        <span>続きを読む</span>
+                        <i class="ri-arrow-right-line ml-1 group-hover:translate-x-1 transition-transform"></i>
+                      </div>
+                    </div>
+                  </a>
+                ))}
+              </div>
+
+              <!-- List View (hidden by default) -->
+              <div id="posts-list" class="hidden space-y-3">
+                {allPosts.map((post) => (
+                  <a
+                    href={`/blog/${post.slug}`}
+                    class="post-card-list group flex items-center gap-4 p-4 bg-[#1E3A5F] backdrop-blur-xl rounded-xl border border-white/20 hover:border-[#00D9FF]/50 hover:bg-[#264A70] transition-all"
+                    data-id={post.id}
+                    data-category={post.category || ''}
+                    data-subcategory={post.subCategory || ''}
+                    data-tags={JSON.stringify(post.tags || [])}
+                    data-title={post.title}
+                    data-date={post.createdAt}
+                  >
+                    <span class="text-xs text-gray-500 w-24 flex-shrink-0">{formatDate(post.createdAt)}</span>
+                    <h3 class="flex-1 text-sm font-medium text-white group-hover:text-[#00D9FF] transition-colors truncate">{post.title}</h3>
+                    {post.category && BLOG_CATEGORIES[post.category] && (
+                      <span class="px-2 py-1 text-xs rounded-full bg-white/10 text-gray-300 flex-shrink-0">
+                        {BLOG_CATEGORIES[post.category].name}
+                      </span>
+                    )}
+                    <i class="ri-arrow-right-s-line text-gray-400 group-hover:text-[#00D9FF] transition-colors"></i>
+                  </a>
+                ))}
+              </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="empty-state" class="hidden text-center py-20">
+              <i class="ri-article-line text-6xl text-gray-600 mb-4 block"></i>
+              <p class="text-gray-400">該当する記事が見つかりませんでした</p>
+              <button id="clear-filters" class="mt-4 px-4 py-2 text-sm text-[#00D9FF] hover:underline">
+                フィルターをクリア
+              </button>
+            </div>
+
+            <!-- Results Count -->
+            <div id="results-count" class="mt-6 text-center text-sm text-gray-400">
+              <span id="visible-count">{allPosts.length}</span>件の記事を表示中
+            </div>
+          </main>
         </div>
       </div>
     </div>
   </div>
 </BaseLayout>
 
-<script>
-  // Category filtering
+<style>
+  .category-arrow.expanded {
+    transform: rotate(90deg);
+  }
+
+  .view-toggle-btn.active {
+    color: #00D9FF;
+    background-color: rgba(0, 217, 255, 0.1);
+  }
+
+  .category-main-btn.active {
+    background-color: rgba(0, 217, 255, 0.2);
+    color: #00D9FF;
+  }
+
+  .subcategory-btn.active {
+    background-color: rgba(0, 217, 255, 0.15);
+    color: #00D9FF;
+  }
+
+  #mobile-filter-icon.expanded {
+    transform: rotate(180deg);
+  }
+
+  @media (max-width: 1023px) {
+    #sidebar.open {
+      display: block;
+      margin-bottom: 1.5rem;
+    }
+  }
+</style>
+
+<script define:vars={{ postsData, categoryData }}>
   document.addEventListener('DOMContentLoaded', () => {
-    const buttons = document.querySelectorAll('.category-btn');
-    const cards = document.querySelectorAll('.post-card');
+    // Parse data
+    const posts = JSON.parse(postsData);
+    const categories = JSON.parse(categoryData);
+
+    // State
+    let currentView = 'grid';
+    let currentCategory = '';
+    let currentSubCategory = '';
+    let currentSearch = '';
+    let currentSort = 'newest';
+
+    // DOM Elements
+    const gridContainer = document.getElementById('posts-grid');
+    const listContainer = document.getElementById('posts-list');
     const emptyState = document.getElementById('empty-state');
-    const postsGrid = document.getElementById('posts-grid');
+    const activeFilters = document.getElementById('active-filters');
+    const visibleCount = document.getElementById('visible-count');
+    const searchInput = document.getElementById('search-input');
+    const sortRadios = document.querySelectorAll('input[name="sort"]');
+    const viewGridBtn = document.getElementById('view-grid');
+    const viewListBtn = document.getElementById('view-list');
+    const clearFiltersBtn = document.getElementById('clear-filters');
+    const mobileFilterToggle = document.getElementById('mobile-filter-toggle');
+    const mobileFilterIcon = document.getElementById('mobile-filter-icon');
+    const sidebar = document.getElementById('sidebar');
 
-    buttons.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const category = btn.getAttribute('data-category');
+    // Category buttons
+    const categoryMainBtns = document.querySelectorAll('.category-main-btn');
+    const subCategoryBtns = document.querySelectorAll('.subcategory-btn');
 
-        // Update button styles
-        buttons.forEach(b => {
-          b.classList.remove('active', 'bg-[#00D9FF]', 'text-[#0A1628]');
-          b.classList.add('bg-white/10', 'text-gray-300');
-        });
-        btn.classList.add('active', 'bg-[#00D9FF]', 'text-[#0A1628]');
-        btn.classList.remove('bg-white/10', 'text-gray-300');
+    // Mobile filter toggle
+    mobileFilterToggle?.addEventListener('click', () => {
+      sidebar?.classList.toggle('open');
+      sidebar?.classList.toggle('hidden');
+      mobileFilterIcon?.classList.toggle('expanded');
+    });
 
-        // Filter cards
-        let visibleCount = 0;
-        cards.forEach(card => {
-          const cardCategory = card.getAttribute('data-category');
-          if (!category || cardCategory === category) {
-            (card as HTMLElement).style.display = '';
-            visibleCount++;
-          } else {
-            (card as HTMLElement).style.display = 'none';
-          }
-        });
+    // View toggle
+    viewGridBtn?.addEventListener('click', () => {
+      currentView = 'grid';
+      updateViewToggle();
+      applyFilters();
+    });
 
-        // Show/hide empty state
-        if (emptyState && postsGrid) {
-          if (visibleCount === 0) {
-            emptyState.classList.remove('hidden');
-            postsGrid.classList.add('hidden');
-          } else {
-            emptyState.classList.add('hidden');
-            postsGrid.classList.remove('hidden');
-          }
-        }
+    viewListBtn?.addEventListener('click', () => {
+      currentView = 'list';
+      updateViewToggle();
+      applyFilters();
+    });
 
-        // Update URL without reload
-        const url = category ? `/blog?category=${category}` : '/blog';
-        history.pushState({}, '', url);
+    function updateViewToggle() {
+      viewGridBtn?.classList.toggle('active', currentView === 'grid');
+      viewListBtn?.classList.toggle('active', currentView === 'list');
+    }
+
+    // Search
+    let searchTimeout;
+    searchInput?.addEventListener('input', (e) => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        currentSearch = e.target.value.toLowerCase().trim();
+        applyFilters();
+      }, 300);
+    });
+
+    // Sort
+    sortRadios.forEach(radio => {
+      radio.addEventListener('change', (e) => {
+        currentSort = e.target.value;
+        applyFilters();
       });
     });
 
-    // Handle initial URL parameter
-    const params = new URLSearchParams(window.location.search);
-    const initialCategory = params.get('category');
-    if (initialCategory) {
-      const targetBtn = document.querySelector(`[data-category="${initialCategory}"]`);
-      if (targetBtn) {
-        (targetBtn as HTMLButtonElement).click();
-      }
+    // Category click - toggle expand/collapse and filter
+    categoryMainBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const category = btn.getAttribute('data-category');
+        const categoryItem = btn.closest('.category-item');
+        const arrow = btn.querySelector('.category-arrow');
+        const subList = categoryItem?.querySelector('.subcategory-list');
+
+        // If clicking on currently selected category, deselect
+        if (currentCategory === category && !currentSubCategory) {
+          currentCategory = '';
+        } else {
+          currentCategory = category;
+          currentSubCategory = '';
+        }
+
+        // Toggle subcategory visibility
+        if (subList && arrow) {
+          const isExpanded = !subList.classList.contains('hidden');
+          if (isExpanded && currentCategory !== category) {
+            subList.classList.add('hidden');
+            arrow.classList.remove('expanded');
+          } else if (!isExpanded) {
+            // Close all other subcategory lists
+            document.querySelectorAll('.subcategory-list').forEach(list => {
+              list.classList.add('hidden');
+            });
+            document.querySelectorAll('.category-arrow').forEach(a => {
+              a.classList.remove('expanded');
+            });
+            subList.classList.remove('hidden');
+            arrow.classList.add('expanded');
+          }
+        }
+
+        updateCategoryButtons();
+        applyFilters();
+      });
+    });
+
+    // Subcategory click
+    subCategoryBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const category = btn.getAttribute('data-category');
+        const subCategory = btn.getAttribute('data-subcategory');
+
+        if (currentSubCategory === subCategory) {
+          currentSubCategory = '';
+        } else {
+          currentCategory = category;
+          currentSubCategory = subCategory;
+        }
+
+        updateCategoryButtons();
+        applyFilters();
+      });
+    });
+
+    function updateCategoryButtons() {
+      categoryMainBtns.forEach(btn => {
+        const category = btn.getAttribute('data-category');
+        const isActive = category === currentCategory && !currentSubCategory;
+        btn.classList.toggle('active', isActive);
+        btn.classList.toggle('bg-[#00D9FF]/20', isActive);
+        btn.classList.toggle('text-[#00D9FF]', isActive);
+        btn.classList.toggle('text-gray-300', !isActive);
+        btn.classList.toggle('hover:bg-white/10', !isActive);
+      });
+
+      subCategoryBtns.forEach(btn => {
+        const subCategory = btn.getAttribute('data-subcategory');
+        const isActive = subCategory === currentSubCategory;
+        btn.classList.toggle('active', isActive);
+      });
     }
+
+    // Clear filters
+    clearFiltersBtn?.addEventListener('click', () => {
+      currentCategory = '';
+      currentSubCategory = '';
+      currentSearch = '';
+      if (searchInput) searchInput.value = '';
+      updateCategoryButtons();
+      applyFilters();
+    });
+
+    // Apply filters
+    function applyFilters() {
+      let filteredPosts = [...posts];
+
+      // Filter by category
+      if (currentCategory) {
+        filteredPosts = filteredPosts.filter(post => post.category === currentCategory);
+      }
+
+      // Filter by subcategory
+      if (currentSubCategory) {
+        filteredPosts = filteredPosts.filter(post => post.subCategory === currentSubCategory);
+      }
+
+      // Filter by search
+      if (currentSearch) {
+        filteredPosts = filteredPosts.filter(post =>
+          post.title.toLowerCase().includes(currentSearch) ||
+          (post.excerpt && post.excerpt.toLowerCase().includes(currentSearch))
+        );
+      }
+
+      // Sort
+      if (currentSort === 'newest') {
+        filteredPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      } else if (currentSort === 'category') {
+        filteredPosts.sort((a, b) => {
+          if (a.category === b.category) {
+            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+          }
+          return (a.category || '').localeCompare(b.category || '');
+        });
+      }
+
+      // Get filtered IDs
+      const filteredIds = new Set(filteredPosts.map(p => p.id));
+
+      // Update grid view
+      const gridCards = gridContainer?.querySelectorAll('.post-card');
+      gridCards?.forEach(card => {
+        const id = card.getAttribute('data-id');
+        card.style.display = filteredIds.has(id) ? '' : 'none';
+      });
+
+      // Update list view
+      const listCards = listContainer?.querySelectorAll('.post-card-list');
+      listCards?.forEach(card => {
+        const id = card.getAttribute('data-id');
+        card.style.display = filteredIds.has(id) ? '' : 'none';
+      });
+
+      // Show/hide views
+      if (currentView === 'grid') {
+        gridContainer?.classList.remove('hidden');
+        listContainer?.classList.add('hidden');
+      } else {
+        gridContainer?.classList.add('hidden');
+        listContainer?.classList.remove('hidden');
+      }
+
+      // Show/hide empty state
+      if (filteredPosts.length === 0) {
+        emptyState?.classList.remove('hidden');
+        gridContainer?.classList.add('hidden');
+        listContainer?.classList.add('hidden');
+      } else {
+        emptyState?.classList.add('hidden');
+      }
+
+      // Update count
+      if (visibleCount) {
+        visibleCount.textContent = filteredPosts.length.toString();
+      }
+
+      // Update active filters
+      updateActiveFilters();
+
+      // Update URL
+      updateURL();
+    }
+
+    function updateActiveFilters() {
+      if (!activeFilters) return;
+
+      const filters = [];
+
+      if (currentCategory) {
+        const cat = categories.find(c => c.slug === currentCategory);
+        if (cat) {
+          filters.push({
+            type: 'category',
+            label: cat.name,
+            value: currentCategory,
+          });
+        }
+      }
+
+      if (currentSubCategory) {
+        filters.push({
+          type: 'subcategory',
+          label: currentSubCategory,
+          value: currentSubCategory,
+        });
+      }
+
+      if (currentSearch) {
+        filters.push({
+          type: 'search',
+          label: `"${currentSearch}"`,
+          value: currentSearch,
+        });
+      }
+
+      activeFilters.innerHTML = filters.map(f => `
+        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#00D9FF]/10 text-[#00D9FF] text-sm rounded-full">
+          ${f.label}
+          <button class="filter-remove hover:text-white transition-colors" data-type="${f.type}" data-value="${f.value}">
+            <i class="ri-close-line"></i>
+          </button>
+        </span>
+      `).join('');
+
+      // Add remove listeners
+      activeFilters.querySelectorAll('.filter-remove').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.preventDefault();
+          const type = btn.getAttribute('data-type');
+          if (type === 'category') {
+            currentCategory = '';
+            currentSubCategory = '';
+          } else if (type === 'subcategory') {
+            currentSubCategory = '';
+          } else if (type === 'search') {
+            currentSearch = '';
+            if (searchInput) searchInput.value = '';
+          }
+          updateCategoryButtons();
+          applyFilters();
+        });
+      });
+    }
+
+    function updateURL() {
+      const params = new URLSearchParams();
+      if (currentCategory) params.set('category', currentCategory);
+      if (currentSubCategory) params.set('sub', currentSubCategory);
+      if (currentSearch) params.set('q', currentSearch);
+      if (currentSort !== 'newest') params.set('sort', currentSort);
+      if (currentView !== 'grid') params.set('view', currentView);
+
+      const url = params.toString() ? `/blog?${params.toString()}` : '/blog';
+      history.replaceState({}, '', url);
+    }
+
+    // Initialize from URL
+    function initFromURL() {
+      const params = new URLSearchParams(window.location.search);
+
+      const category = params.get('category');
+      if (category) {
+        currentCategory = category;
+        // Expand category if it has subcategories
+        const categoryItem = document.querySelector(`.category-main-btn[data-category="${category}"]`)?.closest('.category-item');
+        const subList = categoryItem?.querySelector('.subcategory-list');
+        const arrow = categoryItem?.querySelector('.category-arrow');
+        if (subList && arrow) {
+          subList.classList.remove('hidden');
+          arrow.classList.add('expanded');
+        }
+      }
+
+      const sub = params.get('sub');
+      if (sub) currentSubCategory = sub;
+
+      const q = params.get('q');
+      if (q) {
+        currentSearch = q;
+        if (searchInput) searchInput.value = q;
+      }
+
+      const sort = params.get('sort');
+      if (sort && (sort === 'newest' || sort === 'category')) {
+        currentSort = sort;
+        const radio = document.querySelector(`input[name="sort"][value="${sort}"]`);
+        if (radio) radio.checked = true;
+      }
+
+      const view = params.get('view');
+      if (view === 'list') {
+        currentView = 'list';
+        updateViewToggle();
+      }
+
+      updateCategoryButtons();
+      applyFilters();
+    }
+
+    initFromURL();
   });
 </script>
