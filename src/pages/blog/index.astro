@@ -16,36 +16,45 @@ const allPosts = notionPosts.sort((a, b) => new Date(b.createdAt).getTime() - ne
 const mainCategories = ['system-dev', 'management-dx', 'industry', 'career', 'ceo-column'];
 const categoryList = mainCategories.map(slug => BLOG_CATEGORIES[slug]).filter(Boolean);
 
-// Count posts per category (including subcategory posts in parent count)
-function countPostsByCategory(posts: NotionPost[], categories: typeof categoryList): Record<string, number> {
-  const counts: Record<string, number> = {};
-
-  // Build a map of subcategory to parent category
-  const subCategoryToParent: Record<string, string> = {};
-  categories.forEach(cat => {
-    cat.subCategories?.forEach(subCat => {
-      subCategoryToParent[subCat.slug] = cat.slug;
-    });
+// Build a map of subcategory slug to parent category slug
+const subCategoryToParent: Record<string, string> = {};
+categoryList.forEach(cat => {
+  cat.subCategories?.forEach(subCat => {
+    subCategoryToParent[subCat.slug] = cat.slug;
   });
+});
 
+// Determine which parent category a post belongs to
+function getPostParentCategory(post: NotionPost): string | null {
+  const cat = post.category || '';
+  const subCat = post.subCategory || '';
+
+  // If post has a category that matches a main category, use that
+  if (cat && mainCategories.includes(cat)) {
+    return cat;
+  }
+
+  // If post has a subcategory, find its parent
+  if (subCat && subCategoryToParent[subCat]) {
+    return subCategoryToParent[subCat];
+  }
+
+  return null;
+}
+
+// Count posts per parent category (each post counted only once)
+function countPostsByParentCategory(posts: NotionPost[]): Record<string, number> {
+  const counts: Record<string, number> = {};
   posts.forEach(post => {
-    const cat = post.category || '';
-    const subCat = post.subCategory || '';
-
-    // Count by direct category
-    if (cat) {
-      counts[cat] = (counts[cat] || 0) + 1;
-    }
-
-    // If post has subcategory but no category, count in parent category
-    if (subCat && !cat && subCategoryToParent[subCat]) {
-      const parentCat = subCategoryToParent[subCat];
+    const parentCat = getPostParentCategory(post);
+    if (parentCat) {
       counts[parentCat] = (counts[parentCat] || 0) + 1;
     }
   });
   return counts;
 }
 
+// Count posts per subcategory
 function countPostsBySubCategory(posts: NotionPost[]): Record<string, number> {
   const counts: Record<string, number> = {};
   posts.forEach(post => {
@@ -57,20 +66,8 @@ function countPostsBySubCategory(posts: NotionPost[]): Record<string, number> {
   return counts;
 }
 
-const categoryCounts = countPostsByCategory(allPosts, categoryList);
+const categoryTotalCounts = countPostsByParentCategory(allPosts);
 const subCategoryCounts = countPostsBySubCategory(allPosts);
-
-// Calculate total count for each parent category including subcategories
-const categoryTotalCounts: Record<string, number> = {};
-categoryList.forEach(cat => {
-  let total = categoryCounts[cat.slug] || 0;
-  cat.subCategories?.forEach(subCat => {
-    total += subCategoryCounts[subCat.slug] || 0;
-  });
-  // Avoid double counting: if post has both category and subcategory
-  // We need to subtract posts that are counted in both
-  categoryTotalCounts[cat.slug] = total;
-});
 
 // Serialize posts data for client-side filtering
 const postsData = JSON.stringify(allPosts.map(post => ({
@@ -91,6 +88,10 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
   name: cat.name,
   subCategories: cat.subCategories || [],
 })));
+
+// Serialize subcategory to parent mapping for client-side filtering
+const subCategoryToParentData = JSON.stringify(subCategoryToParent);
+const mainCategoriesData = JSON.stringify(mainCategories);
 ---
 
 <BaseLayout title={title} description={description}>
@@ -354,11 +355,31 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
   }
 </style>
 
-<script define:vars={{ postsData, categoryData }}>
+<script define:vars={{ postsData, categoryData, subCategoryToParentData, mainCategoriesData }}>
   document.addEventListener('DOMContentLoaded', () => {
     // Parse data
     const posts = JSON.parse(postsData);
     const categories = JSON.parse(categoryData);
+    const subCategoryToParent = JSON.parse(subCategoryToParentData);
+    const mainCategories = JSON.parse(mainCategoriesData);
+
+    // Helper function to get the parent category of a post
+    function getPostParentCategory(post) {
+      const cat = post.category || '';
+      const subCat = post.subCategory || '';
+
+      // If post has a category that matches a main category, use that
+      if (cat && mainCategories.includes(cat)) {
+        return cat;
+      }
+
+      // If post has a subcategory, find its parent
+      if (subCat && subCategoryToParent[subCat]) {
+        return subCategoryToParent[subCat];
+      }
+
+      return null;
+    }
 
     // State
     let currentView = 'grid';
@@ -520,12 +541,12 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
     function applyFilters() {
       let filteredPosts = [...posts];
 
-      // Filter by category
-      if (currentCategory) {
-        filteredPosts = filteredPosts.filter(post => post.category === currentCategory);
+      // Filter by category (include posts with matching subcategories)
+      if (currentCategory && !currentSubCategory) {
+        filteredPosts = filteredPosts.filter(post => getPostParentCategory(post) === currentCategory);
       }
 
-      // Filter by subcategory
+      // Filter by subcategory (exact match)
       if (currentSubCategory) {
         filteredPosts = filteredPosts.filter(post => post.subCategory === currentSubCategory);
       }
