@@ -40,19 +40,6 @@ function countPostsBySubCategory(posts: NotionPost[]): Record<string, number> {
 const categoryCounts = countPostsByCategory(allPosts);
 const subCategoryCounts = countPostsBySubCategory(allPosts);
 
-// Debug: Log category counts
-console.log('[Blog] Category counts:', JSON.stringify(categoryCounts));
-console.log('[Blog] SubCategory counts:', JSON.stringify(subCategoryCounts));
-const debugPostsCats = allPosts.map(p => ({ title: p.title.substring(0, 20), cat: p.category, subCat: p.subCategory }));
-console.log('[Blog] Posts categories:', debugPostsCats);
-
-// Create debug info string for HTML comment
-const debugInfo = JSON.stringify({
-  categoryCounts,
-  subCategoryCounts,
-  posts: debugPostsCats
-}, null, 2);
-
 // Serialize posts data for client-side filtering
 const postsData = JSON.stringify(allPosts.map(post => ({
   id: post.id,
@@ -75,7 +62,6 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
 ---
 
 <BaseLayout title={title} description={description}>
-  <!-- DEBUG_CATEGORY_INFO: {debugInfo} -->
   <Navigation currentPath="/blog" />
 
   <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
@@ -259,7 +245,7 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
               </div>
 
               <!-- List View (hidden by default) -->
-              <div id="posts-list" class="hidden space-y-3">
+              <div id="posts-list" class="hidden flex flex-col gap-3">
                 {allPosts.map((post) => (
                   <a
                     href={`/blog/${post.slug}`}
@@ -532,21 +518,32 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
         });
       }
 
-      // Get filtered IDs
+      // Get filtered IDs and create order map
       const filteredIds = new Set(filteredPosts.map(p => p.id));
+      const orderMap = new Map(filteredPosts.map((p, index) => [p.id, index]));
 
-      // Update grid view
+      // Update grid view - apply order for sorting
       const gridCards = gridContainer?.querySelectorAll('.post-card');
       gridCards?.forEach(card => {
         const id = card.getAttribute('data-id');
-        card.style.display = filteredIds.has(id) ? '' : 'none';
+        if (filteredIds.has(id)) {
+          card.style.display = '';
+          card.style.order = orderMap.get(id)?.toString() || '0';
+        } else {
+          card.style.display = 'none';
+        }
       });
 
-      // Update list view
+      // Update list view - apply order for sorting
       const listCards = listContainer?.querySelectorAll('.post-card-list');
       listCards?.forEach(card => {
         const id = card.getAttribute('data-id');
-        card.style.display = filteredIds.has(id) ? '' : 'none';
+        if (filteredIds.has(id)) {
+          card.style.display = '';
+          card.style.order = orderMap.get(id)?.toString() || '0';
+        } else {
+          card.style.display = 'none';
+        }
       });
 
       // Show/hide views

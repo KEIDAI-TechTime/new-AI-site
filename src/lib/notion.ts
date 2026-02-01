@@ -614,7 +614,6 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
     // Convert category name to slug for consistent filtering
     const categoryName = properties.Category?.select?.name || '';
     const category = CATEGORY_NAME_TO_SLUG[categoryName] || categoryName;
-    console.log(`[Notion] Post "${title}" - categoryName: "${categoryName}", category: "${category}"`);
     const subCategory = properties.SubCategory?.select?.name || properties['サブカテゴリ']?.select?.name || '';
     const tags = properties.Tags?.multi_select?.map((tag: any) => tag.name) ||
                  properties['タグ']?.multi_select?.map((tag: any) => tag.name) || [];
