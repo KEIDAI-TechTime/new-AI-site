@@ -81,6 +81,18 @@ export const BLOG_CATEGORIES: Record<string, BlogCategory> = {
   'regional-dx': { slug: 'regional-dx', name: '地域DX', subCategories: [] },
 };
 
+// Reverse mapping: category name -> slug
+export const CATEGORY_NAME_TO_SLUG: Record<string, string> = {
+  'システム開発': 'system-dev',
+  '経営・DX': 'management-dx',
+  '業界研究': 'industry',
+  'キャリア': 'career',
+  '社長コラム': 'ceo-column',
+  // Legacy names
+  '技術ブログ': 'tech-blog',
+  '地域DX': 'regional-dx',
+};
+
 const NOTION_API_VERSION = '2022-06-28';
 const NOTION_API_BASE = 'https://api.notion.com/v1';
 
@@ -599,7 +611,9 @@ async function convertPageToPost(page: any, includeContent = false): Promise<Not
       properties['名前']?.title?.[0]?.plain_text ||
       'Untitled';
     const slug = properties.Slug?.rich_text?.[0]?.plain_text || page.id;
-    const category = properties.Category?.select?.name || '';
+    // Convert category name to slug for consistent filtering
+    const categoryName = properties.Category?.select?.name || '';
+    const category = CATEGORY_NAME_TO_SLUG[categoryName] || categoryName;
     const subCategory = properties.SubCategory?.select?.name || properties['サブカテゴリ']?.select?.name || '';
     const tags = properties.Tags?.multi_select?.map((tag: any) => tag.name) ||
                  properties['タグ']?.multi_select?.map((tag: any) => tag.name) || [];
