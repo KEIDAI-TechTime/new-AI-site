@@ -40,6 +40,11 @@ function countPostsBySubCategory(posts: NotionPost[]): Record<string, number> {
 const categoryCounts = countPostsByCategory(allPosts);
 const subCategoryCounts = countPostsBySubCategory(allPosts);
 
+// Debug: Log category counts
+console.log('[Blog] Category counts:', JSON.stringify(categoryCounts));
+console.log('[Blog] SubCategory counts:', JSON.stringify(subCategoryCounts));
+console.log('[Blog] Posts categories:', allPosts.map(p => ({ title: p.title.substring(0, 20), cat: p.category, subCat: p.subCategory })));
+
 // Serialize posts data for client-side filtering
 const postsData = JSON.stringify(allPosts.map(post => ({
   id: post.id,
