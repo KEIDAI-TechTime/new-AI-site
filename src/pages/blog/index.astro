@@ -43,7 +43,15 @@ const subCategoryCounts = countPostsBySubCategory(allPosts);
 // Debug: Log category counts
 console.log('[Blog] Category counts:', JSON.stringify(categoryCounts));
 console.log('[Blog] SubCategory counts:', JSON.stringify(subCategoryCounts));
-console.log('[Blog] Posts categories:', allPosts.map(p => ({ title: p.title.substring(0, 20), cat: p.category, subCat: p.subCategory })));
+const debugPostsCats = allPosts.map(p => ({ title: p.title.substring(0, 20), cat: p.category, subCat: p.subCategory }));
+console.log('[Blog] Posts categories:', debugPostsCats);
+
+// Create debug info string for HTML comment
+const debugInfo = JSON.stringify({
+  categoryCounts,
+  subCategoryCounts,
+  posts: debugPostsCats
+}, null, 2);
 
 // Serialize posts data for client-side filtering
 const postsData = JSON.stringify(allPosts.map(post => ({
@@ -67,6 +75,7 @@ const categoryData = JSON.stringify(categoryList.map(cat => ({
 ---
 
 <BaseLayout title={title} description={description}>
+  <!-- DEBUG_CATEGORY_INFO: {debugInfo} -->
   <Navigation currentPath="/blog" />
 
   <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
