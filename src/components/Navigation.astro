@@ -7,12 +7,13 @@ interface Props {
 const { currentPath = '/', transparent = false } = Astro.props;
 
 const navLinks = [
-  { href: '/systems', label: '動く業務システムを体験する', special: true },
-  { href: '/web-design', label: '動くWebサイトを体験する', special: true },
-  { href: '/simulator', label: '見積もり', special: false },
-  { href: '/blog', label: 'ブログ', special: false },
-  { href: '/cases', label: '開発事例', special: false },
-  { href: '/about', label: '会社概要', special: false },
+  { href: '/systems', label: '動く業務システムを体験する' },
+  { href: '/web-design', label: '動くWebサイトを体験する' },
+  { href: '/simulator', label: '見積もり' },
+  { href: '/blog', label: 'ブログ' },
+  { href: '/cases', label: '開発事例' },
+  { href: '/about', label: '会社概要' },
+  { href: '/contact', label: 'お問い合わせ' },
 ];
 
 const isActive = (href: string) => currentPath === href;
@@ -35,32 +36,14 @@ const isActive = (href: string) => currentPath === href;
       <!-- Desktop Menu -->
       <div class="hidden lg:flex items-center gap-6 xl:gap-8">
         {navLinks.map((link) => (
-          link.special ? (
-            <a
-              href={link.href}
-              class="nav-special text-sm whitespace-nowrap text-[#00D9FF] font-semibold"
-            >
-              <span class="nav-special-icon">▶</span>
-              {link.label}
-            </a>
-          ) : (
-            <a
-              href={link.href}
-              class:list={[
-                "text-sm transition-colors whitespace-nowrap",
-                isActive(link.href) ? "text-[#00D9FF] font-medium" : "text-gray-300 hover:text-[#00D9FF]"
-              ]}
-            >
-              {link.label}
-            </a>
-          )
+          <a
+            href={link.href}
+            class="nav-special text-sm whitespace-nowrap text-[#00D9FF] font-semibold"
+          >
+            <span class="nav-special-icon">▶</span>
+            {link.label}
+          </a>
         ))}
-        <a
-          href="/contact"
-          class="px-4 xl:px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm"
-        >
-          お問い合わせ
-        </a>
       </div>
 
       <!-- Mobile Menu Button -->
@@ -78,34 +61,14 @@ const isActive = (href: string) => currentPath === href;
   <div id="mobile-menu" class="hidden lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-4 space-y-1">
       {navLinks.map((link) => (
-        link.special ? (
-          <a
-            href={link.href}
-            class="block px-4 py-3 rounded-lg text-[#00D9FF] font-semibold hover:bg-white/5 transition-colors"
-          >
-            <span class="text-[0.7em] opacity-80 mr-1">▶</span>
-            {link.label}
-          </a>
-        ) : (
-          <a
-            href={link.href}
-            class:list={[
-              "block px-4 py-3 rounded-lg transition-colors",
-              isActive(link.href)
-                ? "text-[#00D9FF] font-medium hover:bg-white/5"
-                : "text-gray-300 hover:text-[#00D9FF] hover:bg-white/5"
-            ]}
-          >
-            {link.label}
-          </a>
-        )
+        <a
+          href={link.href}
+          class="block px-4 py-3 rounded-lg text-[#00D9FF] font-semibold hover:bg-white/5 transition-colors"
+        >
+          <span class="text-[0.7em] opacity-80 mr-1">▶</span>
+          {link.label}
+        </a>
       ))}
-      <a
-        href="/contact"
-        class="block mx-4 my-2 px-4 py-3 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 text-center"
-      >
-        お問い合わせ
-      </a>
     </div>
   </div>
 </nav>
