@@ -7,6 +7,17 @@ const description = 'コーポレートサイトからEC、Webアプリまで。
 
 const portfolioData = [
   {
+    title: 'Harlow Ice Cream ブランドサイト',
+    industry: '飲食・サービス',
+    style: 'ポップ・カジュアル系',
+    icon: 'ri-cake-3-line',
+    description: '1950年代アメリカンダイナーをコンセプトにしたハンドメイドアイスクリーム店のLP',
+    duration: '2週間',
+    scope: 'デザイン〜実装',
+    gradient: 'from-[#E8927C] to-[#F2C94C]',
+    demoUrl: '/portfolio/harlow'
+  },
+  {
     title: '製造業A社 コーポレートサイト',
     industry: '製造業・メーカー',
     style: 'コーポレート・信頼系',
@@ -104,7 +115,8 @@ const styles = [
   'コーポレート・信頼系',
   'モダン・スタイリッシュ系',
   '高級・ブランド系',
-  '温かみ・親しみ系'
+  '温かみ・親しみ系',
+  'ポップ・カジュアル系'
 ];
 
 const services = [
@@ -280,10 +292,21 @@ const getIndustryCount = (industry: string) => {
                 <h3 class="text-xl font-bold text-white mb-3">{item.title}</h3>
                 <p class="text-gray-400 text-sm mb-4 leading-relaxed">{item.description}</p>
 
-                <div class="flex items-center justify-between text-xs text-gray-500">
+                <div class="flex items-center justify-between text-xs text-gray-500 mb-4">
                   <span><i class="ri-time-line mr-1"></i>{item.duration}</span>
                   <span><i class="ri-file-list-3-line mr-1"></i>{item.scope}</span>
                 </div>
+
+                {item.demoUrl && (
+                  <a
+                    href={item.demoUrl}
+                    class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366f1] to-[#00D4AA] text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-[#00D4AA]/30 transition-all duration-300"
+                    onclick="event.stopPropagation();"
+                  >
+                    <i class="ri-external-link-line"></i>
+                    デモを見る
+                  </a>
+                )}
               </div>
             </div>
           ))}
