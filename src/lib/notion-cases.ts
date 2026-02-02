@@ -10,6 +10,7 @@ export const CASE_CATEGORIES: Record<string, CaseCategory> = {
   '経営BI': { id: '経営BI', name: '経営BI' },
   '生産管理': { id: '生産管理', name: '生産管理' },
   '人事給与': { id: '人事給与', name: '人事給与' },
+  'Web制作': { id: 'Web制作', name: 'Web制作' },
 } as const;
 
 // Get environment variables
@@ -148,6 +149,20 @@ export const STATIC_CASES: NotionCase[] = [
     results: ['給与計算時間 80%削減', '人事業務効率 50%向上', '勤怠管理精度 向上'],
     published: true,
     order: 6
+  },
+  {
+    id: '7',
+    category: 'Web制作',
+    title: '鉄心工業株式会社様 コーポレートサイト',
+    description: '創業70年の精密金属加工企業のリブランディングに伴うコーポレートサイト全面リニューアル。「工場の鼓動を可視化する」をコンセプトに、製造現場のエネルギーと精密さをダイナミックなアニメーションで表現。老舗の信頼感と革新性を両立したデザイン。',
+    image: 'https://readdy.ai/api/search-image?query=modern%20precision%20metal%20manufacturing%20factory%20with%20CNC%20machines%20and%20gears%2C%20industrial%20corporate%20website%20design%2C%20deep%20navy%20blue%20and%20orange%20amber%20color%20scheme%2C%20professional%20manufacturing%20environment%20with%20metalworking%20equipment%2C%20clean%20modern%20industrial%20aesthetic&width=800&height=600&seq=case7&orientation=landscape',
+    scale: '標準規模',
+    period: '1ヶ月',
+    cost: '50万円',
+    results: ['ブランドイメージ刷新', 'スクロール連動アニメーション実装', 'レスポンシブデザイン対応'],
+    published: true,
+    order: 7,
+    externalUrl: 'https://tessin-kogyo-portfolio.vercel.app'
   }
 ];
 

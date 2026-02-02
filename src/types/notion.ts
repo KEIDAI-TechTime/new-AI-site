@@ -64,6 +64,7 @@ export interface NotionCase {
   published: boolean;
   order: number;
   content?: string; // Markdown content from page blocks
+  externalUrl?: string; // External URL for web portfolio items
 }
 
 /**
