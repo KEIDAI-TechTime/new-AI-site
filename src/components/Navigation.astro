@@ -7,7 +7,8 @@ interface Props {
 const { currentPath = '/', transparent = false } = Astro.props;
 
 const navLinks = [
-  { href: '/systems', label: '対応システム' },
+  { href: '/systems', label: '動く業務システムを体験する' },
+  { href: '/websites', label: '動くWebサイトを体験する' },
   { href: '/simulator', label: '見積もり' },
   { href: '/blog', label: 'ブログ' },
   { href: '/cases', label: '開発事例' },
@@ -32,15 +33,16 @@ const isActive = (href: string) => currentPath === href;
       </a>
 
       <!-- Desktop Menu -->
-      <div class="hidden lg:flex items-center gap-6 xl:gap-8">
+      <div class="hidden lg:flex items-center gap-4 xl:gap-6">
         {navLinks.map((link) => (
           <a
             href={link.href}
             class:list={[
-              "text-sm transition-colors whitespace-nowrap",
+              "text-sm transition-colors whitespace-nowrap flex items-center gap-1",
               isActive(link.href) ? "text-[#00D9FF] font-medium" : "text-gray-300 hover:text-[#00D9FF]"
             ]}
           >
+            <span class="text-[#00D9FF]">▶</span>
             {link.label}
           </a>
         ))}
@@ -70,12 +72,13 @@ const isActive = (href: string) => currentPath === href;
         <a
           href={link.href}
           class:list={[
-            "block px-4 py-3 rounded-lg transition-colors",
+            "flex items-center gap-2 px-4 py-3 rounded-lg transition-colors",
             isActive(link.href)
               ? "text-[#00D9FF] font-medium hover:bg-white/5"
               : "text-gray-300 hover:text-[#00D9FF] hover:bg-white/5"
           ]}
         >
+          <span class="text-[#00D9FF]">▶</span>
           {link.label}
         </a>
       ))}
