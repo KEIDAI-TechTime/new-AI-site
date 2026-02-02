@@ -37,9 +37,9 @@ const isActive = (href: string) => currentPath === href;
         {navLinks.map((link) => (
           <a
             href={link.href}
-            class="nav-special text-sm whitespace-nowrap text-white font-semibold"
+            class="nav-special text-sm whitespace-nowrap font-semibold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
           >
-            <span class="nav-special-icon">▶</span>
+            <span class="nav-special-icon text-gray-300">▶</span>
             {link.label}
           </a>
         ))}
@@ -68,9 +68,9 @@ const isActive = (href: string) => currentPath === href;
       {navLinks.map((link) => (
         <a
           href={link.href}
-          class="block px-4 py-3 rounded-lg text-white font-semibold hover:bg-white/5 transition-colors"
+          class="block px-4 py-3 rounded-lg font-semibold hover:bg-white/5 transition-colors nav-link-gradient"
         >
-          <span class="text-[0.7em] opacity-80 mr-1">▶</span>
+          <span class="text-[0.7em] opacity-80 mr-1 text-gray-300">▶</span>
           {link.label}
         </a>
       ))}
@@ -128,5 +128,12 @@ const isActive = (href: string) => currentPath === href;
 
   .nav-special:hover .nav-special-icon {
     transform: translateX(2px);
+  }
+
+  .nav-link-gradient {
+    background: linear-gradient(to right, white, #d1d5db);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
 </style>
