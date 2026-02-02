@@ -35,8 +35,9 @@ export default function Home() {
             </Link>
 
             {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center gap-6 xl:gap-8">
-              <a href="#systems" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">対応システム</a>
+            <div className="hidden lg:flex items-center gap-4 xl:gap-6">
+              <Link to="/systems" className="px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-[20px] hover:bg-[#00D4AA]/10 transition-all duration-300 whitespace-nowrap">デモを体験する(業務システム)</Link>
+              <Link to="/web-design" className="px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-[20px] hover:bg-[#00D4AA]/10 transition-all duration-300 whitespace-nowrap">デモを体験する(Webサイト)</Link>
               <a href="#simulator" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">見積もり</a>
               <Link to="/blog" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">ブログ</Link>
               <Link to="/cases" className="text-sm text-gray-300 hover:text-[#00D9FF] transition-colors whitespace-nowrap">開発事例</Link>
@@ -58,14 +59,21 @@ export default function Home() {
         {/* Mobile Menu */}
         {mobileMenuOpen && (
           <div className="lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
-            <div className="max-w-7xl mx-auto px-4 py-4 space-y-1">
-              <a
-                href="#systems"
+            <div className="max-w-7xl mx-auto px-4 py-4 space-y-2">
+              <Link
+                to="/systems"
                 onClick={() => setMobileMenuOpen(false)}
-                className="block px-4 py-3 text-gray-300 hover:text-[#00D9FF] hover:bg-white/5 rounded-lg transition-colors"
+                className="block mx-2 px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-[20px] hover:bg-[#00D4AA]/10 transition-all duration-300 text-center"
               >
-                対応システム
-              </a>
+                デモを体験する(業務システム)
+              </Link>
+              <Link
+                to="/web-design"
+                onClick={() => setMobileMenuOpen(false)}
+                className="block mx-2 px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-[20px] hover:bg-[#00D4AA]/10 transition-all duration-300 text-center"
+              >
+                デモを体験する(Webサイト)
+              </Link>
               <a
                 href="#simulator"
                 onClick={() => setMobileMenuOpen(false)}
