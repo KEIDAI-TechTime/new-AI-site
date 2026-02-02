@@ -15,7 +15,7 @@ const portfolioData = [
     duration: '2週間',
     scope: 'デザイン〜実装',
     gradient: 'from-[#E8927C] to-[#F2C94C]',
-    demoUrl: '/portfolio/harlow'
+    demoUrl: 'https://kydlty.readdy.co'
   },
   {
     title: '製造業A社 コーポレートサイト',
@@ -300,6 +300,8 @@ const getIndustryCount = (industry: string) => {
                 {item.demoUrl && (
                   <a
                     href={item.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366f1] to-[#00D4AA] text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-[#00D4AA]/30 transition-all duration-300"
                     onclick="event.stopPropagation();"
                   >
