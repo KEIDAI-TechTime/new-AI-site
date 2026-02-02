@@ -15,7 +15,20 @@ const portfolioData = [
     duration: '2週間',
     scope: 'デザイン〜実装',
     gradient: 'from-[#E8927C] to-[#F2C94C]',
-    demoUrl: '/portfolio/harlow'
+    demoUrl: 'https://kydlty.readdy.co',
+    previewUrl: 'https://kydlty.readdy.co'
+  },
+  {
+    title: 'コードアドベンチャー プログラミングスクールLP',
+    industry: '教育・スクール',
+    style: 'ポップ・カジュアル系',
+    icon: 'ri-rocket-2-line',
+    description: '冒険×発見がテーマの子ども向けプログラミングスクールのランディングページ',
+    duration: '2週間',
+    scope: 'デザイン〜実装',
+    gradient: 'from-[#FF8C42] to-[#2EC4B6]',
+    demoUrl: 'https://ssrnvs.readdy.co',
+    previewUrl: 'https://ssrnvs.readdy.co'
   },
   {
     title: '製造業A社 コーポレートサイト',
@@ -26,6 +39,18 @@ const portfolioData = [
     duration: '2ヶ月',
     scope: '企画〜実装',
     gradient: 'from-[#6366f1] to-[#8b5cf6]'
+  },
+  {
+    title: '鉄心工業株式会社 コーポレートサイト',
+    industry: '製造業・メーカー',
+    style: 'モダン・スタイリッシュ系',
+    icon: 'ri-settings-3-line',
+    description: '創業70年の精密金属加工企業。「工場の鼓動を可視化する」をコンセプトに、製造現場のエネルギーをダイナミックなアニメーションで表現',
+    duration: '1ヶ月',
+    scope: 'デザイン〜実装',
+    gradient: 'from-[#0A1628] to-[#FF6B35]',
+    demoUrl: 'https://tessin-kogyo-portfolio.vercel.app',
+    previewUrl: 'https://tessin-kogyo-portfolio.vercel.app'
   },
   {
     title: 'クリニックB 新規開院LP',
@@ -105,6 +130,7 @@ const industries = [
   '小売・EC',
   '士業・コンサル',
   '飲食・サービス',
+  '教育・スクール',
   '医療・福祉',
   '不動産・建築',
   'IT・テック',
@@ -273,10 +299,24 @@ const getIndustryCount = (industry: string) => {
               data-style={item.style}
             >
               <div class={`aspect-[16/10] bg-gradient-to-br ${item.gradient} flex items-center justify-center relative overflow-hidden`}>
-                <div class="absolute inset-0 bg-black/20"></div>
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <i class={`${item.icon} text-6xl text-white`}></i>
-                </div>
+                {item.previewUrl ? (
+                  <div class="absolute inset-0 overflow-hidden">
+                    <iframe
+                      src={item.previewUrl}
+                      class="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none"
+                      loading="lazy"
+                      title={`${item.title} プレビュー`}
+                    ></iframe>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  </div>
+                ) : (
+                  <>
+                    <div class="absolute inset-0 bg-black/20"></div>
+                    <div class="relative w-20 h-20 flex items-center justify-center">
+                      <i class={`${item.icon} text-6xl text-white`}></i>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div class="p-6">
@@ -300,6 +340,8 @@ const getIndustryCount = (industry: string) => {
                 {item.demoUrl && (
                   <a
                     href={item.demoUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
                     class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366f1] to-[#00D4AA] text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-[#00D4AA]/30 transition-all duration-300"
                     onclick="event.stopPropagation();"
                   >
