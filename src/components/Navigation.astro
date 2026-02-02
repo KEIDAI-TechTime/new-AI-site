@@ -7,12 +7,12 @@ interface Props {
 const { currentPath = '/', transparent = false } = Astro.props;
 
 const navLinks = [
-  { href: '/systems', label: '動く業務システムを体験する' },
-  { href: '/web-design', label: '動くWebサイトを体験する' },
-  { href: '/simulator', label: '見積もり' },
-  { href: '/blog', label: 'ブログ' },
-  { href: '/cases', label: '開発事例' },
-  { href: '/about', label: '会社概要' },
+  { href: '/systems', label: '動く業務システムを体験する', special: true },
+  { href: '/web-design', label: '動くWebサイトを体験する', special: true },
+  { href: '/simulator', label: '見積もり', special: false },
+  { href: '/blog', label: 'ブログ', special: false },
+  { href: '/cases', label: '開発事例', special: false },
+  { href: '/about', label: '会社概要', special: false },
 ];
 
 const isActive = (href: string) => currentPath === href;
@@ -35,15 +35,26 @@ const isActive = (href: string) => currentPath === href;
       <!-- Desktop Menu -->
       <div class="hidden lg:flex items-center gap-6 xl:gap-8">
         {navLinks.map((link) => (
-          <a
-            href={link.href}
-            class:list={[
-              "text-sm transition-colors whitespace-nowrap",
-              isActive(link.href) ? "text-[#00D9FF] font-medium" : "text-gray-300 hover:text-[#00D9FF]"
-            ]}
-          >
-            {link.label}
-          </a>
+          link.special ? (
+            <a
+              href={link.href}
+              class="nav-special text-sm whitespace-nowrap text-[#00D9FF] font-semibold relative group"
+            >
+              <span class="nav-special-icon">▶</span>
+              {link.label}
+              <span class="nav-special-underline"></span>
+            </a>
+          ) : (
+            <a
+              href={link.href}
+              class:list={[
+                "text-sm transition-colors whitespace-nowrap",
+                isActive(link.href) ? "text-[#00D9FF] font-medium" : "text-gray-300 hover:text-[#00D9FF]"
+              ]}
+            >
+              {link.label}
+            </a>
+          )
         ))}
         <a
           href="/contact"
@@ -68,17 +79,27 @@ const isActive = (href: string) => currentPath === href;
   <div id="mobile-menu" class="hidden lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
     <div class="max-w-7xl mx-auto px-4 py-4 space-y-1">
       {navLinks.map((link) => (
-        <a
-          href={link.href}
-          class:list={[
-            "block px-4 py-3 rounded-lg transition-colors",
-            isActive(link.href)
-              ? "text-[#00D9FF] font-medium hover:bg-white/5"
-              : "text-gray-300 hover:text-[#00D9FF] hover:bg-white/5"
-          ]}
-        >
-          {link.label}
-        </a>
+        link.special ? (
+          <a
+            href={link.href}
+            class="block px-4 py-3 rounded-lg text-[#00D9FF] font-semibold hover:bg-white/5 transition-colors"
+          >
+            <span class="text-[0.7em] opacity-80 mr-1">▶</span>
+            {link.label}
+          </a>
+        ) : (
+          <a
+            href={link.href}
+            class:list={[
+              "block px-4 py-3 rounded-lg transition-colors",
+              isActive(link.href)
+                ? "text-[#00D9FF] font-medium hover:bg-white/5"
+                : "text-gray-300 hover:text-[#00D9FF] hover:bg-white/5"
+            ]}
+          >
+            {link.label}
+          </a>
+        )
       ))}
       <a
         href="/contact"
@@ -118,3 +139,36 @@ const isActive = (href: string) => currentPath === href;
     });
   }
 </script>
+
+<style>
+  .nav-special {
+    display: inline-flex;
+    align-items: center;
+  }
+
+  .nav-special-icon {
+    font-size: 0.7em;
+    opacity: 0.8;
+    margin-right: 4px;
+    transition: transform 0.2s ease;
+  }
+
+  .nav-special-underline {
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: #00D9FF;
+    opacity: 0.5;
+    transition: opacity 0.2s ease;
+  }
+
+  .nav-special:hover .nav-special-icon {
+    transform: translateX(2px);
+  }
+
+  .nav-special:hover .nav-special-underline {
+    opacity: 1;
+  }
+</style>
