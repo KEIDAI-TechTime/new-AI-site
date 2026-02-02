@@ -15,7 +15,8 @@ const portfolioData = [
     duration: '2週間',
     scope: 'デザイン〜実装',
     gradient: 'from-[#E8927C] to-[#F2C94C]',
-    demoUrl: 'https://kydlty.readdy.co'
+    demoUrl: 'https://kydlty.readdy.co',
+    previewUrl: 'https://kydlty.readdy.co'
   },
   {
     title: '製造業A社 コーポレートサイト',
@@ -273,10 +274,24 @@ const getIndustryCount = (industry: string) => {
               data-style={item.style}
             >
               <div class={`aspect-[16/10] bg-gradient-to-br ${item.gradient} flex items-center justify-center relative overflow-hidden`}>
-                <div class="absolute inset-0 bg-black/20"></div>
-                <div class="relative w-20 h-20 flex items-center justify-center">
-                  <i class={`${item.icon} text-6xl text-white`}></i>
-                </div>
+                {item.previewUrl ? (
+                  <div class="absolute inset-0 overflow-hidden">
+                    <iframe
+                      src={item.previewUrl}
+                      class="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none"
+                      loading="lazy"
+                      title={`${item.title} プレビュー`}
+                    ></iframe>
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+                  </div>
+                ) : (
+                  <>
+                    <div class="absolute inset-0 bg-black/20"></div>
+                    <div class="relative w-20 h-20 flex items-center justify-center">
+                      <i class={`${item.icon} text-6xl text-white`}></i>
+                    </div>
+                  </>
+                )}
               </div>
 
               <div class="p-6">
