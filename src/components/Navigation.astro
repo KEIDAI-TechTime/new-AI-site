@@ -6,8 +6,12 @@ interface Props {
 
 const { currentPath = '/', transparent = false } = Astro.props;
 
+const demoLinks = [
+  { href: '/systems', label: 'デモを体験する(業務システム)' },
+  { href: '/web-design', label: 'デモを体験する(Webサイト)' },
+];
+
 const navLinks = [
-  { href: '/systems', label: '対応システム' },
   { href: '/simulator', label: '見積もり' },
   { href: '/blog', label: 'ブログ' },
   { href: '/cases', label: '開発事例' },
@@ -32,7 +36,15 @@ const isActive = (href: string) => currentPath === href;
       </a>
 
       <!-- Desktop Menu -->
-      <div class="hidden lg:flex items-center gap-6 xl:gap-8">
+      <div class="hidden lg:flex items-center gap-4 xl:gap-6">
+        {demoLinks.map((link) => (
+          <a
+            href={link.href}
+            class="px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-[20px] hover:bg-[#00D4AA]/10 transition-all duration-300 whitespace-nowrap"
+          >
+            {link.label}
+          </a>
+        ))}
         {navLinks.map((link) => (
           <a
             href={link.href}
@@ -65,7 +77,15 @@ const isActive = (href: string) => currentPath === href;
 
   <!-- Mobile Menu -->
   <div id="mobile-menu" class="hidden lg:hidden bg-[#0A1628]/98 backdrop-blur-xl border-t border-white/10">
-    <div class="max-w-7xl mx-auto px-4 py-4 space-y-1">
+    <div class="max-w-7xl mx-auto px-4 py-4 space-y-2">
+      {demoLinks.map((link) => (
+        <a
+          href={link.href}
+          class="block mx-2 px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-[20px] hover:bg-[#00D4AA]/10 transition-all duration-300 text-center"
+        >
+          {link.label}
+        </a>
+      ))}
       {navLinks.map((link) => (
         <a
           href={link.href}
