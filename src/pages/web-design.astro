@@ -337,7 +337,7 @@ const getIndustryCount = (industry: string) => {
                   <span><i class="ri-file-list-3-line mr-1"></i>{item.scope}</span>
                 </div>
 
-                {item.demoUrl && (
+                {item.demoUrl ? (
                   <a
                     href={item.demoUrl}
                     target="_blank"
@@ -348,6 +348,11 @@ const getIndustryCount = (industry: string) => {
                     <i class="ri-external-link-line"></i>
                     デモを見る
                   </a>
+                ) : (
+                  <span class="inline-flex items-center gap-2 px-4 py-2 border border-white/30 text-white/50 text-sm font-semibold rounded-lg">
+                    <i class="ri-time-line"></i>
+                    準備中
+                  </span>
                 )}
               </div>
             </div>
