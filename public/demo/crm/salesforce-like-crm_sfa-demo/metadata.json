@@ -1,0 +1,8 @@
+{
+  "name": "Salesforce-like CRM/SFA Demo",
+  "description": "A high-fidelity Salesforce Lightning UI demo featuring accounts, opportunities with Kanban, activity timelines, dashboards, and an AI-powered CRM assistant.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ]
+}
