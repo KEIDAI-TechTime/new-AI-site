@@ -40,7 +40,11 @@ const portfolioData = [
     scope: 'デザイン〜実装',
     gradient: 'from-[#0A1628] to-[#FF6B35]',
     demoUrl: 'https://tessin-kogyo-portfolio.vercel.app',
-    previewUrl: 'https://tessin-kogyo-portfolio.vercel.app'
+    images: [
+      '/images/tesshin-kogyo/product-3.png',
+      '/images/tesshin-kogyo/product-2.png',
+      '/images/tesshin-kogyo/product-1.png'
+    ]
   },
   {
     title: '製造業A社 コーポレートサイト',
@@ -299,7 +303,18 @@ const getIndustryCount = (industry: string) => {
               data-style={item.style}
             >
               <div class={`aspect-[16/10] bg-gradient-to-br ${item.gradient} flex items-center justify-center relative overflow-hidden`}>
-                {item.previewUrl ? (
+                {item.images ? (
+                  <div class="absolute inset-0 tesshin-slideshow">
+                    {item.images.map((img: string, i: number) => (
+                      <img
+                        src={img}
+                        alt={`${item.title} ${i + 1}`}
+                        class={`absolute inset-0 w-full h-full object-cover tesshin-slide tesshin-slide-${i + 1}`}
+                        loading="lazy"
+                      />
+                    ))}
+                  </div>
+                ) : item.previewUrl ? (
                   <div class="absolute inset-0 overflow-hidden">
                     <iframe
                       src={item.previewUrl}
@@ -529,3 +544,37 @@ const getIndustryCount = (industry: string) => {
     });
   });
 </script>
+
+<style>
+  .tesshin-slideshow {
+    position: relative;
+  }
+  .tesshin-slide {
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+  .tesshin-slide-1 {
+    animation: tesshinFade1 12s infinite;
+  }
+  .tesshin-slide-2 {
+    animation: tesshinFade2 12s infinite;
+  }
+  .tesshin-slide-3 {
+    animation: tesshinFade3 12s infinite;
+  }
+  @keyframes tesshinFade1 {
+    0%, 30% { opacity: 1; }
+    33%, 97% { opacity: 0; }
+    100% { opacity: 1; }
+  }
+  @keyframes tesshinFade2 {
+    0%, 30% { opacity: 0; }
+    33%, 63% { opacity: 1; }
+    66%, 100% { opacity: 0; }
+  }
+  @keyframes tesshinFade3 {
+    0%, 63% { opacity: 0; }
+    66%, 97% { opacity: 1; }
+    100% { opacity: 0; }
+  }
+</style>
