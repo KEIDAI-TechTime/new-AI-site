@@ -317,6 +317,17 @@ const getIndustryCount = (industry: string) => {
                     </div>
                   </>
                 )}
+                {item.demoUrl ? (
+                  <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-green-500/90 text-white text-xs font-bold flex items-center gap-1 z-10">
+                    <i class="ri-play-circle-line"></i>
+                    デモ体験可能
+                  </div>
+                ) : (
+                  <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-gray-500/80 text-white text-xs font-bold flex items-center gap-1 z-10">
+                    <i class="ri-time-line"></i>
+                    準備中
+                  </div>
+                )}
               </div>
 
               <div class="p-6">
