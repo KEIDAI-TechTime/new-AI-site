@@ -52,7 +52,16 @@ const systems = [
                 onclick={!system.link ? 'return false;' : undefined}
               >
                 <div class="absolute inset-0 w-full h-full">
-                  <img src={system.image} alt={system.name} class="w-full h-full object-cover" />
+                  {system.link ? (
+                    <iframe
+                      src={system.link}
+                      class="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none"
+                      loading="lazy"
+                      title={`${system.name} プレビュー`}
+                    ></iframe>
+                  ) : (
+                    <img src={system.image} alt={system.name} class="w-full h-full object-cover" />
+                  )}
                 </div>
                 <div class="absolute inset-0 bg-gradient-to-t from-[#0A1628]/90 via-[#0A1628]/50 to-transparent group-hover:from-[#0A1628]/70 group-hover:via-[#0A1628]/30 transition-all duration-500"></div>
                 <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-[#00D9FF] flex items-center justify-center shadow-lg">
