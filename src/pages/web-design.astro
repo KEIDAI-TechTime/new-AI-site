@@ -317,6 +317,17 @@ const getIndustryCount = (industry: string) => {
                     </div>
                   </>
                 )}
+                {item.demoUrl ? (
+                  <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-green-500/90 text-white text-xs font-bold flex items-center gap-1 z-10">
+                    <i class="ri-play-circle-line"></i>
+                    デモ体験可能
+                  </div>
+                ) : (
+                  <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-gray-600/90 text-white text-xs font-bold flex items-center gap-1 z-10">
+                    <i class="ri-time-line"></i>
+                    準備中
+                  </div>
+                )}
               </div>
 
               <div class="p-6">
@@ -337,7 +348,7 @@ const getIndustryCount = (industry: string) => {
                   <span><i class="ri-file-list-3-line mr-1"></i>{item.scope}</span>
                 </div>
 
-                {item.demoUrl ? (
+                {item.demoUrl && (
                   <a
                     href={item.demoUrl}
                     target="_blank"
@@ -348,11 +359,6 @@ const getIndustryCount = (industry: string) => {
                     <i class="ri-external-link-line"></i>
                     デモを見る
                   </a>
-                ) : (
-                  <span class="inline-flex items-center gap-2 px-4 py-2 border border-white/30 text-white/50 text-sm font-semibold rounded-lg">
-                    <i class="ri-time-line"></i>
-                    準備中
-                  </span>
                 )}
               </div>
             </div>
