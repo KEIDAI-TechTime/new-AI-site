@@ -1,0 +1,5 @@
+{
+  "name": "未来住建 生産調達システム (SAP Fiori Style)",
+  "description": "住宅建設業向けの「受注・生産・調達・会計」を一気通貫で管理するSAP Fiori風デモアプリケーションです。",
+  "requestFramePermissions": []
+}
