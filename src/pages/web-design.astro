@@ -15,8 +15,8 @@ const portfolioData = [
     duration: '2週間',
     scope: 'デザイン〜実装',
     gradient: 'from-[#E8927C] to-[#F2C94C]',
-    demoUrl: 'https://kydlty.readdy.co',
-    previewUrl: 'https://kydlty.readdy.co'
+    demoUrl: '/demo/harlow/',
+    previewUrl: '/demo/harlow/'
   },
   {
     title: 'コードアドベンチャー プログラミングスクールLP',
@@ -27,8 +27,8 @@ const portfolioData = [
     duration: '2週間',
     scope: 'デザイン〜実装',
     gradient: 'from-[#FF8C42] to-[#2EC4B6]',
-    demoUrl: 'https://ssrnvs.readdy.co',
-    previewUrl: 'https://ssrnvs.readdy.co'
+    demoUrl: '/demo/code-adventure/',
+    previewUrl: '/demo/code-adventure/'
   },
   {
     title: '鉄心工業株式会社 コーポレートサイト',
@@ -39,12 +39,8 @@ const portfolioData = [
     duration: '1ヶ月',
     scope: 'デザイン〜実装',
     gradient: 'from-[#0A1628] to-[#FF6B35]',
-    demoUrl: 'https://tessin-kogyo-portfolio.vercel.app',
-    images: [
-      '/images/tesshin-kogyo/product-3.png',
-      '/images/tesshin-kogyo/product-2.png',
-      '/images/tesshin-kogyo/product-1.png'
-    ]
+    demoUrl: '/demo/tesshin-kogyo/',
+    previewUrl: '/demo/tesshin-kogyo/'
   },
   {
     title: '製造業A社 コーポレートサイト',
@@ -303,18 +299,7 @@ const getIndustryCount = (industry: string) => {
               data-style={item.style}
             >
               <div class={`aspect-[16/10] bg-gradient-to-br ${item.gradient} flex items-center justify-center relative overflow-hidden`}>
-                {item.images ? (
-                  <div class="absolute inset-0 tesshin-slideshow">
-                    {item.images.map((img: string, i: number) => (
-                      <img
-                        src={img}
-                        alt={`${item.title} ${i + 1}`}
-                        class={`absolute inset-0 w-full h-full object-cover tesshin-slide tesshin-slide-${i + 1}`}
-                        loading="lazy"
-                      />
-                    ))}
-                  </div>
-                ) : item.previewUrl ? (
+                {item.previewUrl ? (
                   <div class="absolute inset-0 overflow-hidden">
                     <iframe
                       src={item.previewUrl}
@@ -331,6 +316,17 @@ const getIndustryCount = (industry: string) => {
                       <i class={`${item.icon} text-6xl text-white`}></i>
                     </div>
                   </>
+                )}
+                {item.demoUrl ? (
+                  <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-green-500/90 text-white text-xs font-bold flex items-center gap-1 z-10">
+                    <i class="ri-play-circle-line"></i>
+                    デモ体験可能
+                  </div>
+                ) : (
+                  <div class="absolute top-3 left-3 px-3 py-1 rounded-full bg-gray-600/90 text-white text-xs font-bold flex items-center gap-1 z-10">
+                    <i class="ri-time-line"></i>
+                    準備中
+                  </div>
                 )}
               </div>
 
@@ -544,37 +540,3 @@ const getIndustryCount = (industry: string) => {
     });
   });
 </script>
-
-<style>
-  .tesshin-slideshow {
-    position: relative;
-  }
-  .tesshin-slide {
-    opacity: 0;
-    transition: opacity 1s ease-in-out;
-  }
-  .tesshin-slide-1 {
-    animation: tesshinFade1 12s infinite;
-  }
-  .tesshin-slide-2 {
-    animation: tesshinFade2 12s infinite;
-  }
-  .tesshin-slide-3 {
-    animation: tesshinFade3 12s infinite;
-  }
-  @keyframes tesshinFade1 {
-    0%, 30% { opacity: 1; }
-    33%, 97% { opacity: 0; }
-    100% { opacity: 1; }
-  }
-  @keyframes tesshinFade2 {
-    0%, 30% { opacity: 0; }
-    33%, 63% { opacity: 1; }
-    66%, 100% { opacity: 0; }
-  }
-  @keyframes tesshinFade3 {
-    0%, 63% { opacity: 0; }
-    66%, 97% { opacity: 1; }
-    100% { opacity: 0; }
-  }
-</style>
