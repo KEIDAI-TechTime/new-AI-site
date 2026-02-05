@@ -381,7 +381,7 @@ const pages: Record<string, {
               </dd>
 
               <dt>従業員数</dt>
-              <dd>18名（2025年1月現在）</dd>
+              <dd>18名（業務委託含む、2025年1月現在）</dd>
             </dl>
           </section>
 
