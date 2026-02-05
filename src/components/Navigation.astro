@@ -11,8 +11,14 @@ const demoLinks = [
   { href: '/web-design', label: 'デモを体験する(Webサイト)' },
 ];
 
+// Simulator link with special styling
+const simulatorLink = {
+  href: '/simulator',
+  label: '30秒で料金を見てみる',
+  badge: '登録不要'
+};
+
 const navLinks = [
-  { href: '/simulator', label: '見積もり' },
   { href: '/blog', label: 'ブログ' },
   { href: '/cases', label: '開発事例' },
   { href: '/about', label: '会社概要' },
@@ -45,6 +51,16 @@ const isActive = (href: string) => currentPath === href;
             {link.label}
           </a>
         ))}
+        <!-- Simulator Link with Badge -->
+        <a
+          href={simulatorLink.href}
+          class="relative text-sm text-[#00D9FF] font-medium whitespace-nowrap hover:opacity-80 transition-opacity duration-200 group"
+        >
+          {simulatorLink.label}
+          <span class="absolute -top-2 -right-10 px-1.5 py-0.5 bg-[#00D9FF] text-[#0A1628] text-[10px] font-bold rounded-full whitespace-nowrap group-hover:opacity-80 transition-opacity duration-200">
+            {simulatorLink.badge}
+          </span>
+        </a>
         {navLinks.map((link) => (
           <a
             href={link.href}
@@ -86,6 +102,16 @@ const isActive = (href: string) => currentPath === href;
           {link.label}
         </a>
       ))}
+      <!-- Simulator Link with Badge (Mobile) -->
+      <a
+        href={simulatorLink.href}
+        class="flex items-center justify-center gap-2 px-4 py-3 rounded-lg text-[#00D9FF] font-medium hover:bg-white/5 transition-all duration-200"
+      >
+        <span>{simulatorLink.label}</span>
+        <span class="px-1.5 py-0.5 bg-[#00D9FF] text-[#0A1628] text-[10px] font-bold rounded-full">
+          {simulatorLink.badge}
+        </span>
+      </a>
       {navLinks.map((link) => (
         <a
           href={link.href}
