@@ -35,11 +35,11 @@ const isActive = (href: string) => currentPath === href;
       </a>
 
       <!-- Desktop Menu -->
-      <div class="hidden lg:flex items-center gap-4 xl:gap-6">
+      <div class="hidden lg:flex items-center gap-6 xl:gap-8">
         {demoLinks.map((link) => (
           <a
             href={link.href}
-            class="px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-[20px] hover:bg-[#00D4AA]/10 transition-all duration-300 whitespace-nowrap"
+            class="px-5 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-full hover:bg-[#00D4AA]/10 transition-all duration-300 whitespace-nowrap"
           >
             {link.label}
           </a>
@@ -49,7 +49,7 @@ const isActive = (href: string) => currentPath === href;
           class="flex items-center gap-2 text-white text-sm font-medium hover:text-[#00D9FF] transition-colors whitespace-nowrap"
         >
           30秒で料金を見てみる
-          <span class="px-2 py-0.5 text-xs border border-white rounded text-white">登録不要</span>
+          <span class="px-2 py-0.5 text-xs bg-red-500 rounded text-white font-bold">登録不要</span>
         </a>
         {navLinks.map((link) => (
           <a
@@ -64,7 +64,7 @@ const isActive = (href: string) => currentPath === href;
         ))}
         <a
           href="/contact"
-          class="px-4 xl:px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm"
+          class="px-6 py-2 bg-gradient-to-r from-[#00D9FF] to-[#0099FF] text-white font-medium rounded-lg hover:shadow-lg hover:shadow-[#00D9FF]/30 transition-all duration-300 whitespace-nowrap text-sm"
         >
           お問い合わせ
         </a>
@@ -87,7 +87,7 @@ const isActive = (href: string) => currentPath === href;
       {demoLinks.map((link) => (
         <a
           href={link.href}
-          class="block mx-2 px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-[20px] hover:bg-[#00D4AA]/10 transition-all duration-300 text-center"
+          class="block mx-2 px-4 py-2 border border-[#00D4AA] text-[#00D4AA] text-sm font-medium rounded-full hover:bg-[#00D4AA]/10 transition-all duration-300 text-center"
         >
           {link.label}
         </a>
@@ -97,7 +97,7 @@ const isActive = (href: string) => currentPath === href;
         class="flex items-center justify-center gap-2 px-4 py-3 text-white font-medium hover:bg-white/5 rounded-lg transition-colors"
       >
         30秒で料金を見てみる
-        <span class="px-2 py-0.5 text-xs border border-white rounded text-white">登録不要</span>
+        <span class="px-2 py-0.5 text-xs bg-red-500 rounded text-white font-bold">登録不要</span>
       </a>
       {navLinks.map((link) => (
         <a
