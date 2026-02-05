@@ -12,7 +12,6 @@ const demoLinks = [
 ];
 
 const navLinks = [
-  { href: '/simulator', label: '見積もり' },
   { href: '/blog', label: 'ブログ' },
   { href: '/cases', label: '開発事例' },
   { href: '/about', label: '会社概要' },
@@ -45,6 +44,13 @@ const isActive = (href: string) => currentPath === href;
             {link.label}
           </a>
         ))}
+        <a
+          href="/simulator"
+          class="flex items-center gap-2 text-white text-sm font-medium hover:text-[#00D9FF] transition-colors whitespace-nowrap"
+        >
+          30秒で料金を見てみる
+          <span class="px-2 py-0.5 text-xs border border-white rounded text-white">登録不要</span>
+        </a>
         {navLinks.map((link) => (
           <a
             href={link.href}
@@ -86,6 +92,13 @@ const isActive = (href: string) => currentPath === href;
           {link.label}
         </a>
       ))}
+      <a
+        href="/simulator"
+        class="flex items-center justify-center gap-2 px-4 py-3 text-white font-medium hover:bg-white/5 rounded-lg transition-colors"
+      >
+        30秒で料金を見てみる
+        <span class="px-2 py-0.5 text-xs border border-white rounded text-white">登録不要</span>
+      </a>
       {navLinks.map((link) => (
         <a
           href={link.href}
