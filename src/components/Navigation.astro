@@ -54,10 +54,10 @@ const isActive = (href: string) => currentPath === href;
         <!-- Simulator Link with Badge -->
         <a
           href={simulatorLink.href}
-          class="relative text-sm text-[#00D9FF] font-medium whitespace-nowrap hover:opacity-80 transition-opacity duration-200 group"
+          class="inline-flex items-start gap-1 text-sm text-[#00D9FF] font-medium whitespace-nowrap hover:opacity-80 transition-opacity duration-200 group"
         >
-          {simulatorLink.label}
-          <span class="absolute -top-2 -right-10 px-1.5 py-0.5 bg-[#00D9FF] text-[#0A1628] text-[10px] font-bold rounded-full whitespace-nowrap group-hover:opacity-80 transition-opacity duration-200">
+          <span>{simulatorLink.label}</span>
+          <span class="px-1.5 py-0.5 bg-[#00D9FF] text-[#0A1628] text-[10px] font-bold rounded-full whitespace-nowrap -translate-y-1">
             {simulatorLink.badge}
           </span>
         </a>
