@@ -292,13 +292,19 @@ const getIndustryCount = (industry: string) => {
 
         <!-- Portfolio Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8" id="portfolio-grid">
-          {portfolioData.map((item, index) => (
-            <div
-              class="portfolio-item group bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden hover:-translate-y-2 hover:border-[#00D4AA] transition-all duration-300 hover:shadow-xl hover:shadow-[#00D4AA]/20 cursor-pointer"
-              data-industry={item.industry}
-              data-style={item.style}
-            >
-              <div class={`aspect-[16/10] bg-gradient-to-br ${item.gradient} flex items-center justify-center relative overflow-hidden`}>
+          {portfolioData.map((item, index) => {
+            const CardWrapper = item.demoUrl ? 'a' : 'div';
+            const cardProps = item.demoUrl
+              ? { href: item.demoUrl, target: '_blank', rel: 'noopener noreferrer' }
+              : {};
+            return (
+              <CardWrapper
+                {...cardProps}
+                class="portfolio-item group bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden hover:-translate-y-2 hover:border-[#00D4AA] transition-all duration-300 hover:shadow-xl hover:shadow-[#00D4AA]/20 cursor-pointer block"
+                data-industry={item.industry}
+                data-style={item.style}
+              >
+                <div class={`aspect-[16/10] bg-gradient-to-br ${item.gradient} flex items-center justify-center relative overflow-hidden`}>
                 {item.previewUrl ? (
                   <div class="absolute inset-0 overflow-hidden">
                     <iframe
@@ -349,20 +355,17 @@ const getIndustryCount = (industry: string) => {
                 </div>
 
                 {item.demoUrl && (
-                  <a
-                    href={item.demoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                  <span
                     class="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-[#6366f1] to-[#00D4AA] text-white text-sm font-semibold rounded-lg hover:shadow-lg hover:shadow-[#00D4AA]/30 transition-all duration-300"
-                    onclick="event.stopPropagation();"
                   >
                     <i class="ri-external-link-line"></i>
                     デモを見る
-                  </a>
+                  </span>
                 )}
               </div>
-            </div>
-          ))}
+            </CardWrapper>
+          );
+          })}
         </div>
 
         <!-- Empty State -->
