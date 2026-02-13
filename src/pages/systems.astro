@@ -43,7 +43,10 @@ const systems = [
     <div class="pb-32 px-6">
       <div class="max-w-7xl mx-auto">
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {systems.map((system) => (
+          {systems.map((system) => {
+            const isInternalDemo = system.link && system.link.startsWith('/demo/');
+            const isExternalDemo = system.link && system.link.startsWith('http');
+            return (
               <a
                 href={system.link || '#'}
                 target={system.link ? '_blank' : undefined}
@@ -52,7 +55,7 @@ const systems = [
                 onclick={!system.link ? 'return false;' : undefined}
               >
                 <div class="absolute inset-0 w-full h-full">
-                  {system.link ? (
+                  {isInternalDemo ? (
                     <iframe
                       src={system.link}
                       class="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none"
@@ -90,7 +93,8 @@ const systems = [
                   )}
                 </div>
               </a>
-          ))}
+            );
+          })}
         </div>
 
         <div class="mt-16 text-center">
