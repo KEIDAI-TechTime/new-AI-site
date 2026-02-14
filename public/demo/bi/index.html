@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顧問先カルテ - 税理士事務所向け管理システム</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Serif+JP:wght@600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Noto Sans JP', sans-serif;
+            background-color: #f8f6f1;
+            color: #0a1628;
+            letter-spacing: 0.02em;
+        }
+        h1, h2, h3, h4, .font-serif {
+            font-family: 'Noto Serif JP', serif;
+        }
+        .animate-fadeInUp {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        /* Mobile responsive overrides */
+        @media (max-width: 767px) {
+            body { overflow: auto !important; }
+            header {
+                height: auto !important;
+                min-height: 56px;
+                padding: 8px 16px !important;
+            }
+            header > nav { display: none !important; }
+            header > div:last-child { display: none !important; }
+            #root > div { padding-top: 56px !important; }
+            main { padding: 16px !important; }
+            table { font-size: 12px; }
+        }
+        @media (min-width: 768px) and (max-width: 1023px) {
+            header nav span { display: none; }
+            header nav { gap: 4px !important; }
+            header > div:last-child { display: none !important; }
+        }
+    </style>
+  <script type="module" crossorigin src="/demo/bi/assets/index-BdGZuqNA.js"></script>
+</head>
+<body>
+    <div id="root"></div>
+</body>
+</html>

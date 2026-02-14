@@ -93,6 +93,7 @@ AI Studio のエクスポートには以下の特徴があるので注意:
 | `/demo/sap/` | ビルド済み | index.html + assets/ |
 | `/demo/crm/` | ビルド済み | index.html + assets/ |
 | `/demo/dms/` | ビルド済み | index.html + assets/ |
+| `/demo/bi/` | ビルド済み | index.html + assets/ |
 | `/demo/harlow/` | ビルド済み | index.html + assets/ |
 | `/demo/code-adventure/` | ビルド済み | index.html + assets/ |
 | `/demo/tesshin-kogyo/` | ビルド済み | index.html + assets/ + images/ |
