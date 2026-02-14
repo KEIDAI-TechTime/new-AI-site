@@ -34,10 +34,10 @@ const Dashboard: React.FC = () => {
   ];
 
   return (
-    <div className="space-y-8 animate-fadeInUp">
+    <div className="space-y-6 md:space-y-8 animate-fadeInUp">
       <div>
-        <h1 className="text-3xl font-serif font-bold text-[#0a1628] mb-2">ダッシュボード</h1>
-        <p className="text-gray-500">本日の優先業務と全体サマリーです</p>
+        <h1 className="text-2xl md:text-3xl font-serif font-bold text-[#0a1628] mb-1 md:mb-2">ダッシュボード</h1>
+        <p className="text-sm md:text-base text-gray-500">本日の優先業務と全体サマリーです</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
