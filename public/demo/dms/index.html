@@ -32,15 +32,21 @@
         /* Mobile responsive overrides */
         @media (max-width: 767px) {
             body { overflow: auto !important; }
-            body > #root > div { height: auto !important; min-height: 100vh; }
-            body > #root > div > div { overflow: visible !important; flex-wrap: wrap; }
-            nav[class*="border-r"] { display: none !important; }
+            header {
+                height: auto !important;
+                min-height: 56px;
+                padding: 8px 16px !important;
+            }
+            header > nav { display: none !important; }
+            header > div:last-child { display: none !important; }
+            #root > div { padding-top: 56px !important; }
+            main { padding: 16px !important; }
             table { font-size: 12px; }
-            header { flex-wrap: wrap; gap: 4px; }
         }
         @media (min-width: 768px) and (max-width: 1023px) {
-            nav[class*="border-r"] { width: 48px !important; }
-            nav[class*="border-r"] span { display: none; }
+            header nav span { display: none; }
+            header nav { gap: 4px !important; }
+            header > div:last-child { display: none !important; }
         }
     </style>
   <script type="module" crossorigin src="/demo/dms/assets/index-BxBKN8Hj.js"></script>
