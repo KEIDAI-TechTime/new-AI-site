@@ -54,25 +54,25 @@ const ClientDetail: React.FC = () => {
           <span className="text-[#0a1628]">{client.name}</span>
         </nav>
 
-        <div className="bg-white rounded-[16px] shadow-sm border border-gray-100 p-8 flex justify-between items-center">
-          <div className="flex gap-8 items-center">
-            <div className="w-16 h-16 bg-[#0a1628] rounded-xl flex items-center justify-center text-[#c9a962]">
-              <Building2 size={32} />
+        <div className="bg-white rounded-[16px] shadow-sm border border-gray-100 p-4 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex gap-4 md:gap-8 items-center">
+            <div className="w-12 h-12 md:w-16 md:h-16 bg-[#0a1628] rounded-xl flex items-center justify-center text-[#c9a962] shrink-0">
+              <Building2 size={24} className="md:hidden" /><Building2 size={32} className="hidden md:block" />
             </div>
-            <div className="space-y-1">
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-serif font-bold text-[#0a1628]">{client.name}</h1>
+            <div className="space-y-1 min-w-0">
+              <div className="flex flex-wrap items-center gap-2 md:gap-3">
+                <h1 className="text-xl md:text-3xl font-serif font-bold text-[#0a1628]">{client.name}</h1>
                 <Badge variant="navy" pill>{client.industry}</Badge>
               </div>
-              <div className="flex gap-6 text-sm text-gray-500 font-medium">
+              <div className="flex flex-wrap gap-3 md:gap-6 text-xs md:text-sm text-gray-500 font-medium">
                 <div className="flex items-center gap-1.5"><Calendar size={14} /> {client.closingMonth}月決算</div>
-                <div className="flex items-center gap-1.5"><Briefcase size={14} /> 契約開始: {client.contractStartDate}</div>
+                <div className="flex items-center gap-1.5"><Briefcase size={14} /> <span className="hidden sm:inline">契約開始:</span> {client.contractStartDate}</div>
                 <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full bg-[#059669]" /> 担当: {client.manager}</div>
               </div>
             </div>
           </div>
-          <div className="flex gap-3">
-            <Button variant="secondary" icon={<StickyNote size={18} />}>メモを追加</Button>
+          <div className="flex gap-2 md:gap-3 shrink-0 w-full md:w-auto">
+            <Button variant="secondary" icon={<StickyNote size={18} />}><span className="hidden sm:inline">メモを追加</span></Button>
             <Button icon={<Plus size={18} />} onClick={() => setIsUploadModalOpen(true)}>書類を追加</Button>
           </div>
         </div>
@@ -87,12 +87,12 @@ const ClientDetail: React.FC = () => {
       )}
 
       {/* Year Tabs */}
-      <div className="flex border-b border-gray-200">
+      <div className="flex border-b border-gray-200 overflow-x-auto">
         {years.map(year => (
           <button
             key={year}
             onClick={() => setActiveYear(year)}
-            className={`px-8 py-4 font-bold text-lg transition-all relative ${
+            className={`px-4 md:px-8 py-3 md:py-4 font-bold text-base md:text-lg transition-all relative shrink-0 ${
               activeYear === year 
                 ? 'text-[#0a1628]' 
                 : 'text-gray-400 hover:text-gray-600'
@@ -108,7 +108,7 @@ const ClientDetail: React.FC = () => {
         ))}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-8">
         {/* Documents Grid */}
         <div className="lg:col-span-2 space-y-8">
           {sections.map(section => (
