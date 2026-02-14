@@ -23,10 +23,23 @@
     ::-webkit-scrollbar-track { background: #f1f1f1; }
     ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+    /* Mobile responsive overrides */
+    @media (max-width: 767px) {
+      body { overflow: auto !important; }
+      body > #root > div { height: auto !important; min-height: 100vh; }
+      body > #root > div > div { overflow: visible !important; flex-wrap: wrap; }
+      nav[class*="border-r"] { display: none !important; }
+      table { font-size: 12px; }
+      header { flex-wrap: wrap; gap: 4px; }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      nav[class*="border-r"] { width: 48px !important; }
+      nav[class*="border-r"] span { display: none; }
+    }
   </style>
   <script type="module" crossorigin src="/demo/sap/assets/index-muXah816.js"></script>
 </head>
-<body class="overflow-hidden">
+<body>
   <div id="root"></div>
 </body>
 </html>
