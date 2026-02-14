@@ -23,6 +23,145 @@
     ::-webkit-scrollbar-track { background: #f1f1f1; }
     ::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
     ::-webkit-scrollbar-thumb:hover { background: #aaa; }
+
+    /* Mobile Responsive Styles */
+    @media (max-width: 768px) {
+      /* Remove overflow hidden on mobile */
+      body { overflow-y: auto !important; }
+
+      /* Header adjustments */
+      .shell-bar, .sapMShellBar {
+        padding: 0 12px !important;
+        height: 56px !important;
+      }
+
+      /* Hide less important header items on mobile */
+      .shell-bar-secondary, .sapMBarRight .sapMBtn:not(:first-child) {
+        display: none !important;
+      }
+
+      /* Stack navigation vertically */
+      .sapMITH, .sapMITBHead {
+        flex-wrap: wrap !important;
+      }
+
+      /* Make tables scrollable */
+      .alv-grid, .sapMList, .sapUiTable {
+        overflow-x: auto !important;
+        display: block !important;
+      }
+
+      /* Reduce table font size */
+      .alv-grid td, .alv-grid th {
+        font-size: 12px !important;
+        padding: 8px 4px !important;
+      }
+
+      /* Hide non-essential columns */
+      .alv-grid td:nth-child(n+5), .alv-grid th:nth-child(n+5) {
+        display: none !important;
+      }
+
+      /* Stack form fields vertically */
+      .sapUiForm .sapUiFormResGrid, .sapMFlexBox {
+        flex-direction: column !important;
+      }
+
+      /* Full width form fields */
+      .sapMInput, .sapMSelect, .sapMComboBox {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+
+      /* Adjust button sizes */
+      .sapMBtn {
+        min-width: auto !important;
+        padding: 0 12px !important;
+      }
+
+      /* Stack buttons vertically in toolbars */
+      .sapMTB .sapMBarChild {
+        margin: 4px 0 !important;
+      }
+
+      /* Reduce padding on cards */
+      .sapFCard, .sapMPanel {
+        margin: 8px 4px !important;
+        padding: 12px !important;
+      }
+
+      /* Hide sidebar on mobile */
+      .sapUiHiddenM, .sidebar {
+        display: none !important;
+      }
+
+      /* Full width main content */
+      .main-content, .sapMPage {
+        width: 100% !important;
+        padding: 12px !important;
+      }
+
+      /* Reduce font sizes */
+      h1, .sapMTitle { font-size: 18px !important; }
+      h2 { font-size: 16px !important; }
+      h3 { font-size: 14px !important; }
+
+      /* Make dialog full screen */
+      .sapMDialog {
+        width: 95% !important;
+        max-width: 95% !important;
+        margin: 8px !important;
+      }
+
+      /* Hamburger menu icon (if exists) */
+      .menu-toggle, .sapMBarChild--sapMBtn:first-child {
+        display: block !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      /* Extra small screens */
+      .shell-bar, .sapMShellBar {
+        height: 48px !important;
+        padding: 0 8px !important;
+      }
+
+      /* Smaller text */
+      .alv-grid td, .alv-grid th {
+        font-size: 11px !important;
+        padding: 6px 2px !important;
+      }
+
+      /* Hide even more columns */
+      .alv-grid td:nth-child(n+4), .alv-grid th:nth-child(n+4) {
+        display: none !important;
+      }
+
+      /* Reduce all padding */
+      .sapFCard, .sapMPanel, .main-content {
+        padding: 8px !important;
+        margin: 4px 2px !important;
+      }
+
+      h1, .sapMTitle { font-size: 16px !important; }
+    }
+
+    /* Tablet specific (768px - 1024px) */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      .alv-grid td, .alv-grid th {
+        font-size: 13px !important;
+        padding: 8px 6px !important;
+      }
+
+      /* Show first 6 columns only */
+      .alv-grid td:nth-child(n+7), .alv-grid th:nth-child(n+7) {
+        display: none !important;
+      }
+
+      .main-content {
+        padding: 16px !important;
+      }
+    }
   </style>
   <script type="module" crossorigin src="/demo/sap/assets/index-muXah816.js"></script>
 </head>
