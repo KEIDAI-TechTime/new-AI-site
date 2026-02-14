@@ -27,77 +27,137 @@
     /* Mobile Responsive Styles */
     @media (max-width: 768px) {
       /* Remove overflow hidden on mobile */
-      body { overflow-y: auto !important; }
+      body { overflow-y: auto !important; overflow-x: hidden !important; }
+
+      /* CRITICAL: Hide sidebar/navigation on mobile */
+      #root > div > aside,
+      #root > div > nav:first-child,
+      #root > div > div:first-child:has(nav),
+      aside[class*="sidebar"],
+      aside[class*="w-64"],
+      aside[class*="w-56"],
+      nav[class*="sidebar"],
+      div[class*="sidebar"] {
+        display: none !important;
+        width: 0 !important;
+        min-width: 0 !important;
+      }
+
+      /* Force main content to full width */
+      #root > div,
+      #root > div > div,
+      #root > div > main,
+      main[class*="flex-1"],
+      div[class*="flex-1"],
+      .main-content,
+      .sapMPage {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        padding: 12px !important;
+        flex: 1 1 100% !important;
+      }
+
+      /* Override flex container */
+      #root > div > div[class*="flex"] {
+        display: block !important;
+      }
 
       /* Header adjustments */
-      .shell-bar, .sapMShellBar {
+      header,
+      .shell-bar,
+      .sapMShellBar,
+      div[class*="h-16"],
+      div[class*="h-14"] {
         padding: 0 12px !important;
         height: 56px !important;
+        min-height: 56px !important;
       }
 
       /* Hide less important header items on mobile */
-      .shell-bar-secondary, .sapMBarRight .sapMBtn:not(:first-child) {
+      header > div > div:not(:first-child):not(:last-child),
+      .shell-bar-secondary,
+      .sapMBarRight .sapMBtn:not(:first-child) {
         display: none !important;
       }
 
       /* Stack navigation vertically */
-      .sapMITH, .sapMITBHead {
+      .sapMITH,
+      .sapMITBHead,
+      nav[class*="flex"] {
         flex-wrap: wrap !important;
       }
 
       /* Make tables scrollable */
-      .alv-grid, .sapMList, .sapUiTable {
+      table,
+      .alv-grid,
+      .sapMList,
+      .sapUiTable,
+      div[class*="overflow-auto"]:has(table) {
         overflow-x: auto !important;
         display: block !important;
+        width: 100% !important;
       }
 
       /* Reduce table font size */
-      .alv-grid td, .alv-grid th {
-        font-size: 12px !important;
-        padding: 8px 4px !important;
+      table td,
+      table th,
+      .alv-grid td,
+      .alv-grid th {
+        font-size: 11px !important;
+        padding: 6px 4px !important;
+        white-space: nowrap !important;
       }
 
       /* Hide non-essential columns */
-      .alv-grid td:nth-child(n+5), .alv-grid th:nth-child(n+5) {
+      table td:nth-child(n+5),
+      table th:nth-child(n+5),
+      .alv-grid td:nth-child(n+5),
+      .alv-grid th:nth-child(n+5) {
         display: none !important;
       }
 
       /* Stack form fields vertically */
-      .sapUiForm .sapUiFormResGrid, .sapMFlexBox {
+      .sapUiForm .sapUiFormResGrid,
+      .sapMFlexBox,
+      div[class*="grid"],
+      div[class*="flex"][class*="gap"] {
         flex-direction: column !important;
+        grid-template-columns: 1fr !important;
       }
 
       /* Full width form fields */
-      .sapMInput, .sapMSelect, .sapMComboBox {
+      input,
+      select,
+      textarea,
+      .sapMInput,
+      .sapMSelect,
+      .sapMComboBox {
         width: 100% !important;
         max-width: 100% !important;
       }
 
       /* Adjust button sizes */
+      button,
       .sapMBtn {
         min-width: auto !important;
-        padding: 0 12px !important;
+        padding: 8px 12px !important;
+        font-size: 13px !important;
       }
 
       /* Stack buttons vertically in toolbars */
-      .sapMTB .sapMBarChild {
+      .sapMTB .sapMBarChild,
+      div[class*="flex"][class*="gap"] > button {
         margin: 4px 0 !important;
       }
 
       /* Reduce padding on cards */
-      .sapFCard, .sapMPanel {
+      .sapFCard,
+      .sapMPanel,
+      div[class*="bg-white"][class*="rounded"],
+      div[class*="shadow"] {
         margin: 8px 4px !important;
-        padding: 12px !important;
-      }
-
-      /* Hide sidebar on mobile */
-      .sapUiHiddenM, .sidebar {
-        display: none !important;
-      }
-
-      /* Full width main content */
-      .main-content, .sapMPage {
-        width: 100% !important;
         padding: 12px !important;
       }
 
@@ -107,59 +167,98 @@
       h3 { font-size: 14px !important; }
 
       /* Make dialog full screen */
-      .sapMDialog {
-        width: 95% !important;
-        max-width: 95% !important;
-        margin: 8px !important;
+      .sapMDialog,
+      div[role="dialog"],
+      div[class*="modal"] {
+        width: 95vw !important;
+        max-width: 95vw !important;
+        margin: 8px auto !important;
       }
 
-      /* Hamburger menu icon (if exists) */
-      .menu-toggle, .sapMBarChild--sapMBtn:first-child {
-        display: block !important;
+      /* Container adjustments */
+      .container,
+      div[class*="container"],
+      div[class*="max-w-"] {
+        max-width: 100% !important;
+        padding-left: 12px !important;
+        padding-right: 12px !important;
       }
     }
 
     @media (max-width: 640px) {
       /* Extra small screens */
-      .shell-bar, .sapMShellBar {
+      header,
+      .shell-bar,
+      .sapMShellBar,
+      div[class*="h-16"],
+      div[class*="h-14"] {
         height: 48px !important;
+        min-height: 48px !important;
         padding: 0 8px !important;
       }
 
       /* Smaller text */
-      .alv-grid td, .alv-grid th {
-        font-size: 11px !important;
-        padding: 6px 2px !important;
+      table td,
+      table th,
+      .alv-grid td,
+      .alv-grid th {
+        font-size: 10px !important;
+        padding: 4px 2px !important;
       }
 
       /* Hide even more columns */
-      .alv-grid td:nth-child(n+4), .alv-grid th:nth-child(n+4) {
+      table td:nth-child(n+4),
+      table th:nth-child(n+4),
+      .alv-grid td:nth-child(n+4),
+      .alv-grid th:nth-child(n+4) {
         display: none !important;
       }
 
       /* Reduce all padding */
-      .sapFCard, .sapMPanel, .main-content {
+      .sapFCard,
+      .sapMPanel,
+      .main-content,
+      div[class*="bg-white"],
+      #root > div > main,
+      #root > div > div {
         padding: 8px !important;
         margin: 4px 2px !important;
       }
 
       h1, .sapMTitle { font-size: 16px !important; }
+      h2 { font-size: 14px !important; }
+      h3 { font-size: 12px !important; }
     }
 
     /* Tablet specific (768px - 1024px) */
     @media (min-width: 769px) and (max-width: 1024px) {
-      .alv-grid td, .alv-grid th {
-        font-size: 13px !important;
+      table td,
+      table th,
+      .alv-grid td,
+      .alv-grid th {
+        font-size: 12px !important;
         padding: 8px 6px !important;
       }
 
       /* Show first 6 columns only */
-      .alv-grid td:nth-child(n+7), .alv-grid th:nth-child(n+7) {
+      table td:nth-child(n+7),
+      table th:nth-child(n+7),
+      .alv-grid td:nth-child(n+7),
+      .alv-grid th:nth-child(n+7) {
         display: none !important;
       }
 
-      .main-content {
+      .main-content,
+      #root > div > main,
+      #root > div > div {
         padding: 16px !important;
+      }
+
+      /* Reduce sidebar width */
+      aside,
+      nav:first-child {
+        width: 200px !important;
+        min-width: 200px !important;
       }
     }
   </style>
