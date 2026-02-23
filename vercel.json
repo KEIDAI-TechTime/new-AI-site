@@ -28,6 +28,11 @@
       "source": "/ga4-analytics",
       "destination": "/ga4-analytics/",
       "permanent": true
+    },
+    {
+      "source": "/web-design",
+      "destination": "/webdesign",
+      "permanent": true
     }
   ],
   "rewrites": [
