@@ -4,6 +4,7 @@ import Navigation from '@/components/Navigation.astro';
 
 const title = 'Webサイト制作 | TechTime株式会社';
 const description = 'コーポレートサイトからEC、Webアプリまで。AI駆動のデザイン・開発で、高品質なWebサイトを短期間・低コストで制作します。';
+const ogImage = 'https://techtime-jp.com/images/og/web-design.png';
 
 const portfolioData = [
   {
@@ -139,7 +140,7 @@ const getIndustryCount = (industry: string) => {
 };
 ---
 
-<BaseLayout title={title} description={description}>
+<BaseLayout title={title} description={description} ogImage={ogImage}>
   <Navigation currentPath="/web-design" />
 
   <div class="min-h-screen bg-[#0A1628]">
