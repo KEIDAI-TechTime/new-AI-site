@@ -2,6 +2,19 @@ import fs from 'fs/promises';
 import path from 'path';
 
 // Page metadata and static content for SEO and AI crawlers
+// OG image mapping per route
+const ogImages: Record<string, string> = {
+  '/': 'https://techtime-jp.com/images/og/home.png',
+  '/systems': 'https://techtime-jp.com/images/og/systems.png',
+  '/simulator': 'https://techtime-jp.com/images/og/simulator.png',
+  '/ai-development': 'https://techtime-jp.com/images/og/ai-development.png',
+  '/quality-assurance': 'https://techtime-jp.com/images/og/quality-assurance.png',
+  '/blog': 'https://techtime-jp.com/images/og/blog.png',
+  '/cases': 'https://techtime-jp.com/images/og/cases.png',
+  '/about': 'https://techtime-jp.com/images/og/about.png',
+  '/contact': 'https://techtime-jp.com/images/og/contact.png',
+};
+
 const pages: Record<string, {
   title: string;
   description: string;
@@ -526,6 +539,17 @@ async function prerender() {
         html = html.replace(
           /<meta name="twitter:description" content=".*?">/,
           `<meta name="twitter:description" content="${meta.description}">`
+        );
+
+        // Update OGP image per route
+        const routeOgImage = ogImages[route] || 'https://techtime-jp.com/images/og/home.png';
+        html = html.replace(
+          /<meta property="og:image" content=".*?" \/>/,
+          `<meta property="og:image" content="${routeOgImage}" />`
+        );
+        html = html.replace(
+          /<meta name="twitter:image" content=".*?" \/>/,
+          `<meta name="twitter:image" content="${routeOgImage}" />`
         );
 
         // Inject static content into the root div for crawlers
