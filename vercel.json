@@ -32,6 +32,14 @@
   ],
   "rewrites": [
     {
+      "source": "/demo/autogarage",
+      "destination": "/demo/autogarage/index.html"
+    },
+    {
+      "source": "/demo/autogarage/:path((?!assets/).*)",
+      "destination": "/demo/autogarage/index.html"
+    },
+    {
       "source": "/ga4-analytics/",
       "destination": "https://ga-4-flax.vercel.app/"
     },
