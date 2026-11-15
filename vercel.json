@@ -30,8 +30,48 @@
       "permanent": true
     },
     {
+      "source": "/about",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/ai-development",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/quality-assurance",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/systems",
+      "destination": "/",
+      "permanent": true
+    },
+    {
       "source": "/web-design",
-      "destination": "/webdesign",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/webdesign",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/simulator",
+      "destination": "/assessment",
+      "permanent": true
+    },
+    {
+      "source": "/cases",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/cases/:path*",
+      "destination": "/",
       "permanent": true
     }
   ],
