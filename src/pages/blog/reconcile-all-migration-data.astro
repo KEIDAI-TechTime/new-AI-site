@@ -1,0 +1,212 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '一部だけの照合では、<b>特定の条件のデータだけで発生する誤りを、見つけられません。</b>',
+  'AIが、変換のプログラムと照合のプログラムを作ります。<b>プログラムで、全件を照合します。</b>',
+  '人が確認するのは、<b>プログラムで一致か不一致かを判断できない項目だけ</b>です。',
+];
+/* 図1：データ 14列×6行。誤りは、特定の条件のデータ（右下のかたまり）に集中する（例） */
+const COLS = 14, N = 84;
+const bad = [52, 53, 54, 66, 67, 68, 69, 81, 82];
+const sampled = [1, 9, 16, 24, 30, 37, 45, 58, 72];
+const kinds = [
+  ['そのまま移す項目', '71項目', '移行元の値と、移行先の値が同じかを照合する', 'プログラムが照合する', 'a'],
+  ['変換する項目', '19項目', '変換のルールで計算した値と、移行先の値が同じかを照合する', 'プログラムが照合する', 'a'],
+  ['人が判断する項目', '6項目', '名前の表記の統一、住所の書き方、自由に記入された備考', '人が確認する', 'h'],
+];
+const rh = [['1回目', 4820, 100], ['2回目', 610, 13], ['3回目', 38, 1.5]];
+---
+
+<PostLayout slug="reconcile-all-migration-data" points={points}>
+  <p class="lead2">移行リハーサルで、得意先マスタ8万件を新しいシステムに移しました。移行の担当者は、200件を選んで照合しました。200件に誤りはありませんでした。稼働から2週間後、請求書の送付先の誤りが見つかりました。誤りは、支店コードが4桁の得意先だけで発生していました。</p>
+  <p>200件の中に、支店コードが4桁の得意先は1件も含まれていませんでした。<b>一部だけの照合では、特定の条件のデータで発生する誤りを見つけられません。</b></p>
+  <p>この記事では、全件を照合する方法を書きます。照合するプログラムの作り方と、人が確認する項目の決め方も書きます。</p>
+
+  <h2><i>01</i>移行の誤りは、特定の条件のデータに集中する</h2>
+
+  <figure class="fig b9f1" data-loop="9500">
+    <div class="fig__h"><span>図 1</span>誤りは一部のデータに集中する。9件だけ照合すると見つからず、全件を照合すると見つかる（例）</div>
+    <div class="fig__b">
+      <div class="two">
+        <div>
+          <p class="k">9件だけ照合する</p>
+          <div class="cells">
+            {Array.from({ length: N }, (_, i) => <i class:list={[{ s: sampled.includes(i), b: bad.includes(i) }]} style={`--t:${sampled.indexOf(i) * 0.3 + 0.3}s`}></i>)}
+          </div>
+          <p class="r f" style="--t:3.4s">照合した 9件　見つけた誤り 0件　<b>残った誤り 9件</b></p>
+        </div>
+        <div>
+          <p class="k k--on">全件を照合する</p>
+          <div class="cells cells--all">
+            {Array.from({ length: N }, (_, i) => <i class:list={[{ b: bad.includes(i) }]} style={`--t:${((i % COLS) + Math.floor(i / COLS)) * 0.1 + 0.3}s`}></i>)}
+          </div>
+          <p class="r f" style="--t:2.6s">照合した 84件　見つけた誤り 9件　残った誤り 0件</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">マスの数は説明のための例です。朱の点線の枠が、照合されなかった誤りです。誤りは、同じ条件を持つデータにまとまって発生します。</p>
+  </figure>
+
+  <p>移行の誤りは、データ全体に均等には発生しません。変換のルールが想定していなかった条件のデータで、まとまって発生します。たとえば、コードの桁数が違うデータ、古い時期に登録されたデータ、項目が空欄のデータです。</p>
+  <p>想定していなかった条件のデータは、件数が少ないのが普通です。そのため、一部だけを選ぶ照合では、選んだデータに含まれません。</p>
+
+  <div class="say">
+    <p>一部だけの照合で確認できるのは、変換のルールが想定したデータだけです。誤りは、想定していなかったデータで発生します。</p>
+  </div>
+
+  <h2><i>02</i>照合が一部だけになる原因は、人が照合していること</h2>
+  <p>全件を照合しない理由は、多くの場合、時間が足りないことです。時間が足りない原因は3つあります。</p>
+  <ul>
+    <li><strong>照合する量が多い。</strong>得意先マスタが8万件、項目が96個ある場合、照合する値は768万個です。人が目で比べられる量ではありません。</li>
+    <li><strong>照合を、表計算ソフトで行っている。</strong>移行元と移行先のデータを表に貼り、数式で比べています。件数が多いと、表計算ソフトが動かなくなります。</li>
+    <li><strong>リハーサルのたびに、同じ作業を繰り返している。</strong>照合の手順が人の作業なので、2回目も3回目も同じ時間がかかります。</li>
+  </ul>
+  <p>照合が一部だけになる3つの原因は、照合をプログラムで行うと解決します。プログラムは、768万個の値を数分で比べます。2回目以降のリハーサルでは、同じプログラムをもう一度実行するだけです。</p>
+
+  <h2><i>03</i>照合のプログラムは、変換のプログラムとは別に作る</h2>
+  <p>AIに、変換のプログラムと照合のプログラムを作らせます。重要なのは、<b>2つのプログラムを別々に作る</b>ことです。</p>
+
+  <figure class="fig b9f2" data-loop="9500">
+    <div class="fig__h"><span>図 2</span>変換と照合を別々に作ると、変換の誤りを照合で見つけられる</div>
+    <div class="fig__b">
+      <svg viewBox="0 0 760 250" aria-hidden="true">
+        <g class="box"><rect x="20" y="24" width="150" height="56" /><text x="95" y="57" text-anchor="middle" class="bd">移行元のデータ</text></g>
+        <path d="M170 52H300" pathLength="1" class="ln dr" style="--t:.3s" />
+        <g class="prg p" style="--t:.7s"><rect x="300" y="24" width="160" height="56" /><text x="380" y="48" text-anchor="middle" class="bd">変換のプログラム</text><text x="380" y="67" text-anchor="middle" class="sm2">AIが作る</text></g>
+        <path d="M460 52H590" pathLength="1" class="ln dr" style="--t:1.1s" />
+        <g class="box"><rect x="590" y="24" width="150" height="56" /><text x="665" y="57" text-anchor="middle" class="bd">移行先のデータ</text></g>
+
+        <g class="spec p" style="--t:1.8s"><rect x="300" y="118" width="160" height="44" /><text x="380" y="145" text-anchor="middle" class="bd">移行の仕様書</text></g>
+        <path d="M380 118V80" pathLength="1" class="ln3 dr" style="--t:2.1s" />
+        <path d="M380 162V190" pathLength="1" class="ln3 dr" style="--t:2.1s" />
+        <g class="chk p" style="--t:2.5s"><rect x="300" y="190" width="160" height="50" /><text x="380" y="212" text-anchor="middle" class="bd">照合のプログラム</text><text x="380" y="229" text-anchor="middle" class="sm2">AIが、別に作る</text></g>
+        <path d="M95 80V215H300" pathLength="1" class="ln2 dr" style="--t:3s" />
+        <path d="M665 80V215H460" pathLength="1" class="ln2 dr" style="--t:3s" />
+        <text x="190" y="206" text-anchor="middle" class="sm lb f" style="--t:3.6s">移行元を読む</text>
+        <text x="565" y="206" text-anchor="middle" class="sm lb f" style="--t:3.6s">移行先を読む</text>
+      </svg>
+    </div>
+    <p class="fig__c">2つのプログラムは、同じ仕様書から別々に作ります。照合のプログラムは、変換のプログラムの中身を読まずに作ります。</p>
+  </figure>
+
+  <p>照合のプログラムを、変換のプログラムを元にして作ると、2つのプログラムが同じ誤りを持ちます。変換が誤っていても、照合の結果は「一致」になります。</p>
+  <p>そのため、AIには、移行の仕様書だけを読ませて照合のプログラムを作らせます。変換のプログラムを読ませません。2つのプログラムの結果が違う箇所は、どちらかのプログラムか、仕様書に誤りがあります。</p>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>件数の一致だけで、照合を終わらせないでください。移行元が8万件、移行先も8万件であっても、項目の値が正しいとは限りません。件数の照合と、項目の値の照合は、別の確認です。両方を行います。</p>
+  </div>
+
+  <h2><i>04</i>項目を3種類に分ける。人が確認するのは、1種類だけ</h2>
+  <p>すべての項目を、プログラムで照合できるわけではありません。照合の前に、項目を3種類に分けます。</p>
+
+  <figure class="fig b9f3">
+    <div class="fig__h"><span>図 3</span>得意先マスタの96項目のうち、人が確認するのは6項目（例）</div>
+    <div class="fig__b">
+      <div class="three">
+        {kinds.map(([n, c, d, w, k], i) => (
+          <div class:list={['c', 'p', k]} style={`--t:${0.2 + i * 0.4}s`}>
+            <b>{c}</b><h4>{n}</h4><p>{d}</p><em>{w}</em>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">項目の数は説明のための例です。人が確認する項目を先に決めると、担当者は、判断が必要な項目だけに時間を使えます。</p>
+  </figure>
+
+  <p>3種類目の「人が判断する項目」は、変換のルールを1つに決められない項目です。たとえば、同じ会社が2つの名前で登録されている場合です。どちらの名前に統一するかは、業務の担当者が決めます。</p>
+  <p>人が判断する項目についても、AIは準備の作業を行えます。AIは、名前が似ている得意先を組にして、一覧にします。業務の担当者は、組ごとに、同じ会社かどうかを決めます。</p>
+
+  <h2><i>05</i>全件の照合は、5つの手順で行う</h2>
+  <ol class="n">
+    <li><strong>移行の担当者が、項目を3種類に分ける</strong>担当者は、移行の仕様書に、項目ごとの種類を書きます。</li>
+    <li><strong>AIが、変換のプログラムを作る</strong>AIに、移行の仕様書を読ませます。AIは、仕様書のルールどおりに変換するプログラムを作ります。</li>
+    <li><strong>AIが、照合のプログラムを別に作る</strong>AIに、移行の仕様書だけを読ませます。変換のプログラムは読ませません。</li>
+    <li><strong>移行の担当者が、全件を変換し、全件を照合する</strong>担当者は、2つのプログラムを実行します。照合のプログラムは、不一致の一覧を作ります。</li>
+    <li><strong>AIが、不一致を原因ごとにまとめる</strong>AIは、同じ条件のデータで発生した不一致を1つにまとめます。担当者は、まとめごとに原因を確認します。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>全件を照合すると、1回目は数千件の不一致が出ます。担当者が不一致を1件ずつ確認すると、時間が足りなくなります。不一致は、同じ条件のデータでまとまって発生しています。<strong>条件ごとにまとめ、まとめごとに原因を1つ確認</strong>してください。数千件の不一致の原因は、多くの場合、数個です。</p>
+  </div>
+
+  <h2><i>06</i>不一致の件数がリハーサルのたびに減れば、移行の品質は上がっている</h2>
+
+  <figure class="fig b9f4" data-loop="9500">
+    <div class="fig__h"><span>図 4</span>不一致の件数は、リハーサルのたびに減る。3回目に残った38件が、人の判断を待つ項目（例）</div>
+    <div class="fig__b">
+      <div class="bars">
+        {rh.map(([n, v, w], k) => <div class:list={['row', { last: k === 2 }]}><span>リハーサル {n}</span><div><i class="ty" style={`--w:${w}%;--t:${0.3 + k * 0.6}s`}></i><b class="f" style={`--t:${0.9 + k * 0.6}s`}>{Number(v).toLocaleString()}件</b></div></div>)}
+      </div>
+    </div>
+    <p class="fig__c">件数は説明のための例です。同じプログラムで毎回照合するので、回ごとの件数を比べられます。</p>
+  </figure>
+
+  <p>移行の担当者は、リハーサルのたびに、次の3つの数字を記録します。1つ目は、不一致の件数です。2つ目は、不一致の原因の数です。3つ目は、人が判断する項目のうち、まだ決まっていない件数です。</p>
+  <p>不一致の件数が減らない場合は、原因が解決されていません。原因の数が増えた場合は、新しい条件のデータが見つかっています。どちらの場合も、稼働の判定の前に、移行の担当者が原因を確認します。</p>
+
+  <h2><i>07</i>明日は、直近のリハーサルで照合した範囲を数える</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>直近のリハーサルについて、<b>照合した件数と、全体の件数</b>を、マスタごとに書き出す。</span></li>
+      <li><span>マスタごとに、<b>照合した項目の数と、全体の項目の数</b>を書き出す。</span></li>
+      <li><span>照合するデータを<b>どの方法で選んだか</b>を確認する。先頭から選んだのか、条件ごとに選んだのかを書く。</span></li>
+    </ol>
+  </div>
+  <p>照合した件数が全体の1割に満たないマスタがある場合、照合をプログラムで行うことを検討してください。件数の多いマスタから始めると、効果が大きくなります。</p>
+  <p>照合するデータを、一覧の先頭から選んでいた場合は、特に注意が必要です。先頭のデータは、古い時期に登録されたデータに偏ります。先頭のデータは、登録された時期や条件が似ています。条件の違うデータは、照合されていません。</p>
+</PostLayout>
+
+<style is:global>
+  .b9f1 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  .b9f1 .k { margin: 0 0 10px; font-size: 13px; font-weight: 700; }
+  .b9f1 .k--on { color: var(--shu); }
+  .b9f1 .cells { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; }
+  .b9f1 .cells i { display: block; aspect-ratio: 1 / 1.2; border: 1px solid var(--line); background: var(--paper); }
+  .b9f1 .cells i.s { background: var(--ink); border-color: var(--ink); }
+  .b9f1 .cells i.b:not(.s) { border: 2px dashed var(--shu); }
+  .b9f1 .cells--all i { background: var(--ink); border-color: var(--ink); }
+  .b9f1 .cells--all i.b { background: var(--shu); border: 1px solid var(--shu); }
+  .b9f1.run .cells i.s, .b9f1.run .cells--all i { animation: b9in 0.3s var(--t) both; }
+  .b9f1.run .cells:not(.cells--all) i.b:not(.s) { animation: ffade 0.5s 3.2s both; }
+  @keyframes b9in { from { background: var(--paper); border-color: var(--line); } }
+  .b9f1 .r { margin: 12px 0 0; font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  .b9f1 .r b { color: var(--shu); background: none; }
+  .b9f2 .box rect, .b9f2 .spec rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
+  .b9f2 .prg rect { fill: var(--ink); }
+  .b9f2 .prg text { fill: var(--paper); }
+  .b9f2 .chk rect { fill: var(--shu); }
+  .b9f2 .chk text { fill: var(--paper); }
+  .b9f2 .sm2 { font-size: 11px !important; }
+  .b9f2 .prg .sm2 { fill: #c9c4b6; }
+  .b9f2 .chk .sm2 { fill: #ffd9cf; }
+  .b9f2 .ln { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+  .b9f2 .ln2 { fill: none; stroke: var(--shu); stroke-width: 2; }
+  .b9f2 .ln3 { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 0.06 0.06; }
+  .b9f2 .lb { fill: var(--shu) !important; font-weight: 700; }
+  .b9f2 .prg, .b9f2 .spec, .b9f2 .chk { transform-box: fill-box; transform-origin: center; }
+  .b9f3 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .b9f3 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b9f3 .c > b { font-family: var(--mono); font-weight: 500; font-size: 24px; line-height: 1.1; background: none; }
+  .b9f3 h4 { margin: 0; font-family: var(--mincho); font-size: 17px; line-height: 1.5; }
+  .b9f3 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
+  .b9f3 .c em { font-style: normal; font-size: 12px; font-weight: 700; border-top: 1px solid var(--line); padding-top: 7px; color: var(--ink-2); }
+  .b9f3 .c.h { background: var(--shu); border-color: var(--shu); color: var(--paper); }
+  .b9f3 .c.h em { color: var(--paper); border-top-color: #ffd9cf; }
+  .b9f4 .bars { display: grid; gap: 12px; }
+  .b9f4 .row { display: grid; grid-template-columns: 8.5em 1fr; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
+  .b9f4 .row div { display: flex; align-items: center; gap: 10px; }
+  .b9f4 .row i { display: block; height: 26px; width: var(--w); min-width: 4px; max-width: 80%; background: var(--ink); flex: none; }
+  .b9f4 .row.last i { background: var(--shu); }
+  .b9f4 .row.last b { color: var(--shu); }
+  .b9f4 .row b { font-family: var(--mono); font-weight: 500; background: none; white-space: nowrap; }
+  @media (max-width: 760px) {
+    .b9f1 .two { grid-template-columns: 1fr; }
+    .b9f3 .three { grid-template-columns: 1fr; }
+    .b9f4 .row { grid-template-columns: 1fr; gap: 4px; }
+    .b9f4 .row i { max-width: 68%; }
+  }
+</style>

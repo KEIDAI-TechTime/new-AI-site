@@ -1,0 +1,170 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '一度「追加開発」と書かれた要件は、<b>見直されないまま見積もりに残ります。</b>',
+  '見直す材料は、会議の記録にあります。<b>「設定で足りるのでは」という意見が、結論の出ないまま残っています。</b>',
+  'AIが見直す候補を挙げ、標準機能を使う案を作ります。<b>標準機能に合わせるかどうかは、業務の責任者が決めます。</b>',
+];
+const costs = [['設計と開発', 30], ['テスト', 18], ['稼働後の保守', 26], ['バージョンアップ時の確認と修正', 26]];
+---
+
+<PostLayout slug="recheck-add-ons-against-standard" points={points}>
+  <p class="lead2">Fit&Gap の会議で、ある要件に「追加開発」と書かれました。理由の欄は「現行のシステムと同じ動作にしたい」です。3か月後、その要件は設計の対象として、開発の見積もりに入っていました。</p>
+  <p>3か月の間に、この要件を見直した人はいません。「追加開発」と一度書かれた要件は、決定として扱われるからです。</p>
+  <p>しかし、会議の記録を読むと、見直す理由が見つかります。この記事では、見直す要件の選び方と、標準機能との比べ方を書きます。あわせて、AIに任せる作業を書きます。</p>
+
+  <h2><i>01</i>「追加開発」と書かれた要件は、見直されない</h2>
+
+  <figure class="fig b5f1" data-loop="9500">
+    <div class="fig__h"><span>図 1</span>要件が「追加開発」のまま、見積もりに残るまで</div>
+    <div class="fig__b">
+      <ol class="tl">
+        <li class="p" style="--t:.2s"><time>1か月目</time><b>Fit&Gap の会議</b><span>要件一覧に「追加開発」と書く。理由は「現行と同じ動作にしたい」</span></li>
+        <li class="p" style="--t:1.2s"><time>2か月目</time><b>要件の検討会</b><span>「得意先マスタの設定で分ければ足りるのでは」という意見が出る。結論は次回になる</span></li>
+        <li class="p warn" style="--t:2.2s"><time>その後</time><b>次の議題にならない</b><span>次回の会議では、別の議題が優先される</span></li>
+        <li class="p" style="--t:3.2s"><time>4か月目</time><b>見積もり</b><span>要件一覧の「追加開発」の行が、そのまま開発の対象になる</span></li>
+      </ol>
+    </div>
+    <p class="fig__c">「次の議題にならない」の段階で、見直す機会が無くなります。意見は会議の記録に残りますが、要件一覧は変わりません。</p>
+  </figure>
+
+  <p>要件一覧の「追加開発」という記載は、Fit&Gap の時点の判断です。その後の検討で前提が変わっても、要件一覧を直す担当はいません。見積もりを作る人は、要件一覧だけを見ます。</p>
+
+  <div class="say">
+    <p>追加開発が増える原因は、業務の要求が多いことだけではありません。一度書かれた「追加開発」を、誰も消さないことです。</p>
+  </div>
+
+  <h2><i>02</i>見直す要件は、3つの特徴で選ぶ</h2>
+  <p>すべての追加開発を見直す時間はありません。次の3つの特徴のどれかを持つ要件を、見直しの候補にします。</p>
+
+  <figure class="fig b5f2">
+    <div class="fig__h"><span>図 2</span>理由が「現行と同じ」、対象が少ない、結論の無い案がある。この3つの要件を見直す</div>
+    <div class="fig__b">
+      <div class="three">
+        <div class="c p" style="--t:.2s"><b>1</b><h4>理由が「現行と同じにしたい」</h4><p>業務上の必要ではなく、現行のシステムの動作が理由になっている。</p><em>要件一覧の「理由」の欄で分かる</em></div>
+        <div class="c p" style="--t:.6s"><b>2</b><h4>対象が少ない</h4><p>その機能を使う得意先・部門・伝票の件数が、全体のごく一部である。</p><em>会議の記録と、現行の実績データで分かる</em></div>
+        <div class="c p" style="--t:1s"><b>3</b><h4>代わりの案が出たが、結論が無い</h4><p>会議で「設定で足りるのでは」「運用で対応できるのでは」という意見が出ている。</p><em>会議の記録で分かる</em></div>
+      </div>
+    </div>
+    <p class="fig__c">3つとも、要件一覧と会議の記録を読めば判定できます。業務の担当者に聞き取りをする必要はありません。</p>
+  </figure>
+
+  <p>3つ目の特徴「代わりの案が出たが、結論が無い」は、人が見つけるのは困難です。数十本の会議の記録から、結論が出なかった意見を探す必要があるからです。この作業は AI に任せます。</p>
+
+  <h2><i>03</i>追加開発の費用は、作る費用だけではない</h2>
+  <p>業務の責任者が判断するには、標準機能に合わせる場合と、追加開発にする場合を比べる資料が必要です。多くの見積もりには、設計と開発の工数だけが書かれています。稼働後の費用が書かれていません。</p>
+
+  <figure class="fig b5f3" data-loop="9000">
+    <div class="fig__h"><span>図 3</span>追加開発1本にかかる費用の内訳。見積もりに書かれるのは、左の2つだけ</div>
+    <div class="fig__b">
+      <div class="stack">
+        {costs.map(([n, w], k) => <div class:list={['seg', 'ty', { later: k >= 2 }]} style={`--w:${w}%;--t:${0.3 + k * 0.5}s`}><span>{n}</span></div>)}
+      </div>
+      <div class="legend"><span class="f" style="--t:1.3s"><i></i>見積もりに書かれる費用</span><span class="f" style="--t:2.3s"><i class="l"></i>稼働後に毎年かかる費用</span></div>
+    </div>
+    <p class="fig__c">割合は説明のための例です。追加開発は、稼働後も保守と、バージョンアップのたびの確認が必要です。</p>
+  </figure>
+
+  <p>比べる資料には、次の4つの項目を書きます。</p>
+  <table class="tbl">
+    <thead><tr><th>項目</th><th>標準機能に合わせる場合</th><th>追加開発にする場合</th></tr></thead>
+    <tbody>
+      <tr><th>業務で変わること</th><td>どの担当者の、どの作業が、どう変わるか</td><td>変わらない</td></tr>
+      <tr><th>導入の費用</th><td>設定と、業務の手順書の変更</td><td>設計・開発・テスト</td></tr>
+      <tr><th>稼働後の費用</th><td>ほぼ発生しない</td><td>保守と、バージョンアップ時の確認</td></tr>
+      <tr><th>対象の件数</th><td colspan="2">その機能を使う得意先・部門・伝票の件数</td></tr>
+    </tbody>
+  </table>
+  <p>最も重要な項目は、1つ目の「業務で変わること」です。この項目が具体的に書かれていないと、業務の責任者は判断できません。「標準機能に合わせてください」という依頼だけでは、断られます。</p>
+
+  <h2><i>04</i>見直しは、5つの手順で行う</h2>
+  <ol class="n">
+    <li><strong>AIが、見直しの候補を選ぶ</strong>AIに要件一覧と会議の記録を読ませます。AIは、図2に示した3つの特徴のどれかを持つ要件を、一覧にします。</li>
+    <li><strong>AIが、標準機能を使う案を作る</strong>AIは、候補の要件ごとに、標準機能や設定で実現する方法を書きます。その場合に業務で変わることも書きます。</li>
+    <li><strong>各領域の担当者が、案を確認する</strong>担当者は、標準機能で実現できない案を除きます。</li>
+    <li><strong>業務の責任者が、要件ごとに決める</strong>責任者は、比べる資料を見て、標準機能に合わせるか、追加開発にするかを決めます。</li>
+    <li><strong>決定を、要件一覧と見積もりに反映する</strong>標準機能に合わせると決めた要件を、見積もりの対象から外します。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>「追加開発を2割減らす」のように、件数を目標にしないでください。件数が目標になると、業務の担当者は要件を守ろうとして、検討に協力しなくなります。目的は、要件を減らすことではありません。<strong>作ると決める前に、もう一度比べること</strong>です。比べた結果、追加開発のままになる要件があっても構いません。</p>
+  </div>
+
+  <h2><i>05</i>AIは候補を挙げるまで。「標準機能で足りる」とは断定させない</h2>
+  <p>AIに「この要件は標準機能で足りますか」と質問すると、AIは「足ります」と答えることがあります。この答えを、そのまま使ってはいけません。AIは、その会社の業務の例外を知らないからです。</p>
+  <ul>
+    <li><strong>AIには、根拠を引用させる。</strong>引用させる根拠は、会議の発言と、標準機能の説明の該当する箇所です。根拠の無い候補は、一覧から除きます。</li>
+    <li><strong>AIには、「足りる」ではなく「見直す価値がある」と書かせる。</strong>決めるのは業務の責任者です。</li>
+    <li><strong>AIが作った案は、領域の担当者が先に確認する。</strong>実現できない案を責任者に見せると、見直しそのものが信用されなくなります。</li>
+  </ul>
+
+  <h2><i>06</i>見直しの結果は、4つの区分で記録する</h2>
+
+  <figure class="fig b5f4" data-loop="9000">
+    <div class="fig__h"><span>図 4</span>見直した24件のうち、15件が追加開発ではなくなった（例）</div>
+    <div class="fig__b">
+      <div class="res">
+        {[['標準機能に合わせる', 7, 'a'], ['設定で対応する', 5, 'a'], ['運用で対応する', 3, 'a'], ['追加開発のままにする', 9, 'b']].map(([n, v, c], k) => (
+          <div class="r"><span>{n}</span><div><i class:list={['ty', c]} style={`--w:${Number(v) * 9}%;--t:${0.3 + k * 0.4}s`}></i><b class="f" style={`--t:${0.8 + k * 0.4}s`}>{v}件</b></div></div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。「追加開発のままにする」と決めた要件にも、決めた理由を記録します。稼働後に同じ議論を繰り返さないためです。</p>
+  </figure>
+
+  <p>記録する数字は、見直した件数、区分ごとの件数、見積もりから外した工数の3つです。見直した結果、追加開発のままになった要件も、見直しの成果です。その要件は、理由を確認したうえで作ると決めた要件になります。</p>
+
+  <h2><i>07</i>明日は、見積もりの大きい10本の理由を読む</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>追加開発の見積もりを、<b>工数の大きい順</b>に並べる。上位の10本を選ぶ。</span></li>
+      <li><span>10本それぞれについて、要件一覧の<b>「追加開発にする理由」</b>を読む。</span></li>
+      <li><span>理由が「現行と同じにしたい」の要件と、<b>理由が書かれていない要件</b>を数える。</span></li>
+    </ol>
+  </div>
+  <p>10本のうち3本以上が当てはまる場合、見直す価値があります。工数の大きい要件から見直すと、見積もりへの影響が大きくなります。</p>
+  <p>理由が書かれていない要件が多い場合は、先に理由を書く欄を要件一覧に追加してください。理由が無い要件は、見直すこともできません。</p>
+</PostLayout>
+
+<style is:global>
+  .b5f1 .tl { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; border: 1px solid var(--ink); background: var(--paper); }
+  .b5f1 .tl li { padding: 14px 16px; border-right: 1px solid var(--ink); display: grid; gap: 4px; align-content: start; position: relative; }
+  .b5f1 .tl li:last-child { border-right: 0; background: var(--ink); color: var(--paper); }
+  .b5f1 .tl time { font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+  .b5f1 .tl li:last-child time { color: #c9c4b6; }
+  .b5f1 .tl b { font-family: var(--mincho); font-size: 16.5px; line-height: 1.5; background: none; }
+  .b5f1 .tl span { font-size: 12.5px; line-height: 1.7; }
+  .b5f1 .tl .warn { background: repeating-linear-gradient(-45deg, rgba(212, 65, 42, 0.14) 0 6px, transparent 6px 12px); }
+  .b5f1 .tl .warn b { color: var(--shu); }
+  .b5f2 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .b5f2 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b5f2 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
+  .b5f2 h4 { margin: 0; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .b5f2 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
+  .b5f2 .c em { font-style: normal; font-size: 11.5px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 6px; }
+  .b5f3 .stack { display: flex; height: 64px; border: 1px solid var(--ink); background: var(--paper); }
+  .b5f3 .seg { width: var(--w); border-right: 1px solid var(--paper); background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 12px; font-weight: 700; text-align: center; line-height: 1.4; padding: 0 4px; overflow: hidden; }
+  .b5f3 .seg.later { background: var(--shu); }
+  .b5f3 .legend { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 12px; font-size: 12.5px; }
+  .b5f3 .legend span { display: flex; align-items: center; gap: 8px; }
+  .b5f3 .legend i { width: 14px; height: 14px; background: var(--ink); display: block; }
+  .b5f3 .legend i.l { background: var(--shu); }
+  .b5f4 .res { display: grid; gap: 12px; }
+  .b5f4 .r { display: grid; grid-template-columns: 11.5em 1fr; gap: 12px; align-items: center; font-size: 13.5px; font-weight: 700; }
+  .b5f4 .r div { display: flex; align-items: center; gap: 10px; }
+  .b5f4 .r i { display: block; height: 26px; width: var(--w); background: var(--shu); }
+  .b5f4 .r i.b { background: var(--ink); }
+  .b5f4 .r b { font-family: var(--mono); font-weight: 500; background: none; }
+  @media (max-width: 760px) {
+    .b5f1 .tl { grid-template-columns: 1fr; }
+    .b5f1 .tl li { border-right: 0; border-bottom: 1px solid var(--ink); }
+    .b5f1 .tl li:last-child { border-bottom: 0; }
+    .b5f2 .three { grid-template-columns: 1fr; }
+    .b5f3 .stack { height: auto; flex-direction: column; }
+    .b5f3 .seg { width: 100% !important; padding: 8px; border-right: 0; border-bottom: 1px solid var(--paper); }
+    .b5f4 .r { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>

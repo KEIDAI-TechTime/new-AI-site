@@ -1,0 +1,200 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '結合テストの時間の多くは、画面の操作と証跡の作成に使われています。<b>この2つの作業は、AIに任せられます。</b>',
+  'AIに操作させるのは、検証環境だけです。<b>本番環境では、AIに操作させません。</b>',
+  'AIは、結果と期待値を比べ、一致しないケースを報告します。<b>合否は、テストの担当者が決めます。</b>',
+];
+const time = [['画面の操作', 34, 'a'], ['証跡の作成', 26, 'a'], ['結果の確認と合否の判断', 22, 'h'], ['不具合の調査', 18, 'h']];
+const envs = [
+  ['開発環境', '結合テストでは使わない', 'na', '開発の担当者が、単体の確認に使う'],
+  ['検証環境', 'AIに操作させる', 'ok', '結合テストを実施する。AIはこの環境だけで操作する'],
+  ['本番環境', 'AIに操作させない', 'ng', '人だけが操作する。AIは接続もしない'],
+];
+---
+
+<PostLayout slug="ai-runs-integration-tests" points={points}>
+  <p class="lead2">ある製造業のプロジェクトで、結合テストが2週目に入りました。テストの担当者が1日に実施できたケースは、12件でした。計画は30件です。担当者の作業を調べると、時間の6割が、画面への入力と、画面を画像で保存して貼る作業でした。</p>
+  <p>結合テストが遅れる原因は、担当者の判断が遅いことではありません。<b>判断の前の作業に、時間がかかりすぎていること</b>です。</p>
+  <p>この記事では、AIに任せる作業と、人が決める作業の分け方を書きます。あわせて、AIに操作させる環境の決め方を書きます。</p>
+
+  <h2><i>01</i>テストの時間は、判断ではなく、操作と証跡に使われている</h2>
+
+  <figure class="fig b7f1" data-loop="9500">
+    <div class="fig__h"><span>図 1</span>テストの担当者の時間の6割は、画面の操作と証跡の作成に使われている（例）</div>
+    <div class="fig__b">
+      <div class="stack">
+        {time.map(([n, w, c], k) => <div class:list={['seg', 'ty', c]} style={`--w:${w}%;--t:${0.3 + k * 0.45}s`}><span>{n}</span><b>{w}%</b></div>)}
+      </div>
+      <div class="legend"><span class="f" style="--t:1.4s"><i class="a"></i>AIに任せられる作業</span><span class="f" style="--t:2.3s"><i></i>人が行う作業</span></div>
+    </div>
+    <p class="fig__c">割合は説明のための例です。図で朱色にした2つの作業は、手順が決まっていれば、誰が行っても結果が同じになります。</p>
+  </figure>
+
+  <p>画面の操作と証跡の作成は、担当者の知識を必要としません。テストケースに書かれた手順を、順番に実行する作業です。一方、合否の判断と不具合の調査には、業務とシステムの知識が必要です。</p>
+
+  <div class="say">
+    <p>業務を最もよく知っている人が、1日の半分以上を、画面への入力と画像の貼り付けに使っています。</p>
+  </div>
+
+  <h2><i>02</i>AIに任せる作業と、人が決める作業を、先に分ける</h2>
+  <p>AIを使う前に、AIに任せる作業と、人が決める作業を分けます。分け方の基準は1つです。<b>手順どおりに行えば結果が決まる作業は、AIに任せます。判断が必要な作業は、人が行います。</b></p>
+
+  <figure class="fig b7f2">
+    <div class="fig__h"><span>図 2</span>手順で結果が決まる作業はAIに任せ、判断が必要な作業は人が行う</div>
+    <div class="fig__b">
+      <div class="two">
+        <div class="col col--ai">
+          <p class="k">AIに任せる作業</p>
+          <ul>
+            {['テストデータを画面に入力する', 'テストケースの手順どおりに、画面を操作する', '操作のたびに、画面を画像で保存する', '結果を、テストケースの期待値と比べる'].map((t, k) => <li class="p" style={`--t:${0.2 + k * 0.3}s`}>{t}</li>)}
+          </ul>
+        </div>
+        <div class="col col--hu">
+          <p class="k">人が決めること</p>
+          <ul>
+            {['テストケースの手順と期待値を書く', '合格か不合格かを決める', '一致しない結果が、不具合かどうかを決める', '設計書の記載があいまいな場合に、解釈を決める'].map((t, k) => <li class="p" style={`--t:${1.6 + k * 0.3}s`}>{t}</li>)}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">AIは「期待値と一致しない」と報告します。一致しない結果を不合格とするかどうかは、テストの担当者が決めます。</p>
+  </figure>
+
+  <p>AIが「一致しない」と報告した結果には、不具合ではないものが含まれます。テストケースの期待値が誤っている場合や、テストデータが誤っている場合です。そのため、AIに合否を決めさせません。</p>
+
+  <h2><i>03</i>AIに操作させるのは、検証環境だけにする</h2>
+  <p>AIに画面を操作させる場合、最も重要なルールは、操作させる環境を限定することです。AIは、指示された手順をそのまま実行します。接続先が本番環境であっても、AIは操作を止めません。</p>
+
+  <figure class="fig b7f3" data-loop="9000">
+    <div class="fig__h"><span>図 3</span>AIは、操作の前に接続先を確認する。検証環境でなければ、操作を始めない</div>
+    <div class="fig__b">
+      <div class="envs">
+        {envs.map(([n, r, c, d], k) => (
+          <div class:list={['env', 'p', c]} style={`--t:${0.3 + k * 0.6}s`}>
+            <p class="env__n">{n}</p>
+            <p class="env__r">{r}</p>
+            <p class="env__d">{d}</p>
+          </div>
+        ))}
+      </div>
+      <p class="gate f" style="--t:2.4s"><b>操作の前の確認</b>AIは、画面に表示された環境の名前を読みます。検証環境の名前でなければ、AIは操作を始めずに、担当者に報告します。</p>
+    </div>
+    <p class="fig__c">環境の確認は、AIへの指示に書くだけでは不十分です。AIが使うユーザーに、本番環境の権限を付与しないことで、二重に防ぎます。</p>
+  </figure>
+
+  <table class="tbl">
+    <thead><tr><th>決めること</th><th>ルール</th></tr></thead>
+    <tbody>
+      <tr><th>操作させる環境</th><td>検証環境だけ。本番環境では、AIに操作させない。</td></tr>
+      <tr><th>AIが使うユーザー</th><td>テスト専用のユーザーを作る。本番環境には、このユーザーを登録しない。</td></tr>
+      <tr><th>操作の前の確認</th><td>AIは、接続先の環境の名前を読む。検証環境でなければ、操作を始めない。</td></tr>
+      <tr><th>操作の記録</th><td>AIが操作した日時・ケース・画面を記録する。担当者が、後から確認できるようにする。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>検証環境から、外部のシステムにデータが送信される場合があります。たとえば、取引先への注文データや、メールの通知です。AIにテストを実施させる前に、検証環境から外部に送信される経路を確認してください。送信される経路がある場合は、その経路を止めてから実施します。</p>
+  </div>
+
+  <h2><i>04</i>AIが実施できるのは、手順と期待値が具体的に書かれたケースだけ</h2>
+  <p>AIにテストを実施させると、最初に、実施できないケースが見つかります。手順や期待値が、具体的に書かれていないケースです。</p>
+  <ul>
+    <li><strong>手順が省略されている。</strong>「受注を登録する」とだけ書かれています。入力する項目と値が書かれていません。</li>
+    <li><strong>期待値があいまいである。</strong>「正しく登録されること」と書かれています。どの項目がどの値になれば正しいのかが、書かれていません。</li>
+    <li><strong>前提のデータが書かれていない。</strong>使う得意先と品目が、指定されていません。</li>
+  </ul>
+  <p>人がテストを実施する場合、担当者は自分の知識で不足を補います。そのため、テストケースの不備は表に出ません。AIは不足を補えないので、不備のあるケースを実施できません。</p>
+
+  <div class="say">
+    <p>AIが実施できないケースは、担当者が交代したときに、人も実施できなくなるケースです。</p>
+    <span>AIにテストを実施させると、テストケースの不備が、テストの前に見つかります。</span>
+  </div>
+
+  <h2><i>05</i>結合テストは、AIが実施し、人が合否を決める5つの手順で進める</h2>
+  <ol class="n">
+    <li><strong>AIが、テストケースを2つに分ける</strong>AIにテストケースを読ませます。AIは、実施できるケースと、手順や期待値が不足しているケースに分けます。</li>
+    <li><strong>テストの担当者が、不足している手順と期待値を書く</strong>担当者は、AIが示した不足の箇所を書き足します。</li>
+    <li><strong>AIが、検証環境でテストを実施する</strong>AIは、手順どおりに画面を操作します。操作のたびに、画面を画像で保存します。</li>
+    <li><strong>AIが、結果と期待値を比べる</strong>AIは、一致しないケースを一覧にします。一覧には、期待値と実際の値を並べて書きます。</li>
+    <li><strong>テストの担当者が、合否を決める</strong>担当者は、一致しないケースの証跡を確認します。不具合と判断したケースを、不具合票に登録します。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>AIが「一致」と報告したケースを、担当者がまったく確認しない運用は危険です。期待値そのものが誤っていることがあります。その場合も、AIは結果が期待値と同じなら「一致」と報告します。「一致」のケースのうち一部を、担当者が毎回確認してください。確認する件数は、最初は多くします。誤りが出ない状態が続いた場合に、件数を減らします。</p>
+  </div>
+
+  <h2><i>06</i>効果は、実施した件数と、担当者が確認に使った時間で確認する</h2>
+
+  <figure class="fig b7f4" data-loop="9500">
+    <div class="fig__h"><span>図 4</span>1日に実施できるケースが増え、担当者の時間は確認と判断に使われる（例）</div>
+    <div class="fig__b">
+      <div class="ms">
+        <div class="m"><p class="m__k">1日に実施したケース</p><div class="m__r"><span>人が実施</span><i class="ty" style="--w:20%;--t:.3s"></i><b>12件</b></div><div class="m__r on"><span>AIが実施</span><i class="ty" style="--w:75%;--t:.9s"></i><b>45件</b></div></div>
+        <div class="m"><p class="m__k">AIが実施できなかったケースの割合</p><div class="m__r"><span>1週目</span><i class="ty" style="--w:40%;--t:1.6s"></i><b>40%</b></div><div class="m__r on"><span>3週目</span><i class="ty" style="--w:10%;--t:2.2s"></i><b>10%</b></div></div>
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。「AIが実施できなかったケースの割合」が下がれば、テストケースの手順と期待値が具体的になっています。</p>
+  </figure>
+
+  <p>PM は、次の3つの数字を確認します。1つ目は、1日に実施したケースの件数です。2つ目は、AIが実施できなかったケースの割合です。3つ目は、担当者が一致しないケースの確認に使った時間です。</p>
+  <p>2つ目の割合が下がらない場合は、テストケースの書き方が改善されていません。テストケースを書く担当者に、AIが実施できなかった理由を伝えてください。</p>
+
+  <h2><i>07</i>明日は、テストケース20件を「AIが実施できるか」で分ける</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>結合テストのテストケースから、<b>20件</b>を選ぶ。</span></li>
+      <li><span>20件それぞれについて、<b>入力する項目と値</b>がすべて書かれているかを確認する。</span></li>
+      <li><span>20件それぞれについて、<b>期待値が、項目と値で書かれているか</b>を確認する。両方とも書かれているケースの件数を数える。</span></li>
+    </ol>
+  </div>
+  <p>両方とも書かれているケースが半数に満たない場合、AIを導入する前に、テストケースの書き方を見直してください。入力する値と期待値を書く欄を、テストケースの様式に追加します。</p>
+  <p>書き方を見直したテストケースは、AIを使わない場合にも役立ちます。担当者が交代しても、同じ手順でテストを実施できます。</p>
+</PostLayout>
+
+<style is:global>
+  .b7f1 .stack { display: flex; height: 76px; border: 1px solid var(--ink); background: var(--paper); }
+  .b7f1 .seg { width: var(--w); border-right: 1px solid var(--paper); background: var(--ink); color: var(--paper); display: grid; place-content: center; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.4; padding: 0 4px; overflow: hidden; }
+  .b7f1 .seg.a { background: var(--shu); }
+  .b7f1 .seg b { font-family: var(--mono); font-weight: 500; font-size: 15px; background: none; }
+  .b7f1 .legend { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 12px; font-size: 12.5px; }
+  .b7f1 .legend span { display: flex; align-items: center; gap: 8px; }
+  .b7f1 .legend i { width: 14px; height: 14px; background: var(--ink); display: block; }
+  .b7f1 .legend i.a { background: var(--shu); }
+  .b7f2 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+  .b7f2 .col { border: 1px solid var(--ink); background: var(--paper); padding: 16px 18px; }
+  .b7f2 .col--hu { background: var(--ink); color: var(--paper); }
+  .b7f2 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--shu); }
+  .b7f2 .col--hu .k { color: #ff8a70; }
+  .b7f2 ul { list-style: none; margin: 0; padding: 0; }
+  .b7f2 li { padding: 8px 0 8px 18px; border-top: 1px solid var(--line); font-size: 13.5px; line-height: 1.7; position: relative; }
+  .b7f2 .col--hu li { border-top-color: #55524a; }
+  .b7f2 li::before { content: ''; position: absolute; left: 2px; top: 1.15em; width: 6px; height: 6px; background: var(--shu); }
+  .b7f3 .envs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .b7f3 .env { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+  .b7f3 .env__n { margin: 0; font-family: var(--mincho); font-weight: 700; font-size: 18px; }
+  .b7f3 .env__r { margin: 0; font-size: 12.5px; font-weight: 700; color: var(--shu); }
+  .b7f3 .env__d { margin: 0; font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+  .b7f3 .env.na { border-style: dashed; border-color: var(--ink-2); }
+  .b7f3 .env.na .env__n, .b7f3 .env.na .env__r { color: var(--ink-2); }
+  .b7f3 .env.ng { background: repeating-linear-gradient(-45deg, rgba(212, 65, 42, 0.14) 0 6px, transparent 6px 12px); border: 2px solid var(--shu); }
+  .b7f3 .gate { margin: 14px 0 0; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); padding: 12px 16px; font-size: 13px; line-height: 1.8; }
+  .b7f3 .gate b { display: block; color: #ff8a70; background: none; font-size: 12.5px; }
+  .b7f4 .ms { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  .b7f4 .m__k { margin: 0 0 10px; font-size: 13px; font-weight: 700; }
+  .b7f4 .m__r { display: grid; grid-template-columns: 5.5em 1fr auto; gap: 10px; align-items: center; font-size: 12.5px; margin-bottom: 8px; }
+  .b7f4 .m__r i { display: block; height: 22px; width: var(--w); background: var(--ink); }
+  .b7f4 .m__r.on i { background: var(--shu); }
+  .b7f4 .m__r b { font-family: var(--mono); font-weight: 500; font-size: 14px; background: none; }
+  @media (max-width: 760px) {
+    .b7f1 .stack { height: auto; flex-direction: column; }
+    .b7f1 .seg { width: 100% !important; padding: 8px; border-right: 0; border-bottom: 1px solid var(--paper); }
+    .b7f2 .two { grid-template-columns: 1fr; }
+    .b7f3 .envs { grid-template-columns: 1fr; }
+    .b7f4 .ms { grid-template-columns: 1fr; }
+  }
+</style>

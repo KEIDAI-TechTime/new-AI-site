@@ -1,0 +1,286 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '「間に合います」という答えは、外れたときに理由を説明できません。<b>「間に合う確率は 31% です」と答えると、次の対策を決められます。</b>',
+  '完了日を決めているのは、最も遅れている領域です。<b>重大度の高い課題から解決しても、間に合う確率は上がらないことがあります。</b>',
+  '必要なものは、課題ごとの解決日数の見積もり（早い・普通・遅いの3通り）と、表計算ソフトです。<b>PM は毎週、同じ方法で確率を計算し直します。</b>',
+];
+/* 図2：完了日の分布（期日との差・営業日・例） */
+const hist = [1, 2, 5, 9, 14, 15, 13, 11, 9, 7, 5, 4, 3, 1, 1]; // 合計100。左の5本の合計が31
+const DL = 5; // 何本目の棒から期日より後か
+/* 図3：領域ごとの残りの日数（例） */
+const streams = [['販売', 62], ['購買', 58], ['生産', 74], ['会計', 60], ['移行データ', 96]];
+/* 図4：課題の重大度と、期日への効果（例） */
+const issues = [
+  { id: 'K-04', name: '原価の配賦の基準', sev: '高', eff: 3 },
+  { id: 'K-01', name: '品目マスタの採番の方針', sev: '中', eff: 20 },
+  { id: 'K-07', name: '購買の承認の例外', sev: '高', eff: 2 },
+  { id: 'K-05', name: '得意先の名寄せの範囲', sev: '低', eff: 15 },
+  { id: 'K-03', name: '部品表の版の管理方法', sev: '中', eff: 5 },
+];
+const bySev = [...issues].sort((a, b) => '高中低'.indexOf(a.sev) - '高中低'.indexOf(b.sev));
+const byEff = [...issues].sort((a, b) => b.eff - a.eff);
+---
+
+<PostLayout slug="answer-with-probability" points={points}>
+  <p class="lead2">定例会議で、プロジェクトの責任者が質問します。「要件定義は、期日までに終わりますか」。あなたが PM なら、どう答えますか。</p>
+  <p>多くの PM は「厳しい部分もありますが、間に合わせます」と答えます。日付で質問されると、日付で答えるしかないからです。</p>
+  <p>この記事では、同じ質問に<b>確率で答える方法</b>を書きます。専用のソフトは必要ありません。計算は表計算ソフトでできます。確率を計算すると、<b>どの課題を先に解決すべきか</b>が分かります。これが最大の利点です。</p>
+
+  <h2><i>01</i>日付で答えると、次の対策を決められない</h2>
+
+  <figure class="fig a3f1">
+    <div class="fig__h"><span>図 1</span>日付で答えると対策が決まらない。確率で答えると決まる</div>
+    <div class="fig__b">
+      <p class="q">「要件定義は、12月18日に終わりますか」</p>
+      <div class="two">
+        <div class="ans p" style="--t:.3s">
+          <p class="k">日付で答える</p>
+          <p class="a">「厳しいですが、間に合わせます。」</p>
+          <ul><li>外れたときに、理由を説明できない</li><li>何を変えれば間に合うかが、分からない</li><li>質問した人は、信じるか疑うかしかできない</li></ul>
+        </div>
+        <div class="ans ans--on p" style="--t:.9s">
+          <p class="k">確率で答える</p>
+          <p class="a">「このままでは 31% です。3つの課題を今週決めれば、65% になります。」</p>
+          <ul><li>条件が変わると、数字が変わる</li><li>何を先に決めればよいかが、分かる</li><li>質問した人は、対策を決められる</li></ul>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">確率で答えると、会議の議題が「終わるかどうか」から「何を決めれば終わるか」に変わります。数字は説明のための例です。</p>
+  </figure>
+
+  <p>確率で答える目的は、正確な予測ではありません。31% が実際には 28% でも 35% でも、取るべき対策は同じです。目的は、<b>会議で話す内容を「大丈夫か」から「何を決めるか」に変える</b>ことです。</p>
+
+  <h2><i>02</i>課題ごとに、解決までの日数を3通り見積もる</h2>
+  <p>使うのは、未解決の課題の一覧です。課題ごとに、解決までの日数を3通り見積もります。</p>
+
+  <table class="tbl">
+    <thead><tr><th>見積もる日数</th><th>担当者への聞き方</th><th>例（営業日）</th></tr></thead>
+    <tbody>
+      <tr><th>早い場合</th><td>すべてが順調に進んだ場合、何日で解決するか</td><td class="m">4</td></tr>
+      <tr><th>普通の場合</th><td>最も可能性が高いのは、何日か</td><td class="m">9</td></tr>
+      <tr><th>遅い場合</th><td>決める人の都合が付かない、再検討になる、などが重なった場合、何日か</td><td class="m">20</td></tr>
+    </tbody>
+  </table>
+
+  <p>日数を3通り聞く理由は、担当者に「遅い場合」を考えてもらうためです。日数を1つだけ聞くと、担当者は順調に進んだ場合の日数を答えます。3通り聞くと、遅れる原因が初めて話題になります。</p>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>3通り聞いても、担当者の見積もりは短めになります。聞く前に、<strong>同じ種類の課題が過去に何日かかったか</strong>を担当者に見せてください。課題表の起票日と完了日から計算できます。「方針を決める課題は、過去の中央値が11営業日でした」と伝えると、見積もりが実績に近づきます。</p>
+  </div>
+
+  <h2><i>03</i>完了日を数千回計算する。期日までに終わった割合が、間に合う確率</h2>
+  <p>3通りの見積もりから、間に合う確率を計算します。まず、課題ごとに、早い場合から遅い場合までの範囲で、日数を乱数で1つ決めます。すべての課題の日数が決まると、完了日が1つ計算できます。この計算を数千回繰り返します。</p>
+
+  <figure class="fig a3f2" data-loop="10000">
+    <div class="fig__h"><span>図 2</span>数千回の計算のうち、期日までに終わったのは31%（例）</div>
+    <div class="fig__b">
+      <svg viewBox="0 0 760 290" aria-hidden="true">
+        <rect x={60 + DL * 44} y="20" width={700 - DL * 44} height="210" class="late" />
+        <text x="712" y="38" text-anchor="end" class="bd" fill="var(--shu)">期日より後</text>
+        {hist.map((v, i) => (
+          <rect x={62 + i * 44} y={230 - v * 12.5} width="40" height={v * 12.5} class:list={['bar', 'up', { over: i >= DL }]} style={`--t:${0.3 + i * 0.09}s`} />
+        ))}
+        <line x1="50" y1="230" x2="730" y2="230" class="ax" />
+        <line x1={60 + DL * 44} y1="14" x2={60 + DL * 44} y2="244" class="dl" />
+        <text x={60 + DL * 44} y="262" text-anchor="middle" class="bd">期日</text>
+        <text x="62" y="262" class="sm">早く終わる</text>
+        <text x="722" y="262" text-anchor="end" class="sm">遅く終わる</text>
+        <g class="pct f" style="--t:2.2s"><text x="124" y="66" text-anchor="middle" class="big mo">31%</text><text x="124" y="88" text-anchor="middle" class="sm">期日までに終わる割合</text></g>
+        <g class="pct f" style="--t:2.8s"><text x="560" y="110" text-anchor="middle" class="big mo" fill="var(--shu)">69%</text><text x="560" y="132" text-anchor="middle" class="sm">期日を過ぎる割合</text></g>
+      </svg>
+    </div>
+    <p class="fig__c">棒の高さは、その日に完了した計算結果の件数です。期日より左の棒の合計の割合が、間に合う確率です。数字は例です。</p>
+  </figure>
+
+  <p>このグラフから、間に合う確率と、遅れる場合の日数が分かります。期日より左の棒の割合が、間に合う確率です。棒が期日より右に長く続いている場合、遅れるときの日数が大きくなります。PM は、確率に加えて「10回のうち8回は、この日までに完了する」という日付も報告します。</p>
+
+  <h2><i>04</i>完了日を決めているのは、最も遅れている領域だけ</h2>
+  <p>確率を計算する最大の目的は、先に解決すべき課題を見つけることです。そのために、まず完了日の決まり方を確認します。</p>
+  <p>要件定義は、販売・購買・生産などの領域ごとに並行して進みます。<b>すべての領域が終わった日が、完了日</b>です。そのため、完了日を決めているのは、最も遅れている領域だけです。</p>
+
+  <figure class="fig a3f3" data-loop="9000">
+    <div class="fig__h"><span>図 3</span>完了日は、最も遅れている領域で決まる</div>
+    <div class="fig__b">
+      <div class="st">
+        {streams.map(([n, w], k) => (
+          <div class:list={['row', { crit: w === 96 }]}>
+            <span>{n}</span>
+            <div class="track"><i class="ty" style={`--w:${w}%;--t:${0.2 + k * 0.18}s`}></i>
+              {n === '購買' && <em class="pin p" style="--t:2.2s;left:44%">購買の課題を解決しても、完了日は同じ</em>}
+              {n === '移行データ' && <em class="pin pin--on p" style="--t:3.2s;left:70%">移行データが、完了日を決めている</em>}
+            </div>
+          </div>
+        ))}
+        <div class="dline f" style="--t:1.6s"><b>期日</b></div>
+      </div>
+    </div>
+    <p class="fig__c">期日の線を越えているのは、移行データの領域だけです。ほかの領域の課題を急いで解決しても、完了日は1日も早くなりません。</p>
+  </figure>
+
+  <p>当然のことに見えます。しかし、課題を重大度の高い順に並べて上から解決していると、最も遅れている領域がどこかを見落とします。</p>
+
+  <h2><i>05</i>重大度の高い課題と、期日への効果が大きい課題は違う</h2>
+  <p>確率を計算する表があれば、課題ごとに次の値も計算できます。「この課題だけが最も早く解決した場合、間に合う確率は何ポイント上がるか」。この記事では、確率が上がるポイント数を、その課題の<b>期日への効果</b>と呼びます。</p>
+
+  <figure class="fig a3f4" data-loop="10000">
+    <div class="fig__h"><span>図 4</span>同じ5つの課題を、重大度の高い順から、期日への効果が大きい順に並べ替える</div>
+    <div class="fig__b">
+      <p class="mode"><span class="m1">重大度の高い順</span><span class="m2">期日への効果が大きい順</span></p>
+      <div class="list" style={`--n:${issues.length}`}>
+        {issues.map((it) => (
+          <div class:list={['it', { top: byEff.indexOf(it) < 2 }]} style={`--y0:${bySev.indexOf(it)};--y1:${byEff.indexOf(it)}`}>
+            <span class="id">{it.id}</span>
+            <span class="nm">{it.name}</span>
+            <span class:list={['sev', `sev--${it.sev}`]}>重大度 {it.sev}</span>
+            <span class="eff"><i style={`--w:${it.eff * 3.3}%`}></i><b>+{it.eff}pt</b></span>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">重大度が「高」の2つの課題は、期日への効果では下位です。期日を左右しているのは、重大度が「中」と「低」の2つの課題です。数字は例です。</p>
+  </figure>
+
+  <p>重大度は、「解決しないと、どれだけ困るか」で決めます。期日への効果は、「解決すると、完了日がどれだけ早まるか」で決まります。2つは別の基準です。重大度の高い課題でも、日程に余裕のある領域の課題であれば、急いで解決しても完了日は変わりません。</p>
+
+  <div class="say">
+    <p>課題を上から順に解決しているのに、期日に間に合う見通しが立たない。原因の多くは、期日への効果が小さい課題から解決していることです。</p>
+    <span>重大度の高い課題を後回しにしてよい、という意味ではありません。期日を守るために今週決める課題は、期日への効果で選びます。</span>
+  </div>
+
+  <h2><i>06</i>確率は、表計算ソフトの5つの手順で計算できる</h2>
+  <ol class="n">
+    <li><strong>課題を、領域ごとに分ける</strong>販売・購買・移行データなどに分けます。領域ごとに、課題が無い場合の残りの作業日数も見積もります。</li>
+    <li><strong>課題ごとに、解決までの日数を3通り見積もる</strong>早い場合・普通の場合・遅い場合です。担当者に、過去の実績を見せてから聞きます。</li>
+    <li><strong>1行で、1回分の完了日を計算する</strong>乱数で課題ごとの日数を決め、領域ごとに合計します。領域の合計のうち最大のものが、完了日です。</li>
+    <li><strong>同じ行を、数千行コピーする</strong>1,000行あれば、確率の傾向が分かります。期日以内の行の割合が、間に合う確率です。</li>
+    <li><strong>課題を1つずつ「早い場合」に固定して、計算し直す</strong>確率が何ポイント上がったかが、その課題の期日への効果です。効果の大きい順に並べます。</li>
+  </ol>
+
+  <p>ここまでは、人が手作業でできます。AIが役立つのは、計算の前と後です。計算の前には、AIが<b>チャットや会議の記録を読み、課題表に登録されていない課題を見つけます。</b>登録されていない課題は、計算に入りません。計算の後には、AIが<b>毎週、同じ方法で計算し直します。</b>人が手作業で続けると、3週目ごろに止まります。</p>
+
+  <h2><i>07</i>確率は、条件と一緒に伝える</h2>
+  <p>確率を報告すると、数字だけが伝わり、条件が伝わらないことがあります。PM は、報告を始める前に、次の4つへの対策を決めます。</p>
+
+  <table class="tbl">
+    <thead><tr><th>起きること</th><th>対策</th></tr></thead>
+    <tbody>
+      <tr><th>確率が、約束として受け取られる</th><td>「65% で間に合います」とは言わない。「この3つを今週決められれば、65% に上がります」と、条件を先に伝える。</td></tr>
+      <tr><th>数字の細かい差が、議論になる</th><td>1% 単位の差は議論しない。前の週から上がったか下がったかと、その理由を話す。</td></tr>
+      <tr><th>低い数字を、PM が責められる</th><td>数字は評価ではなく、対策を選ぶための情報である。このことを、最初の報告で合意する。</td></tr>
+      <tr><th>1回計算して、終わる</th><td>毎週、同じ曜日に、同じ方法で計算する。1回の数字より、数字の変化が重要である。</td></tr>
+    </tbody>
+  </table>
+
+  <p>PM が毎週報告する項目は、次の4つです。</p>
+
+  <figure class="fig a3f5">
+    <div class="fig__h"><span>図 5</span>毎週の報告は、4つの項目で足りる（例）</div>
+    <div class="fig__b">
+      <div class="rep">
+        <div class="rep__n p" style="--t:.2s"><span>出口判定に間に合う確率</span><b>31%</b><em>先週 38%</em></div>
+        <div class="rep__w p" style="--t:.6s"><span>下がった理由</span><p>品目マスタの採番の方針（K-01）が、今週も決まらなかった。</p></div>
+        <div class="rep__d p" style="--t:1s"><span>今週、先に決める3つの課題</span><ol><li>K-01　品目マスタの採番の方針<i>+20pt</i></li><li>K-05　得意先の名寄せの範囲<i>+15pt</i></li><li>K-03　部品表の版の管理方法<i>+5pt</i></li></ol></div>
+        <div class="rep__s p" style="--t:1.4s"><span>10回のうち8回は、この日までに完了する</span><b>期日の +5営業日</b></div>
+      </div>
+    </div>
+    <p class="fig__c">この4つの項目は、A4 用紙の半分に収まります。報告のための資料を、別に作る必要はありません。</p>
+  </figure>
+
+  <h2><i>08</i>明日は、領域ごとの遅れを確認する</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>未解決の課題を、<b>領域ごと</b>に分けて数える。</span></li>
+      <li><span>領域ごとに、<b>最も古い未解決の課題が、起票から何日たっているか</b>を確認する。</span></li>
+      <li><span>最も遅れている領域の課題のうち、<b>誰かの決定を待っている課題</b>に印を付ける。</span></li>
+    </ol>
+  </div>
+  <p>領域ごとの課題の件数、最も古い課題の日数、決定を待っている課題。この3つを確認すると、確率を計算しなくても、完了日を決めている領域が分かります。その領域で待たれている決定も分かります。</p>
+  <p>PM は、今週の定例会議で、待たれている決定を議題にします。3つの確認では、課題表の重大度の欄は使いません。</p>
+  <p>確率の計算は、その次の段階です。日数を3通り見積もり、課題を期日への効果の大きい順に並べます。すると、「なぜこの課題を先に解決するのか」を数字で説明できます。</p>
+</PostLayout>
+
+<style is:global>
+  .a3f1 .q { margin: 0 0 16px; font-family: var(--mincho); font-weight: 700; font-size: 18px; text-align: center; }
+  .a3f1 .two { display: grid; grid-template-columns: 1fr 1.15fr; gap: 16px; align-items: stretch; }
+  .a3f1 .ans { border: 1px solid var(--line); background: var(--paper); padding: 16px 20px; }
+  .a3f1 .ans--on { border: 1.5px solid var(--ink); }
+  .a3f1 .k { margin: 0 0 8px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+  .a3f1 .ans--on .k { color: var(--shu); }
+  .a3f1 .a { margin: 0 0 12px; font-family: var(--mincho); font-weight: 700; font-size: 17px; line-height: 1.8; }
+  .a3f1 ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .a3f1 li { padding: 7px 0 7px 18px; border-bottom: 1px solid var(--line); font-size: 13px; position: relative; line-height: 1.7; }
+  .a3f1 li::before { content: ''; position: absolute; left: 2px; top: 1.1em; width: 6px; height: 6px; background: var(--line); }
+  .a3f1 .ans--on li::before { background: var(--shu); }
+
+  .a3f2 .late { fill: var(--shu); opacity: 0.1; }
+  .a3f2 .bar { fill: var(--ink); }
+  .a3f2 .bar.over { fill: var(--shu); }
+  .a3f2 .ax { stroke: var(--ink); stroke-width: 1; }
+  .a3f2 .dl { stroke: var(--shu); stroke-width: 1.8; stroke-dasharray: 6 4; }
+  .a3f2 .big { font-size: 44px !important; font-weight: 500; letter-spacing: -0.03em; }
+
+  .a3f3 .st { position: relative; display: grid; gap: 10px; padding: 26px 0 6px; }
+  .a3f3 .row { display: grid; grid-template-columns: 6.5em 1fr; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
+  .a3f3 .track { position: relative; height: 30px; }
+  .a3f3 .track i { display: block; height: 100%; width: var(--w); background: var(--ink); }
+  .a3f3 .crit .track i { background: var(--shu); }
+  .a3f3 .pin { position: absolute; top: 50%; transform: translateY(-50%); font-style: normal; font-size: 12px; font-weight: 700; background: var(--paper); border: 1px solid var(--ink); padding: 1px 10px; white-space: nowrap; }
+  .a3f3.run .pin { animation: a3pin 0.5s var(--t) both; }
+  @keyframes a3pin { from { opacity: 0; } }
+  .a3f3 .pin--on { background: var(--ink); color: var(--paper); left: auto !important; right: 8px; }
+  .a3f3 .dline { position: absolute; top: 0; bottom: 0; left: calc(6.5em + 12px + (100% - 6.5em - 12px) * 0.8); border-left: 2px dashed var(--ink); }
+  .a3f3 .dline b { position: absolute; top: 0; left: 6px; font-size: 12px; background: none; white-space: nowrap; }
+
+  .a3f4 .mode { margin: 0 0 12px; display: flex; gap: 8px; font-size: 12.5px; font-weight: 700; }
+  .a3f4 .mode span { border: 1px solid var(--ink); padding: 2px 14px; }
+  .a3f4 .m2 { background: var(--shu); border-color: var(--shu) !important; color: var(--paper); }
+  .a3f4.run .m1 { animation: a3m1 9s both; }
+  .a3f4.run .m2 { animation: a3m2 9s both; }
+  @keyframes a3m1 { 0%, 34% { background: var(--ink); color: var(--paper); } 40%, 100% { background: transparent; color: var(--ink-2); } }
+  @keyframes a3m2 { 0%, 34% { background: transparent; color: var(--ink-2); border-color: var(--ink); } 40%, 100% { background: var(--shu); color: var(--paper); border-color: var(--shu); } }
+  .a3f4 .list { position: relative; height: calc(var(--n) * 52px); }
+  .a3f4 .it { position: absolute; left: 0; right: 0; top: calc(var(--y1) * 52px); height: 44px; display: grid; grid-template-columns: 4em 1fr 6em 32%; gap: 12px; align-items: center; border: 1px solid var(--ink); background: var(--paper); padding: 0 14px; }
+  .a3f4.run .it { animation: a3mv 1.4s 3.4s cubic-bezier(0.6, 0, 0.2, 1) both; }
+  @keyframes a3mv { from { top: calc(var(--y0) * 52px); } to { top: calc(var(--y1) * 52px); } }
+  .a3f4 .id { font-family: var(--mono); font-size: 12.5px; }
+  .a3f4 .nm { font-size: 14px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .a3f4 .sev { font-size: 11.5px; font-weight: 700; border: 1px solid var(--ink); text-align: center; padding: 1px 0; }
+  .a3f4 .sev--高 { background: var(--ink); color: var(--paper); }
+  .a3f4 .sev--低 { border-style: dashed; color: var(--ink-2); }
+  .a3f4 .eff { display: flex; align-items: center; gap: 8px; }
+  .a3f4 .eff i { display: block; height: 14px; width: var(--w); background: var(--line); flex: none; }
+  .a3f4 .top .eff i { background: var(--shu); }
+  .a3f4 .eff b { font-family: var(--mono); font-weight: 500; font-size: 12.5px; background: none; }
+  .a3f4 .top .eff b { color: var(--shu); }
+  .a3f4.run .eff { animation: ffade 0.6s 5s both; }
+
+  .a3f5 .rep { display: grid; grid-template-columns: 0.8fr 1.4fr; gap: 0; border: 1.5px solid var(--ink); background: var(--paper); }
+  .a3f5 .rep > div { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+  .a3f5 .rep > div:nth-child(odd) { border-right: 1px solid var(--line); }
+  .a3f5 .rep > div:nth-last-child(-n + 2) { border-bottom: 0; }
+  .a3f5 .rep span { display: block; font-size: 11.5px; font-weight: 700; color: var(--ink-2); margin-bottom: 4px; }
+  .a3f5 .rep b { font-family: var(--mono); font-weight: 500; font-size: 26px; background: none; line-height: 1.3; }
+  .a3f5 .rep__n b { font-size: 50px; color: var(--shu); letter-spacing: -0.03em; }
+  .a3f5 .rep em { font-style: normal; font-family: var(--mono); font-size: 12px; color: var(--ink-2); margin-left: 10px; }
+  .a3f5 .rep p { margin: 0; font-size: 14px; line-height: 1.8; }
+  .a3f5 .rep ol { margin: 0; padding: 0; list-style: none; font-size: 14px; }
+  .a3f5 .rep li { display: flex; justify-content: space-between; gap: 10px; padding: 4px 0; border-bottom: 1px dotted var(--line); font-weight: 700; }
+  .a3f5 .rep li i { font-style: normal; font-family: var(--mono); font-weight: 500; color: var(--shu); }
+
+  @media (max-width: 760px) {
+    .a3f1 .two { grid-template-columns: 1fr; }
+    .a3f3 .pin { font-size: 10.5px; padding: 0 6px; left: 4px !important; right: auto !important; }
+    .a3f3 .row { grid-template-columns: 5em 1fr; }
+    .a3f3 .dline { left: calc(5em + 12px + (100% - 5em - 12px) * 0.8); }
+    .a3f4 .it { grid-template-columns: 3.2em 1fr 30%; gap: 8px; padding: 0 8px; }
+    .a3f4 .sev { display: none; }
+    .a3f4 .eff i { max-width: 46%; }
+    .a3f4 .nm { font-size: 12.5px; }
+    .a3f5 .rep { grid-template-columns: 1fr; }
+    .a3f5 .rep > div { border-right: 0 !important; border-bottom: 1px solid var(--line) !important; }
+  }
+</style>

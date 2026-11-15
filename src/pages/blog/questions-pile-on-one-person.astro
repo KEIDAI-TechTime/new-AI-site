@@ -1,0 +1,203 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  'チャットの質問を数えると、質問は特定の人に集中しています。<b>その人の回答待ちで、複数の領域の作業が同時に止まります。</b>',
+  '集中の原因は、その人の能力や働き方ではありません。<b>決定する権限と知識が、その人だけにあること</b>です。',
+  '対策は、その人を急がせることではありません。<b>PM は、その人に集まっている質問を種類ごとに分けます。種類ごとに、ほかの人や会議に移します。</b>',
+];
+/* 図1：質問を受けた件数（役割ごと・2週間・例） */
+const people = [['移行の担当リーダー', 62], ['生産の業務リーダー', 31], ['連携の担当', 24], ['販売の業務リーダー', 20], ['会計の業務リーダー', 17], ['PMO', 14], ['購買の業務リーダー', 11], ['そのほか 11人', 71]];
+const total = people.reduce((s, p) => s + Number(p[1]), 0);
+/* 図4：5営業日以内に回答が出た質問の割合（週ごと・例） */
+const weeks = [48, 45, 51, 44, 63, 71, 78, 82];
+---
+
+<PostLayout slug="questions-pile-on-one-person" points={points}>
+  <p class="lead2">定例会議で、3つの領域のリーダーが同じ報告をしました。「設計書は作成中です。一部、確認中の項目があります」。販売・購買・生産の3つの領域とも、確認の相手は移行の担当リーダーでした。</p>
+  <p>3つの領域の作業は、1人の回答を待って止まっていました。課題表には、この遅れは書かれていません。質問はチャットで行われ、課題として起票されないからです。</p>
+  <p>遅れの原因は、質問が1人に集中していることです。この記事では、質問の数え方と、集中している質問を分ける方法を書きます。</p>
+
+  <h2><i>01</i>質問は均等には来ない。複数の領域に関わる人に集中する</h2>
+  <p>プロジェクトのチャットを2週間分数えると、質問を受ける人は大きく偏ります。</p>
+
+  <figure class="fig b10f1" data-loop="9000">
+    <div class="fig__h"><span>図 1</span>質問の4分の1が、1人に集中している（18人・2週間・250件の例）</div>
+    <div class="fig__b">
+      <div class="bars">
+        {people.map(([n, v], k) => (
+          <div class:list={['row', { top: k === 0, etc: k === people.length - 1 }]}>
+            <span>{n}</span>
+            <div><i class="ty" style={`--w:${(Number(v) / 71) * 100}%;--t:${0.2 + k * 0.15}s`}></i><b class="f" style={`--t:${0.7 + k * 0.15}s`}>{v}件<small>{Math.round((Number(v) / total) * 100)}%</small></b></div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。18人に均等に質問が来る場合、1人あたりの割合は約6%です。25%は、その4倍です。</p>
+  </figure>
+
+  <p>質問が集中する人は、多くの場合、複数の領域にまたがる知識を持つ人です。移行データ、マスタ、システム間の連携の担当者に集中します。どの領域の設計も、移行データ・マスタ・連携についての決定を前提にしているからです。</p>
+
+  <div class="say">
+    <p>質問が集中している人は、仕事が遅い人ではありません。プロジェクトで最も多くの決定を求められている人です。</p>
+  </div>
+
+  <h2><i>02</i>回答待ちの遅れは、課題表にも進捗報告にも書かれない</h2>
+  <p>回答を待っている担当者は、進捗を「作成中」「確認中」と報告します。報告を受けた PM は、作業が進んでいると理解します。実際には、作業は止まっています。</p>
+
+  <figure class="fig b10f2" data-loop="9500">
+    <div class="fig__h"><span>図 2</span>1人の回答待ちが、3つの領域の設計を同時に止める（例）</div>
+    <div class="fig__b">
+      <div class="hub">
+        <div class="who p" style="--t:.2s"><b>移行の担当リーダー</b><span>未回答の質問 14件</span></div>
+        <div class="waits">
+          {[['販売', '得意先コードの桁数', 6], ['生産', '品目の採番の方針', 9], ['連携', '倉庫システムに渡す項目', 5]].map(([a, q, d], k) => (
+            <div class="w p" style={`--t:${0.8 + k * 0.5}s`}>
+              <em>{a}の設計</em>
+              <b>{q}</b>
+              <span>回答待ち <u>{d}営業日</u></span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">3つの領域の報告は、どれも「確認中」です。確認の相手が同じ人であることは、報告を並べても分かりません。</p>
+  </figure>
+
+  <p>回答待ちが見えない理由は、2つあります。1つ目は、質問がチャットで行われ、課題表に起票されないことです。2つ目は、領域ごとの報告では、待っている相手が書かれないことです。</p>
+
+  <h2><i>03</i>質問の集中は、スレッドごとに4つの項目を記録すると数えられる</h2>
+  <p>集中を見つけるには、チャットのスレッドを数えます。AIにスレッドを読ませ、スレッドごとに次の4つの項目を記録させます。</p>
+
+  <table class="tbl">
+    <thead><tr><th>項目</th><th>記録する内容</th><th>例</th></tr></thead>
+    <tbody>
+      <tr><th>質問した人</th><td>役割の名前で記録する。個人の名前は使わない</td><td>販売の設計担当</td></tr>
+      <tr><th>質問された人</th><td>役割の名前で記録する</td><td>移行の担当リーダー</td></tr>
+      <tr><th>質問の種類</th><td>方針の決定・現行の仕様の確認・資料の場所・承認の4つから選ぶ</td><td>方針の決定</td></tr>
+      <tr><th>回答までの営業日</th><td>質問の日から、回答か決定が書かれた日まで。未回答は「未回答」と記録する</td><td>6営業日</td></tr>
+    </tbody>
+  </table>
+
+  <p>集計すると、質問された人ごとの件数が出ます。集中が偶然かどうかは、均等な場合の割合と比べて判断します。18人のプロジェクトでは、均等な場合の割合は約6%です。1人が20%を超えている場合、偶然では説明できません。</p>
+  <p>件数に加えて、回答までの営業日も確認します。件数が多くても、回答が1営業日で出ていれば、作業は止まっていません。対策が必要なのは、件数が多く、回答までの営業日も長い人です。</p>
+
+  <h2><i>04</i>集中している質問は、種類ごとに移す先が違う</h2>
+  <p>質問が集中している人を急がせても、問題は解決しません。その人の時間は、すでに回答に使われています。対策は2段階です。まず、その人に集まっている質問を、種類ごとに分けます。次に、種類ごとに、質問を移す先を決めます。</p>
+
+  <figure class="fig b10f3" data-loop="9500">
+    <div class="fig__h"><span>図 3</span>質問の種類ごとに、移す先を決める</div>
+    <div class="fig__b">
+      <div class="maps">
+        {[
+          ['方針の決定', '「品目の採番をどうするか」', '決める会議を設ける', '業務の責任者が出席する場で、まとめて決める'],
+          ['現行の仕様の確認', '「いまのシステムでは何桁か」', '資料にまとめ、AIが回答の下書きを作る', '同じ質問が繰り返されているものから、資料にする'],
+          ['資料の場所', '「最新の項目一覧はどこか」', 'AIが回答する', '資料の保存場所を1か所に決めておく'],
+          ['承認', '「この設計で進めてよいか」', '承認できる人を、もう1人決める', '承認の範囲を決めて、権限を分ける'],
+        ].map(([a, b, c, d], k) => (
+          <div class="map">
+            <p class="from p" style={`--t:${0.2 + k * 0.9}s`}><b>{a}</b><span>{b}</span></p>
+            <svg viewBox="0 0 60 12" class="f" style={`--t:${0.6 + k * 0.9}s`}><path d="M0 6h56M50 1l6 5-6 5" /></svg>
+            <p class="to p" style={`--t:${0.8 + k * 0.9}s`}><b>{c}</b><span>{d}</span></p>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">4つのうち、その人にしか答えられない質問は「方針の決定」の一部だけです。残りの3つは、ほかの人や AI に移せます。</p>
+  </figure>
+
+  <p>最も効果が大きいのは、1つ目の「方針の決定」です。方針の質問は、1件ずつチャットで回答しても終わりません。1つの方針が決まると、その方針を待っていた複数の質問が同時に解決します。</p>
+
+  <h2><i>05</i>集中の解消は、5つの手順で行う</h2>
+  <ol class="n">
+    <li><strong>AIが、2週間分のスレッドを読む</strong>AIは、スレッドごとに4つの項目を記録します。4つの項目は、この記事の「03」の表に書いた項目です。対象は、プロジェクトの公開のチャンネルだけにします。</li>
+    <li><strong>PM が、質問された人ごとの件数を確認する</strong>PM は、均等な場合の割合を大きく超えている役割を見つけます。</li>
+    <li><strong>PM が、質問が集中している本人と、集計の結果を見る</strong>ほかの人に見せる前に、本人に見せます。本人が、質問の種類の分け方を直します。</li>
+    <li><strong>PM と本人が、質問の種類ごとに移す先を決める</strong>図3の4つの種類ごとに、会議・資料・AI・ほかの承認者を決めます。</li>
+    <li><strong>AIが、毎週同じ方法で数える</strong>PM は、集中している人の件数と、回答までの営業日が減ったかを確認します。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>この集計を、個人の評価に使わないでください。評価に使われると分かると、担当者は質問をチャットに書かなくなります。質問が見えなくなり、集計もできなくなります。集計は役割の名前で行い、個人あてのメッセージは対象にしません。目的は、質問が集中している所を見つけて、決定を分けることです。</p>
+  </div>
+
+  <h2><i>06</i>対策の効果は、5営業日以内に回答が出た割合で確認する</h2>
+
+  <figure class="fig b10f4" data-loop="9000">
+    <div class="fig__h"><span>図 4</span>方針を決める会議を設けた週から、回答が出る割合が上がる（例）</div>
+    <div class="fig__b">
+      <svg viewBox="0 0 760 250" aria-hidden="true">
+        <line x1="50" y1="200" x2="730" y2="200" class="ax" />
+        {weeks.map((v, k) => (
+          <g>
+            <rect x={70 + k * 82} y={200 - v * 1.9} width="52" height={v * 1.9} class:list={['bar', 'up', { on: k >= 4 }]} style={`--t:${0.2 + k * 0.12}s`} />
+            <text x={96 + k * 82} y={192 - v * 1.9} text-anchor="middle" class="mo f" style={`--t:${0.7 + k * 0.12}s`}>{v}%</text>
+            <text x={96 + k * 82} y="220" text-anchor="middle" class="sm">{k + 1}週</text>
+          </g>
+        ))}
+        <g class="f" style="--t:1.8s"><line x1="388" y1="20" x2="388" y2="200" class="dl" /><text x="396" y="32" class="bd">5週目に、方針を決める会議を設けた</text></g>
+        <text x="730" y="244" text-anchor="end" class="sm">5営業日以内に回答が出た質問の割合</text>
+      </svg>
+    </div>
+    <p class="fig__c">数字は説明のための例です。質問の件数ではなく、回答が出た割合を見ます。件数は、作業が進むと自然に増えるからです。</p>
+  </figure>
+
+  <p>PM は、次の2つの数字を確認します。1つ目は、5営業日以内に回答が出た質問の割合です。2つ目は、最も質問が集中している人の、質問の割合です。対策が機能していれば、回答が出た質問の割合は上がります。集中している人の質問の割合は下がります。</p>
+
+  <h2><i>07</i>明日は、直近2週間のスレッドを50件数える</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>プロジェクトのチャットから、直近2週間の<b>質問のスレッドを50件</b>選ぶ。</span></li>
+      <li><span>50件それぞれについて、<b>質問された人の役割</b>と、<b>回答までの営業日</b>を表に書く。</span></li>
+      <li><span>質問された件数が最も多い役割について、<b>未回答の質問</b>と、5営業日を超えた質問を数える。</span></li>
+    </ol>
+  </div>
+  <p>50件のうち10件以上が1つの役割に集中している場合、その役割の回答待ちが、複数の領域を止めています。未回答の質問を読み、同じ方針を待っている質問をまとめてください。</p>
+  <p>まとめた方針を、次の定例会議の議題にします。1つの方針が決まると、複数の質問が同時に解決します。</p>
+</PostLayout>
+
+<style is:global>
+  .b10f1 .bars { display: grid; gap: 7px; }
+  .b10f1 .row { display: grid; grid-template-columns: 11em 1fr; gap: 12px; align-items: center; font-size: 13px; }
+  .b10f1 .row div { display: flex; align-items: center; gap: 10px; }
+  .b10f1 .row i { display: block; height: 20px; width: var(--w); max-width: 78%; background: var(--ink); flex: none; }
+  .b10f1 .row.top i { background: var(--shu); }
+  .b10f1 .row.top span { font-weight: 700; }
+  .b10f1 .row.etc i { background: var(--line); }
+  .b10f1 .row b { font-family: var(--mono); font-weight: 500; font-size: 13px; background: none; white-space: nowrap; }
+  .b10f1 .row.top b { color: var(--shu); }
+  .b10f1 .row small { font-size: 11px; color: var(--ink-2); margin-left: 6px; }
+  .b10f2 .hub { display: grid; grid-template-columns: 0.8fr 1.5fr; gap: 22px; align-items: center; }
+  .b10f2 .who { background: var(--shu); color: var(--paper); padding: 18px 16px; text-align: center; }
+  .b10f2 .who b { display: block; font-family: var(--mincho); font-size: 17px; line-height: 1.5; background: none; }
+  .b10f2 .who span { font-size: 12.5px; color: #ffd9cf; }
+  .b10f2 .waits { display: grid; gap: 10px; }
+  .b10f2 .w { display: grid; grid-template-columns: 6em 1fr auto; gap: 12px; align-items: center; border: 1px solid var(--ink); background: var(--paper); padding: 10px 14px; position: relative; }
+  .b10f2 .w::before { content: ''; position: absolute; right: 100%; top: 50%; width: 22px; height: 2px; background: var(--shu); }
+  .b10f2 .w em { font-style: normal; font-size: 12px; color: var(--ink-2); }
+  .b10f2 .w b { font-size: 14px; background: none; }
+  .b10f2 .w span { font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+  .b10f2 .w u { text-decoration: none; font-family: var(--mono); color: var(--shu); font-size: 14px; }
+  .b10f3 .maps { display: grid; gap: 10px; }
+  .b10f3 .map { display: grid; grid-template-columns: 0.85fr auto 1.25fr; gap: 14px; align-items: center; }
+  .b10f3 .map p { margin: 0; padding: 10px 14px; border: 1px solid var(--ink); background: var(--paper); }
+  .b10f3 .map b { display: block; font-family: var(--mincho); font-size: 16px; line-height: 1.55; background: none; }
+  .b10f3 .map span { font-size: 12px; color: var(--ink-2); }
+  .b10f3 .from { background: var(--paper-2) !important; }
+  .b10f3 .to b { color: var(--shu); }
+  .b10f3 .map svg { width: 60px; height: 12px; fill: none; stroke: var(--ink); stroke-width: 1.5; }
+  .b10f4 .ax { stroke: var(--ink); stroke-width: 1; }
+  .b10f4 .bar { fill: var(--ink); }
+  .b10f4 .bar.on { fill: var(--shu); }
+  .b10f4 .dl { stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 5 4; }
+  @media (max-width: 760px) {
+    .b10f1 .row { grid-template-columns: 1fr; gap: 2px; }
+    .b10f2 .hub { grid-template-columns: 1fr; }
+    .b10f2 .w { grid-template-columns: 1fr; gap: 2px; }
+    .b10f2 .w::before { display: none; }
+    .b10f3 .map { grid-template-columns: 1fr; gap: 4px; }
+    .b10f3 .map svg { transform: rotate(90deg); width: 34px; margin-left: 14px; }
+  }
+</style>

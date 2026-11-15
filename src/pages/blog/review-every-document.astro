@@ -1,0 +1,237 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '設計書の一部だけを読むレビューでは、<b>設計書のどこが弱いかは分かりません。</b>分かるのは、読んだ人が何を重視したかだけです。',
+  '全件を同じ観点で点検すると、指摘は特定の領域に集中します。<b>集中している所に、まだ決まっていない課題があります。</b>',
+  '数百件の指摘を、人がすべて読む必要はありません。<b>人は指摘を原因ごとにまとめ、原因1つにつき、対応を1つ決めます。</b>',
+];
+/* 図1：設計書60本。抜き取りで読む9本と、誤りのある6本（例） */
+const N = 60, COLS = 12;
+const sampled = [3, 14, 19, 27, 33, 40, 46, 52, 57];
+const bad = [7, 19, 22, 38, 44, 55];
+/* 図3：領域 × 指摘の種類（例） */
+const areas = ['販売', '購買', '生産', '会計'];
+const kinds = ['項目の定義の抜け', '前提の記載なし', '例外の記載なし', '他の資料との食い違い'];
+const tab = [[9, 6, 11, 12], [8, 5, 24, 6], [31, 7, 10, 13], [7, 22, 6, 5]];
+const hot = ['2-0', '1-2', '3-1'];
+---
+
+<PostLayout slug="review-every-document" points={points}>
+  <p class="lead2">設計書が60本あります。レビューの期限は来週です。レビューする人が期限までに読めるのは、10本です。どの10本を読みますか。</p>
+  <p>多くのプロジェクトでは、重要に見える設計書か、レビューする人が得意な領域の設計書を選びます。残りの50本は、誰も最後まで読まないまま次の工程に進みます。50本の中の誤りは、結合テストで見つかります。</p>
+  <p>生成AIを使うと、60本すべてを同じ観点で点検できます。効果は、誤りの見落としが減ることだけではありません。<b>指摘が、どの領域のどの種類に集中しているか</b>が分かります。一部だけを読むレビューでは、これは分かりません。</p>
+
+  <h2><i>01</i>一部だけ読んでも、設計書のどこが弱いかは分からない</h2>
+
+  <figure class="fig a2f1" data-loop="9500">
+    <div class="fig__h"><span>図 1</span>9本だけ読むと、誤りが5本残る。60本すべてを読むと、残らない（誤りのある設計書が6本ある例）</div>
+    <div class="fig__b">
+      <div class="two">
+        <div>
+          <p class="k">9本だけ読む</p>
+          <div class="cells">
+            {Array.from({ length: N }, (_, i) => (
+              <i class:list={[{ s: sampled.includes(i), b: bad.includes(i) }]} style={`--t:${sampled.indexOf(i) * 0.35 + 0.3}s`}></i>
+            ))}
+          </div>
+          <p class="r f" style="--t:3.8s">読んだ 9本　見つけた誤り 1本　<b>残った誤り 5本</b></p>
+        </div>
+        <div>
+          <p class="k k--on">60本すべてを、同じ観点で読む</p>
+          <div class="cells cells--all">
+            {Array.from({ length: N }, (_, i) => (
+              <i class:list={[{ b: bad.includes(i) }]} style={`--t:${((i % COLS) + Math.floor(i / COLS)) * 0.12 + 0.3}s`}></i>
+            ))}
+          </div>
+          <p class="r f" style="--t:2.6s">読んだ 60本　見つけた誤り 6本　残った誤り 0本</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">朱の点線の枠が、読まれなかった誤りです。9本だけ読む方法では、誤りがどこに残っているかも分かりません。</p>
+  </figure>
+
+  <p>一部だけ読むレビューには、誤りを見落とす以外の問題もあります。</p>
+  <p>レビューの指摘には、レビューする人の専門が表れます。会計に詳しい人は、勘定について指摘します。システム連携に詳しい人は、連携について指摘します。指摘の一覧に連携の指摘が多くても、設計書の連携が弱いとは限りません。連携に詳しい人が読んだだけかもしれません。</p>
+
+  <div class="say">
+    <p>一部だけ読んだレビューの結果からは、「設計書のどこが弱いか」は言えません。言えるのは、「誰が、何を重視して読んだか」だけです。</p>
+  </div>
+
+  <h2><i>02</i>観点は、「はい・いいえ」で答えられる問いにする</h2>
+  <p>全件を同じ基準で点検するには、点検する観点を先に決めます。観点の書き方で、結果の質が決まります。AIに「設計書をレビューして」と指示すると、AIは感想を返します。感想は、設計書の修正には使えません。</p>
+  <p>観点は、<b>「はい・いいえ」で答えられる問い</b>の形で書きます。</p>
+
+  <table class="tbl">
+    <thead><tr><th>使えない観点</th><th>使える観点（問いの形）</th></tr></thead>
+    <tbody>
+      <tr><td class="x">項目の定義が十分か</td><td class="o">すべての項目に、桁数・必須かどうか・初期値が書かれているか</td></tr>
+      <tr><td class="x">例外処理が考慮されているか</td><td class="o">処理ごとに、エラーが起きたときの動作が1つ以上書かれているか</td></tr>
+      <tr><td class="x">前提が明確か</td><td class="o">「未定」「検討中」「別途」と書かれた箇所に、決める期日と決める人が書かれているか</td></tr>
+      <tr><td class="x">他の資料と整合しているか</td><td class="o">業務フローの手順のうち、この設計書に対応する記載が無いものはどれか</td></tr>
+    </tbody>
+  </table>
+
+  <p>観点の数は、8つ程度にします。観点を増やすと指摘が増え、人が読み切れなくなります。観点を1つ追加するときは、1つ減らします。</p>
+  <p>もう1つのルールは、<b>AIに、指摘ごとに設計書の原文を引用させる</b>ことです。たとえば「3章の項目一覧に、版の桁数が未定と書かれている」と書かせます。原文の引用が無い指摘は、人が確認できないので使いません。</p>
+
+  <h2><i>03</i>指摘が集中している所に、未決の課題がある</h2>
+  <p>全件の点検が終わると、数百件の指摘の一覧ができます。一覧を上から読む前に、<b>指摘の件数を、領域と種類ごとに数えます。</b></p>
+
+  <figure class="fig a2f3" data-loop="10000">
+    <div class="fig__h"><span>図 2</span>指摘の件数を、領域と種類ごとに数えた表（説明のための例）</div>
+    <div class="fig__b">
+      <table class="heat">
+        <thead><tr><th></th>{kinds.map((k) => <th>{k}</th>)}</tr></thead>
+        <tbody>
+          {areas.map((a, i) => (
+            <tr>
+              <th>{a}</th>
+              {tab[i].map((v, j) => (
+                <td class:list={['p', { hot: hot.includes(`${i}-${j}`) }]} style={`--t:${(i + j) * 0.14 + 0.2}s`}>
+                  <b>{v}</b>{hot.includes(`${i}-${j}`) && <em class="f" style="--t:2.4s">集中</em>}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="fig__c">指摘が均等に出ていれば、どのマスも近い件数になります。朱のマスは、ほかのマスより明らかに件数が多い所です。</p>
+  </figure>
+
+  <p>指摘は均等には出ません。必ず、特定の領域の特定の種類に集中します。集中している所の設計書を読むと、多くの場合、同じ原因が見つかります。<b>設計の前提が、まだ決まっていない</b>ことです。</p>
+
+  <figure class="fig a2f4" data-loop="9000">
+    <div class="fig__h"><span>図 3</span>指摘の種類から、何が決まっていないかが分かる</div>
+    <div class="fig__b">
+      <div class="maps">
+        {[
+          ['項目の定義の抜け', '生産に集中', 'マスタや移行データの方針が、決まっていない', '桁数や採番のルールが決まらないので、書けない'],
+          ['例外の記載なし', '購買に集中', '業務の例外が、洗い出されていない', '承認の例外を誰も数えていないので、書けない'],
+          ['前提の記載なし', '会計に集中', '方式や基準が、決まっていない', '配賦の基準が決まらないまま、先に設計書を書いている'],
+        ].map(([a, b, c, d], k) => (
+          <div class="map">
+            <p class="from p" style={`--t:${0.2 + k * 1.3}s`}><b>{a}</b><span>{b}</span></p>
+            <svg viewBox="0 0 60 12" class="f" style={`--t:${0.7 + k * 1.3}s`}><path d="M0 6h56M50 1l6 5-6 5" /></svg>
+            <p class="to p" style={`--t:${0.9 + k * 1.3}s`}><b>{c}</b><span>{d}</span></p>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">指摘が多い領域の担当者に「丁寧に書いてください」と依頼しても、指摘は減りません。設計書を書く前に決めるべきことが、決まっていないからです。</p>
+  </figure>
+
+  <div class="say">
+    <p>指摘が多いのは、設計書を書いた人の能力が低いからではありません。設計の前提が決まっていないからです。</p>
+    <span>このように読むと、設計書のレビューで、未決の課題を見つけられます。</span>
+  </div>
+
+  <h2><i>04</i>指摘は、原因ごとにまとめて読む</h2>
+  <p>全件を点検すると、指摘は数百件になります。人が1件ずつ読むと、一部だけ読むレビューより時間がかかります。数百件を、原因ごとにまとめて読みます。</p>
+  <ol class="n">
+    <li><strong>同じ原因の指摘を、1つにまとめる</strong>図2の朱のマスの場合、数十件の指摘が1つのまとまりになります。</li>
+    <li><strong>まとまりごとに、代表の3件だけを読む</strong>3件の原文を読み、同じ原因かどうかを確認します。同じ原因なら、残りは読みません。</li>
+    <li><strong>まとまりごとに、対応を1つ決める</strong>たとえば「部品表の版の管理方法を、いつ、誰が決めるか」を決めます。指摘を1件ずつ直すのではなく、原因を解決します。</li>
+    <li><strong>どのまとまりにも入らない指摘を、1件ずつ読む</strong>これが、設計書そのものの誤りです。1件ずつ読む指摘は、全体の一部で済みます。</li>
+  </ol>
+
+  <figure class="fig a2f5" data-loop="8000">
+    <div class="fig__h"><span>図 4</span>全件を点検すると、レビューの時間を「読む」から「決める」に使える</div>
+    <div class="fig__b">
+      <div class="bars">
+        <div class="bar"><span>一部だけ読むレビュー</span><div><i class="rd" style="width:78%">読む・探す</i><i class="dc">決める</i></div></div>
+        <div class="bar"><span>全件を点検したあと</span><div><i class="rd rd--now">読む</i><i class="dc dc--now">決める</i></div></div>
+      </div>
+    </div>
+    <p class="fig__c">レビューの会議は、設計書を読み合わせる場から、原因ごとに対応を決める場に変わります。</p>
+  </figure>
+
+  <h2><i>05</i>AIは指摘を出しすぎる。採用した割合で管理する</h2>
+  <p>全件の点検を始めると、最初に、指摘が多すぎるという問題が起きます。AIは、観点に少しでも関係する箇所をすべて指摘します。指摘する必要のない箇所も含まれます。</p>
+  <p>対策をしないと、レビューする人は AI の指摘を信用しなくなり、読まなくなります。そこで、次の3つをプロジェクトの運用のルールにします。</p>
+  <ul>
+    <li><strong>指摘ごとに、採用するかしないかを記録する。</strong>採用しない場合は、理由を一言書きます。</li>
+    <li><strong>採用しなかった指摘が多い観点を、書き直す。</strong>原因は、観点の問いがあいまいなことです。観点は増やさず、問いを具体的にします。</li>
+    <li><strong>採用した指摘の割合を、点検のたびに確認する。</strong>割合が上がっていれば、観点が改善されています。下がった場合は、設計書の書き方が変わったか、観点が合わなくなっています。</li>
+  </ul>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>「AIが見落とさないように」と観点を追加し続けると、指摘が増えます。採用する割合が下がり、やがて誰も指摘を読まなくなります。管理する数字は、指摘の件数ではありません。<strong>採用した指摘の割合</strong>です。</p>
+  </div>
+
+  <h2><i>06</i>設計書を直すたびに、全件を点検し直す</h2>
+  <p>全件の点検は、1回では終わりません。設計書は修正され、版が上がります。設計書を修正すると、他の資料との食い違いが新しく発生します。</p>
+  <p>人のレビューでは、修正した設計書をもう一度最初から読むことは、ほとんどありません。AIは、版が上がるたびに全件を点検できます。前回の結果と比べると、「修正で増えた指摘」と「修正で消えた指摘」が分かります。</p>
+  <p>毎回の指摘の件数を記録すると、設計がどこまで確定したかを示す指標になります。</p>
+
+  <h2><i>07</i>明日は、「未定」の件数を全件で数える</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>すべての設計書から、<b>「未定」「検討中」「別途」「TBD」</b>という語を検索し、件数を数える。AIが無くてもできる。</span></li>
+      <li><span>件数を<b>領域ごと</b>に集計する。設計書の本数で割り、1本あたりの件数にする。</span></li>
+      <li><span>件数が最も多い領域について、「未定」の箇所を10件読む。10件が<b>共通して待っている決定</b>を書き出す。</span></li>
+    </ol>
+  </div>
+  <p>多くの場合、10件のうち半数以上が、同じ1つか2つの決定を待っています。その決定を先に行うと、設計書の「未定」がまとめて無くなります。</p>
+  <p>全件を数えると、多くの設計書に共通する原因が分かります。その原因を1つ解決すれば、設計書を1本ずつ直す必要はありません。</p>
+  <p>「未定」を数え終えたら、次に観点を8つに増やします。AIには、設計書の原文を引用して指摘を出させます。</p>
+</PostLayout>
+
+<style is:global>
+  .a2f1 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
+  .a2f1 .k { margin: 0 0 10px; font-size: 13px; font-weight: 700; }
+  .a2f1 .k--on { color: var(--shu); }
+  .a2f1 .cells { display: grid; grid-template-columns: repeat(12, 1fr); gap: 4px; }
+  .a2f1 .cells i { display: block; aspect-ratio: 1 / 1.25; border: 1px solid var(--line); background: var(--paper); }
+  .a2f1 .cells i.s { background: var(--ink); border-color: var(--ink); }
+  .a2f1 .cells i.s.b { background: var(--shu); border-color: var(--shu); }
+  .a2f1 .cells i.b:not(.s) { border: 2px dashed var(--shu); }
+  .a2f1 .cells--all i { background: var(--ink); border-color: var(--ink); }
+  .a2f1 .cells--all i.b { background: var(--shu); border: 1px solid var(--shu); }
+  .a2f1.run .cells i.s, .a2f1.run .cells--all i { animation: a2in 0.3s var(--t) both; }
+  .a2f1.run .cells:not(.cells--all) i.b:not(.s) { animation: ffade 0.5s 3.6s both; }
+  @keyframes a2in { from { background: var(--paper); border-color: var(--line); } }
+  .a2f1 .r { margin: 12px 0 0; font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  .a2f1 .r b { color: var(--shu); background: none; }
+
+  .a2f3 .heat { width: 100%; border-collapse: collapse; background: var(--paper); }
+  .a2f3 .heat th, .a2f3 .heat td { border: 1px solid var(--ink); padding: 12px 10px; text-align: center; font-size: 13px; line-height: 1.5; }
+  .a2f3 .heat thead th { background: var(--ink); color: var(--paper); font-size: 12px; }
+  .a2f3 .heat tbody th { background: var(--paper-2); white-space: nowrap; }
+  .a2f3 .heat td b { font-family: var(--mono); font-weight: 500; font-size: 22px; background: none; }
+  .a2f3 .heat td.hot { background: var(--shu); color: var(--paper); }
+  .a2f3 .heat td em { display: block; font-style: normal; font-size: 11px; font-weight: 700; }
+
+  .a2f4 .maps { display: grid; gap: 12px; }
+  .a2f4 .map { display: grid; grid-template-columns: 0.8fr auto 1.3fr; gap: 14px; align-items: center; }
+  .a2f4 .map p { margin: 0; padding: 12px 16px; border: 1px solid var(--ink); background: var(--paper); }
+  .a2f4 .map b { display: block; font-family: var(--mincho); font-size: 16.5px; line-height: 1.6; background: none; }
+  .a2f4 .map span { font-size: 12px; color: var(--ink-2); }
+  .a2f4 .from { background: var(--shu) !important; border-color: var(--shu) !important; color: var(--paper); }
+  .a2f4 .from span { color: #ffd9cf; }
+  .a2f4 .map svg { width: 60px; height: 12px; fill: none; stroke: var(--ink); stroke-width: 1.5; }
+
+  .a2f5 .bars { display: grid; gap: 16px; }
+  .a2f5 .bar { display: grid; grid-template-columns: 11em 1fr; gap: 12px; align-items: center; font-size: 13px; }
+  .a2f5 .bar div { display: flex; height: 46px; border: 1px solid var(--ink); background: var(--paper); }
+  .a2f5 .bar i { font-style: normal; display: grid; place-items: center; font-size: 13px; font-weight: 700; white-space: nowrap; overflow: hidden; }
+  .a2f5 .rd { background: repeating-linear-gradient(-45deg, var(--line) 0 1px, transparent 1px 6px); border-right: 1px solid var(--ink); }
+  .a2f5 .dc { flex: 1; }
+  .a2f5 .rd--now { width: 24%; }
+  .a2f5.run .rd--now { animation: a2rd 2.2s 0.8s cubic-bezier(0.6, 0, 0.2, 1) both; }
+  @keyframes a2rd { from { width: 78%; } to { width: 24%; } }
+  .a2f5 .dc--now { background: var(--shu); color: var(--paper); }
+
+  @media (max-width: 760px) {
+    .a2f1 .two { grid-template-columns: 1fr; }
+    .a2f3 .heat th, .a2f3 .heat td { padding: 8px 3px; font-size: 11px; }
+    .a2f3 .heat thead th { font-size: 10px; }
+    .a2f3 .heat td b { font-size: 17px; }
+    .a2f4 .map { grid-template-columns: 1fr; gap: 4px; }
+    .a2f4 .map svg { transform: rotate(90deg); width: 34px; margin-left: 14px; }
+    .a2f5 .bar { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>

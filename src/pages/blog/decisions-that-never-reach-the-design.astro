@@ -1,0 +1,242 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '会議の決定が設計書に反映されない原因は、担当者の怠慢ではありません。<b>決定を資料に反映する担当が、決まっていない</b>ことです。',
+  '決定は、<b>「どの資料の、どの行を、どう変えるか」</b>まで書きます。ここまで書かないと、資料は直せません。',
+  'AIが決定を抜き出し、修正案を作ります。<b>資料に反映するかどうかは、資料の担当者が決めます。</b>',
+];
+/* 図4：決定から反映までの営業日（例） */
+const days = [1, 2, 2, 3, 5, 6, 8, 9, 9, 10, 12, 14, 17, 19];
+---
+
+<PostLayout slug="decisions-that-never-reach-the-design" points={points}>
+  <p class="lead2">要件定義の会議で「この機能は標準の機能を使う。追加開発はしない」と決まりました。3週間後、その機能は追加開発の見積もりに残ったままでした。</p>
+  <p>基幹システムの導入では、このような例がよくあります。会議で決定が出て、議事録も配られています。それでも、設計書と見積もりは古いままです。</p>
+  <p>原因は1つです。<b>決定を資料に反映する担当が、決まっていません。</b>この記事では、まず原因を3つ説明します。次に、決定を資料に反映する手順と、反映の速さの測り方を書きます。</p>
+
+  <h2><i>01</i>決定は、議事録に書かれて終わる</h2>
+  <p>決定は議事録には書かれます。しかし、その先の資料には反映されません。</p>
+
+  <figure class="fig a1f1" data-loop="9000">
+    <div class="fig__h"><span>図 1</span>決定は議事録で止まる。要件一覧・設計書・見積もりは古いまま残る</div>
+    <div class="fig__b">
+      <svg viewBox="0 0 760 252" aria-hidden="true">
+        <g class="box"><rect x="20" y="96" width="120" height="60" /><text x="80" y="131" text-anchor="middle" class="bd">会議</text></g>
+        <path d="M140 126H208" class="ln" />
+        <g class="box"><rect x="208" y="96" width="130" height="60" /><text x="273" y="131" text-anchor="middle" class="bd">議事録</text></g>
+        <circle r="7" cx="140" cy="126" class="tok" />
+        <text x="273" y="182" text-anchor="middle" class="stop p" style="--t:1.5s">これまでは、ここで止まる</text>
+
+        {[['要件一覧', 24], ['設計書', 98], ['見積もり', 172]].map(([l, y], k) => (
+          <g>
+            <path d={`M468 126 C520 126 520 ${Number(y) + 28} 590 ${Number(y) + 28}`} pathLength="1" class="ln2 dr" style={`--t:${3.9 + k * 0.25}s`} />
+            <g class="doc"><rect x="590" y={y} width="150" height="56" /><text x="606" y={Number(y) + 33} class="bd">{l}</text>
+              <text x="726" y={Number(y) + 33} text-anchor="end" class="sm old">古いまま</text></g>
+            <g class="stamp p" style={`--t:${4.9 + k * 0.3}s`}><circle cx="716" cy={Number(y) + 28} r="17" /><text x="716" y={Number(y) + 33} text-anchor="middle">反映</text></g>
+          </g>
+        ))}
+        <path d="M338 126H398" pathLength="1" class="ln2 dr" style="--t:3s" />
+        <g class="ai p" style="--t:3.3s"><rect x="398" y="100" width="70" height="52" /><text x="433" y="122" text-anchor="middle" class="mo">AI</text><text x="433" y="140" text-anchor="middle" class="sm2">修正案</text></g>
+      </svg>
+    </div>
+    <p class="fig__c">朱の線は、AIが議事録から修正案を作り、各資料の担当者に渡す手順です。多くのプロジェクトには、この手順がありません。</p>
+  </figure>
+
+  <p>議事録は1つの文書です。一方、決定によって直す資料は、要件一覧、設計書、見積もり、課題表と複数あります。議事録の決定を、それぞれの資料に書き写す担当がいません。</p>
+
+  <div class="say">
+    <p>最も費用がかかるのは、「作らない」と決めた機能が、見積もりに残り続けることです。</p>
+    <span>設計が始まって誰かが気づくまで、その工数は計画に入ったままです。</span>
+  </div>
+
+  <h2><i>02</i>反映されない原因は3つ。どれも、担当者の怠慢ではない</h2>
+
+  <h3>原因 1　議事録に、直す資料が書かれていない</h3>
+  <p>多くの議事録は、誰が何を発言したかを議題の順に書きます。経緯は分かります。しかし、「どの資料のどこを直すか」は書かれていません。資料の担当者が、議事録から自分で読み取る必要があります。</p>
+
+  <h3>原因 2　決定する人と、資料を直す人が違う</h3>
+  <p>決定するのは、会議に出席している業務の責任者です。資料を直すのは、資料の担当者です。担当者が会議に出席していない場合、決定は人づてに伝わります。人づての連絡は、忙しい週には伝わりません。</p>
+
+  <h3>原因 3　決定と意見の区別が付いていない</h3>
+  <p>会議では、決定に見える意見が出ます。たとえば「その方向でよいと思います」「設定で分ければ足りるのでは」という発言です。この2つは意見です。意見を決定として資料に反映すると、後で「それは決めていない」と言われます。反対に、本当の決定が意見にまぎれて、見落とされることもあります。</p>
+
+  <h2><i>03</i>決定は、「どの資料の、どの行を、どう変えるか」まで書く</h2>
+  <p>資料を直せる決定には、5つの項目が必要です。1つでも欠けると、資料の担当者は直せません。</p>
+
+  <figure class="fig a1f2">
+    <div class="fig__h"><span>図 2</span>議事録の書き方では資料を直せない。5つの項目で書くと直せる</div>
+    <div class="fig__b">
+      <div class="two">
+        <div class="card">
+          <p class="card__k">議事録の書き方</p>
+          <p class="card__q">「与信の確認については、標準の機能を使う方向で合意した。」</p>
+          <p class="card__n">経緯は分かる。<br />どの資料を直すかは、分からない。</p>
+        </div>
+        <div class="card card--on">
+          <p class="card__k">資料を直せる書き方</p>
+          <dl>
+            <div class="p" style="--t:.2s"><dt>決めたこと</dt><dd>受注時の与信の確認は、標準の機能で行う</dd></div>
+            <div class="p" style="--t:.45s"><dt>直す資料</dt><dd>要件一覧　R-118</dd></div>
+            <div class="p" style="--t:.7s"><dt>直す内容</dt><dd>対応の方針を「追加開発」から「標準」に変える</dd></div>
+            <div class="p" style="--t:.95s"><dt>あわせて直す資料</dt><dd>見積もり A-081 を対象から外す</dd></div>
+            <div class="p" style="--t:1.2s"><dt>決めた人と日付</dt><dd>営業の責任者　9月24日</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">5つの項目のうち、書き忘れやすいのは4つ目の「あわせて直す資料」です。要件を変えると、見積もりとテストも変わります。</p>
+  </figure>
+
+  <p>この形で書くには時間がかかります。会議のたびに、人がすべての決定をこの形で書くのは続きません。この作業を AI に任せます。</p>
+
+  <h2><i>04</i>決定は、5つの手順で資料に反映する</h2>
+  <ol class="n">
+    <li><strong>会議の最後に、決めたことを読み上げる</strong>30秒で済みます。「今日決めたのは3つです」と読み上げると、決定と意見の区別がはっきりします。会議の記録にも残ります。</li>
+    <li><strong>AIが、会議の記録から決定を抜き出す</strong>AIに議事録や文字起こしを読ませます。AIは、決定を図2の5つの項目の形で書き出します。</li>
+    <li><strong>AIが、決定に関係する資料の行を特定する</strong>AIに要件一覧や設計書を読ませます。AIは、決定と内容が食い違う行を探し、その行の修正案を書きます。</li>
+    <li><strong>資料の担当者が、修正案を見て判断する</strong>担当者は、反映するか差し戻すかを決めます。修正案には元の発言を添えるので、判断は1件あたり1分ほどです。</li>
+    <li><strong>毎週、反映されていない決定を数える</strong>PM は、反映されていない決定の件数と、決定から反映までの日数を確認します。数字が悪化した週は、1〜4のどこかの手順が止まっています。</li>
+  </ol>
+  <p>5つの手順のうち、最も重要なのは3つ目です。決定を抜き出すだけなら、議事録を丁寧に書けば済みます。AIが<b>決定に関係する資料の行まで特定する</b>と、担当者はすぐに資料を直せます。</p>
+
+  <h2><i>05</i>AIが作るのは修正案まで。反映は人が決める</h2>
+  <p>AIは、発言を「決定」「意見」「宿題」に分類できます。ただし、分類を AI だけに任せると誤りが出ます。そこで、プロジェクトで次の4つのルールを決めます。</p>
+
+  <figure class="fig a1f3" data-loop="9000">
+    <div class="fig__h"><span>図 3</span>発言の分類。決定する立場の人が断定したものだけを、決定とする</div>
+    <div class="fig__b">
+      <div class="rows">
+        <div class="row">
+          <p class="bub p" style="--t:.2s">「与信の確認は標準の機能で行う。追加開発はしない。」<small>営業の責任者</small></p>
+          <span class="arr f" style="--t:1s">→</span>
+          <p class="res res--ok p" style="--t:1.3s"><b>決定</b>資料の修正案を作る</p>
+        </div>
+        <div class="row">
+          <p class="bub p" style="--t:2.2s">「納期の回答は、設定で分ければ足りるのでは。」<small>担当者</small></p>
+          <span class="arr f" style="--t:3s">→</span>
+          <p class="res res--no p" style="--t:3.3s"><b>意見</b>資料は直さない。次の会議の議題にする</p>
+        </div>
+        <div class="row">
+          <p class="bub p" style="--t:4.2s">「価格の例外は、次回までに営業で整理する。」<small>営業の責任者</small></p>
+          <span class="arr f" style="--t:5s">→</span>
+          <p class="res res--hw p" style="--t:5.3s"><b>宿題</b>課題表に登録し、期日と担当を決める</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">図の2つ目の発言のような意見を、決定として資料に反映しないことが、最も重要です。一度でも誤って反映すると、修正案が信用されなくなります。</p>
+  </figure>
+
+  <table class="tbl">
+    <thead><tr><th>場面</th><th>ルール</th></tr></thead>
+    <tbody>
+      <tr><th>決定とする条件</th><td>決定する立場の人が、「〜する」「〜しない」と断定している。この2つを満たさない発言は、決定としない。</td></tr>
+      <tr><th>AIの読み誤りへの対策</th><td>AIに同じ記録を2回読ませる。2回の結果が違う発言は、AIの結果を使わずに人が確認する。</td></tr>
+      <tr><th>資料への反映</th><td>AIは修正案を作るまで。資料は、担当者が承認してから直す。</td></tr>
+      <tr><th>修正案に添えるもの</th><td>元の発言と、会議の日付。修正案だけを見せない。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>AIに「決定をすべて抜き出して」と指示すると、AIは意見まで決定として抜き出します。抜き出した件数ではなく、<strong>担当者が差し戻した修正案の割合</strong>を確認してください。割合が高い間は、決定とする条件の書き方を直します。</p>
+  </div>
+
+  <h2><i>06</i>反映の速さは、未反映の件数と、反映までの日数で測る</h2>
+  <p>5つの手順が機能しているかどうかは、未反映の決定の件数と、反映までの日数で分かります。どちらの数字も、会議の日付と資料の更新日から計算できます。</p>
+
+  <figure class="fig a1f4" data-loop="10000">
+    <div class="fig__h"><span>図 4</span>決定が資料に反映されるまで、中央値で8.5営業日かかっている（14件の例）</div>
+    <div class="fig__b">
+      <svg viewBox="0 0 760 170" aria-hidden="true">
+        <line x1="40" y1="118" x2="730" y2="118" class="ax" />
+        {[0, 5, 10, 15, 20].map((v) => <g><line x1={40 + v * 34.5} y1="118" x2={40 + v * 34.5} y2="125" class="ax" /><text x={40 + v * 34.5} y="144" text-anchor="middle" class="mo sm">{v}</text></g>)}
+        <text x="730" y="164" text-anchor="end" class="sm">決定から反映までの営業日</text>
+        {days.map((d, k) => <circle cx={40 + d * 34.5} cy={118 - 14 - (days.slice(0, k).filter((x) => x === d).length) * 20} r="8" class="dot p" style={`--t:${0.2 + k * 0.12}s`} />)}
+        <g class="med f" style="--t:2.2s"><line x1={40 + 8.5 * 34.5} y1="22" x2={40 + 8.5 * 34.5} y2="118" /><text x={40 + 8.5 * 34.5 + 8} y="34" class="bd">中央値　8.5営業日</text></g>
+        <g class="goal f" style="--t:3.2s"><line x1={40 + 1 * 34.5} y1="52" x2={40 + 1 * 34.5} y2="118" /><text x={40 + 1 * 34.5 + 8} y="64" class="bd">目標　会議の翌営業日</text></g>
+      </svg>
+    </div>
+    <p class="fig__c">数字は説明のための例です。平均ではなく中央値を使います。数件の長い遅れが、平均を大きくするためです。</p>
+  </figure>
+
+  <ul>
+    <li><strong>反映されていない決定の件数。</strong>決定は出ているのに、資料が古いままの件数です。週ごとに増えている場合は、反映が決定の速さに追いついていません。</li>
+    <li><strong>決定から反映までの営業日。</strong>中央値と最大値を確認します。日数が長い決定は、多くの場合、資料の担当者が決まっていません。</li>
+  </ul>
+
+  <h2><i>07</i>明日は、決定を10件だけ確認する</h2>
+  <p>AIを導入する前に、PM は自分のプロジェクトの現状を半日で確認できます。</p>
+
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>直近3回の会議の議事録から、<b>決定を10件</b>抜き出す。決定か意見か迷った発言には、印を付ける。</span></li>
+      <li><span>10件それぞれについて、<b>直すべき資料の行</b>を探す。その行の今の記載と、決定を比べる。</span></li>
+      <li><span>10件を、次の3つに分けて数える。反映されていた決定、反映されていなかった決定、<b>直す資料が分からなかった決定</b>。</span></li>
+    </ol>
+  </div>
+
+  <p>「直す資料が分からなかった決定」が多い場合、問題は決定の書き方です。決定を図2の5つの項目で書くことから始めてください。</p>
+  <p>「反映されていなかった決定」が多い場合、反映する担当が決まっていません。その場合は、この記事の「04 決定は、5つの手順で資料に反映する」の手順を使ってください。</p>
+</PostLayout>
+
+<style is:global>
+  .a1f1 .box rect, .a1f1 .doc rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
+  .a1f1 .ln { stroke: var(--ink); stroke-width: 1.4; }
+  .a1f1 .ln2 { fill: none; stroke: var(--shu); stroke-width: 2.2; }
+  .a1f1 .tok { fill: var(--ink); }
+  .a1f1.run .tok { animation: a1tok 1.2s 0.3s cubic-bezier(0.5, 0, 0.3, 1) both; }
+  @keyframes a1tok { 0% { transform: translateX(0); opacity: 1; } 80% { transform: translateX(68px); opacity: 1; } 100% { transform: translateX(68px); opacity: 0; } }
+  .a1f1 .stop { fill: var(--shu); font-weight: 700; transform-box: fill-box; }
+  .a1f1 .old { fill: var(--ink-2); }
+  .a1f1.run .old { animation: a1old 0.4s 4.9s both; }
+  @keyframes a1old { to { opacity: 0; } }
+  .a1f1 .ai rect { fill: var(--ink); }
+  .a1f1 .ai text { fill: var(--paper); font-size: 15px; }
+  .a1f1 .ai .sm2 { font-size: 10.5px; fill: #c9c4b6; }
+  .a1f1 .ai, .a1f1 .stamp { transform-box: fill-box; transform-origin: center; }
+  .a1f1 .stamp circle { fill: var(--paper); stroke: var(--shu); stroke-width: 1.8; }
+  .a1f1 .stamp text { fill: var(--shu); font-family: var(--mincho); font-weight: 800; font-size: 12px; }
+
+  .a1f2 .two { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 18px; align-items: stretch; }
+  .a1f2 .card { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; }
+  .a1f2 .card--on { border: 1.5px solid var(--ink); }
+  .a1f2 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+  .a1f2 .card--on .card__k { color: var(--shu); }
+  .a1f2 .card__q { margin: 0 0 14px; font-family: var(--mincho); font-weight: 500; font-size: 16px; line-height: 1.9; }
+  .a1f2 .card__n { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.8; border-top: 1px solid var(--line); padding-top: 10px; }
+  .a1f2 dl { margin: 0; }
+  .a1f2 dl div { display: grid; grid-template-columns: 8.5em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); align-items: baseline; }
+  .a1f2 dt { font-size: 12px; color: var(--ink-2); }
+  .a1f2 dd { margin: 0; font-size: 14.5px; font-weight: 700; line-height: 1.7; }
+  .a1f2 dl div:nth-child(4) dd { color: var(--shu); }
+
+  .a1f3 .rows { display: grid; gap: 14px; }
+  .a1f3 .row { display: grid; grid-template-columns: 1.25fr auto 1fr; gap: 14px; align-items: center; }
+  .a1f3 .bub { margin: 0; background: var(--paper); border: 1px solid var(--ink); padding: 12px 16px; font-family: var(--mincho); font-weight: 500; font-size: 15px; line-height: 1.8; }
+  .a1f3 .bub small { display: block; font-family: var(--gothic); font-size: 11.5px; color: var(--ink-2); margin-top: 4px; }
+  .a1f3 .arr { color: var(--shu); font-size: 18px; }
+  .a1f3 .res { margin: 0; padding: 10px 14px; font-size: 13.5px; line-height: 1.7; border: 1px solid var(--ink); }
+  .a1f3 .res b { display: block; font-family: var(--mincho); font-size: 18px; background: none; }
+  .a1f3 .res--ok { background: var(--ink); color: var(--paper); }
+  .a1f3 .res--no { border-style: dashed; color: var(--ink-2); background: var(--paper); }
+  .a1f3 .res--no b { color: var(--ink); }
+  .a1f3 .res--hw { background: var(--paper); border-color: var(--shu); }
+  .a1f3 .res--hw b { color: var(--shu); }
+
+  .a1f4 .ax { stroke: var(--ink); stroke-width: 1; }
+  .a1f4 .dot { fill: var(--ink); transform-box: fill-box; transform-origin: center; }
+  .a1f4 .med line { stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 5 4; }
+  .a1f4 .goal line { stroke: var(--shu); stroke-width: 1.8; }
+  .a1f4 .goal text { fill: var(--shu); }
+
+  @media (max-width: 760px) {
+    .a1f2 .two { grid-template-columns: 1fr; }
+    .a1f2 dl div { grid-template-columns: 1fr; gap: 0; }
+    .a1f3 .row { grid-template-columns: 1fr; gap: 6px; }
+    .a1f3 .arr { transform: rotate(90deg); justify-self: start; margin-left: 20px; }
+    .fig svg text { font-size: 17px; }
+    .fig svg .sm { font-size: 14px; }
+  }
+</style>

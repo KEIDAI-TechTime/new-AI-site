@@ -1,0 +1,249 @@
+---
+import DraftLayout from '@/layouts/DraftLayout.astro';
+import { posts } from '@/data/posts';
+
+interface Props {
+  slug: string;
+  points: string[];
+}
+const { slug, points } = Astro.props;
+const post = posts.find((p) => p.slug === slug)!;
+/* ほかの記事：同じ工程の記事を先に、足りない分を新しい順で。3本まで */
+const same = posts.filter((p) => p.slug !== slug && p.cat === post.cat);
+const rest = posts.filter((p) => p.slug !== slug && p.cat !== post.cat).sort((a, b) => Number(b.no) - Number(a.no));
+const others = [...same, ...rest].slice(0, 3);
+---
+
+<DraftLayout title={`${post.title} | TechTime`} description={post.dek}>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="frame" aria-hidden="true">
+    <span class="frame__tl">TECHTIME CO., LTD.</span>
+    <span class="frame__tr">BLOG {post.no}</span>
+  </div>
+  <div class="prog" aria-hidden="true"><i id="prog"></i></div>
+
+  <header class="pnav">
+    <a href="/" class="pnav__logo">TechTime<i></i></a>
+    <nav class="pnav__links">
+      <a href="/blog">ブログの一覧</a>
+      <a href="/contact?topic=assess" class="pnav__cta">アセスメントの相談はこちら<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+    </nav>
+  </header>
+
+  <article class="post">
+    <header class="post__head">
+      <p class="post__meta"><a href={`/blog?cat=${encodeURIComponent(post.cat)}`} class="post__cat">{post.cat}</a><time>{post.date}</time><em>読む時間 約{post.min}分</em></p>
+      <h1>{post.title}</h1>
+      <p class="post__dek">{post.dek}</p>
+      <div class="gist">
+        <p class="gist__k">この記事の要点</p>
+        <ol>
+          {points.map((p) => <li><span set:html={p} /></li>)}
+        </ol>
+      </div>
+    </header>
+
+    <div class="post__body">
+      <slot />
+    </div>
+
+    <aside class="pcta">
+      <p class="pcta__k">貴社のプロジェクトの状況を、資料から確認します</p>
+      <h2>貴社の資料を読み、どこに効くかを報告書にします。</h2>
+      <p>設計書や会議の記録をお預かりし、この記事の内容を貴社の資料で確認します。架空の会社を題材にした、結果報告書のサンプルをご覧いただけます。</p>
+      <div class="pcta__act">
+        <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="pbtn">アセスメントのサンプルを見る<small>PDF・29枚</small></a>
+        <a href="/contact?topic=assess" class="pbtn pbtn--line">アセスメントを相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+      </div>
+    </aside>
+
+    <nav class="more">
+      <p class="more__k">ほかの記事</p>
+      {others.map((o) => (
+        <a href={`/blog/${o.slug}`}>
+          <span>{o.no}</span>
+          <b>{o.title}</b>
+          <em>{o.cat}</em>
+        </a>
+      ))}
+      <a href="/blog" class="more__all"><span></span><b>すべての記事を、工程や困りごとから探す</b><em>一覧へ</em></a>
+    </nav>
+  </article>
+
+  <footer class="pfoot">
+    <p class="pfoot__n">TechTime株式会社</p>
+    <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
+    <p class="pfoot__c">© TechTime Co., Ltd.</p>
+  </footer>
+</DraftLayout>
+
+<style is:global>
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--hair) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hair) 1px, transparent 1px),
+      linear-gradient(rgba(28, 27, 24, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28, 27, 24, 0.035) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  }
+  .frame { position: fixed; inset: 10px; border: 1px solid var(--ink); pointer-events: none; z-index: 40; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-2); }
+  .frame span { position: absolute; top: -9px; background: var(--paper); padding: 2px 10px; line-height: 1.4; }
+  .frame__tl { left: 22px; }
+  .frame__tr { right: 22px; }
+  .prog { position: fixed; left: 11px; right: 11px; top: 11px; height: 3px; z-index: 41; }
+  .prog i { display: block; height: 100%; background: var(--shu); transform-origin: left; transform: scaleX(var(--p, 0)); }
+
+  .pnav { position: fixed; top: 10px; left: 10px; right: 10px; z-index: 30; display: flex; justify-content: space-between; align-items: center; padding: 22px var(--gutter) 14px; background: linear-gradient(var(--paper) 60%, transparent); }
+  .pnav__logo { font-family: var(--mincho); font-weight: 800; font-size: 21px; letter-spacing: 0.02em; display: flex; align-items: center; gap: 7px; }
+  .pnav__logo i { width: 8px; height: 8px; background: var(--shu); display: block; }
+  .pnav__links { display: flex; align-items: center; gap: clamp(14px, 2.4vw, 30px); font-size: 13.5px; font-weight: 500; }
+  .pnav__cta { display: flex; align-items: center; gap: 12px; background: var(--shu); color: var(--paper); font-weight: 700; font-size: 13.5px; padding: 9px 16px 9px 18px; box-shadow: 4px 4px 0 var(--ink); transition: box-shadow 0.25s, transform 0.25s; white-space: nowrap; }
+  .pnav__cta:hover { box-shadow: 1px 1px 0 var(--ink); transform: translate(3px, 3px); }
+  svg[viewBox='0 0 40 10'] { width: 26px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.2; flex: none; }
+
+  /* ---------- 記事 ---------- */
+  .post { max-width: 820px; margin: 0 auto; padding: 150px calc(var(--gutter) + 10px) 60px; }
+  .post__meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin: 0 0 24px; font-family: var(--mono); font-size: 12px; color: var(--ink-2); letter-spacing: 0.06em; }
+  .post__cat { background: var(--ink); color: var(--paper); font-family: var(--gothic); font-weight: 700; padding: 1px 11px; letter-spacing: 0.04em; transition: background 0.25s; }
+  .post__cat:hover { background: var(--shu); }
+  .post__meta em { font-style: normal; font-family: var(--gothic); }
+  .post h1 { font-family: var(--mincho); font-weight: 800; font-size: clamp(28px, 4.6vw, 50px); line-height: 1.42; letter-spacing: 0.01em; margin: 0 0 22px; }
+  .post__dek { font-size: clamp(15.5px, 1.7vw, 18px); line-height: 2; color: var(--ink-2); margin: 0 0 34px; }
+  .gist { border: 1px solid var(--ink); background: var(--paper); padding: 20px 26px 16px; box-shadow: 8px 8px 0 var(--paper-2), 8px 8px 0 1px var(--ink); }
+  .gist__k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--shu); }
+  .gist ol { margin: 0; padding: 0; list-style: none; counter-reset: g; }
+  .gist li { counter-increment: g; display: grid; grid-template-columns: 2em 1fr; padding: 9px 0; border-top: 1px solid var(--line); font-weight: 500; line-height: 1.8; }
+  .gist li::before { content: counter(g); font-family: var(--mono); color: var(--shu); }
+  .gist li b, .post__body b { background: linear-gradient(transparent 62%, rgba(212, 65, 42, 0.26) 62%); font-weight: 700; }
+
+  .post__body { margin-top: 70px; font-size: 16.5px; line-height: 2.05; }
+  .post__body > p { margin: 0 0 1.5em; }
+  .post__body h2 { font-family: var(--mincho); font-weight: 800; font-size: clamp(22px, 3vw, 31px); line-height: 1.55; margin: 96px 0 26px; padding-top: 26px; border-top: 1px solid var(--ink); display: grid; grid-template-columns: auto 1fr; gap: 18px; align-items: baseline; }
+  .post__body h2 i { font-style: normal; font-family: var(--mono); font-weight: 500; font-size: 13px; color: var(--paper); background: var(--ink); padding: 0 9px; line-height: 1.8; transform: translateY(-4px); }
+  .post__body h3 { font-family: var(--mincho); font-weight: 700; font-size: 20px; line-height: 1.6; margin: 50px 0 14px; }
+  .post__body ul, .post__body ol.n { margin: 0 0 1.6em; padding: 0; list-style: none; border-top: 1px solid var(--line); }
+  .post__body ul > li, .post__body ol.n > li { padding: 12px 0 12px 30px; border-bottom: 1px solid var(--line); position: relative; line-height: 1.9; }
+  .post__body ul > li::before { content: ''; position: absolute; left: 6px; top: 1.45em; width: 7px; height: 7px; background: var(--ink); }
+  .post__body ol.n { counter-reset: n; }
+  .post__body ol.n > li { counter-increment: n; padding-left: 46px; }
+  .post__body ol.n > li::before { content: counter(n, decimal-leading-zero); position: absolute; left: 0; top: 14px; font-family: var(--mono); font-size: 13px; color: var(--shu); }
+  .post__body ol.n > li strong { display: block; font-family: var(--mincho); font-size: 18px; }
+  .post__body strong { font-weight: 700; }
+  .post__body .lead2 { font-family: var(--mincho); font-weight: 700; font-size: clamp(19px, 2.4vw, 25px); line-height: 1.8; margin: 0 0 1.3em; }
+
+  /* 現場のひとこと */
+  .say { margin: 38px 0; padding: 4px 0 4px 24px; border-left: 3px solid var(--shu); }
+  .say p { margin: 0; font-family: var(--mincho); font-weight: 700; font-size: clamp(18px, 2.2vw, 23px); line-height: 1.85; }
+  .say span { display: block; margin-top: 8px; font-size: 13px; color: var(--ink-2); }
+  /* 注意・落とし穴 */
+  .trap { margin: 34px 0; border: 1px solid var(--shu); background: var(--paper); padding: 18px 24px; }
+  .trap > b { display: inline-block; background: var(--shu) !important; color: var(--paper); font-size: 12.5px; padding: 0 11px; margin-bottom: 8px; }
+  .trap p { margin: 0; line-height: 1.95; font-size: 15.5px; }
+  /* 明日からできること */
+  .todo { margin: 34px 0; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); padding: 22px 26px 12px; }
+  .todo > b { display: block; font-family: var(--mincho); font-size: 20px; margin-bottom: 8px; background: none !important; }
+  .todo ol { list-style: none; margin: 0; padding: 0; counter-reset: t; }
+  .todo li { counter-increment: t; display: grid; grid-template-columns: 34px 1fr; padding: 12px 0; border-top: 1px solid #55524a; line-height: 1.85; font-size: 15.5px; }
+  .todo li::before { content: ''; width: 16px; height: 16px; border: 1.5px solid var(--paper); margin-top: 7px; }
+  .todo li b { background: none !important; color: #ff8a70; }
+
+  /* 表 */
+  .tbl { width: 100%; border-collapse: collapse; margin: 30px 0; font-size: 14.5px; line-height: 1.75; background: var(--paper); }
+  .tbl th, .tbl td { border: 1px solid var(--ink); padding: 10px 14px; text-align: left; vertical-align: top; }
+  .tbl thead th { background: var(--ink); color: var(--paper); font-size: 12.5px; white-space: nowrap; }
+  .tbl tbody th { background: var(--paper-2); font-weight: 700; white-space: nowrap; }
+  .tbl td.x { color: var(--ink-2); }
+  .tbl td.o { font-weight: 700; }
+  .tbl .m { font-family: var(--mono); }
+
+  /* ---------- 図 ---------- */
+  .fig { margin: 44px calc(-1 * clamp(0px, 6vw, 80px)); border: 1px solid var(--ink); background: var(--paper); box-shadow: 10px 10px 0 var(--paper-2), 10px 10px 0 1px var(--ink); }
+  .fig__h { display: flex; align-items: baseline; gap: 14px; padding: 11px 20px; border-bottom: 1px solid var(--ink); font-size: 13.5px; font-weight: 700; line-height: 1.6; }
+  .fig__h span { font-family: var(--mono); font-weight: 500; font-size: 11.5px; color: var(--paper); background: var(--shu); padding: 0 9px; white-space: nowrap; }
+  .fig__b { padding: clamp(18px, 3vw, 34px); position: relative; overflow: hidden; font-size: 13px; line-height: 1.6;
+    background: linear-gradient(var(--hair) 1px, transparent 1px) 0 0 / 16px 16px, linear-gradient(90deg, var(--hair) 1px, transparent 1px) 0 0 / 16px 16px; }
+  .fig__c { margin: 0; padding: 10px 20px 12px; border-top: 1px solid var(--line); font-size: 12.5px; line-height: 1.75; color: var(--ink-2); }
+  .fig svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .fig svg text { font-family: var(--gothic); font-size: 13px; fill: var(--ink); }
+  .fig svg .mo { font-family: var(--mono); }
+  .fig svg .sm { font-size: 11px; fill: var(--ink-2); }
+  .fig svg .bd { font-weight: 700; }
+  /* 図の中の動き：.run が付くたびに最初から再生する */
+  .fig.run .p { animation: fpop 0.55s var(--t, 0s) cubic-bezier(0.3, 1.4, 0.5, 1) both; }
+  .fig.run .f { animation: ffade 0.6s var(--t, 0s) both; }
+  .fig.run .ty { animation: fty 0.6s var(--t, 0s) cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: left; transform-box: fill-box; }
+  .fig.run .up { animation: fup 0.7s var(--t, 0s) cubic-bezier(0.2, 0.8, 0.2, 1) both; transform-origin: bottom; transform-box: fill-box; }
+  .fig.run .dr { stroke-dasharray: 1; animation: fdr 0.8s var(--t, 0s) cubic-bezier(0.5, 0, 0.2, 1) both; }
+  @keyframes fpop { from { opacity: 0; transform: translateY(12px) scale(0.92); } }
+  @keyframes ffade { from { opacity: 0; } }
+  @keyframes fty { from { transform: scaleX(0); } }
+  @keyframes fup { from { transform: scaleY(0); } }
+  @keyframes fdr { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+
+  /* ---------- 記事の後 ---------- */
+  .pcta { margin: 110px calc(-1 * clamp(0px, 6vw, 80px)) 0; background: var(--ink); color: var(--paper); padding: clamp(28px, 5vw, 56px); }
+  .pcta__k { margin: 0 0 12px; font-size: 13px; font-weight: 700; color: #ff8a70; }
+  .pcta h2 { margin: 0 0 16px; font-family: var(--mincho); font-weight: 800; font-size: clamp(23px, 3.4vw, 36px); line-height: 1.5; }
+  .pcta p { margin: 0 0 28px; color: #c9c4b6; font-size: 15px; line-height: 2; }
+  .pcta__act { display: flex; flex-wrap: wrap; gap: 14px; }
+  .pbtn { display: inline-flex; align-items: center; gap: 14px; background: var(--shu); color: var(--paper); font-weight: 700; font-size: 15px; padding: 15px 24px; transition: background 0.25s, color 0.25s; }
+  .pbtn small { font-family: var(--mono); font-weight: 400; font-size: 11px; opacity: 0.85; }
+  .pbtn:hover { background: var(--paper); color: var(--ink); }
+  .pbtn--line { background: transparent; border: 1px solid var(--paper); }
+  .more { margin-top: 70px; border-top: 1px solid var(--ink); }
+  .more__k { margin: 18px 0 6px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .more a { display: grid; grid-template-columns: 3em 1fr auto; gap: 14px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--line); transition: padding 0.3s, background 0.3s; }
+  .more a:hover { padding-left: 12px; background: var(--paper-2); }
+  .more span { font-family: var(--mono); font-size: 13px; color: var(--shu); }
+  .more b { font-family: var(--mincho); font-weight: 700; font-size: clamp(17px, 2.1vw, 21px); line-height: 1.6; }
+  .more__all b { font-family: var(--gothic) !important; font-size: 14px !important; color: var(--shu); }
+  .more em { font-style: normal; font-size: 12px; color: var(--ink-2); white-space: nowrap; }
+  .pfoot { margin: 60px calc(var(--gutter) + 10px) 40px; border-top: 1px solid var(--ink); padding-top: 20px; font-size: 12.5px; color: var(--ink-2); display: flex; gap: 8px 30px; flex-wrap: wrap; align-items: baseline; }
+  .pfoot p { margin: 0; }
+  .pfoot__n { font-weight: 700; color: var(--ink); }
+  .pfoot__c { margin-left: auto !important; font-family: var(--mono); font-size: 10.5px; }
+
+  @media (max-width: 760px) {
+    .post { padding-top: 120px; }
+    .pnav__links > a:not(.pnav__cta) { display: none; }
+    .pnav__cta { font-size: 12px; padding: 8px 11px 8px 13px; box-shadow: 3px 3px 0 var(--ink); }
+    .pnav__cta svg { display: none; }
+    .post__body { font-size: 16px; line-height: 2; margin-top: 54px; }
+    .post__body h2 { margin-top: 70px; grid-template-columns: 1fr; gap: 6px; }
+    .post__body h2 i { justify-self: start; transform: none; }
+    .fig, .pcta { margin-left: -8px; margin-right: -8px; box-shadow: none; }
+    .tbl { font-size: 13.5px; }
+    .tbl th, .tbl td { padding: 8px 9px; }
+    .tbl thead th, .tbl tbody th { white-space: normal; }
+    .more a { grid-template-columns: 2.4em 1fr; }
+    .more em { display: none; }
+    .pfoot__c { margin-left: 0 !important; }
+  }
+</style>
+
+<script>
+  /* 読み進めた量を上の線で示す */
+  const prog = document.querySelector<HTMLElement>('#prog')!;
+  const onScroll = () => {
+    const h = document.documentElement;
+    prog.style.setProperty('--p', String(Math.min(1, h.scrollTop / Math.max(1, h.scrollHeight - h.clientHeight))));
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* 図は、見えている間だけ、決めた間隔でくり返し再生する */
+  const live = new Set<HTMLElement>();
+  const play = (f: HTMLElement) => { f.classList.remove('run'); void f.offsetWidth; f.classList.add('run'); f.dispatchEvent(new CustomEvent('fig:play')); };
+  const io = new IntersectionObserver((es) => es.forEach((e) => {
+    const f = e.target as HTMLElement;
+    if (e.isIntersecting) { if (!live.has(f)) { live.add(f); play(f); } } else live.delete(f);
+  }), { threshold: 0.25 });
+  document.querySelectorAll<HTMLElement>('.fig').forEach((f) => {
+    io.observe(f);
+    const ms = Number(f.dataset.loop || 0);
+    if (ms) setInterval(() => { if (live.has(f) && !document.hidden) play(f); }, ms);
+  });
+</script>

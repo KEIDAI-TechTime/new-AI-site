@@ -1,0 +1,174 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '研修と呼びかけだけでは、AIは使われなくなります。<b>忙しくなると、担当者は慣れた方法を選ぶからです。</b>',
+  '使うかどうかを、担当者の判断に任せません。<b>AIを使う手順を、工程の進め方そのものに組み込みます。</b>',
+  '使われているかは、担当者に質問しても分かりません。<b>成果物のうち、AIの点検を通したものの割合を数えます。</b>',
+];
+const weeks = [92, 85, 74, 61, 52, 44, 38, 33, 29, 27, 26, 24];
+const areas = [['販売', 91], ['購買', 84], ['生産', 38], ['会計', 77]];
+---
+
+<PostLayout slug="keep-using-ai" points={points}>
+  <p class="lead2">ある会社が、設計の担当者の全員に AI の研修を行いました。研修の翌週は、ほぼ全員が AI を使いました。3か月後に数えると、使っている担当者は4人に1人でした。</p>
+  <p>使わなくなった担当者に理由を質問すると、多くの担当者は「忙しかったので」と答えます。AIに不満があったわけではありません。</p>
+  <p>原因は、<b>AIを使うかどうかを、担当者の判断に任せていること</b>です。この記事では、使われなくなる理由と、工程の進め方に組み込む方法を書きます。あわせて、使われているかを数える方法を書きます。</p>
+
+  <h2><i>01</i>研修を行っても、3か月で使う人が減る</h2>
+
+  <figure class="fig b13f1" data-loop="9500">
+    <div class="fig__h"><span>図 1</span>研修のあと、AIを使った担当者の割合は、週ごとに下がる（例）</div>
+    <div class="fig__b">
+      <div class="wk">
+        {weeks.map((v, k) => <div class="w"><i class="up" style={`--h:${v}%;--t:${0.2 + k * 0.1}s`}></i><span>{k + 1}</span></div>)}
+      </div>
+      <p class="ax">研修からの週</p>
+      <p class="note f" style="--t:1.8s"><b>12週目　24%</b>忙しい時期に入った4週目から、大きく下がる</p>
+    </div>
+    <p class="fig__c">数字は説明のための例です。使った担当者の割合が下がり始めるのは、設計書の提出の期限が重なる時期です。</p>
+  </figure>
+
+  <p>割合が下がるのは、担当者の意欲が下がったからではありません。期限が近づくと、担当者は確実に終わる方法を選びます。使い慣れていない AI より、これまでの方法のほうが、かかる時間を予想できるからです。</p>
+
+  <h2><i>02</i>使われなくなる理由は、担当者の意欲ではなく、仕事の進め方にある</h2>
+
+  <figure class="fig b13f2">
+    <div class="fig__h"><span>図 2</span>AIが使われなくなる理由は3つ。忙しい、使わなくても仕事が進む、使った結果が残らない</div>
+    <div class="fig__b">
+      <div class="three">
+        <div class="c p" style="--t:.2s"><b>1</b><h4>忙しいと、慣れた方法を選ぶ</h4><p>AIを使うと、最初は時間がかかる。期限が近いと、担当者は試す余裕が無い。</p></div>
+        <div class="c p" style="--t:.6s"><b>2</b><h4>使わなくても、仕事が進む</h4><p>AIを使わずに作った設計書も、レビューで受け付けられる。使う理由が無い。</p></div>
+        <div class="c p" style="--t:1s"><b>3</b><h4>使った結果が、どこにも残らない</h4><p>AIの点検の結果は、担当者の手元にしか無い。ほかの人は、使ったかどうかを知らない。</p></div>
+      </div>
+    </div>
+    <p class="fig__c">3つとも、担当者の問題ではありません。AIを使う手順が、工程の進め方に含まれていないことが原因です。</p>
+  </figure>
+
+  <div class="say">
+    <p>「使ってください」という呼びかけは、忙しい週に効果が無くなります。忙しい週にこそ、AIの点検が必要です。</p>
+  </div>
+
+  <h2><i>03</i>AIを使う手順を、工程の進め方に組み込む</h2>
+  <p>使い続けるには、AIを使う手順を、作業の途中に必ず通る手順にします。担当者が、使うかどうかを毎回判断しなくて済むようにします。</p>
+
+  <figure class="fig b13f3" data-loop="9500">
+    <div class="fig__h"><span>図 3</span>レビューの受け付けの条件に、AIの点検の結果を加える</div>
+    <div class="fig__b">
+      <p class="k">これまでの進め方</p>
+      <div class="flow"><i class="p" style="--t:.2s">設計書を作る</i><u>→</u><i class="p" style="--t:.5s">レビューを依頼する</i><u>→</u><i class="p" style="--t:.8s">レビューする</i></div>
+      <p class="r">AIの点検は、担当者が自分の判断で行う。行わなくても、次に進める</p>
+      <p class="k k--on">組み込んだ進め方</p>
+      <div class="flow flow--on"><i class="p" style="--t:1.8s">設計書を作る</i><u>→</u><i class="p hot" style="--t:2.2s">AIの点検の結果を添える</i><u>→</u><i class="p" style="--t:2.6s">レビューを依頼する</i><u>→</u><i class="p" style="--t:3s">レビューする</i></div>
+      <p class="r r--on">点検の結果が無い設計書は、レビューを受け付けない。レビューする人は、結果を読んでから始める</p>
+    </div>
+    <p class="fig__c">図で朱色にした手順が、新しく追加する手順です。レビューする人は、AIが見つけた指摘を先に読めるので、レビューの時間も短くなります。</p>
+  </figure>
+
+  <p>この方法では、担当者だけでなく、レビューする人にも利点があります。レビューする人は、記載の抜けを探す作業を AI に任せ、設計の内容の確認に時間を使えます。利点がある人が増えると、手順は続きます。</p>
+
+  <h2><i>04</i>組み込む場所は、レビュー・会議・手順書の3つ</h2>
+  <table class="tbl">
+    <thead><tr><th>組み込む場所</th><th>決めること</th><th>続く理由</th></tr></thead>
+    <tbody>
+      <tr><th>レビューの受け付け</th><td>設計書に、AIの点検の結果を添える。添えていない設計書は、レビューを受け付けない。</td><td>次の工程に進むために、必ず通る手順になる。</td></tr>
+      <tr><th>会議</th><td>課題の会議は、AIが記録から作った一覧を画面に表示して進める。人が作った資料を持ち込まない。</td><td>一覧を使わないと、会議が始まらない。資料を作る作業も無くなる。</td></tr>
+      <tr><th>手順書</th><td>AIへの指示を、全員が使う1か所に保存する。更新する担当者を、成果物の種類ごとに1人決める。</td><td>担当者は、長い指示を自分で書かなくて済む。使うほうが、使わないより早い。</td></tr>
+    </tbody>
+  </table>
+  <p>3つを同時に始める必要はありません。最初は、レビューの受け付けから始めます。PM は、対象の成果物と、開始する日を決めます。決めた内容を、全員に伝えます。手順書の作り方は、<a href="/blog/consistent-ai-output">AIの成果物の品質をそろえる記事</a>に書きました。</p>
+
+  <ol class="n">
+    <li><strong>情報システム部門の責任者が、対象の成果物を1種類選ぶ</strong>最初は、本数が多く、様式が決まっている成果物を選びます。たとえば、機能の設計書です。</li>
+    <li><strong>PM が、受け付けの条件を文書に書く</strong>添える結果の形と、例外の扱いを書きます。</li>
+    <li><strong>2週間、条件を試す</strong>担当者とレビューする人から、困った点を集めます。</li>
+    <li><strong>PM が、条件と手順書を直す</strong>PM は、担当者が困った点を解決してから、対象を次の成果物に広げます。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>受け付けの条件を決めても、担当者が形だけ守ることがあります。たとえば、担当者が AI の点検の結果を添えるだけで、指摘を読んでいない状態です。<strong>点検の結果には、指摘ごとに「直した」「直さない」と、直さない理由を書く欄を設けてください。</strong>欄が空のままの設計書は、受け付けません。</p>
+  </div>
+
+  <h2><i>05</i>使われているかは、成果物から数える</h2>
+  <p>「AIを使っていますか」と担当者に質問しても、実態は分かりません。担当者は、1回でも使っていれば「使っています」と答えます。使われているかは、成果物から数えます。</p>
+
+  <figure class="fig b13f4" data-loop="9000">
+    <div class="fig__h"><span>図 4</span>AIの点検の結果が添えられた設計書の割合を、領域ごとに数える（例）</div>
+    <div class="fig__b">
+      <div class="ar">
+        {areas.map(([n, v], k) => (
+          <div class:list={['row', { low: Number(v) < 50 }]}><span>{n}</span><div><i class="ty" style={`--w:${v}%;--t:${0.3 + k * 0.3}s`}></i></div><b>{v}%</b></div>
+        ))}
+      </div>
+      <p class="note f" style="--t:1.8s">生産の領域だけが低い。理由を確認すると、生産の設計書の様式が、手順書と合っていなかった</p>
+    </div>
+    <p class="fig__c">数字は説明のための例です。割合が低い領域では、担当者ではなく、手順書か条件に原因があることが多くあります。</p>
+  </figure>
+
+  <ul>
+    <li><strong>AIの点検の結果が添えられた成果物の割合。</strong>領域ごと、週ごとに数えます。割合が下がった週は、受け付けの条件が守られていません。</li>
+    <li><strong>指摘のうち、担当者が直した割合。</strong>この割合が極端に低い場合、点検の観点が成果物に合っていません。</li>
+  </ul>
+
+  <div class="say">
+    <p>数える目的は、使っていない担当者を見つけることではありません。使いにくい原因を見つけることです。</p>
+    <span>割合が低い領域では、PM が担当者に、困っている点を質問します。PM は、手順書か条件を直します。</span>
+  </div>
+
+  <h2><i>06</i>例外の扱いを、先に決めておく</h2>
+  <p>条件を決めると、必ず例外が出ます。たとえば、緊急の修正で、点検の時間が無い場合です。例外の扱いを決めていないと、担当者は自分の判断で条件を省きます。省くことが続くと、条件は使われなくなります。</p>
+  <p>PM は、例外を認める人と、例外の記録のしかたを決めます。たとえば、「領域のリーダーが認めた場合は、点検を後で行う。後で行う日を記録する」と決めます。例外の件数も、毎週数えます。</p>
+
+  <h2><i>07</i>明日は、直近の成果物10本で、AIを使った本数を数える</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>直近にレビューした成果物を<b>10本</b>選ぶ。</span></li>
+      <li><span>10本のうち、<b>AIで作ったか、AIで点検した記録が残っているもの</b>を数える。</span></li>
+      <li><span>記録が残っていない成果物について、担当者に<b>使わなかった理由</b>を質問する。</span></li>
+    </ol>
+  </div>
+  <p>10本のうち、記録が残っているものが半数より少ない場合、AIを使うかどうかが担当者の判断に任されています。担当者から集めた「使わなかった理由」は、図2の3つの理由のどれかに当てはまります。</p>
+  <p>理由が「忙しかった」「使わなくても進められた」の場合は、レビューの受け付けの条件から始めてください。理由が「使いにくい」の場合は、先に手順書を直します。</p>
+</PostLayout>
+
+<style is:global>
+  .b13f1 .wk { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; height: 170px; align-items: end; border-bottom: 1px solid var(--ink); }
+  .b13f1 .w { display: grid; grid-template-rows: 1fr auto; height: 100%; position: relative; }
+  .b13f1 .w i { align-self: end; display: block; height: var(--h); background: var(--ink); }
+  .b13f1 .w:nth-child(n + 4) i { background: var(--shu); }
+  .b13f1 .w span { position: absolute; top: 100%; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--ink-2); padding-top: 4px; }
+  .b13f1 .ax { margin: 24px 0 0; text-align: right; font-size: 12px; color: var(--ink-2); }
+  .b13f1 .note, .b13f4 .note { margin: 8px 0 0; font-size: 13px; line-height: 1.7; }
+  .b13f1 .note b { background: var(--shu); color: var(--paper); font-family: var(--mono); font-weight: 500; padding: 1px 10px; margin-right: 10px; }
+  .b13f2 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .b13f2 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b13f2 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
+  .b13f2 h4 { margin: 0; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .b13f2 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
+  .b13f3 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .b13f3 .k--on { color: var(--shu); margin-top: 18px; }
+  .b13f3 .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .b13f3 .flow i { font-style: normal; border: 1px solid var(--line); background: var(--paper); padding: 9px 14px; font-size: 13.5px; font-weight: 700; }
+  .b13f3 .flow--on i { border-color: var(--ink); }
+  .b13f3 .flow i.hot { background: var(--shu); border-color: var(--shu); color: var(--paper); }
+  .b13f3 .flow u { text-decoration: none; color: var(--ink-2); }
+  .b13f3 .r { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.7; }
+  .b13f3 .r--on { color: var(--ink); font-weight: 700; }
+  .b13f4 .ar { display: grid; gap: 10px; }
+  .b13f4 .row { display: grid; grid-template-columns: 4em 1fr 3.4em; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
+  .b13f4 .row div { height: 24px; border: 1px solid var(--ink); background: var(--paper); }
+  .b13f4 .row i { display: block; height: 100%; width: var(--w); background: var(--ink); }
+  .b13f4 .row.low i { background: var(--shu); }
+  .b13f4 .row b { font-family: var(--mono); font-weight: 500; background: none; text-align: right; }
+  .b13f4 .row.low b { color: var(--shu); }
+  .b13f4 .note { border-left: 3px solid var(--shu); padding-left: 12px; margin-top: 14px; }
+  @media (max-width: 760px) {
+    .b13f1 .wk { gap: 3px; height: 130px; }
+    .b13f1 .w span { font-size: 9px; }
+    .b13f2 .three { grid-template-columns: 1fr; }
+    .b13f3 .flow { flex-direction: column; align-items: stretch; gap: 4px; }
+    .b13f3 .flow u { transform: rotate(90deg); align-self: flex-start; margin-left: 16px; }
+  }
+</style>

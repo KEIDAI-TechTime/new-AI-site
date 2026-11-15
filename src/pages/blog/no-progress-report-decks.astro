@@ -1,0 +1,206 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '「80%完了」という申告からは、残りの作業が分かりません。<b>進捗は、担当者の申告ではなく、成果物の状態から数えます。</b>',
+  '成果物の状態は、設計書の版、レビューの結果、テストの合否として、すでに記録されています。<b>集計と転記の作業は要りません。</b>',
+  '定例会議では資料を作らず、全員が同じ一覧を見ます。<b>PMO の時間は、状態が変わっていない成果物への対応に使います。</b>',
+];
+/* 図1：設計書40本の状態（週ごと・例）。未着手・作成中・レビュー中・確定 */
+const wk = [[6, 22, 8, 4], [4, 20, 10, 6], [3, 19, 11, 7]];
+/* 図4：10営業日以上、状態が変わっていない成果物（領域ごと・例） */
+const stuck = [['生産', 9], ['連携', 6], ['会計', 4], ['販売', 2], ['購買', 1]];
+---
+
+<PostLayout slug="no-progress-report-decks" points={points}>
+  <p class="lead2">木曜の午後、PMO の担当者は、各チームの進捗の表を1つの資料にまとめています。金曜の定例会議で使う資料です。資料をまとめる作業には、毎週半日かかります。資料の数字は「設計 80%完了」です。翌週も、その翌週も、80%のままでした。</p>
+  <p>80%のまま変わらない理由は、数字が担当者の申告だからです。担当者は、作業の大半が終わったと感じた時点で、80%と報告します。残りの20%に何があるかは、報告からは分かりません。</p>
+  <p>進捗は、<b>成果物の状態</b>から数えます。この記事では、成果物の状態の分け方と、記録からの数え方を書きます。あわせて、資料を作らない会議の進め方を書きます。</p>
+
+  <h2><i>01</i>「80%完了」からは、残りの作業が分からない</h2>
+
+  <figure class="fig b15f1" data-loop="10000">
+    <div class="fig__h"><span>図 1</span>申告の進捗は3週間80%のまま。成果物の状態で数えると、確定は40本のうち7本（例）</div>
+    <div class="fig__b">
+      <div class="two">
+        <div>
+          <p class="k">担当者の申告</p>
+          {wk.map((_, k) => <div class="rep p" style={`--t:${0.2 + k * 0.5}s`}><span>{k + 1}週目</span><b>設計 80%完了</b></div>)}
+          <p class="r">3週間、数字が変わらない。何が残っているかは分からない</p>
+        </div>
+        <div>
+          <p class="k k--on">成果物の状態（設計書40本）</p>
+          {wk.map((w, k) => (
+            <div class="st">
+              <span>{k + 1}週目</span>
+              <div class="stack">{w.map((v, j) => <i class:list={[`s${j}`, 'ty']} style={`--w:${(v / 40) * 100}%;--t:${1.8 + k * 0.5 + j * 0.1}s`}>{v}</i>)}</div>
+            </div>
+          ))}
+          <p class="lg"><i class="s0"></i>未着手<i class="s1"></i>作成中<i class="s2"></i>レビュー中<i class="s3"></i>確定</p>
+          <p class="r r--on">確定は 4本→6本→7本。作成中の19本が進んでいない</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。右の数え方では、進んでいる部分と、進んでいない部分が分かります。</p>
+  </figure>
+
+  <p>申告の数字には、もう1つの問題があります。担当者によって、80%の意味が違います。ある担当者は、本文を書き終えた時点で80%と報告します。別の担当者は、レビューの指摘をすべて直した時点で80%と報告します。この2つを合計しても、意味のある数字になりません。</p>
+
+  <div class="say">
+    <p>進捗の数字が動かないとき、止まっているのは作業とは限りません。数え方が、作業の進みを示していないだけです。</p>
+  </div>
+
+  <h2><i>02</i>進捗報告の資料は、集計と転記で作られている</h2>
+
+  <figure class="fig b15f2" data-loop="9500">
+    <div class="fig__h"><span>図 2</span>報告の数字は、3回の転記を通って会議に出る。会議の時点で、数字は3日前の状態になる</div>
+    <div class="fig__b">
+      <ol class="chain">
+        {[['担当者', '作業の状態を、自分の表に書く', '月曜'], ['チームのリーダー', '担当者の表を、チームの表に転記する', '水曜'], ['PMO', 'チームの表を、報告の資料に転記する', '木曜'], ['定例会議', '資料を読み上げる', '金曜']].map(([a, b, c], k) => (
+          <li class="p" style={`--t:${0.2 + k * 0.7}s`}><time>{c}</time><b>{a}</b><span>{b}</span></li>
+        ))}
+      </ol>
+    </div>
+    <p class="fig__c">転記のたびに、時間がかかり、写し間違いが入ります。会議では、数字が正しいかどうかの確認に時間を使います。</p>
+  </figure>
+
+  <p>PMO の担当者は、毎週の半日を、集計と転記に使っています。本来の仕事は、遅れている作業を見つけて、対応を決めることです。資料を作る時間が、その仕事の時間を減らしています。</p>
+
+  <h2><i>03</i>成果物の状態は、記録で判定できる条件で分ける</h2>
+  <p>状態を数えるには、状態の条件を決めます。条件は、<b>記録を見れば誰でも同じ判定になるもの</b>にします。担当者の判断が入る条件は使いません。</p>
+
+  <table class="tbl">
+    <thead><tr><th>状態</th><th>設計書の条件</th><th>テストの条件</th></tr></thead>
+    <tbody>
+      <tr><th>未着手</th><td>設計書のファイルが、決められた場所に無い</td><td>実施の記録が無い</td></tr>
+      <tr><th>作成中</th><td>ファイルがあり、レビューの依頼の記録が無い</td><td>実施の記録があり、結果が書かれていない</td></tr>
+      <tr><th>レビュー中</th><td>レビューの依頼の記録があり、未対応の指摘がある</td><td>結果が不合格で、再テストが済んでいない</td></tr>
+      <tr><th>確定</th><td>指摘がすべて対応済みで、承認の記録がある</td><td>結果が合格で、証跡が保存されている</td></tr>
+    </tbody>
+  </table>
+
+  <p>この条件では、担当者が「ほぼ終わった」と感じていても、承認の記録が無ければ確定になりません。申告より厳しい数字になります。その数字が、実際の残りの作業を示しています。</p>
+
+  <h2><i>04</i>状態の判定は AI に任せる。人が申告する必要は無くなる</h2>
+  <p>状態の判定に必要な記録は、すでに存在します。設計書の版、レビューの記録、テストの結果です。記録は別々の場所にあるので、人が集めると時間がかかります。この作業を AI に任せます。</p>
+  <ol class="n">
+    <li><strong>PM が、成果物の一覧を決める</strong>一覧には、設計書とテストの番号と名前を書きます。一覧に無い成果物は、数える対象になりません。</li>
+    <li><strong>PM が、状態の条件を決める</strong>03の表のように、記録で判定できる条件を書きます。</li>
+    <li><strong>AIが、毎朝記録を読み、成果物ごとに状態を判定する</strong>AIは、判定に使った記録を、成果物ごとに添えます。</li>
+    <li><strong>AIが、状態が変わっていない成果物を一覧にする</strong>対象は、10営業日以上、同じ状態の成果物です。</li>
+    <li><strong>PMO が、一覧の成果物について、担当者に理由を確認する</strong>PMO は、理由を一覧に書き、対応を決めます。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>成果物の本数だけを数えると、大きな設計書と小さな設計書が同じ1本になります。成果物の一覧に、規模の列を追加してください。大・中・小の3つの区分で足ります。会議では、本数と、規模ごとの内訳の両方を見ます。</p>
+  </div>
+
+  <h2><i>05</i>定例会議は、資料ではなく、同じ一覧を見て進める</h2>
+  <p>状態の一覧があれば、報告の資料は要りません。定例会議では、全員が同じ一覧の画面を見ます。</p>
+
+  <figure class="fig b15f3" data-loop="8500">
+    <div class="fig__h"><span>図 3</span>会議の時間を、報告を聞く時間から、対応を決める時間に変える</div>
+    <div class="fig__b">
+      <div class="bars">
+        <div class="bar"><span>資料で報告する会議</span><div><i class="rd" style="width:74%">報告を聞く・数字を確認する</i><i class="dc">決める</i></div></div>
+        <div class="bar"><span>一覧を見る会議</span><div><i class="rd rd--now">見る</i><i class="dc dc--now">状態が変わっていない成果物の対応を決める</i></div></div>
+      </div>
+    </div>
+    <p class="fig__c">全員が同じ一覧を見ているので、数字が正しいかどうかの議論は起きません。</p>
+  </figure>
+
+  <p>会議の議題は、状態が変わっていない成果物だけです。順調に進んでいる成果物は、報告しません。リーダーは、状態が変わっていない理由と、必要な支援を話します。</p>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>一覧を導入しても、従来の報告の資料を並行して作り続けると、作業が増えるだけです。一覧の数字は、申告の数字より低くなります。そのとき資料の数字のほうが信用されると、一覧は見られなくなります。一覧で会議を行うと決めた週から、資料の作成をやめてください。</p>
+  </div>
+
+  <h2><i>06</i>遅れは、状態が変わっていない成果物の件数で見つける</h2>
+
+  <figure class="fig b15f4" data-loop="9000">
+    <div class="fig__h"><span>図 4</span>10営業日以上、状態が変わっていない成果物は、生産と連携に多い（例）</div>
+    <div class="fig__b">
+      <div class="rows">
+        {stuck.map(([n, v], k) => (
+          <div class:list={['row', { top: k < 2 }]}>
+            <span>{n}</span>
+            <div><i class="ty" style={`--w:${Number(v) * 8}%;--t:${0.2 + k * 0.2}s`}></i><b class="f" style={`--t:${0.7 + k * 0.2}s`}>{v}本</b></div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。PMO は、件数が多い領域から、理由を確認します。</p>
+  </figure>
+
+  <p>全体の進捗率は、遅れを見つける役に立ちません。全体が70%でも、特定の領域が止まっている場合があります。PMO は、状態が変わっていない成果物の件数を、領域ごとに確認します。件数が多い領域には、共通の原因があります。状態が変わっていない成果物は、多くの場合、ほかの領域の決定を待っています。</p>
+
+  <h2><i>07</i>明日は、設計書10本の状態を、記録から判定する</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>進捗報告で「80%以上」と報告されている設計書を、<b>10本</b>選ぶ。</span></li>
+      <li><span>10本それぞれについて、<b>レビューの依頼の記録</b>と、<b>承認の記録</b>があるかを調べる。</span></li>
+      <li><span>この記事の「03」の表の条件を使い、設計書10本を<b>4つの状態</b>に分ける。確定の本数を数える。</span></li>
+    </ol>
+  </div>
+  <p>10本のうち確定が3本以下の場合、申告の進捗と、実際の状態が大きく違っています。残りの設計書も、同じ条件で判定してください。</p>
+  <p>判定に必要な記録が見つからない場合は、記録を残す場所が決まっていません。先に、レビューの依頼と承認を記録する場所を1か所に決めます。記録があれば、状態は AI が毎朝判定できます。</p>
+</PostLayout>
+
+<style is:global>
+  .b15f1 .two { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 22px; align-items: start; }
+  .b15f1 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .b15f1 .k--on { color: var(--shu); }
+  .b15f1 .rep { display: grid; grid-template-columns: 4.5em 1fr; gap: 10px; align-items: center; border: 1px solid var(--line); background: var(--paper); padding: 7px 12px; margin-bottom: 8px; font-size: 12.5px; }
+  .b15f1 .rep b { font-family: var(--mincho); font-size: 16px; background: none; }
+  .b15f1 .st { display: grid; grid-template-columns: 4.5em 1fr; gap: 10px; align-items: center; margin-bottom: 8px; font-size: 12.5px; }
+  .b15f1 .stack { display: flex; height: 34px; border: 1px solid var(--ink); background: var(--paper); }
+  .b15f1 .stack i { font-style: normal; width: var(--w); display: grid; place-items: center; font-family: var(--mono); font-size: 12px; overflow: hidden; transform-origin: left; }
+  .b15f1 .s0 { background: var(--paper); color: var(--ink-2); }
+  .b15f1 .s1 { background: repeating-linear-gradient(-45deg, var(--line) 0 1px, transparent 1px 6px); border-left: 1px solid var(--ink); }
+  .b15f1 .s2 { background: var(--ink); color: var(--paper); }
+  .b15f1 .s3 { background: var(--shu); color: var(--paper); }
+  .b15f1 .lg { margin: 4px 0 0; display: flex; flex-wrap: wrap; gap: 4px 6px; align-items: center; font-size: 11.5px; color: var(--ink-2); }
+  .b15f1 .lg i { width: 12px; height: 12px; border: 1px solid var(--ink); display: block; margin-left: 8px; }
+  .b15f1 .r { margin: 10px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+  .b15f1 .r--on { color: var(--shu); font-weight: 700; }
+  .b15f2 .chain { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--ink); background: var(--paper); }
+  .b15f2 .chain li { padding: 14px 16px; border-right: 1px solid var(--ink); display: grid; gap: 4px; align-content: start; position: relative; }
+  .b15f2 .chain li:last-child { border-right: 0; background: var(--ink); color: var(--paper); }
+  .b15f2 .chain li:not(:last-child)::after { content: '転記'; position: absolute; right: -15px; top: 10px; font-size: 10.5px; font-weight: 700; background: var(--shu); color: var(--paper); padding: 0 5px; z-index: 1; }
+  .b15f2 .chain li:nth-child(3)::after { content: '読み上げ'; right: -24px; }
+  .b15f2 .chain time { font-family: var(--mono); font-size: 11.5px; color: var(--shu); }
+  .b15f2 .chain li:last-child time { color: #ff8a70; }
+  .b15f2 .chain b { font-family: var(--mincho); font-size: 16.5px; background: none; }
+  .b15f2 .chain span { font-size: 12.5px; line-height: 1.7; }
+  .b15f3 .bars { display: grid; gap: 16px; }
+  .b15f3 .bar { display: grid; grid-template-columns: 10em 1fr; gap: 12px; align-items: center; font-size: 13px; }
+  .b15f3 .bar div { display: flex; height: 46px; border: 1px solid var(--ink); background: var(--paper); }
+  .b15f3 .bar i { font-style: normal; display: grid; place-items: center; font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; padding: 0 6px; }
+  .b15f3 .rd { background: repeating-linear-gradient(-45deg, var(--line) 0 1px, transparent 1px 6px); border-right: 1px solid var(--ink); }
+  .b15f3 .dc { flex: 1; }
+  .b15f3 .rd--now { width: 16%; }
+  .b15f3.run .rd--now { animation: b15rd 2.2s 0.8s cubic-bezier(0.6, 0, 0.2, 1) both; }
+  @keyframes b15rd { from { width: 74%; } to { width: 16%; } }
+  .b15f3 .dc--now { background: var(--shu); color: var(--paper); }
+  .b15f4 .rows { display: grid; gap: 8px; }
+  .b15f4 .row { display: grid; grid-template-columns: 5em 1fr; gap: 12px; align-items: center; font-size: 13px; }
+  .b15f4 .row div { display: flex; align-items: center; gap: 10px; }
+  .b15f4 .row i { display: block; height: 22px; width: var(--w); background: var(--ink); flex: none; }
+  .b15f4 .row.top i { background: var(--shu); }
+  .b15f4 .row.top span { font-weight: 700; }
+  .b15f4 .row b { font-family: var(--mono); font-weight: 500; background: none; }
+  .b15f4 .row.top b { color: var(--shu); }
+  @media (max-width: 760px) {
+    .b15f1 .two { grid-template-columns: 1fr; }
+    .b15f2 .chain { grid-template-columns: 1fr; }
+    .b15f2 .chain li { border-right: 0; border-bottom: 1px solid var(--ink); }
+    .b15f2 .chain li:last-child { border-bottom: 0; }
+    .b15f2 .chain li:not(:last-child)::after { right: 10px; top: auto; bottom: -9px; }
+    .b15f2 .chain li:nth-child(3)::after { right: 10px; }
+    .b15f3 .bar { grid-template-columns: 1fr; gap: 4px; }
+    .b15f3 .bar i { font-size: 11px; white-space: normal; text-align: center; line-height: 1.3; }
+  }
+</style>

@@ -1,686 +1,249 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import Navigation from '@/components/Navigation.astro';
-import { getPosts, BLOG_CATEGORIES, formatDate, type NotionPost, type BlogCategory } from '@/lib/notion';
+import DraftLayout from '@/layouts/DraftLayout.astro';
+import { posts, cats, catOrder } from '@/data/posts';
 
-const title = 'ブログ | TechTime株式会社';
-const description = 'TechTimeの最新情報や技術ブログをお届けします。AI駆動開発、システム開発のノウハウなど、役立つ情報を発信中。';
-
-// Fetch posts from Notion at build time
-const notionPosts = await getPosts({ perPage: 100 });
-
-// Sort by date (newest first)
-const allPosts = notionPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-
-// Get main categories (excluding legacy ones)
-const mainCategories = ['system-dev', 'management-dx', 'industry', 'career', 'ceo-column'];
-const categoryList = mainCategories.map(slug => BLOG_CATEGORIES[slug]).filter(Boolean);
-
-// Count posts per category and subcategory
-function countPostsByCategory(posts: NotionPost[]): Record<string, number> {
-  const counts: Record<string, number> = {};
-  posts.forEach(post => {
-    const cat = post.category || '';
-    counts[cat] = (counts[cat] || 0) + 1;
-  });
-  return counts;
-}
-
-function countPostsBySubCategory(posts: NotionPost[]): Record<string, number> {
-  const counts: Record<string, number> = {};
-  posts.forEach(post => {
-    const subCat = post.subCategory || '';
-    if (subCat) {
-      counts[subCat] = (counts[subCat] || 0) + 1;
-    }
-  });
-  return counts;
-}
-
-const categoryCounts = countPostsByCategory(allPosts);
-const subCategoryCounts = countPostsBySubCategory(allPosts);
-
-// Serialize posts data for client-side filtering
-const postsData = JSON.stringify(allPosts.map(post => ({
-  id: post.id,
-  title: post.title,
-  slug: post.slug,
-  category: post.category || '',
-  subCategory: post.subCategory || '',
-  tags: post.tags || [],
-  coverImage: post.coverImage || '',
-  excerpt: post.excerpt || '',
-  createdAt: post.createdAt,
-})));
-
-// Serialize category data
-const categoryData = JSON.stringify(categoryList.map(cat => ({
-  slug: cat.slug,
-  name: cat.name,
-  subCategories: cat.subCategories || [],
-})));
+const title = 'ブログ | TechTime';
+const description = 'SAP の導入と保守で、生成AIをどの作業に、どう使うか。要件定義からプロジェクト管理まで、手順と測り方を書きます。';
+const count = (c: string) => posts.filter((p) => p.cat === c).length;
+const sorted = [...posts].sort((a, b) => Number(b.no) - Number(a.no));
 ---
 
-<BaseLayout title={title} description={description}>
-  <Navigation currentPath="/blog" />
+<DraftLayout title={title} description={description}>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="frame" aria-hidden="true"><span class="frame__tl">TECHTIME CO., LTD.</span><span class="frame__tr">BLOG</span></div>
 
-  <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
-    <div class="pt-20 sm:pt-24 lg:pt-32 pb-12 sm:pb-16 px-4 sm:px-6">
-      <div class="max-w-7xl mx-auto">
-        <!-- Header -->
-        <div class="text-center mb-8">
-          <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">ブログ</h1>
-          <p class="text-gray-300 text-sm sm:text-base">TechTimeの最新情報や技術ブログをお届けします</p>
+  <header class="nav">
+    <a href="/" class="nav__logo">TechTime<i></i></a>
+    <a href="/contact?topic=assess" class="nav__cta">アセスメントの相談はこちら</a>
+  </header>
+
+  <main class="wrap">
+    <p class="tag"><span>ブログ</span>導入と保守の現場から</p>
+    <h1 class="h1">
+      <span class="hl"><span>効果があった進め方を、</span></span>
+      <span class="hl"><span>手順と測り方まで書く。</span></span>
+    </h1>
+    <p class="lead">SAP の導入と保守で、生成AIをどの作業に、どう使うか。考え方に加えて、明日から試せる手順まで書きます。</p>
+
+    <!-- 探し方 1：工程から -->
+    <section class="find" aria-label="工程から探す">
+      <p class="find__k">工程から探す</p>
+      <div class="phase">
+        <div class="phase__line">
+          {cats.line.map((c) => (
+            <button type="button" class="ph" data-cat={c} disabled={count(c) === 0}><b>{c}</b><span>{count(c)}本</span></button>
+          ))}
         </div>
-
-        <!-- Mobile Filter Toggle -->
-        <div class="lg:hidden mb-6">
-          <button
-            id="mobile-filter-toggle"
-            class="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 backdrop-blur-xl rounded-xl border border-white/10 text-white hover:bg-white/20 transition-all"
-          >
-            <i class="ri-filter-3-line text-lg"></i>
-            <span>フィルター・検索</span>
-            <i class="ri-arrow-down-s-line text-lg transition-transform" id="mobile-filter-icon"></i>
-          </button>
-        </div>
-
-        <div class="flex flex-col lg:flex-row gap-8">
-          <!-- Sidebar -->
-          <aside id="sidebar" class="hidden lg:block w-full lg:w-72 flex-shrink-0">
-            <div class="sticky top-24 space-y-6">
-              <!-- Search Box -->
-              <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
-                <div class="relative">
-                  <input
-                    type="text"
-                    id="search-input"
-                    placeholder="キーワード検索..."
-                    class="w-full pl-10 pr-4 py-2.5 bg-white/10 border border-white/10 rounded-xl text-white placeholder-gray-400 focus:outline-none focus:border-[#00D9FF]/50 focus:ring-1 focus:ring-[#00D9FF]/50 transition-all"
-                  />
-                  <i class="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
-                </div>
-              </div>
-
-              <!-- Sort Options -->
-              <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
-                <h3 class="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                  <i class="ri-sort-desc text-[#00D9FF]"></i>
-                  並び替え
-                </h3>
-                <div class="flex flex-col gap-2">
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="sort" value="newest" checked class="accent-[#00D9FF]" />
-                    <span class="text-sm text-gray-300">新着順</span>
-                  </label>
-                  <label class="flex items-center gap-2 cursor-pointer">
-                    <input type="radio" name="sort" value="category" class="accent-[#00D9FF]" />
-                    <span class="text-sm text-gray-300">カテゴリ順</span>
-                  </label>
-                </div>
-              </div>
-
-              <!-- Category Navigation -->
-              <div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-4">
-                <h3 class="text-sm font-semibold text-white mb-3 flex items-center gap-2">
-                  <i class="ri-folder-line text-[#00D9FF]"></i>
-                  カテゴリ
-                </h3>
-
-                <!-- All Posts -->
-                <button
-                  class="category-main-btn w-full text-left px-3 py-2 rounded-lg text-sm font-medium bg-[#00D9FF]/20 text-[#00D9FF] mb-2"
-                  data-category=""
-                >
-                  <span class="flex items-center justify-between">
-                    <span>すべての記事</span>
-                    <span class="text-xs bg-[#00D9FF]/20 px-2 py-0.5 rounded-full">{allPosts.length}</span>
-                  </span>
-                </button>
-
-                <!-- Category List -->
-                <div id="category-list" class="space-y-1">
-                  {categoryList.map((cat) => (
-                    <div class="category-item">
-                      <button
-                        class="category-main-btn w-full text-left px-3 py-2 rounded-lg text-sm text-gray-300 hover:bg-white/10 transition-colors flex items-center justify-between"
-                        data-category={cat.slug}
-                      >
-                        <span class="flex items-center gap-2">
-                          {cat.subCategories && cat.subCategories.length > 0 && (
-                            <i class="ri-arrow-right-s-line category-arrow text-gray-500 transition-transform"></i>
-                          )}
-                          <span>{cat.name}</span>
-                        </span>
-                        <span class="text-xs text-gray-500">{categoryCounts[cat.slug] || 0}</span>
-                      </button>
-
-                      {cat.subCategories && cat.subCategories.length > 0 && (
-                        <div class="subcategory-list hidden pl-6 mt-1 space-y-1">
-                          {cat.subCategories.map((subCat) => (
-                            <button
-                              class="subcategory-btn w-full text-left px-3 py-1.5 rounded-lg text-xs text-gray-400 hover:bg-white/10 hover:text-gray-200 transition-colors flex items-center justify-between"
-                              data-category={cat.slug}
-                              data-subcategory={subCat.slug}
-                            >
-                              <span>{subCat.name}</span>
-                              <span class="text-xs text-gray-600">{subCategoryCounts[subCat.slug] || 0}</span>
-                            </button>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </aside>
-
-          <!-- Main Content -->
-          <main class="flex-1 min-w-0">
-            <!-- Active Filters & View Toggle -->
-            <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <!-- Active Filters -->
-              <div id="active-filters" class="flex flex-wrap gap-2">
-                <!-- Dynamically populated -->
-              </div>
-
-              <!-- View Toggle -->
-              <div class="flex items-center gap-2 bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 p-1">
-                <button
-                  id="view-grid"
-                  class="view-toggle-btn active p-2 rounded-lg text-[#00D9FF] bg-[#00D9FF]/10"
-                  title="グリッド表示"
-                >
-                  <i class="ri-grid-fill text-lg"></i>
-                </button>
-                <button
-                  id="view-list"
-                  class="view-toggle-btn p-2 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
-                  title="リスト表示"
-                >
-                  <i class="ri-list-check text-lg"></i>
-                </button>
-              </div>
-            </div>
-
-            <!-- Posts Container -->
-            <div id="posts-container">
-              <!-- Grid View (default) -->
-              <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-                {allPosts.map((post) => (
-                  <a
-                    href={`/blog/${post.slug}`}
-                    class="post-card group bg-[#1E3A5F] backdrop-blur-xl rounded-2xl border border-white/20 overflow-hidden hover:border-[#00D9FF]/50 hover:shadow-lg hover:shadow-[#00D9FF]/10 transition-all duration-300 hover:-translate-y-1"
-                    data-id={post.id}
-                    data-category={post.category || ''}
-                    data-subcategory={post.subCategory || ''}
-                    data-tags={JSON.stringify(post.tags || [])}
-                    data-title={post.title}
-                    data-date={post.createdAt}
-                  >
-                    {post.coverImage && (
-                      <div class="aspect-video overflow-hidden bg-white/5">
-                        <img src={post.coverImage} alt={post.title} class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
-                      </div>
-                    )}
-                    <div class="p-6 bg-[#273449]">
-                      <div class="flex items-center gap-3 mb-3">
-                        <span class="text-xs text-gray-400">{formatDate(post.createdAt)}</span>
-                        {post.category && BLOG_CATEGORIES[post.category] && (
-                          <span class="px-2 py-1 text-xs rounded-full bg-[#00D9FF]/10 text-[#00D9FF]">
-                            {BLOG_CATEGORIES[post.category].name}
-                          </span>
-                        )}
-                      </div>
-                      <h3 class="text-lg font-bold text-white mb-3 group-hover:text-[#00D9FF] transition-colors line-clamp-2">{post.title}</h3>
-                      <p class="text-sm text-gray-300 line-clamp-3">{post.excerpt || ''}</p>
-                      <div class="mt-4 flex items-center text-[#00D9FF] text-sm font-medium">
-                        <span>続きを読む</span>
-                        <i class="ri-arrow-right-line ml-1 group-hover:translate-x-1 transition-transform"></i>
-                      </div>
-                    </div>
-                  </a>
-                ))}
-              </div>
-
-              <!-- List View (hidden by default) -->
-              <div id="posts-list" class="hidden space-y-3">
-                {allPosts.map((post) => (
-                  <a
-                    href={`/blog/${post.slug}`}
-                    class="post-card-list group flex items-center gap-4 p-4 bg-[#1E3A5F] backdrop-blur-xl rounded-xl border border-white/20 hover:border-[#00D9FF]/50 hover:bg-[#264A70] transition-all"
-                    data-id={post.id}
-                    data-category={post.category || ''}
-                    data-subcategory={post.subCategory || ''}
-                    data-tags={JSON.stringify(post.tags || [])}
-                    data-title={post.title}
-                    data-date={post.createdAt}
-                  >
-                    <span class="text-xs text-gray-500 w-24 flex-shrink-0">{formatDate(post.createdAt)}</span>
-                    <h3 class="flex-1 text-sm font-medium text-white group-hover:text-[#00D9FF] transition-colors truncate">{post.title}</h3>
-                    {post.category && BLOG_CATEGORIES[post.category] && (
-                      <span class="px-2 py-1 text-xs rounded-full bg-white/10 text-gray-300 flex-shrink-0">
-                        {BLOG_CATEGORIES[post.category].name}
-                      </span>
-                    )}
-                    <i class="ri-arrow-right-s-line text-gray-400 group-hover:text-[#00D9FF] transition-colors"></i>
-                  </a>
-                ))}
-              </div>
-            </div>
-
-            <!-- Empty State -->
-            <div id="empty-state" class="hidden text-center py-20">
-              <i class="ri-article-line text-6xl text-gray-600 mb-4 block"></i>
-              <p class="text-gray-400">該当する記事が見つかりませんでした</p>
-              <button id="clear-filters" class="mt-4 px-4 py-2 text-sm text-[#00D9FF] hover:underline">
-                フィルターをクリア
-              </button>
-            </div>
-
-            <!-- Results Count -->
-            <div id="results-count" class="mt-6 text-center text-sm text-gray-400">
-              <span id="visible-count">{allPosts.length}</span>件の記事を表示中
-            </div>
-          </main>
+        <div class="phase__cross">
+          {cats.cross.map((c) => (
+            <button type="button" class="ph ph--x" data-cat={c} disabled={count(c) === 0}><b>{c}</b><span>{count(c)}本</span><em>すべての工程に関わる</em></button>
+          ))}
         </div>
       </div>
-    </div>
-  </div>
-</BaseLayout>
+    </section>
+
+    <!-- 探し方 2：困りごとから -->
+    <section class="find" aria-label="困りごとから探す">
+      <p class="find__k">困りごとから探す</p>
+      <ul class="prob">
+        {sorted.slice().reverse().map((p) => (
+          <li data-cat={p.cat}><a href={`/blog/${p.slug}`}><span>{p.problem}</span><svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg><em>{p.no}</em></a></li>
+        ))}
+      </ul>
+    </section>
+
+    <!-- 探し方 3：言葉で -->
+    <section class="find find--bar" aria-label="言葉で探す">
+      <label class="q">
+        <span>言葉で探す</span>
+        <input type="search" id="q" placeholder="例：議事録、レビュー、期日" autocomplete="off" />
+      </label>
+      <div class="sort" role="group" aria-label="並び順">
+        <button type="button" data-sort="new" class="is-on">新しい順</button>
+        <button type="button" data-sort="phase">工程の順</button>
+      </div>
+      <p class="hit"><b id="hit">{posts.length}</b> / {posts.length}本<button type="button" id="clear" hidden>絞り込みを解除</button></p>
+    </section>
+
+    <ol class="list" id="list">
+      {sorted.map((p) => (
+        <li data-cat={p.cat} data-no={p.no} data-order={catOrder.indexOf(p.cat)} data-text={[p.title, p.dek, p.problem, p.cat, ...p.words].join(' ').toLowerCase()}>
+          <a href={`/blog/${p.slug}`}>
+            <span class="no">{p.no}</span>
+            <div>
+              <p class="meta"><b>{p.cat}</b><time>{p.date}</time><em>読む時間 約{p.min}分</em></p>
+              <h2>{p.title}</h2>
+              <p class="dek">{p.dek}</p>
+            </div>
+            <svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg>
+          </a>
+        </li>
+      ))}
+    </ol>
+    <p class="none" id="none" hidden>当てはまる記事がありません。言葉を変えるか、絞り込みを解除してください。</p>
+  </main>
+
+  <footer class="foot">
+    <p class="foot__n">TechTime株式会社</p>
+    <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
+    <p class="foot__c">© TechTime Co., Ltd.</p>
+  </footer>
+</DraftLayout>
 
 <style>
-  .category-arrow.expanded {
-    transform: rotate(90deg);
-  }
+  .grid-bg { position: fixed; inset: 0; z-index: -1; background-image: linear-gradient(var(--hair) 1px, transparent 1px), linear-gradient(90deg, var(--hair) 1px, transparent 1px), linear-gradient(rgba(28, 27, 24, 0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(28, 27, 24, 0.035) 1px, transparent 1px); background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px; }
+  .frame { position: fixed; inset: 10px; border: 1px solid var(--ink); pointer-events: none; z-index: 40; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-2); }
+  .frame span { position: absolute; top: -9px; background: var(--paper); padding: 2px 10px; line-height: 1.4; }
+  .frame__tl { left: 22px; }
+  .frame__tr { right: 22px; }
+  .nav { position: fixed; top: 10px; left: 10px; right: 10px; z-index: 30; display: flex; justify-content: space-between; align-items: center; padding: 22px var(--gutter) 14px; background: linear-gradient(var(--paper) 60%, transparent); }
+  .nav__logo { font-family: var(--mincho); font-weight: 800; font-size: 21px; display: flex; align-items: center; gap: 7px; }
+  .nav__logo i { width: 8px; height: 8px; background: var(--shu); display: block; }
+  .nav__cta { background: var(--shu); color: var(--paper); font-weight: 700; font-size: 13.5px; padding: 9px 18px; box-shadow: 4px 4px 0 var(--ink); transition: box-shadow 0.25s, transform 0.25s; white-space: nowrap; }
+  .nav__cta:hover { box-shadow: 1px 1px 0 var(--ink); transform: translate(3px, 3px); }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 160px calc(var(--gutter) + 10px) 90px; }
+  .tag { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink-2); margin: 0 0 26px; display: flex; align-items: center; gap: 14px; }
+  .tag span { color: var(--paper); background: var(--ink); padding: 1px 9px; font-family: var(--gothic); }
+  .h1 { font-family: var(--mincho); font-weight: 800; font-size: clamp(27px, 4.6vw, 58px); line-height: 1.36; margin: 0 0 22px; }
+  .hl { display: block; overflow: hidden; padding-bottom: 0.06em; }
+  .hl > span { display: inline-block; transform: translateY(108%); animation: rise 1.1s cubic-bezier(0.16, 0.9, 0.2, 1) forwards; }
+  .hl:nth-child(2) > span { animation-delay: 0.16s; }
+  @keyframes rise { to { transform: none; } }
+  @keyframes up { from { opacity: 0; transform: translateY(24px); } }
+  .lead { max-width: 620px; color: var(--ink-2); margin: 0 0 54px; animation: up 0.9s 0.4s both; }
+  svg[viewBox='0 0 40 10'] { width: 40px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.2; flex: none; transition: transform 0.35s; }
 
-  .view-toggle-btn.active {
-    color: #00D9FF;
-    background-color: rgba(0, 217, 255, 0.1);
-  }
+  /* 探し方 */
+  .find { margin-bottom: 34px; animation: up 0.8s 0.5s both; }
+  .find__k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+  .find__k::before { content: ''; width: 8px; height: 8px; background: var(--ink); }
+  .phase { border: 1px solid var(--ink); background: var(--paper); }
+  .phase__line { display: grid; grid-template-columns: repeat(6, 1fr); }
+  .phase__cross { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--ink); }
+  .ph { font: inherit; text-align: left; background: transparent; color: var(--ink); border: 0; border-right: 1px solid var(--ink); padding: 14px 16px 15px; cursor: pointer; position: relative; display: grid; gap: 2px; transition: background 0.25s, color 0.25s; }
+  .ph:last-child { border-right: 0; }
+  .phase__line .ph:not(:last-child)::after { content: ''; position: absolute; right: -7px; top: 50%; width: 12px; height: 12px; background: var(--paper); border-top: 1px solid var(--ink); border-right: 1px solid var(--ink); transform: translateY(-50%) rotate(45deg); z-index: 1; transition: background 0.25s; }
+  .ph b { font-family: var(--mincho); font-weight: 700; font-size: clamp(14px, 1.5vw, 18px); }
+  .ph span { font-family: var(--mono); font-size: 11.5px; color: var(--shu); }
+  .ph em { font-style: normal; font-size: 11px; color: var(--ink-2); position: absolute; right: 14px; top: 50%; transform: translateY(-50%); }
+  .ph:hover:not(:disabled) { background: var(--paper-2); }
+  .ph:hover:not(:disabled)::after { background: var(--paper-2); }
+  .ph.is-on { background: var(--ink); color: var(--paper); }
+  .ph.is-on::after { background: var(--ink) !important; }
+  .ph.is-on span, .ph.is-on em { color: #ff8a70; }
+  .ph:disabled { cursor: default; color: var(--line); }
+  .ph:disabled span { color: var(--line); }
+  .prob { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 8px; }
+  .prob a { display: grid; grid-template-columns: 1fr auto auto; gap: 12px; align-items: center; border: 1px solid var(--line); background: var(--paper); padding: 11px 14px; font-size: 14px; line-height: 1.6; height: 100%; transition: border-color 0.25s, background 0.25s; }
+  .prob a::before { content: ''; }
+  .prob a { grid-template-columns: 1fr auto auto; }
+  .prob a::before { display: none; }
+  .prob svg { width: 22px; color: var(--shu); }
+  .prob em { font-style: normal; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); }
+  .prob a:hover { border-color: var(--ink); background: var(--paper-2); }
+  .prob a:hover svg { transform: translateX(4px); }
+  .prob li.is-off { display: none; }
+  .find--bar { display: grid; grid-template-columns: 1fr auto auto; gap: 14px 22px; align-items: end; margin: 46px 0 0; padding-top: 22px; border-top: 1px solid var(--ink); }
+  .q { display: grid; gap: 6px; }
+  .q span { font-size: 12.5px; font-weight: 700; display: flex; align-items: center; gap: 9px; }
+  .q span::before { content: ''; width: 8px; height: 8px; background: var(--ink); }
+  .q input { font: inherit; font-size: 16px; color: var(--ink); background: var(--paper); border: 1px solid var(--ink); border-radius: 0; padding: 11px 14px; outline: none; width: 100%; -webkit-appearance: none; appearance: none; }
+  .q input:focus { border-color: var(--shu); box-shadow: 0 0 0 1px var(--shu); }
+  .q input::placeholder { color: var(--line); }
+  .sort { display: flex; border: 1px solid var(--ink); }
+  .sort button { font: inherit; font-size: 13px; font-weight: 700; background: var(--paper); color: var(--ink); border: 0; padding: 12px 16px; cursor: pointer; white-space: nowrap; }
+  .sort button + button { border-left: 1px solid var(--ink); }
+  .sort button.is-on { background: var(--ink); color: var(--paper); }
+  .hit { margin: 0; font-size: 13px; color: var(--ink-2); padding-bottom: 12px; white-space: nowrap; }
+  .hit b { font-family: var(--mono); font-weight: 500; font-size: 22px; color: var(--ink); }
+  .hit button { font: inherit; font-size: 12.5px; color: var(--shu); background: none; border: 0; border-bottom: 1px solid var(--shu); padding: 0; margin-left: 14px; cursor: pointer; }
 
-  .category-main-btn.active {
-    background-color: rgba(0, 217, 255, 0.2);
-    color: #00D9FF;
-  }
-
-  .subcategory-btn.active {
-    background-color: rgba(0, 217, 255, 0.15);
-    color: #00D9FF;
-  }
-
-  #mobile-filter-icon.expanded {
-    transform: rotate(180deg);
-  }
-
-  @media (max-width: 1023px) {
-    #sidebar.open {
-      display: block;
-      margin-bottom: 1.5rem;
-    }
+  /* 一覧 */
+  .list { list-style: none; margin: 18px 0 0; padding: 0; border-top: 1px solid var(--ink); }
+  .list li { border-bottom: 1px solid var(--ink); }
+  .list li.is-off { display: none; }
+  .list a { display: grid; grid-template-columns: clamp(60px, 9vw, 120px) 1fr auto; gap: clamp(14px, 3vw, 40px); align-items: center; padding: clamp(22px, 3vw, 40px) 0; transition: background 0.35s, padding 0.35s; }
+  .list a:hover { background: var(--ink); color: var(--paper); padding-inline: clamp(12px, 2vw, 28px); }
+  .no { font-family: var(--mono); font-weight: 500; font-size: clamp(38px, 6vw, 84px); line-height: 1; letter-spacing: -0.04em; color: var(--shu); }
+  .meta { margin: 0 0 8px; display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: center; font-family: var(--mono); font-size: 11.5px; color: var(--ink-2); transition: color 0.35s; }
+  .meta b { font-family: var(--gothic); border: 1px solid currentColor; padding: 0 9px; color: var(--ink); transition: color 0.35s; }
+  .meta em { font-style: normal; font-family: var(--gothic); }
+  .list a:hover .meta, .list a:hover .meta b, .list a:hover .dek { color: #c9c4b6; }
+  .list h2 { margin: 0 0 8px; font-family: var(--mincho); font-weight: 800; font-size: clamp(19px, 2.6vw, 29px); line-height: 1.5; }
+  .dek { margin: 0; font-size: 14.5px; color: var(--ink-2); max-width: 660px; transition: color 0.35s; }
+  .list a:hover svg { transform: translateX(8px); }
+  .list :global(mark) { background: linear-gradient(transparent 55%, rgba(212, 65, 42, 0.35) 55%); color: inherit; }
+  .none { margin: 40px 0; color: var(--ink-2); }
+  .foot { margin: 0 calc(var(--gutter) + 10px) 40px; border-top: 1px solid var(--ink); padding-top: 20px; font-size: 12.5px; color: var(--ink-2); display: flex; gap: 8px 30px; flex-wrap: wrap; align-items: baseline; }
+  .foot p { margin: 0; }
+  .foot__n { font-weight: 700; color: var(--ink); }
+  .foot__c { margin-left: auto !important; font-family: var(--mono); font-size: 10.5px; }
+  @media (max-width: 760px) {
+    .wrap { padding-top: 120px; }
+    .nav__cta { font-size: 12px; padding: 8px 12px; box-shadow: 3px 3px 0 var(--ink); }
+    .phase__line { grid-template-columns: repeat(3, 1fr); }
+    .phase__line .ph:nth-child(3) { border-right: 0; }
+    .phase__line .ph:nth-child(-n + 3) { border-bottom: 1px solid var(--ink); }
+    .phase__line .ph:nth-child(3)::after { display: none; }
+    .phase__cross { grid-template-columns: 1fr; }
+    .phase__cross .ph { border-right: 0; }
+    .phase__cross .ph + .ph { border-top: 1px solid var(--ink); }
+    .ph { padding: 11px 12px; }
+    .prob { grid-template-columns: 1fr; }
+    .find--bar { grid-template-columns: 1fr; }
+    .sort button { flex: 1; }
+    .hit { padding-bottom: 0; }
+    .list a { grid-template-columns: 1fr; gap: 6px; }
+    .list a > svg { display: none; }
+    .foot__c { margin-left: 0 !important; }
   }
 </style>
 
-<script define:vars={{ postsData, categoryData }}>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Parse data
-    const posts = JSON.parse(postsData);
-    const categories = JSON.parse(categoryData);
+<script>
+  const list = document.querySelector<HTMLElement>('#list')!;
+  const items = [...list.querySelectorAll<HTMLElement>('li')];
+  const probs = [...document.querySelectorAll<HTMLElement>('.prob li')];
+  const phs = [...document.querySelectorAll<HTMLButtonElement>('.ph')];
+  const q = document.querySelector<HTMLInputElement>('#q')!;
+  const hit = document.querySelector<HTMLElement>('#hit')!;
+  const none = document.querySelector<HTMLElement>('#none')!;
+  const clear = document.querySelector<HTMLButtonElement>('#clear')!;
+  const sorts = [...document.querySelectorAll<HTMLButtonElement>('.sort button')];
+  const st = { cat: '', q: '', sort: 'new' };
 
-    // State
-    let currentView = 'grid';
-    let currentCategory = '';
-    let currentSubCategory = '';
-    let currentSearch = '';
-    let currentSort = 'newest';
+  /* 開いたときの絞り込みは、アドレスの ?cat= と ?q= から読む（記事から工程を押して来た場合など） */
+  const sp = new URLSearchParams(location.search);
+  st.cat = sp.get('cat') || ''; st.q = sp.get('q') || ''; st.sort = sp.get('sort') === 'phase' ? 'phase' : 'new';
+  q.value = st.q;
 
-    // DOM Elements
-    const gridContainer = document.getElementById('posts-grid');
-    const listContainer = document.getElementById('posts-list');
-    const emptyState = document.getElementById('empty-state');
-    const activeFilters = document.getElementById('active-filters');
-    const visibleCount = document.getElementById('visible-count');
-    const searchInput = document.getElementById('search-input');
-    const sortRadios = document.querySelectorAll('input[name="sort"]');
-    const viewGridBtn = document.getElementById('view-grid');
-    const viewListBtn = document.getElementById('view-list');
-    const clearFiltersBtn = document.getElementById('clear-filters');
-    const mobileFilterToggle = document.getElementById('mobile-filter-toggle');
-    const mobileFilterIcon = document.getElementById('mobile-filter-icon');
-    const sidebar = document.getElementById('sidebar');
-
-    // Category buttons
-    const categoryMainBtns = document.querySelectorAll('.category-main-btn');
-    const subCategoryBtns = document.querySelectorAll('.subcategory-btn');
-
-    // Mobile filter toggle
-    mobileFilterToggle?.addEventListener('click', () => {
-      sidebar?.classList.toggle('open');
-      sidebar?.classList.toggle('hidden');
-      mobileFilterIcon?.classList.toggle('expanded');
+  const esc = (s: string) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const mark = (el: HTMLElement, words: string[]) => {
+    const raw = el.dataset.raw ?? (el.dataset.raw = el.textContent || '');
+    if (!words.length) { el.textContent = raw; return; }
+    const re = new RegExp(`(${words.map(esc).join('|')})`, 'gi');
+    el.innerHTML = raw.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]!)).replace(re, '<mark>$1</mark>');
+  };
+  const apply = () => {
+    const words = st.q.toLowerCase().split(/[\s　、,]+/).filter(Boolean);
+    let n = 0;
+    items.forEach((li) => {
+      const ok = (!st.cat || li.dataset.cat === st.cat) && words.every((w) => li.dataset.text!.includes(w));
+      li.classList.toggle('is-off', !ok); if (ok) n++;
+      mark(li.querySelector('h2')!, words); mark(li.querySelector('.dek')!, words);
     });
-
-    // View toggle
-    viewGridBtn?.addEventListener('click', () => {
-      currentView = 'grid';
-      updateViewToggle();
-      applyFilters();
-    });
-
-    viewListBtn?.addEventListener('click', () => {
-      currentView = 'list';
-      updateViewToggle();
-      applyFilters();
-    });
-
-    function updateViewToggle() {
-      viewGridBtn?.classList.toggle('active', currentView === 'grid');
-      viewListBtn?.classList.toggle('active', currentView === 'list');
-    }
-
-    // Search
-    let searchTimeout;
-    searchInput?.addEventListener('input', (e) => {
-      clearTimeout(searchTimeout);
-      searchTimeout = setTimeout(() => {
-        currentSearch = e.target.value.toLowerCase().trim();
-        applyFilters();
-      }, 300);
-    });
-
-    // Sort
-    sortRadios.forEach(radio => {
-      radio.addEventListener('change', (e) => {
-        currentSort = e.target.value;
-        applyFilters();
-      });
-    });
-
-    // Category click - toggle expand/collapse and filter
-    categoryMainBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const category = btn.getAttribute('data-category');
-        const categoryItem = btn.closest('.category-item');
-        const arrow = btn.querySelector('.category-arrow');
-        const subList = categoryItem?.querySelector('.subcategory-list');
-
-        // If clicking on currently selected category, deselect
-        if (currentCategory === category && !currentSubCategory) {
-          currentCategory = '';
-        } else {
-          currentCategory = category;
-          currentSubCategory = '';
-        }
-
-        // Toggle subcategory visibility
-        if (subList && arrow) {
-          const isExpanded = !subList.classList.contains('hidden');
-          if (isExpanded && currentCategory !== category) {
-            subList.classList.add('hidden');
-            arrow.classList.remove('expanded');
-          } else if (!isExpanded) {
-            // Close all other subcategory lists
-            document.querySelectorAll('.subcategory-list').forEach(list => {
-              list.classList.add('hidden');
-            });
-            document.querySelectorAll('.category-arrow').forEach(a => {
-              a.classList.remove('expanded');
-            });
-            subList.classList.remove('hidden');
-            arrow.classList.add('expanded');
-          }
-        }
-
-        updateCategoryButtons();
-        applyFilters();
-      });
-    });
-
-    // Subcategory click
-    subCategoryBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const category = btn.getAttribute('data-category');
-        const subCategory = btn.getAttribute('data-subcategory');
-
-        if (currentSubCategory === subCategory) {
-          currentSubCategory = '';
-        } else {
-          currentCategory = category;
-          currentSubCategory = subCategory;
-        }
-
-        updateCategoryButtons();
-        applyFilters();
-      });
-    });
-
-    function updateCategoryButtons() {
-      categoryMainBtns.forEach(btn => {
-        const category = btn.getAttribute('data-category');
-        const isActive = category === currentCategory && !currentSubCategory;
-        btn.classList.toggle('active', isActive);
-        btn.classList.toggle('bg-[#00D9FF]/20', isActive);
-        btn.classList.toggle('text-[#00D9FF]', isActive);
-        btn.classList.toggle('text-gray-300', !isActive);
-        btn.classList.toggle('hover:bg-white/10', !isActive);
-      });
-
-      subCategoryBtns.forEach(btn => {
-        const subCategory = btn.getAttribute('data-subcategory');
-        const isActive = subCategory === currentSubCategory;
-        btn.classList.toggle('active', isActive);
-      });
-    }
-
-    // Clear filters
-    clearFiltersBtn?.addEventListener('click', () => {
-      currentCategory = '';
-      currentSubCategory = '';
-      currentSearch = '';
-      if (searchInput) searchInput.value = '';
-      updateCategoryButtons();
-      applyFilters();
-    });
-
-    // Apply filters
-    function applyFilters() {
-      let filteredPosts = [...posts];
-
-      // Filter by category
-      if (currentCategory) {
-        filteredPosts = filteredPosts.filter(post => post.category === currentCategory);
-      }
-
-      // Filter by subcategory
-      if (currentSubCategory) {
-        filteredPosts = filteredPosts.filter(post => post.subCategory === currentSubCategory);
-      }
-
-      // Filter by search
-      if (currentSearch) {
-        filteredPosts = filteredPosts.filter(post =>
-          post.title.toLowerCase().includes(currentSearch) ||
-          (post.excerpt && post.excerpt.toLowerCase().includes(currentSearch))
-        );
-      }
-
-      // Sort
-      if (currentSort === 'newest') {
-        filteredPosts.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      } else if (currentSort === 'category') {
-        filteredPosts.sort((a, b) => {
-          if (a.category === b.category) {
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          }
-          return (a.category || '').localeCompare(b.category || '');
-        });
-      }
-
-      // Get filtered IDs
-      const filteredIds = new Set(filteredPosts.map(p => p.id));
-
-      // Update grid view
-      const gridCards = gridContainer?.querySelectorAll('.post-card');
-      gridCards?.forEach(card => {
-        const id = card.getAttribute('data-id');
-        card.style.display = filteredIds.has(id) ? '' : 'none';
-      });
-
-      // Update list view
-      const listCards = listContainer?.querySelectorAll('.post-card-list');
-      listCards?.forEach(card => {
-        const id = card.getAttribute('data-id');
-        card.style.display = filteredIds.has(id) ? '' : 'none';
-      });
-
-      // Show/hide views
-      if (currentView === 'grid') {
-        gridContainer?.classList.remove('hidden');
-        listContainer?.classList.add('hidden');
-      } else {
-        gridContainer?.classList.add('hidden');
-        listContainer?.classList.remove('hidden');
-      }
-
-      // Show/hide empty state
-      if (filteredPosts.length === 0) {
-        emptyState?.classList.remove('hidden');
-        gridContainer?.classList.add('hidden');
-        listContainer?.classList.add('hidden');
-      } else {
-        emptyState?.classList.add('hidden');
-      }
-
-      // Update count
-      if (visibleCount) {
-        visibleCount.textContent = filteredPosts.length.toString();
-      }
-
-      // Update active filters
-      updateActiveFilters();
-
-      // Update URL
-      updateURL();
-    }
-
-    function updateActiveFilters() {
-      if (!activeFilters) return;
-
-      const filters = [];
-
-      if (currentCategory) {
-        const cat = categories.find(c => c.slug === currentCategory);
-        if (cat) {
-          filters.push({
-            type: 'category',
-            label: cat.name,
-            value: currentCategory,
-          });
-        }
-      }
-
-      if (currentSubCategory) {
-        filters.push({
-          type: 'subcategory',
-          label: currentSubCategory,
-          value: currentSubCategory,
-        });
-      }
-
-      if (currentSearch) {
-        filters.push({
-          type: 'search',
-          label: `"${currentSearch}"`,
-          value: currentSearch,
-        });
-      }
-
-      activeFilters.innerHTML = filters.map(f => `
-        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[#00D9FF]/10 text-[#00D9FF] text-sm rounded-full">
-          ${f.label}
-          <button class="filter-remove hover:text-white transition-colors" data-type="${f.type}" data-value="${f.value}">
-            <i class="ri-close-line"></i>
-          </button>
-        </span>
-      `).join('');
-
-      // Add remove listeners
-      activeFilters.querySelectorAll('.filter-remove').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.preventDefault();
-          const type = btn.getAttribute('data-type');
-          if (type === 'category') {
-            currentCategory = '';
-            currentSubCategory = '';
-          } else if (type === 'subcategory') {
-            currentSubCategory = '';
-          } else if (type === 'search') {
-            currentSearch = '';
-            if (searchInput) searchInput.value = '';
-          }
-          updateCategoryButtons();
-          applyFilters();
-        });
-      });
-    }
-
-    function updateURL() {
-      const params = new URLSearchParams();
-      if (currentCategory) params.set('category', currentCategory);
-      if (currentSubCategory) params.set('sub', currentSubCategory);
-      if (currentSearch) params.set('q', currentSearch);
-      if (currentSort !== 'newest') params.set('sort', currentSort);
-      if (currentView !== 'grid') params.set('view', currentView);
-
-      const url = params.toString() ? `/blog?${params.toString()}` : '/blog';
-      history.replaceState({}, '', url);
-    }
-
-    // Initialize from URL
-    function initFromURL() {
-      const params = new URLSearchParams(window.location.search);
-
-      const category = params.get('category');
-      if (category) {
-        currentCategory = category;
-        // Expand category if it has subcategories
-        const categoryItem = document.querySelector(`.category-main-btn[data-category="${category}"]`)?.closest('.category-item');
-        const subList = categoryItem?.querySelector('.subcategory-list');
-        const arrow = categoryItem?.querySelector('.category-arrow');
-        if (subList && arrow) {
-          subList.classList.remove('hidden');
-          arrow.classList.add('expanded');
-        }
-      }
-
-      const sub = params.get('sub');
-      if (sub) currentSubCategory = sub;
-
-      const q = params.get('q');
-      if (q) {
-        currentSearch = q;
-        if (searchInput) searchInput.value = q;
-      }
-
-      const sort = params.get('sort');
-      if (sort && (sort === 'newest' || sort === 'category')) {
-        currentSort = sort;
-        const radio = document.querySelector(`input[name="sort"][value="${sort}"]`);
-        if (radio) radio.checked = true;
-      }
-
-      const view = params.get('view');
-      if (view === 'list') {
-        currentView = 'list';
-        updateViewToggle();
-      }
-
-      updateCategoryButtons();
-      applyFilters();
-    }
-
-    initFromURL();
-  });
+    probs.forEach((li) => li.classList.toggle('is-off', !!st.cat && li.dataset.cat !== st.cat));
+    phs.forEach((b) => b.classList.toggle('is-on', b.dataset.cat === st.cat));
+    sorts.forEach((b) => b.classList.toggle('is-on', b.dataset.sort === st.sort));
+    [...items].sort((a, b) => st.sort === 'phase'
+      ? Number(a.dataset.order) - Number(b.dataset.order) || Number(a.dataset.no) - Number(b.dataset.no)
+      : Number(b.dataset.no) - Number(a.dataset.no)).forEach((li) => list.appendChild(li));
+    hit.textContent = String(n); none.hidden = n > 0; clear.hidden = !st.cat && !st.q;
+    const p = new URLSearchParams(); if (st.cat) p.set('cat', st.cat); if (st.q) p.set('q', st.q); if (st.sort === 'phase') p.set('sort', 'phase');
+    history.replaceState(null, '', p.toString() ? `?${p}` : location.pathname);
+  };
+  phs.forEach((b) => b.addEventListener('click', () => { st.cat = st.cat === b.dataset.cat ? '' : b.dataset.cat!; apply(); }));
+  sorts.forEach((b) => b.addEventListener('click', () => { st.sort = b.dataset.sort!; apply(); }));
+  q.addEventListener('input', () => { st.q = q.value.trim(); apply(); });
+  clear.addEventListener('click', () => { st.cat = ''; st.q = ''; q.value = ''; apply(); });
+  apply();
 </script>

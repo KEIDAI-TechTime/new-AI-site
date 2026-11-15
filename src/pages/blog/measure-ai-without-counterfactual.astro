@@ -1,0 +1,188 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '「AIを使わなかった場合の工数」は、誰にも測れません。<b>そのため、「工数が何割減った」という数字は、実績ではなく見積もりです。</b>',
+  '測るのは、プロジェクトの記録に自然に残る数字です。<b>導入の前と後を、同じ方法で数えて比べます。</b>',
+  '経営には、<b>測った数字と、工数の見込みを分けて説明します。</b>見込みには、幅と前提を付けます。',
+];
+const metrics = [
+  ['決定から資料への反映までの日数', '会議の日付と、資料の更新日', '9営業日', '2営業日', 100, 22],
+  ['点検した設計書の割合', 'レビューと点検の記録', '21%', '100%', 21, 100],
+  ['質問から回答までの日数', 'チャットの投稿の日付', '4.5営業日', '1.5営業日', 100, 33],
+  ['結合テストで見つかった不具合の数', '不具合の管理表', '機能あたり 5.9件', '機能あたり 2.1件', 100, 36],
+];
+---
+
+<PostLayout slug="measure-ai-without-counterfactual" points={points}>
+  <p class="lead2">経営会議で、情報システム部門の責任者が質問されました。「AIの導入で、工数は何割減ったのか」。責任者は「約3割です」と答えました。次の質問は「その3割は、どう測ったのか」でした。責任者は答えられませんでした。</p>
+  <p>答えられなかった理由は、準備の不足ではありません。<b>「AIを使わなかった場合の工数」を、誰も測れないから</b>です。同じプロジェクトを、AIを使う場合と使わない場合で2回行うことはできません。</p>
+  <p>この記事では、測れる数字の選び方と、導入の前と後の比べ方を書きます。あわせて、経営への説明のしかたを書きます。</p>
+
+  <h2><i>01</i>「何割減ったか」は、比べる相手が存在しない</h2>
+
+  <figure class="fig b12f1" data-loop="9000">
+    <div class="fig__h"><span>図 1</span>削減率を計算するには、測れない数字が必要になる</div>
+    <div class="fig__b">
+      <div class="cmp">
+        <div class="row"><span>AIを使った場合の工数</span><div><i class="real ty" style="--w:62%;--t:.3s">実績として記録に残る</i></div></div>
+        <div class="row"><span>AIを使わなかった場合の工数</span><div><i class="ghost p" style="--w:88%;--t:1.3s">実施していないので、測れない</i></div></div>
+        <p class="eq f" style="--t:2.6s"><b>削減率</b>＝（使わなかった場合 − 使った場合）÷ 使わなかった場合<em>使わなかった場合の工数が見積もりなので、削減率も見積もりになる</em></p>
+      </div>
+    </div>
+    <p class="fig__c">点線の棒は、誰かが見積もった数字です。見積もりを大きくすると、削減率も大きくなります。</p>
+  </figure>
+
+  <p>多くの報告では、「使わなかった場合の工数」に、過去のプロジェクトの実績か、導入前の見積もりを使います。しかし、過去のプロジェクトとは、要件の数も体制も違います。導入前の見積もりは、見積もった人の判断で変わります。</p>
+
+  <div class="say">
+    <p>削減率は、実績のように見えます。実際には、見積もりどうしを比べた数字です。</p>
+  </div>
+
+  <h2><i>02</i>削減率を約束すると、後で説明できなくなる</h2>
+  <p>削減率を目標として約束すると、2つの問題が起きます。</p>
+  <ul>
+    <li><strong>達成したかどうかを、誰も確認できない。</strong>「3割減った」と報告しても、根拠を質問されると答えられません。「減っていない」と指摘されても、反論できません。</li>
+    <li><strong>減った時間の使い道が、見えなくなる。</strong>AIで作成の時間が減っても、担当者はその時間を点検や検討に使います。工数の合計は、あまり変わらないことがあります。削減率だけを見ると、品質が上がった効果を説明できません。</li>
+  </ul>
+
+  <h2><i>03</i>測るのは、プロジェクトの記録に自然に残る数字</h2>
+  <p>測る数字は、次の2つの条件で選びます。1つ目は、報告のために新しく集計しなくても、記録から計算できることです。2つ目は、AIを導入する前にも、同じ方法で計算できることです。</p>
+
+  <figure class="fig b12f2">
+    <div class="fig__h"><span>図 2</span>効果を測る5つの数字は、すべてプロジェクトの記録から計算できる</div>
+    <div class="fig__b">
+      <table class="src">
+        <thead><tr><th>測る数字</th><th>元になる記録</th><th>分かること</th></tr></thead>
+        <tbody>
+          <tr class="p" style="--t:.2s"><td class="b">決定から資料への反映までの日数</td><td>会議の日付と、資料の更新日</td><td>決定が、設計に使われるまでの速さ</td></tr>
+          <tr class="p" style="--t:.45s"><td class="b">点検した設計書の割合</td><td>レビューと点検の記録</td><td>点検されないまま次の工程に進む設計書の量</td></tr>
+          <tr class="p" style="--t:.7s"><td class="b">質問から回答までの日数</td><td>チャットの投稿の日付</td><td>回答を待って作業が止まる時間</td></tr>
+          <tr class="p" style="--t:.95s"><td class="b">人が直した箇所の数</td><td>成果物の修正の履歴</td><td>AIが作った成果物の品質</td></tr>
+          <tr class="p" style="--t:1.2s"><td class="b">後の工程で見つかった不具合の数</td><td>不具合の管理表</td><td>前の工程の点検で、見つけられなかった誤りの量</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="fig__c">5つとも、担当者が申告する数字ではありません。日付と件数から計算するので、数える人によって結果が変わりません。</p>
+  </figure>
+
+  <p>5つの数字をすべて測る必要はありません。AIを導入する作業に合う数字を、2つか3つ選びます。たとえば、設計書の点検に導入する場合は、点検した設計書の割合と、後の工程で見つかった不具合の数を選びます。</p>
+
+  <h2><i>04</i>導入の前と後を、同じ方法で数えて比べる</h2>
+  <p>比べる相手は、「AIを使わなかった場合」ではありません。<b>AIを導入する前の、自分のプロジェクト</b>です。導入する前の値は、実績として記録に残っています。</p>
+
+  <figure class="fig b12f3" data-loop="9500">
+    <div class="fig__h"><span>図 3</span>導入の前と後を、同じ数え方で並べる（例）</div>
+    <div class="fig__b">
+      <div class="ba">
+        {metrics.map(([n, , b, a, wb, wa], k) => (
+          <div class="m">
+            <p class="m__n">{n}</p>
+            <div class="m__r"><span>導入の前</span><i class="ty bf" style={`--w:${wb}%;--t:${0.2 + k * 0.5}s`}></i><b>{b}</b></div>
+            <div class="m__r"><span>導入の後</span><i class="ty af" style={`--w:${wa}%;--t:${0.5 + k * 0.5}s`}></i><b class="on">{a}</b></div>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。「点検した設計書の割合」は、増えることが改善です。そのほかの数字は、値が減ることが改善です。</p>
+  </figure>
+
+  <ol class="n">
+    <li><strong>導入する前に、選んだ数字の今の値を計算する</strong>過去1〜2か月の記録から計算します。この値が、比べる基準になります。</li>
+    <li><strong>数え方を、文書に書く</strong>使う記録と、使う日付を書きます。計算の方法も書きます。数える人が替わっても、同じ値になるようにします。</li>
+    <li><strong>導入した後、毎月、同じ数え方で計算する</strong>AIに記録を読ませて計算させると、集計の作業が不要になります。</li>
+    <li><strong>値が変わった理由を、1行で記録する</strong>理由は、AIの効果、体制の変更、工程の変化のどれかを書きます。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>最も多い失敗は、導入する前の値を計算していないことです。導入した後に効果を質問されても、比べる基準がありません。<strong>AIを導入すると決めたら、最初に今の値を計算してください。</strong>導入した後では、過去の記録が残っていないことがあります。</p>
+  </div>
+
+  <h2><i>05</i>経営には、測った数字と、工数の見込みを分けて説明する</h2>
+  <p>経営が工数を知りたいのは当然です。投資を判断するには、金額に換算した数字が必要だからです。工数の見込みを示すことは問題ありません。問題は、見込みを実績のように報告することです。</p>
+
+  <figure class="fig b12f4">
+    <div class="fig__h"><span>図 4</span>経営への報告は、実績と見込みを分ける（例）</div>
+    <div class="fig__b">
+      <div class="rep">
+        <div class="rep__a p" style="--t:.2s"><span>1　測った数字（実績）</span><ul><li>決定の反映　<b>9 → 2営業日</b></li><li>点検した設計書　<b>21% → 100%</b></li><li>結合テストの不具合　<b>5.9 → 2.1件</b></li></ul></div>
+        <div class="rep__b p" style="--t:.8s"><span>2　工数の見込み（見積もり）</span><p class="big">600 〜 900人日</p><p class="pre">前提：設計・開発・テストで、人の作業時間が2〜4割減る。最初の10本の実績が出たら、計算し直す。</p></div>
+        <div class="rep__c p" style="--t:1.4s"><span>3　次に確認すること</span><p>最初の10本について、機能ごとの工数の実績を記録する。見込みと比べる。</p></div>
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。1は記録から計算した実績、2は前提を付けた見積もりです。同じ表に並べません。</p>
+  </figure>
+
+  <table class="tbl">
+    <thead><tr><th>場面</th><th>説明のしかた</th></tr></thead>
+    <tbody>
+      <tr><th>効果を質問されたとき</th><td>削減率ではなく、導入の前と後の数字を並べて答える。数え方も伝える。</td></tr>
+      <tr><th>工数を質問されたとき</th><td>1つの数字ではなく、幅で答える。幅の前提を1行で添える。</td></tr>
+      <tr><th>目標を求められたとき</th><td>削減率を約束しない。測る数字と、目指す値を約束する。</td></tr>
+      <tr><th>減った時間の使い道を質問されたとき</th><td>点検した本数や、検討した案の数など、増えた作業を数字で示す。</td></tr>
+    </tbody>
+  </table>
+
+  <h2><i>06</i>測った数字を、担当者の評価に使わない</h2>
+  <p>測る数字を決めるとき、情報システム部門の責任者は、数字の使い道も決めます。数字を担当者の評価に使うと、担当者は数字が良くなるように記録を書きます。たとえば、人が直した箇所の数を評価に使うと、担当者は直した記録を残さなくなります。</p>
+  <p>数字は、AIを導入した作業が改善したかどうかを確認するために使います。責任者は、この方針を、測り始める前に全員に伝えます。</p>
+
+  <h2><i>07</i>明日は、導入する前の値を3つ計算する</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>AIを導入したい作業を1つ選ぶ。この記事の図2に挙げた5つの数字から、<b>選んだ作業に合う数字を2つか3つ</b>選ぶ。</span></li>
+      <li><span>選んだ数字について、<b>元になる記録が残っているか</b>を確認する。</span></li>
+      <li><span>過去1か月の記録から、<b>今の値</b>を計算する。数え方を文書に書く。</span></li>
+    </ol>
+  </div>
+  <p>元になる記録が残っていない数字は、今は測れません。その場合は、先に記録を残すルールを決めてください。たとえば、会議の決定に日付を書く、レビューした設計書を一覧に記録する、というルールです。</p>
+  <p>導入する前の値が計算できれば、導入した後の説明は難しくありません。同じ数え方で計算した数字を、前の値の隣に並べます。</p>
+</PostLayout>
+
+<style is:global>
+  .b12f1 .cmp { display: grid; gap: 14px; }
+  .b12f1 .row { display: grid; grid-template-columns: 13.5em 1fr; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
+  .b12f1 .row i { display: grid; align-items: center; height: 40px; width: var(--w); font-style: normal; font-size: 12.5px; padding: 0 12px; white-space: nowrap; overflow: hidden; }
+  .b12f1 .real { background: var(--ink); color: var(--paper); }
+  .b12f1 .ghost { border: 2px dashed var(--shu); color: var(--shu); background: var(--paper); }
+  .b12f1 .eq { margin: 6px 0 0; border-top: 1px solid var(--ink); padding-top: 12px; font-size: 13.5px; line-height: 1.8; }
+  .b12f1 .eq b { background: var(--ink); color: var(--paper); padding: 1px 10px; margin-right: 6px; }
+  .b12f1 .eq em { display: block; font-style: normal; color: var(--shu); font-weight: 700; margin-top: 4px; }
+  .b12f2 .src { width: 100%; border-collapse: collapse; background: var(--paper); font-size: 13.5px; line-height: 1.7; }
+  .b12f2 .src th, .b12f2 .src td { border: 1px solid var(--ink); padding: 9px 12px; text-align: left; vertical-align: top; }
+  .b12f2 .src thead th { background: var(--ink); color: var(--paper); font-size: 12px; }
+  .b12f2 .src .b { font-weight: 700; }
+  .b12f3 .ba { display: grid; grid-template-columns: 1fr 1fr; gap: 18px 26px; }
+  .b12f3 .m__n { margin: 0 0 6px; font-size: 13px; font-weight: 700; }
+  .b12f3 .m__r { display: grid; grid-template-columns: 5em 1fr auto; gap: 8px; align-items: center; font-size: 12px; margin-bottom: 4px; }
+  .b12f3 .m__r i { display: block; height: 16px; width: var(--w); }
+  .b12f3 .bf { background: var(--line); }
+  .b12f3 .af { background: var(--shu); }
+  .b12f3 .m__r b { font-family: var(--mono); font-weight: 500; font-size: 12.5px; background: none; white-space: nowrap; }
+  .b12f3 .m__r b.on { color: var(--shu); }
+  .b12f4 .rep { display: grid; grid-template-columns: 1fr 1fr; border: 1.5px solid var(--ink); background: var(--paper); }
+  .b12f4 .rep > div { padding: 14px 18px; }
+  .b12f4 .rep span { display: block; font-size: 12px; font-weight: 700; margin-bottom: 8px; }
+  .b12f4 .rep__a { border-right: 1px solid var(--ink); }
+  .b12f4 .rep__a ul { list-style: none; margin: 0; padding: 0; border: 0; }
+  .b12f4 .rep__a li { padding: 5px 0; border-bottom: 1px dotted var(--line); font-size: 13.5px; display: flex; justify-content: space-between; gap: 10px; }
+  .b12f4 .rep__a li::before { display: none; }
+  .b12f4 .rep__a b { font-family: var(--mono); font-weight: 500; background: none; white-space: nowrap; }
+  .b12f4 .rep__b { background: repeating-linear-gradient(-45deg, rgba(212, 65, 42, 0.07) 0 6px, transparent 6px 12px); }
+  .b12f4 .rep__b span { color: var(--shu); }
+  .b12f4 .big { margin: 0 0 6px; font-family: var(--mono); font-weight: 500; font-size: 24px; color: var(--shu); }
+  .b12f4 .pre { margin: 0; font-size: 12.5px; line-height: 1.75; }
+  .b12f4 .rep__c { grid-column: 1 / -1; border-top: 1px solid var(--ink); }
+  .b12f4 .rep__c p { margin: 0; font-size: 13.5px; }
+  @media (max-width: 760px) {
+    .b12f1 .row { grid-template-columns: 1fr; gap: 4px; }
+    .b12f1 .row i { width: 100% !important; white-space: normal; height: auto; padding: 8px 12px; }
+    .b12f2 .src { font-size: 12px; }
+    .b12f2 .src th, .b12f2 .src td { padding: 6px 6px; }
+    .b12f3 .ba { grid-template-columns: 1fr; }
+    .b12f4 .rep { grid-template-columns: 1fr; }
+    .b12f4 .rep__a { border-right: 0; border-bottom: 1px solid var(--ink); }
+  }
+</style>

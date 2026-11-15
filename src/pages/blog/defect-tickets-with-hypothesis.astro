@@ -1,0 +1,181 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '「動きません」とだけ書かれた不具合票では、<b>開発の担当者が、再現と原因の調査を最初から行います。</b>',
+  'AIが設計書とプログラムを読み、<b>不具合票に、再現の手順と原因の仮説を書きます。影響する範囲と修正案も書きます。</b>',
+  'AIの仮説は、外れることがあります。<b>仮説には根拠を引用させ、外れた割合を記録します。</b>',
+];
+const causes = [['プログラムの誤り', 16, 'a'], ['テストデータの誤り', 9, 'b'], ['期待値の誤り', 6, 'b'], ['設計書の誤り', 5, 'b'], ['設定の誤り', 4, 'b']];
+const acc = [['プログラムの誤り', 81], ['テストデータの誤り', 78], ['期待値の誤り', 67], ['設計書の誤り', 60], ['設定の誤り', 25]];
+---
+
+<PostLayout slug="defect-tickets-with-hypothesis" points={points}>
+  <p class="lead2">結合テストで、不具合が1件見つかりました。不具合票には「出荷指示が登録できません」と書かれています。開発の担当者は、同じ現象を再現するのに半日かかりました。原因は、テストデータの得意先に、与信の限度額が設定されていないことでした。</p>
+  <p>問題は、原因がプログラム以外にあったことではありません。<b>不具合票に、調査に必要な情報が書かれていなかったこと</b>です。</p>
+  <p>この記事では、不具合票に書く4つの項目と、AIが原因の仮説を作る方法を書きます。あわせて、仮説が外れた場合の扱いを書きます。</p>
+
+  <h2><i>01</i>修正の時間の多くは、再現と調査に使われている</h2>
+
+  <figure class="fig b8f1" data-loop="10000">
+    <div class="fig__h"><span>図 1</span>現象だけの不具合票は、起票の後に質問と再現が続く。仮説のある不具合票は、確認から始まる</div>
+    <div class="fig__b">
+      <p class="k">現象だけを書いた不具合票</p>
+      <ol class="tl">{['起票', '質問', '回答', '再現', '原因の調査', '修正'].map((t, k) => <li class:list={['p', { wait: k >= 1 && k <= 3 }]} style={`--t:${0.2 + k * 0.35}s`}>{t}</li>)}</ol>
+      <p class="k k--on">再現の手順と、原因の仮説を書いた不具合票</p>
+      <ol class="tl tl--on">{['起票', '仮説の確認', '修正'].map((t, k) => <li class="p" style={`--t:${2.8 + k * 0.4}s`}>{t}</li>)}</ol>
+    </div>
+    <p class="fig__c">図で朱色の斜線を付けた段階は、質問・再現・調査の3つです。不具合票に必要な情報が書かれていれば、3つとも不要です。この3つの段階では、起票した人と開発の担当者の両方が待ちます。</p>
+  </figure>
+
+  <p>開発の担当者は、不具合票を受け取ると、まず現象を再現しようとします。再現に必要な情報が無い場合、担当者は起票した人に質問します。起票した人が別のテストを実施している間、回答は来ません。</p>
+
+  <div class="say">
+    <p>不具合の修正が遅い原因の多くは、修正が難しいことではありません。修正を始めるまでが長いことです。</p>
+  </div>
+
+  <h2><i>02</i>不具合票には、4つの項目を書く</h2>
+  <p>開発の担当者が、質問をせずに調査を始められる不具合票には、4つの項目が必要です。</p>
+
+  <figure class="fig b8f2">
+    <div class="fig__h"><span>図 2</span>現象だけの不具合票では調査を始められない。4つの項目があると、確認から始められる</div>
+    <div class="fig__b">
+      <div class="two">
+        <div class="card">
+          <p class="card__k">現象だけを書いた不具合票</p>
+          <p class="card__q">「出荷指示が登録できません。」</p>
+          <p class="card__n">使ったデータが分からない。<br />どの画面の、どの操作かが分からない。</p>
+        </div>
+        <div class="card card--on">
+          <p class="card__k">4つの項目を書いた不具合票</p>
+          <dl>
+            <div class="p" style="--t:.2s"><dt>再現の手順</dt><dd>得意先 C-1042 の受注から、出荷指示を登録する。保存の操作でエラーが出る</dd></div>
+            <div class="p" style="--t:.5s"><dt>原因の仮説</dt><dd>得意先 C-1042 に、与信の限度額が設定されていない</dd></div>
+            <div class="p" style="--t:.8s"><dt>仮説の根拠</dt><dd>設計書 D-047 の3章「限度額が未設定の場合は、エラーとする」</dd></div>
+            <div class="p" style="--t:1.1s"><dt>影響する範囲</dt><dd>限度額が未設定の得意先を使う、ほかの6件のテストケース</dd></div>
+            <div class="p" style="--t:1.4s"><dt>修正案</dt><dd>テストデータの得意先に、限度額を設定する。プログラムは修正しない</dd></div>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">番号と内容は説明のための例です。「仮説の根拠」は、原因の仮説に必ず添えます。根拠があると、開発の担当者は、仮説が正しいかを数分で確認できます。</p>
+  </figure>
+
+  <p>4つの項目を、テストの担当者がすべて書くのは困難です。テストの担当者は、設計書とプログラムの中身を知らないからです。そこで、4つの項目の下書きを AI に書かせます。</p>
+
+  <h2><i>03</i>不具合票のすべてが、プログラムの誤りではない</h2>
+  <p>AIに原因の仮説を書かせる前に、原因の種類を決めます。不具合票の原因は、プログラムの誤りだけではありません。</p>
+
+  <figure class="fig b8f3" data-loop="9500">
+    <div class="fig__h"><span>図 3</span>不具合票40件のうち、原因がプログラムの誤りだったのは16件（例）</div>
+    <div class="fig__b">
+      <div class="bars">
+        {causes.map(([n, v, c], k) => <div class="row"><span>{n}</span><div><i class:list={['ty', c]} style={`--w:${Number(v) * 5}%;--t:${0.3 + k * 0.35}s`}></i><b class="f" style={`--t:${0.8 + k * 0.35}s`}>{v}件</b></div></div>)}
+      </div>
+    </div>
+    <p class="fig__c">件数は説明のための例です。図で朱色にした4種類の原因は、プログラムを修正しても解決しません。修正する対象は、データ・テストケース・設計書・設定です。</p>
+  </figure>
+
+  <p>原因の種類によって、修正する担当者が違います。プログラムの誤りは開発の担当者が修正します。テストデータの誤りは、テストの担当者が修正します。原因の種類が分からない不具合票は、すべて開発の担当者に渡されます。</p>
+  <p>AIには、原因の仮説と一緒に、原因の種類も書かせます。不具合票を、最初から正しい担当者に渡すためです。</p>
+
+  <h2><i>04</i>AIの仮説は外れる。根拠を引用させ、担当者が確認する</h2>
+  <p>AIが書いた原因の仮説は、外れることがあります。そのため、仮説をそのまま事実として扱いません。次の4つのルールを、プロジェクトで決めます。</p>
+
+  <table class="tbl">
+    <thead><tr><th>場面</th><th>ルール</th></tr></thead>
+    <tbody>
+      <tr><th>仮説の書き方</th><td>AIは、不具合票に「仮説」と明記する。「原因は〜である」と断定の形で書かない。</td></tr>
+      <tr><th>仮説の根拠</th><td>AIは、設計書かプログラムの該当する箇所を引用する。引用できない仮説は、不具合票に書かない。</td></tr>
+      <tr><th>仮説の確認</th><td>開発の担当者が、根拠の箇所を読み、仮説が正しいかを確認する。確認の結果を、不具合票に記録する。</td></tr>
+      <tr><th>修正の実施</th><td>AIは修正案を書くまで。プログラムとデータは、担当者が確認してから修正する。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>AIが仮説を断定の形で書くと、開発の担当者は仮説を信じます。担当者は、確認せずに修正を始めます。仮説が外れていた場合、誤った修正が行われます。不具合票の項目の名前を「原因」ではなく<strong>「原因の仮説」</strong>にしてください。項目の名前を変えるだけで、担当者は確認してから修正するようになります。</p>
+  </div>
+
+  <h2><i>05</i>不具合票は、5つの手順で作る</h2>
+  <ol class="n">
+    <li><strong>テストの担当者が、現象と使ったデータを記録する</strong>担当者は、テストケースの番号と、実際の結果を記録します。画面の画像も保存します。</li>
+    <li><strong>AIが、再現の手順を書く</strong>AIに、テストケースと画面の画像を読ませます。AIは、操作の順番と、入力した値を書きます。</li>
+    <li><strong>AIが、原因の仮説と根拠を書く</strong>AIに、設計書・プログラム・テストデータを読ませます。AIは、原因の種類と仮説を書き、根拠の箇所を引用します。</li>
+    <li><strong>AIが、影響する範囲と修正案を書く</strong>AIは、同じ原因で不合格になるテストケースを一覧にします。</li>
+    <li><strong>担当者が、仮説を確認して修正する</strong>原因の種類に応じた担当者が、仮説を確認します。確認の結果を記録してから、修正します。</li>
+  </ol>
+  <p>5つの手順のうち、最も効果が大きいのは4つ目です。同じ原因で不合格になるテストケースが分かると、テストの担当者は、同じ不具合票を何件も起票しなくて済みます。</p>
+
+  <h2><i>06</i>仮説が正しかった割合を記録し、AIに読ませる資料を見直す</h2>
+
+  <figure class="fig b8f4" data-loop="9500">
+    <div class="fig__h"><span>図 4</span>仮説が正しかった割合は、原因の種類によって違う。低い種類は、AIに読ませる資料が不足している（例）</div>
+    <div class="fig__b">
+      <div class="bars bars--pct">
+        {acc.map(([n, v], k) => <div class:list={['row', { low: Number(v) < 50 }]}><span>{n}</span><div><i class="ty" style={`--w:${v}%;--t:${0.3 + k * 0.35}s`}></i><b class="f" style={`--t:${0.8 + k * 0.35}s`}>{v}%</b></div></div>)}
+      </div>
+    </div>
+    <p class="fig__c">割合は説明のための例です。この例では、原因を「設定の誤り」とした仮説だけ、正しかった割合が低くなっています。AIに、設定の一覧を読ませていないことが原因です。</p>
+  </figure>
+
+  <p>開発の担当者が記録した確認の結果から、仮説が正しかった割合を計算します。割合は、原因の種類ごとに集計します。</p>
+  <p>割合が低い種類がある場合、AIの能力の問題ではありません。多くの場合、AIに読ませる資料が不足しています。たとえば、設定の誤りの仮説が外れる場合は、設定の一覧を AI に読ませます。</p>
+
+  <div class="say">
+    <p>外れた仮説は、失敗ではありません。AIに読ませる資料のうち、何が不足しているかを示す記録です。</p>
+  </div>
+
+  <h2><i>07</i>明日は、直近の不具合票20件を読み直す</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>直近の不具合票を<b>20件</b>選ぶ。再現の手順と、使ったデータが書かれている不具合票の件数を数える。</span></li>
+      <li><span>20件それぞれについて、<b>起票から、修正を始めるまでの日数</b>を計算する。</span></li>
+      <li><span>20件のうち、<b>原因がプログラムの誤りではなかった不具合票</b>の件数を数える。</span></li>
+    </ol>
+  </div>
+  <p>再現の手順が書かれている不具合票が半数に満たない場合、不具合票の様式を見直してください。再現の手順と、使ったデータを書く欄を追加します。</p>
+  <p>原因がプログラムの誤りではなかった不具合票が多い場合、原因の種類を書く欄を追加します。原因の種類が分かると、不具合票を最初から正しい担当者に渡せます。</p>
+</PostLayout>
+
+<style is:global>
+  .b8f1 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .b8f1 .k--on { color: var(--shu); margin-top: 18px; }
+  .b8f1 .tl { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(6, 1fr); gap: 6px; }
+  .b8f1 .tl--on { grid-template-columns: repeat(3, 1fr); width: 50%; }
+  .b8f1 .tl li { border: 1px solid var(--ink); background: var(--paper); padding: 10px 6px; text-align: center; font-size: 13px; font-weight: 700; line-height: 1.5; position: relative; }
+  .b8f1 .tl li.wait { background: repeating-linear-gradient(-45deg, rgba(212, 65, 42, 0.18) 0 6px, transparent 6px 12px); border-color: var(--shu); color: var(--shu); }
+  .b8f1 .tl--on li { background: var(--ink); color: var(--paper); }
+  .b8f2 .two { display: grid; grid-template-columns: 0.75fr 1.25fr; gap: 16px; align-items: stretch; }
+  .b8f2 .card { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; }
+  .b8f2 .card--on { border: 1.5px solid var(--ink); }
+  .b8f2 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+  .b8f2 .card--on .card__k { color: var(--shu); }
+  .b8f2 .card__q { margin: 0 0 14px; font-family: var(--mincho); font-weight: 500; font-size: 16px; line-height: 1.9; }
+  .b8f2 .card__n { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.8; border-top: 1px solid var(--line); padding-top: 10px; }
+  .b8f2 dl { margin: 0; }
+  .b8f2 dl div { display: grid; grid-template-columns: 7em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); align-items: baseline; }
+  .b8f2 dt { font-size: 12px; color: var(--ink-2); }
+  .b8f2 dd { margin: 0; font-size: 13.5px; font-weight: 700; line-height: 1.7; }
+  .b8f2 dl div:nth-child(3) dd { color: var(--shu); }
+  .b8f3 .bars, .b8f4 .bars { display: grid; gap: 10px; }
+  .b8f3 .row, .b8f4 .row { display: grid; grid-template-columns: 10em 1fr; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
+  .b8f3 .row div, .b8f4 .row div { display: flex; align-items: center; gap: 10px; }
+  .b8f3 .row i, .b8f4 .row i { display: block; height: 24px; width: var(--w); background: var(--shu); flex: none; }
+  .b8f3 .row i.a { background: var(--ink); }
+  .b8f4 .row i { background: var(--ink); max-width: 78%; }
+  .b8f4 .row.low i { background: var(--shu); }
+  .b8f4 .row.low span, .b8f4 .row.low b { color: var(--shu); }
+  .b8f3 .row b, .b8f4 .row b { font-family: var(--mono); font-weight: 500; background: none; white-space: nowrap; }
+  @media (max-width: 760px) {
+    .b8f1 .tl { grid-template-columns: repeat(3, 1fr); }
+    .b8f1 .tl--on { width: 100%; }
+    .b8f1 .tl li { font-size: 12px; }
+    .b8f2 .two { grid-template-columns: 1fr; }
+    .b8f2 dl div { grid-template-columns: 1fr; gap: 0; }
+    .b8f3 .row, .b8f4 .row { grid-template-columns: 1fr; gap: 4px; }
+    .b8f3 .row i { max-width: 70%; }
+    .b8f4 .row i { max-width: 70%; }
+  }
+</style>

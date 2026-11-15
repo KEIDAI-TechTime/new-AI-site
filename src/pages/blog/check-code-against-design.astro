@@ -1,0 +1,198 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  'AIは、設計書に書かれていない処理を、自分で補ってプログラムを書きます。<b>プログラムは動くので、レビューでは見つかりません。</b>',
+  '人がプログラムを読む前に、<b>AIに、設計書とプログラムの対応表を作らせます。</b>対応する記載が無い処理が、補われた処理です。',
+  '単体テストは、プログラムからではなく、設計書から作ります。<b>プログラムから作ったテストは、プログラムの誤りを見つけられません。</b>',
+];
+/* 図2：対応表（例） */
+const map = [
+  ['3.1　受注ファイルを読み込む', '読み込みの処理', 'ok'],
+  ['3.2　得意先コードを確認する', '得意先マスタの検索', 'ok'],
+  ['3.3　受注伝票を登録する', '受注伝票の登録', 'ok'],
+  ['（記載なし）', '数量が0の行を読み飛ばす', 'add'],
+  ['（記載なし）', '登録に失敗した行を、3回まで再実行する', 'add'],
+  ['3.4　結果の一覧を出力する', '（処理なし）', 'miss'],
+];
+---
+
+<PostLayout slug="check-code-against-design" points={points}>
+  <p class="lead2">AIが書いた受注取込のプログラムは、単体テストにすべて合格しました。結合テストで、受注の件数が合いません。調べると、プログラムは数量が0の行を読み飛ばしていました。設計書には、その処理は書かれていませんでした。</p>
+  <p>AIは、設計書に書かれていない部分を、一般的な処理で補います。補った処理は、多くの場合、もっともらしく見えます。プログラムは動き、テストにも合格します。</p>
+  <p>原因は、AIの能力ではありません。<b>設計書とプログラムの対応を、誰も確認していないこと</b>です。この記事では、対応を確認する方法と、単体テストの作り方を書きます。あわせて、AIに任せる作業を書きます。</p>
+
+  <h2><i>01</i>AIは、設計書に無い処理を補って書く</h2>
+  <p>人の開発者は、設計書に書かれていない点があると、設計の担当者に質問します。AIは質問せずに、処理を補います。補われる処理には、3つの種類があります。</p>
+
+  <figure class="fig b17f1">
+    <div class="fig__h"><span>図 1</span>AIが補う処理は3種類。どれも、設計書には書かれていない</div>
+    <div class="fig__b">
+      <div class="three">
+        <div class="c p" style="--t:.2s"><b>1</b><h4>例外の処理</h4><p>値が空の場合、件数が0の場合、桁数を超えた場合の処理。</p><em>例：数量が0の行を読み飛ばす</em></div>
+        <div class="c p" style="--t:.6s"><b>2</b><h4>エラーが起きたときの動作</h4><p>処理を中止するか、続けるか、再実行するか。</p><em>例：登録に失敗した行を、3回まで再実行する</em></div>
+        <div class="c p" style="--t:1s"><b>3</b><h4>初期値と変換</h4><p>項目が指定されていない場合の値と、単位や日付の変換。</p><em>例：通貨が空の場合は、円として登録する</em></div>
+      </div>
+    </div>
+    <p class="fig__c">3種類とも、業務の担当者が決めるべき内容です。AIが補うと、業務の担当者が知らないルールが、プログラムの中に作られます。</p>
+  </figure>
+
+  <div class="say">
+    <p>AIが補った処理は、誤りとは限りません。問題は、その処理を、誰も決めていないことです。</p>
+    <span>稼働後に「なぜこの動作なのか」と質問されても、理由を説明できる人がいません。</span>
+  </div>
+
+  <h2><i>02</i>補われた処理は、レビューでもテストでも見つからない</h2>
+  <p>補われた処理が見つからない理由は、2つあります。</p>
+  <ul>
+    <li><strong>レビューする人は、プログラムの誤りを探す。</strong>補われた処理は、プログラムとしては正しく書かれています。レビューする人は、設計書に無い処理だとは気づきません。</li>
+    <li><strong>単体テストも、AIがプログラムから作っている。</strong>AIは、プログラムの動作に合わせてテストを作ります。補われた処理も、テストの期待値に含まれます。テストは必ず合格します。</li>
+  </ul>
+  <p>単体テストを AI がプログラムから作っていることが、より重大な問題です。プログラムから作ったテストは、プログラムが設計書どおりかを確認していません。確認しているのは、プログラムが、プログラムどおりに動くことだけです。</p>
+
+  <h2><i>03</i>人が読む前に、AIに設計書とプログラムの対応表を作らせる</h2>
+  <p>補われた処理は、設計書とプログラムを1行ずつ比べると見つかります。人がこの作業を行うと、プログラム1本に数時間かかります。この作業を AI に任せます。</p>
+
+  <figure class="fig b17f2" data-loop="10000">
+    <div class="fig__h"><span>図 2</span>対応表を作ると、設計書に無い処理と、プログラムに無い処理が分かる（例）</div>
+    <div class="fig__b">
+      <table class="map">
+        <thead><tr><th>設計書の記載</th><th>プログラムの処理</th><th>判定</th></tr></thead>
+        <tbody>
+          {map.map(([a, b, k], i) => (
+            <tr class:list={['p', k]} style={`--t:${0.3 + i * 0.45}s`}>
+              <td>{a}</td><td>{b}</td>
+              <td class="j">{k === 'ok' ? '対応している' : k === 'add' ? '設計書に無い処理' : 'プログラムに無い処理'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="fig__c">朱色の2行が、AIが補った処理です。最後の行は、設計書に書かれているのに、プログラムに書かれていない処理です。</p>
+  </figure>
+
+  <p>対応表からは、2種類の問題が見つかります。1つ目は、設計書に無い処理です。2つ目は、設計書にあるのに、プログラムに無い処理です。レビューする人は、対応表のうち「対応している」以外の行だけを確認します。</p>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>プログラムを書いた AI に、同じ会話の中で対応表を作らせないでください。AIは、自分が補った処理を「設計書の記載から当然に必要な処理」と説明します。対応表は、新しい会話で、設計書とプログラムだけを渡して作らせます。</p>
+  </div>
+
+  <h2><i>04</i>設計書に無い処理は、消すか、設計書に書くかを決める</h2>
+  <p>設計書に無い処理が見つかったら、対応は2つのどちらかです。プログラムから消すか、設計書に追加するかです。プログラムにだけ残す、という対応は取りません。</p>
+  <table class="tbl">
+    <thead><tr><th>見つかった処理</th><th>決める人</th><th>対応</th></tr></thead>
+    <tbody>
+      <tr><th>業務のルールに関わる処理</th><td>業務の担当者</td><td>必要なら設計書に追加する。不要ならプログラムから消す。</td></tr>
+      <tr><th>技術的な処理（再実行、ログの出力など）</th><td>開発のリーダー</td><td>開発標準に合っていれば、設計書か開発標準に追加する。</td></tr>
+      <tr><th>設計書にあるのに、プログラムに無い処理</th><td>開発の担当者</td><td>プログラムに追加する。</td></tr>
+    </tbody>
+  </table>
+  <p>業務のルールに関わる処理は、開発の担当者が判断してはいけません。数量が0の行を読み飛ばすか、エラーにするかは、業務の担当者が決めることです。</p>
+
+  <h2><i>05</i>単体テストは、プログラムからではなく、設計書から作る</h2>
+
+  <figure class="fig b17f3" data-loop="9500">
+    <div class="fig__h"><span>図 3</span>プログラムから作ったテストは、プログラムの誤りを見つけられない</div>
+    <div class="fig__b">
+      <div class="two">
+        <div class="col">
+          <p class="k">プログラムからテストを作る場合</p>
+          <div class="chain"><i class="p" style="--t:.2s">設計書</i><u class="f" style="--t:.5s">→</u><i class="p" style="--t:.7s">プログラム</i><u class="f" style="--t:1s">→</u><i class="p" style="--t:1.2s">テスト</i></div>
+          <p class="r f" style="--t:1.7s">テストは、プログラムの動作を確認しているだけ。設計書との違いは見つからない</p>
+        </div>
+        <div class="col col--on">
+          <p class="k">設計書からテストを作る場合</p>
+          <div class="chain chain--y"><i class="p" style="--t:2.2s">設計書</i><div><span><u class="f" style="--t:2.5s">→</u><i class="p" style="--t:2.7s">プログラム</i></span><span><u class="f" style="--t:2.9s">→</u><i class="p on" style="--t:3.1s">テスト</i></span></div></div>
+          <p class="r f" style="--t:3.6s">テストは、設計書の記載を確認する。プログラムが設計書と違うと、不合格になる</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">右の方法では、テストを作る AI に、プログラムを読ませません。設計書だけを渡します。</p>
+  </figure>
+
+  <p>設計書からテストを作ると、設計書の記載の不足も見つかります。設計書に期待する結果が書かれていない処理では、AIはテストを作れません。テストを作れない処理は、設計書の記載が不足しています。</p>
+
+  <h2><i>06</i>開発は、プログラム・テスト・対応表を別々に作る5つの手順で進める</h2>
+  <ol class="n">
+    <li><strong>AIが、設計書からプログラムを作る</strong>AIに、設計書と開発標準を読ませます。</li>
+    <li><strong>別の会話で、AIが単体テストを作る</strong>AIには設計書だけを渡します。プログラムは渡しません。</li>
+    <li><strong>別の会話で、AIが対応表を作る</strong>AIに設計書とプログラムを渡します。AIは、設計書の記載とプログラムの処理を1行ずつ並べた対応表を作ります。</li>
+    <li><strong>開発の担当者が、対応表と、テストの結果を確認する</strong>担当者は、「対応している」以外の行と、不合格のテストを確認します。</li>
+    <li><strong>決める人が、設計書に無い処理の対応を決める</strong>決めた内容を、設計書かプログラムに反映します。</li>
+  </ol>
+  <p>最も重要なのは、プログラム・単体テスト・対応表を、別々の会話で作らせることです。同じ会話で続けて作らせると、AIは自分が書いたプログラムを前提にして、テストと対応表を作ります。</p>
+
+  <h2><i>07</i>開発の品質は、設計書に無い処理の件数で確認する</h2>
+
+  <figure class="fig b17f4" data-loop="9000">
+    <div class="fig__h"><span>図 4</span>設計書に無い処理は、設計書の記載が少ない機能に多い（プログラム10本の例）</div>
+    <div class="fig__b">
+      <div class="rows">
+        {[['例外の処理', 14], ['エラーが起きたときの動作', 9], ['初期値と変換', 6], ['そのほか', 2]].map(([n, v], k) => (
+          <div class="row"><span>{n}</span><div><i class="ty" style={`--w:${Number(v) * 6}%;--t:${0.3 + k * 0.35}s`}></i><b class="f" style={`--t:${0.8 + k * 0.35}s`}>{v}件</b></div></div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。件数が多い種類は、設計書の様式に、その種類を書く欄がありません。</p>
+  </figure>
+
+  <p>記録する数字は、プログラム1本あたりの、設計書に無い処理の件数です。件数が多い種類は、設計書の様式を見直します。たとえば、例外の処理が多い場合は、設計書に「値が空の場合」「件数が0の場合」を書く欄を追加します。</p>
+  <p>設計書の様式に欄を追加すると、設計の担当者がその処理を書くようになります。次のプログラムから、AIが補う処理が減ります。</p>
+
+  <h2><i>08</i>明日は、AIが書いたプログラム1本で対応表を作る</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>AIが書いたプログラムを<b>1本</b>選ぶ。レビューが済んだプログラムを選ぶ。</span></li>
+      <li><span>新しい会話で、AIに設計書とプログラムを渡す。<b>設計書の記載と、プログラムの処理の対応表</b>を作らせる。</span></li>
+      <li><span>対応表のうち、<b>設計書に記載が無い処理</b>の件数を数える。その処理を決めた人がいるかを確認する。</span></li>
+    </ol>
+  </div>
+  <p>レビューが済んだプログラムでも、設計書に無い処理が数件見つかることがあります。見つかった処理を、業務の担当者に見せてください。担当者が知らない処理があれば、ほかのプログラムにも同じ問題があります。</p>
+  <p>担当者が知らない処理が見つかった場合は、開発のリーダーが、単体テストの作り方も確認します。テストをプログラムから作っている場合は、設計書から作る方法に変えてください。</p>
+</PostLayout>
+
+<style is:global>
+  .b17f1 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .b17f1 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b17f1 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
+  .b17f1 h4 { margin: 0; font-family: var(--mincho); font-size: 17px; line-height: 1.5; }
+  .b17f1 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
+  .b17f1 .c em { font-style: normal; font-size: 12px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 7px; line-height: 1.7; }
+  .b17f2 .map { width: 100%; border-collapse: collapse; background: var(--paper); font-size: 13.5px; }
+  .b17f2 .map th, .b17f2 .map td { border: 1px solid var(--ink); padding: 9px 12px; text-align: left; line-height: 1.6; }
+  .b17f2 .map thead th { background: var(--ink); color: var(--paper); font-size: 12px; }
+  .b17f2 .map .j { font-size: 12.5px; font-weight: 700; white-space: nowrap; }
+  .b17f2 .map tr.ok .j { color: var(--ink-2); font-weight: 400; }
+  .b17f2 .map tr.add td { background: var(--shu); color: var(--paper); border-color: var(--ink); }
+  .b17f2 .map tr.miss td { background: repeating-linear-gradient(-45deg, rgba(212, 65, 42, 0.16) 0 6px, transparent 6px 12px); }
+  .b17f2 .map tr.miss .j { color: var(--shu); }
+  .b17f3 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+  .b17f3 .col { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; display: grid; gap: 14px; align-content: start; }
+  .b17f3 .col--on { border: 1.5px solid var(--ink); }
+  .b17f3 .k { margin: 0; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .b17f3 .col--on .k { color: var(--shu); }
+  .b17f3 .chain { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; min-height: 96px; }
+  .b17f3 .chain i { font-style: normal; border: 1px solid var(--ink); padding: 8px 12px; font-size: 13px; font-weight: 700; background: var(--paper); white-space: nowrap; }
+  .b17f3 .chain i.on { background: var(--shu); border-color: var(--shu); color: var(--paper); }
+  .b17f3 .chain u { text-decoration: none; color: var(--shu); font-size: 16px; }
+  .b17f3 .chain--y div { display: grid; gap: 10px; }
+  .b17f3 .chain--y span { display: flex; align-items: center; gap: 8px; }
+  .b17f3 .r { margin: 0; font-size: 12.5px; line-height: 1.75; border-top: 1px solid var(--line); padding-top: 10px; }
+  .b17f3 .col--on .r { font-weight: 700; }
+  .b17f4 .rows { display: grid; gap: 12px; }
+  .b17f4 .row { display: grid; grid-template-columns: 13em 1fr; gap: 12px; align-items: center; font-size: 13.5px; font-weight: 700; }
+  .b17f4 .row div { display: flex; align-items: center; gap: 10px; }
+  .b17f4 .row i { display: block; height: 24px; width: var(--w); background: var(--ink); }
+  .b17f4 .row:first-child i { background: var(--shu); }
+  .b17f4 .row b { font-family: var(--mono); font-weight: 500; background: none; }
+  @media (max-width: 760px) {
+    .b17f1 .three { grid-template-columns: 1fr; }
+    .b17f2 .map { font-size: 11.5px; }
+    .b17f2 .map th, .b17f2 .map td { padding: 6px 6px; }
+    .b17f2 .map .j { white-space: normal; }
+    .b17f3 .two { grid-template-columns: 1fr; }
+    .b17f4 .row { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>

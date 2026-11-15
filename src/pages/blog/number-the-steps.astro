@@ -1,0 +1,206 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '業務フローは、図として描かれて終わります。<b>手順に番号が無いと、要件・設計書・テストと結び付けられません。</b>',
+  '番号は、要件定義の間に付けます。<b>後の工程で付けると、結び付ける資料が増え、作業が何倍にもなります。</b>',
+  'AIが業務フローを読み、手順の一覧の案を作ります。<b>手順の分け方と番号のルールは、人が決めます。</b>',
+];
+const chain = [['業務フロー', 'BF-023 手順07'], ['要件', 'R-019'], ['設計書', 'D-047'], ['プログラム', 'ZLE_SHIP'], ['テスト', 'T-142']];
+const steps = [
+  ['07', '倉庫', '検品の結果を登録する', '検品の結果', '倉庫システム'],
+  ['08', '営業', '出荷指示を確定する', '出荷指示', 'SAP'],
+  ['09', '倉庫', '出荷する', '出荷の実績', '倉庫システム'],
+  ['10', '経理', '請求書を発行する', '請求書', 'SAP'],
+];
+---
+
+<PostLayout slug="number-the-steps" points={points}>
+  <p class="lead2">稼働から半年後、業務の担当者から依頼が来ました。「出荷の前に、検品の手順を1つ追加したい」。保守の担当者は、どの設計書とプログラムを直すかを調べるのに、3日かかりました。</p>
+  <p>3日かかった理由は、業務フローの手順に番号が無かったことです。担当者は、設計書を1本ずつ開き、出荷に関係する記載を探しました。</p>
+  <p>業務フローの手順に番号を付けます。要件・設計書・テストにも、同じ番号を書きます。すると、直す資料の調査は数分で終わります。</p>
+  <p>この記事では、番号を付ける時期とルールを書きます。あわせて、AIに任せる作業を書きます。</p>
+
+  <h2><i>01</i>番号が無いと、「この手順を変えると何を直すか」に答えられない</h2>
+
+  <figure class="fig b4f1" data-loop="9500">
+    <div class="fig__h"><span>図 1</span>番号が無いと、資料を1本ずつ開いて探す。番号があると、検索で一覧が出る</div>
+    <div class="fig__b">
+      <p class="q">「出荷の前に、検品の手順を追加したい。何を直せばよいか」</p>
+      <div class="two">
+        <div class="col">
+          <p class="k">手順に番号が無い場合</p>
+          <div class="docs">{['設計書', '設計書', '設計書', '設計書', 'テスト', 'テスト'].map((d, k) => <i class="p" style={`--t:${0.3 + k * 0.35}s`}>{d}<u>?</u></i>)}</div>
+          <p class="r f" style="--t:2.8s">担当者が、資料を1本ずつ開いて探す</p>
+        </div>
+        <div class="col col--on">
+          <p class="k">手順に番号がある場合</p>
+          <ol class="chain">{chain.map(([a, b], k) => <li class="p" style={`--t:${0.3 + k * 0.45}s`}><em>{a}</em><b>{b}</b></li>)}</ol>
+          <p class="r f" style="--t:2.8s">番号で検索すると、直す資料が一覧で出る</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">右の番号は説明のための例です。業務フローの手順の番号を、要件・設計書・プログラム・テストの資料にも書いておきます。</p>
+  </figure>
+
+  <p>この調査は、稼働後の保守で何度も発生します。法令の改正、組織の変更、取引先の追加のたびに、業務の手順が変わるからです。番号が無いプロジェクトでは、変更のたびに、担当者が資料を読み直します。</p>
+
+  <div class="say">
+    <p>業務フローの番号は、導入の間は役に立っているように見えません。役に立つのは、稼働したあとです。</p>
+    <span>そのため、番号を付ける作業は後回しになります。番号が無いまま、システムが稼働します。</span>
+  </div>
+
+  <h2><i>02</i>業務フローは、図として描かれて終わっている</h2>
+  <p>多くのプロジェクトで、業務フローは作図ソフトで描いた図です。図には、次の3つの問題があります。</p>
+  <ul>
+    <li><strong>手順に番号が無い。</strong>箱の中には、手順の名前だけが書かれています。</li>
+    <li><strong>同じ手順の名前が、資料ごとに違う。</strong>業務フローでは「出荷」、要件一覧では「出荷処理」、設計書では「出荷指示の確定」と書かれています。名前で検索しても、すべては見つかりません。</li>
+    <li><strong>要件一覧には、図の名前しか書かれていない。</strong>「関連する業務フロー」の欄に「出荷の業務フロー」と書かれています。図のどの手順の要件かは、書かれていません。</li>
+  </ul>
+
+  <figure class="fig b4f2">
+    <div class="fig__h"><span>図 2</span>要件一覧の「関連する業務フロー」の欄。図の名前だけでは、手順を特定できない</div>
+    <div class="fig__b">
+      <div class="two">
+        <div class="card">
+          <p class="card__k">図の名前だけを書いた場合</p>
+          <dl><div><dt>要件</dt><dd>R-231　出荷指示の取消</dd></div><div><dt>関連する業務フロー</dt><dd class="ng">出荷の業務フロー</dd></div></dl>
+          <p class="card__n">「出荷の業務フロー」には手順が14個ある。<br />どの手順の要件かは、分からない。</p>
+        </div>
+        <div class="card card--on">
+          <p class="card__k">手順の番号を書いた場合</p>
+          <dl><div class="p" style="--t:.3s"><dt>要件</dt><dd>R-231　出荷指示の取消</dd></div><div class="p" style="--t:.6s"><dt>関連する手順</dt><dd class="ok">BF-023 手順08　出荷指示を確定する</dd></div></dl>
+          <p class="card__n">手順08を変更するときに、<br />R-231 を検索で見つけられる。</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">欄の名前を「関連する業務フロー」から「関連する手順」に変えるだけで、記入する人は手順の番号を書くようになります。</p>
+  </figure>
+
+  <h2><i>03</i>手順は、図に加えて、一覧表でも管理する</h2>
+  <p>番号を付けるには、業務フローの手順を一覧表にします。図は人が読むための資料です。一覧表は、検索と、ほかの資料との結び付けに使います。</p>
+
+  <figure class="fig b4f3" data-loop="9500">
+    <div class="fig__h"><span>図 3</span>手順の一覧表は、1行に1つの手順を書く（例）</div>
+    <div class="fig__b">
+      <table class="steps">
+        <thead><tr><th>番号</th><th>担当</th><th>手順</th><th>作るもの</th><th>使うシステム</th></tr></thead>
+        <tbody>
+          {steps.map((r, k) => (
+            <tr class="p" style={`--t:${0.3 + k * 0.5}s`}><td class="m">BF-023-{r[0]}</td><td>{r[1]}</td><td class="b">{r[2]}</td><td>{r[3]}</td><td>{r[4]}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="fig__c">1行が1つの手順です。「担当」と「使うシステム」の列があると、設計書やテストの担当者が、自分に関係する手順を探せます。</p>
+  </figure>
+
+  <p>図と一覧表を別々に作ると、片方だけが更新されて内容が食い違います。一覧表を元のデータとして管理し、図は一覧表から作るのが確実です。難しい場合は、図を直した日に一覧表も直すことを、担当者の作業に含めます。</p>
+
+  <h2><i>04</i>番号のルールは、3つで足りる</h2>
+  <table class="tbl">
+    <thead><tr><th>ルール</th><th>内容</th><th>理由</th></tr></thead>
+    <tbody>
+      <tr><th>1　重複させない</th><td>業務フローの番号と、手順の連番を組み合わせる。例：BF-023-07</td><td>プロジェクト全体で、1つの番号が1つの手順だけを指すようにする。</td></tr>
+      <tr><th>2　付けた番号を変えない</th><td>手順を削除しても、番号を詰めない。手順を追加するときは、新しい番号を使う。</td><td>番号を変えると、番号を書いたすべての資料を直す必要がある。</td></tr>
+      <tr><th>3　手順の大きさをそろえる</th><td>担当が変わる所と、システムに入力する所で、手順を分ける。</td><td>手順が大きすぎると、1つの手順に要件が何十件も結び付き、調査の役に立たない。</td></tr>
+    </tbody>
+  </table>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>番号に意味を持たせると、後で困ります。たとえば、番号の中に部門の略号や工程の順番を入れる方法です。組織の変更や手順の入れ替えのたびに、番号を付け直すことになります。番号は、意味のない連番にします。</p>
+  </div>
+
+  <h2><i>05</i>AIが一覧表の案を作り、業務の担当者が確認する</h2>
+  <p>業務フローが数十本ある場合、人が手順を1つずつ一覧表に書き写すと、数週間かかります。この作業を AI に任せます。</p>
+  <ol class="n">
+    <li><strong>AIが、業務フローの図から一覧表の案を作る</strong>AIに図を読ませます。AIは、手順・担当・次の手順を一覧表に書き出します。</li>
+    <li><strong>業務の担当者が、一覧表を実際の業務と比べる</strong>担当者は、手順の抜けと、順番の誤りを直します。</li>
+    <li><strong>AIが、要件一覧の各行に、手順の番号の案を書く</strong>AIに要件一覧と一覧表を読ませます。AIは、要件ごとに関係する手順を選び、選んだ理由を書きます。</li>
+    <li><strong>各領域の担当者が、番号の案を確認する</strong>担当者は、理由を読み、案を採用するか直すかを決めます。</li>
+    <li><strong>PM が、結び付いていない要件と手順を数える</strong>手順の番号が無い要件と、要件が1つも無い手順を数えます。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>AIは、図の矢印を読み誤ることがあります。線が交差している所と、分岐が多い所で誤りが出ます。AIに同じ図を2回読ませ、2回の結果が違う手順は人が確認してください。画像として貼られた図では、文字を読めない箱があります。読めない箱は、AIに推測させず、「読めない」と書かせます。</p>
+  </div>
+
+  <h2><i>06</i>結び付きは、番号のある要件の数と、要件の無い手順の数で確認する</h2>
+
+  <figure class="fig b4f4" data-loop="9000">
+    <div class="fig__h"><span>図 4</span>手順の番号が書かれている要件は、412件のうち61件（例）</div>
+    <div class="fig__b">
+      <div class="gs">
+        <div class="g"><p class="g__k">手順の番号が書かれている要件</p><div class="g__bar"><i class="ty" style="--w:15%;--t:.3s"></i></div><p class="g__n"><b>61</b> / 412件<em class="f" style="--t:1.2s">残りの351件は、どの手順の要件かが分からない</em></p></div>
+        <div class="g"><p class="g__k">要件が1つも無い手順</p><div class="g__bar g__bar--b"><i class="ty" style="--w:9%;--t:.8s"></i></div><p class="g__n"><b>28</b> / 310手順<em class="f" style="--t:1.7s">要件の漏れか、システムを使わない手順かを確認する</em></p></div>
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。「要件が1つも無い手順」を調べると、要件定義の漏れが見つかります。</p>
+  </figure>
+
+  <p>1つ目の数字は、結び付けの作業の進み具合を示します。2つ目の数字は、要件定義の品質を示します。システムを使う手順なのに要件が1つも無い場合、その手順の要件が漏れています。</p>
+
+  <h2><i>07</i>明日は、業務フロー1本で試す</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>主要な業務フローを<b>1本</b>選び、手順の数を数える。手順に連番を付ける。</span></li>
+      <li><span>要件一覧から、その業務フローに関係する要件を<b>10件</b>選ぶ。</span></li>
+      <li><span>10件それぞれについて、<b>どの手順の要件か</b>を書く。書けなかった要件の件数を数える。</span></li>
+    </ol>
+  </div>
+  <p>10件のうち3件以上を書けなかった場合、要件の書き方か、手順の分け方に問題があります。要件定義が終わる前に、手順の一覧表を作ることを検討してください。</p>
+  <p>設計に入ると、番号を書く資料に設計書が加わります。テストに入ると、テストの仕様書が加わります。番号を付ける作業は、工程が進むほど増えます。</p>
+</PostLayout>
+
+<style is:global>
+  .b4f1 .q { margin: 0 0 16px; font-family: var(--mincho); font-weight: 700; font-size: 17px; text-align: center; line-height: 1.7; }
+  .b4f1 .two, .b4f2 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
+  .b4f1 .col { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; }
+  .b4f1 .col--on { border: 1.5px solid var(--ink); }
+  .b4f1 .k { margin: 0 0 12px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .b4f1 .col--on .k { color: var(--shu); }
+  .b4f1 .docs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .b4f1 .docs i { font-style: normal; border: 1px solid var(--line); padding: 10px 8px; font-size: 12.5px; color: var(--ink-2); display: flex; justify-content: space-between; align-items: center; }
+  .b4f1 .docs u { text-decoration: none; font-family: var(--mono); color: var(--shu); font-size: 15px; }
+  .b4f1 .chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+  .b4f1 .chain li { display: grid; grid-template-columns: 6.5em 1fr; gap: 10px; align-items: baseline; border: 1px solid var(--ink); padding: 6px 12px; position: relative; }
+  .b4f1 .chain li + li::before { content: ''; position: absolute; left: 20px; bottom: 100%; width: 2px; height: 7px; background: var(--shu); }
+  .b4f1 .chain em { font-style: normal; font-size: 12px; color: var(--ink-2); }
+  .b4f1 .chain b { font-family: var(--mono); font-weight: 500; font-size: 14px; background: none; }
+  .b4f1 .r { margin: 12px 0 0; font-size: 12.5px; font-weight: 700; }
+  .b4f1 .col--on .r { color: var(--shu); }
+  .b4f2 .card { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; }
+  .b4f2 .card--on { border: 1.5px solid var(--ink); }
+  .b4f2 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
+  .b4f2 .card--on .card__k { color: var(--shu); }
+  .b4f2 dl { margin: 0 0 12px; }
+  .b4f2 dl div { display: grid; grid-template-columns: 9em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); align-items: baseline; }
+  .b4f2 dt { font-size: 12px; color: var(--ink-2); }
+  .b4f2 dd { margin: 0; font-size: 14.5px; font-weight: 700; }
+  .b4f2 dd.ng { color: var(--ink-2); text-decoration: underline wavy var(--shu); text-underline-offset: 5px; }
+  .b4f2 dd.ok { color: var(--shu); }
+  .b4f2 .card__n { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.8; border-top: 1px solid var(--line); padding-top: 10px; }
+  .b4f3 .steps { width: 100%; border-collapse: collapse; background: var(--paper); font-size: 13.5px; }
+  .b4f3 .steps th, .b4f3 .steps td { border: 1px solid var(--ink); padding: 9px 12px; text-align: left; }
+  .b4f3 .steps thead th { background: var(--ink); color: var(--paper); font-size: 12px; }
+  .b4f3 .steps .m { font-family: var(--mono); color: var(--shu); white-space: nowrap; }
+  .b4f3 .steps .b { font-weight: 700; }
+  .b4f4 .gs { display: grid; gap: 22px; }
+  .b4f4 .g__k { margin: 0 0 6px; font-size: 13px; font-weight: 700; }
+  .b4f4 .g__bar { height: 22px; border: 1px solid var(--ink); background: var(--paper); }
+  .b4f4 .g__bar i { display: block; height: 100%; width: var(--w); background: var(--ink); }
+  .b4f4 .g__bar--b i { background: var(--shu); }
+  .b4f4 .g__n { margin: 6px 0 0; font-size: 13px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+  .b4f4 .g__n b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--ink); background: none; }
+  .b4f4 .g__n em { font-style: normal; font-size: 12.5px; }
+  @media (max-width: 760px) {
+    .b4f1 .two, .b4f2 .two { grid-template-columns: 1fr; }
+    .b4f2 dl div { grid-template-columns: 1fr; gap: 0; }
+    .b4f3 .steps { font-size: 11.5px; }
+    .b4f3 .steps th, .b4f3 .steps td { padding: 6px 5px; }
+    .b4f3 .steps th:nth-child(4), .b4f3 .steps td:nth-child(4) { display: none; }
+  }
+</style>

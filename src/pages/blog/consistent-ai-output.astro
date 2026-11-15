@@ -1,0 +1,180 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  'AIへの頼み方が上手な人に頼ると、<b>その人の成果物だけが良くなります。</b>プロジェクト全体の品質はそろいません。',
+  'そろえる対象は、頼み方ではありません。<b>様式・記載のルール・点検の観点の3つを、プロジェクトの手順書として保存します。</b>',
+  '人が成果物を直したら、<b>直した内容を手順書に反映します。</b>反映しないと、同じ修正を毎回繰り返します。',
+];
+const people = [['担当者A', 88], ['担当者B', 46], ['担当者C', 67], ['担当者D', 30]];
+---
+
+<PostLayout slug="consistent-ai-output" points={points}>
+  <p class="lead2">同じ要件から、4人の担当者が AI で設計書の初版を作りました。4本を並べると、章の構成、項目の書き方、記載の細かさが、すべて違っていました。</p>
+  <p>多くの現場は、この問題を「頼み方の差」と考えます。そこで、プロジェクトは、AIへの頼み方の研修を行います。研修の直後は改善しますが、1か月後には元の状態に戻ります。</p>
+  <p>原因は頼み方ではありません。<b>成果物の様式と、点検の観点が決まっていないこと</b>です。この記事では、プロジェクトで決める3つの対象と、手順書を保存する場所を書きます。あわせて、人の修正を次の成果物に生かす方法を書きます。</p>
+
+  <h2><i>01</i>同じ要件でも、頼む人によって成果物が変わる</h2>
+
+  <figure class="fig b6f1" data-loop="9000">
+    <div class="fig__h"><span>図 1</span>各自の頼み方で作ると、レビューで直す箇所の数が、担当者によって3倍違う（例）</div>
+    <div class="fig__b">
+      <div class="two">
+        <div>
+          <p class="k">各自が、自分の頼み方で作った場合</p>
+          <div class="bars">{people.map(([n, w], k) => <div class="row"><span>{n}</span><i class="ty" style={`--w:${w}%;--t:${0.3 + k * 0.25}s`}></i></div>)}</div>
+          <p class="r">直した箇所の数が、担当者によって3倍違う</p>
+        </div>
+        <div>
+          <p class="k k--on">全員が、同じ手順書を使って作った場合</p>
+          <div class="bars bars--on">{people.map(([n], k) => <div class="row"><span>{n}</span><i class="ty" style={`--w:${[28, 31, 26, 30][k]}%;--t:${1.6 + k * 0.25}s`}></i></div>)}</div>
+          <p class="r r--on">担当者による差が小さくなり、直す箇所も減る</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">数字は説明のための例です。左の状態では、レビューする人が、設計書ごとに違う形を読むことになります。</p>
+  </figure>
+
+  <p>成果物の差は、レビューする人の負担になります。設計書ごとに章の構成が違うと、レビューする人は、必要な記載がどこにあるかを毎回探します。記載の抜けにも気づきにくくなります。</p>
+
+  <h2><i>02</i>頼み方を教えても、品質はそろわない</h2>
+  <p>頼み方の研修で品質がそろわない理由は、3つあります。</p>
+  <ul>
+    <li><strong>良い頼み方は長い。</strong>様式、記載のルール、注意点をすべて書くと、指示は数十行になります。担当者は、忙しいときに指示を短くします。</li>
+    <li><strong>指示が、担当者の手元にしか無い。</strong>各自が自分のメモに指示を保存しています。誰かが指示を改善しても、ほかの担当者には伝わりません。</li>
+    <li><strong>担当者が交代すると、指示も無くなる。</strong>新しい担当者は、指示を最初から作ります。</li>
+  </ul>
+
+  <div class="say">
+    <p>頼み方が上手な人が1人いても、その人の成果物が良くなるだけです。プロジェクトの品質は変わりません。</p>
+  </div>
+
+  <h2><i>03</i>そろえる対象は、様式・記載のルール・点検の観点の3つ</h2>
+
+  <figure class="fig b6f2">
+    <div class="fig__h"><span>図 2</span>プロジェクトで決めて、手順書に書く3つの対象</div>
+    <div class="fig__b">
+      <div class="three">
+        <div class="c p" style="--t:.2s"><b>1</b><h4>様式</h4><p>章の構成と、各章に書く項目。</p><em>例：3章に項目の一覧。項目ごとに、桁数・必須かどうか・初期値を書く</em></div>
+        <div class="c p" style="--t:.6s"><b>2</b><h4>記載のルール</h4><p>用語、番号の付け方、書いてはいけない表現。</p><em>例：「適宜」「必要に応じて」を使わない。未定の箇所には、決める人と期日を書く</em></div>
+        <div class="c p" style="--t:1s"><b>3</b><h4>点検の観点</h4><p>作った成果物を、AI自身に確認させる問い。</p><em>例：処理ごとに、エラーが起きたときの動作が書かれているか</em></div>
+      </div>
+    </div>
+    <p class="fig__c">3つ目の点検の観点が、最も省略されます。AIは、作った直後の成果物を、観点に沿って自分で確認できます。</p>
+  </figure>
+
+  <p>3つとも、お客様のプロジェクトにすでに存在するものです。設計書の様式、開発標準、レビューのチェックリストです。新しく作る必要はありません。プロジェクトの担当者が、3つを AI が読める形に書き直し、手順書にまとめます。</p>
+
+  <h2><i>04</i>手順書は、個人の手元ではなく、全員が使う1か所に保存する</h2>
+
+  <figure class="fig b6f3" data-loop="9000">
+    <div class="fig__h"><span>図 3</span>指示を各自の手元に保存すると、4通りになる。1か所に保存すると、1通りになる</div>
+    <div class="fig__b">
+      <div class="two">
+        <div class="side">
+          <p class="k">各自の手元に保存する場合</p>
+          <div class="memos">{['Aさんのメモ', 'Bさんのメモ', 'Cさんのメモ', 'Dさんのメモ'].map((m, k) => <i class="p" style={`--t:${0.3 + k * 0.25}s`}>{m}</i>)}</div>
+          <p class="r">指示が4通りある。改善しても、ほかの3人には伝わらない</p>
+        </div>
+        <div class="side side--on">
+          <p class="k k--on">全員が使う1か所に保存する場合</p>
+          <div class="one p" style="--t:1.6s"><b>設計書を作る手順書</b><span>様式／記載のルール／点検の観点</span></div>
+          <div class="users">{['A', 'B', 'C', 'D'].map((m, k) => <i class="p" style={`--t:${2.1 + k * 0.2}s`}>{m}</i>)}</div>
+          <p class="r r--on">指示は1通り。1人が改善すると、全員の成果物が良くなる</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">手順書は、設計書・プログラム・テスト仕様書など、成果物の種類ごとに1つ作ります。</p>
+  </figure>
+
+  <p>手順書を1か所に保存すると、担当者は長い指示を書く必要が無くなります。担当者が AI に伝えるのは、使う手順書と、対象の要件だけです。忙しいときにも、指示は省略されません。</p>
+
+  <h2><i>05</i>人が直した内容は、手順書に反映する</h2>
+  <p>AIが作った成果物を、人がレビューして直します。多くの現場では、修正はその成果物だけで終わります。次の成果物でも、AIは同じ誤りをします。</p>
+
+  <figure class="fig b6f4" data-loop="10000">
+    <div class="fig__h"><span>図 4</span>修正を手順書に反映しないと、同じ箇所を毎回直すことになる</div>
+    <div class="fig__b">
+      <div class="lp">
+        <p class="k">反映しない場合</p>
+        <div class="seq">{[1, 2, 3].map((n) => <div class="p" style={`--t:${0.2 + (n - 1) * 0.5}s`}><b>{n}本目</b><span>同じ箇所を、人が直す</span></div>)}</div>
+        <p class="k k--on">反映する場合</p>
+        <div class="seq seq--on">
+          <div class="p" style="--t:2.2s"><b>1本目</b><span>人が直す</span></div>
+          <div class="p up2" style="--t:2.8s"><b>手順書</b><span>直した内容を、記載のルールに追加する</span></div>
+          <div class="p" style="--t:3.4s"><b>2本目以降</b><span>AIが、最初から正しく書く</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">反映する担当者を決めておきます。決めていないと、修正は成果物の中に残るだけで、手順書は変わりません。</p>
+  </figure>
+
+  <ol class="n">
+    <li><strong>レビューする人が、直した箇所と理由を記録する</strong>成果物の修正履歴か、レビューの記録に残します。</li>
+    <li><strong>手順書の担当者が、同じ種類の修正を週に1回集める</strong>複数の成果物で繰り返し出ている修正を選びます。</li>
+    <li><strong>担当者が、手順書の記載のルールか点検の観点に追加する</strong>1回の追加は、1行か2行です。</li>
+    <li><strong>次の成果物で、同じ修正が出なくなったかを確認する</strong>出た場合は、追加した記載の書き方を直します。</li>
+  </ol>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>手順書に記載を追加し続けると、手順書が長くなります。長い手順書では、AIが一部の記載を守らなくなります。追加するのは、<strong>複数の成果物で繰り返し出た修正だけ</strong>にしてください。1回しか出ていない修正は、追加しません。手順書の担当者は、成果物の種類ごとに1人に決めます。全員が直せる状態にすると、記載が矛盾します。</p>
+  </div>
+
+  <h2><i>06</i>品質がそろったかは、人が直した箇所の数で確認する</h2>
+  <p>確認する数字は2つです。1つ目は、成果物1本あたりの、人が直した箇所の数です。手順書が機能していれば、回を追うごとに減ります。2つ目は、直した箇所の数の、担当者ごとの差です。全員が同じ手順書を使っていれば、差は小さくなります。</p>
+  <p>直した箇所の数が減らない場合は、修正が手順書に反映されていません。担当者ごとの差が大きい場合は、手順書を使っていない担当者がいます。</p>
+
+  <h2><i>07</i>明日は、3人に同じ要件で作ってもらう</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>要件を1つ選ぶ。<b>3人の担当者</b>に、それぞれの方法で、AIを使って設計書の初版を作ってもらう。</span></li>
+      <li><span>3本を並べ、<b>章の構成と、項目の書き方の違い</b>を書き出す。</span></li>
+      <li><span>3人が AI に渡した指示を集め、<b>指示に書かれていた様式とルール</b>を比べる。</span></li>
+    </ol>
+  </div>
+  <p>3本の違いが大きい場合は、3人が AI に渡した指示を比べてください。多くの場合、指示に書かれている様式とルールが、3人とも違っています。</p>
+  <p>3人の指示のうち、最も良い結果が出た指示を元にして、1つの手順書を作ってください。手順書を1か所に保存し、次の設計書から全員が使います。</p>
+</PostLayout>
+
+<style is:global>
+  .b6f1 .two, .b6f3 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
+  .b6f1 .k, .b6f3 .k, .b6f4 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .b6f1 .k--on, .b6f3 .k--on, .b6f4 .k--on { color: var(--shu); }
+  .b6f1 .bars { display: grid; gap: 8px; }
+  .b6f1 .row { display: grid; grid-template-columns: 5em 1fr; gap: 10px; align-items: center; font-size: 12.5px; }
+  .b6f1 .row i { display: block; height: 20px; width: var(--w); background: var(--ink); }
+  .b6f1 .bars--on .row i { background: var(--shu); }
+  .b6f1 .r, .b6f3 .r { margin: 12px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+  .b6f1 .r--on, .b6f3 .r--on { color: var(--shu); font-weight: 700; }
+  .b6f2 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .b6f2 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b6f2 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
+  .b6f2 h4 { margin: 0; font-family: var(--mincho); font-size: 18px; }
+  .b6f2 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
+  .b6f2 .c em { font-style: normal; font-size: 12px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 7px; line-height: 1.7; }
+  .b6f3 .memos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .b6f3 .memos i { font-style: normal; border: 1px dashed var(--ink-2); padding: 12px 10px; font-size: 12.5px; color: var(--ink-2); text-align: center; background: var(--paper); }
+  .b6f3 .memos i:nth-child(2) { transform: rotate(1.5deg); }
+  .b6f3 .memos i:nth-child(3) { transform: rotate(-1.2deg); }
+  .b6f3 .one { border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); padding: 12px 14px; text-align: center; }
+  .b6f3 .one b { display: block; font-family: var(--mincho); font-size: 17px; background: none; }
+  .b6f3 .one span { font-size: 12px; color: #c9c4b6; }
+  .b6f3 .users { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; position: relative; }
+  .b6f3 .users i { font-style: normal; border: 1px solid var(--ink); background: var(--paper); text-align: center; padding: 6px 0; font-family: var(--mono); font-size: 13px; position: relative; }
+  .b6f3 .users i::before { content: ''; position: absolute; left: 50%; bottom: 100%; width: 1px; height: 16px; background: var(--shu); }
+  .b6f4 .seq { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+  .b6f4 .seq div { border: 1px solid var(--line); background: var(--paper); padding: 10px 14px; }
+  .b6f4 .seq b { display: block; font-family: var(--mono); font-weight: 500; font-size: 12.5px; color: var(--ink-2); background: none; }
+  .b6f4 .seq span { font-size: 14px; font-weight: 700; line-height: 1.6; }
+  .b6f4 .seq--on { margin-bottom: 0; }
+  .b6f4 .seq--on div { border-color: var(--ink); }
+  .b6f4 .seq--on .up2 { background: var(--shu); border-color: var(--shu); color: var(--paper); }
+  .b6f4 .seq--on .up2 b { color: #ffd9cf; }
+  @media (max-width: 760px) {
+    .b6f1 .two, .b6f3 .two { grid-template-columns: 1fr; }
+    .b6f2 .three { grid-template-columns: 1fr; }
+    .b6f4 .seq { grid-template-columns: 1fr; }
+  }
+</style>

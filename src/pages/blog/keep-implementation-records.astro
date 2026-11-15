@@ -1,0 +1,193 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '引継ぎ資料は、導入の終わりに急いで作られます。<b>要約する間に、「なぜこの設計にしたか」という経緯が抜けます。</b>',
+  '引継ぎ資料を新しく作る代わりに、<b>設計書・テストの記録・会議の決定を、AIが読める形でそのまま残します。</b>',
+  '保守では、AIが記録を検索して、回答の下書きを作ります。改修で直す資料の一覧も作ります。<b>判断と対応は、保守の担当者が行います。</b>',
+];
+const kinds = [
+  ['設計書', '機能が、何をどう処理するか', '改修で直す箇所を特定する'],
+  ['テストの記録', 'どの条件で、どの結果になったか', '改修のあとに、同じ条件で確認する'],
+  ['会議の決定', 'なぜ、その設計にしたか', '問い合わせに、理由を付けて回答する'],
+  ['業務フローと手順の一覧表', 'どの業務の手順で、どの機能を使うか', '業務の変更が、どの機能に影響するかを調べる'],
+];
+---
+
+<PostLayout slug="keep-implementation-records" points={points}>
+  <p class="lead2">稼働から1年後、業務の担当者から問い合わせが来ました。「この得意先だけ、請求書の締め日が違うのはなぜですか」。保守の担当者は、引継ぎ資料を読みましたが、理由は書かれていませんでした。</p>
+  <p>理由は、導入時の会議の記録に書かれていました。しかし、その記録は引継ぎの対象ではありませんでした。保守の担当者は、導入時の担当者を探して質問し、回答までに1週間かかりました。</p>
+  <p>原因は、<b>引継ぎ資料を作るときに、決定の経緯を省いたこと</b>です。この記事では、導入時の記録を残す形と、保守での使い方を書きます。</p>
+
+  <h2><i>01</i>引継ぎ資料は、要約する間に経緯が抜ける</h2>
+  <p>引継ぎ資料は、導入の最後の1か月で作られます。担当者は、稼働の準備と並行して、設計書や会議の記録を要約します。時間が足りないので、要約に残るのは「何を作ったか」だけです。</p>
+
+  <figure class="fig b11f1" data-loop="9500">
+    <div class="fig__h"><span>図 1</span>導入時の記録を引継ぎ資料に要約すると、決定の経緯が残らない</div>
+    <div class="fig__b">
+      <div class="two">
+        <div class="src">
+          <p class="k">導入時の記録</p>
+          {[['設計書', '何を作ったか'], ['テストの記録', 'どう確認したか'], ['会議の決定', 'なぜ、そう決めたか'], ['検討して採用しなかった案', '何を、なぜやめたか']].map(([a, b], k) => (
+            <div class:list={['rec', 'p', { lost: k >= 2 }]} style={`--t:${0.2 + k * 0.3}s`}><b>{a}</b><span>{b}</span></div>
+          ))}
+        </div>
+        <svg viewBox="0 0 60 12" class="arr f" style="--t:1.6s"><path d="M0 6h56M50 1l6 5-6 5" /></svg>
+        <div class="dst p" style="--t:2s">
+          <p class="k">引継ぎ資料</p>
+          <div class="rec"><b>機能の一覧</b><span>何を作ったか</span></div>
+          <div class="rec"><b>運用の手順</b><span>どう操作するか</span></div>
+          <p class="miss f" style="--t:3s">「なぜ、そう決めたか」と「何を、なぜやめたか」は、書かれていない</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">朱の枠の2つが、要約する間に省かれる記録です。保守で質問が多いのは、この2つです。</p>
+  </figure>
+
+  <div class="say">
+    <p>保守の担当者が知りたいのは、「何を作ったか」ではありません。「なぜ、そう作ったか」です。</p>
+    <span>「何を作ったか」は、システムを調べれば分かります。「なぜ」は、記録にしか残っていません。</span>
+  </div>
+
+  <h2><i>02</i>経緯が分からないと、保守の調査は導入時の担当者に頼ることになる</h2>
+  <p>経緯が分からない場合、保守の担当者は2つの方法しか選べません。1つ目は、導入時の担当者に質問することです。担当者が別のプロジェクトに移っていると、回答に日数がかかります。退職している場合は、質問できません。</p>
+  <p>2つ目は、理由が分からないまま改修することです。この方法では、導入時に検討して採用しなかった案を、もう一度作ることがあります。採用しなかった理由が、記録に残っていないからです。</p>
+
+  <h2><i>03</i>記録は、AIが読める3つの条件を満たす形で残す</h2>
+  <p>引継ぎ資料を新しく作る必要はありません。導入時の記録を、そのまま残します。ただし、残すだけでは、保守の担当者は目的の記載を見つけられません。AIが検索できるように、次の3つの条件を満たします。</p>
+
+  <figure class="fig b11f2">
+    <div class="fig__h"><span>図 2</span>AIが読める記録の条件は3つ。文字で読める、番号で結び付いている、保存する場所が決まっている</div>
+    <div class="fig__b">
+      <div class="three">
+        <div class="c p" style="--t:.2s"><b>1</b><h4>文字として読める</h4><p>図や表が画像として貼られていない。会議は、録音だけでなく文字の記録がある。</p><em>画像の中の文字は、検索できない</em></div>
+        <div class="c p" style="--t:.6s"><b>2</b><h4>番号で結び付いている</h4><p>設計書・テストの記録・会議の決定に、同じ要件の番号や手順の番号が書かれている。</p><em>番号が無いと、関係する記録を集められない</em></div>
+        <div class="c p" style="--t:1s"><b>3</b><h4>保存する場所が決まっている</h4><p>種類ごとに、保存するフォルダと、ファイルの名前のルールが決まっている。</p><em>個人のパソコンにある記録は、残らない</em></div>
+      </div>
+    </div>
+    <p class="fig__c">3つの条件は、稼働の直前に満たそうとしても間に合いません。設計が始まる前に決めます。</p>
+  </figure>
+
+  <p>2つ目の条件は、要件定義の間に番号を付けていれば満たせます。番号の付け方は、<a href="/blog/number-the-steps">業務フローの手順に番号を付ける記事</a>に書きました。この記事では、残した記録の使い方を書きます。</p>
+
+  <h2><i>04</i>残す記録は、設計書・テストの記録・会議の決定・手順の一覧表の4種類</h2>
+  <table class="tbl">
+    <thead><tr><th>記録</th><th>書かれていること</th><th>保守での使い道</th></tr></thead>
+    <tbody>
+      {kinds.map(([a, b, c]) => <tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>)}
+    </tbody>
+  </table>
+  <p>4種類のうち、残されないことが多いのは会議の決定です。会議の記録は、導入の間は連絡のために使われます。システムが稼働すると、会議の記録を管理する担当者がいなくなります。会議の決定には、決めた日・決めた人・関係する要件の番号を付けます。決定は、設計書と同じ場所に保存します。</p>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>すべての資料を残そうとすると、古い版と新しい版が混ざります。AIは、古い版の記載を根拠にして回答することがあります。残すのは、<strong>最後に承認された版</strong>だけにしてください。古い版は別のフォルダに移し、AIが読む対象から外します。</p>
+  </div>
+
+  <h2><i>05</i>記録があれば、問い合わせへの回答と改修の調査を、記録の検索から始められる</h2>
+
+  <figure class="fig b11f3" data-loop="10000">
+    <div class="fig__h"><span>図 3</span>AIが記録を検索して回答の下書きを作り、保守の担当者が確認して回答する</div>
+    <div class="fig__b">
+      <div class="chat">
+        <p class="q p" style="--t:.3s">「この得意先だけ、請求書の締め日が違うのはなぜですか」<small>業務の担当者</small></p>
+        <div class="ai p" style="--t:1.4s"><b>AI</b><span>要件の番号で、設計書・会議の決定・テストの記録を検索する</span></div>
+        <div class="ans p" style="--t:2.6s">
+          <p class="ans__k">回答の下書き</p>
+          <p class="ans__t">契約で締め日を月末以外に決めている得意先があり、得意先マスタの設定で分けています。</p>
+          <div class="refs"><i class="p" style="--t:3.3s">会議の決定　9月24日</i><i class="p" style="--t:3.6s">設計書 D-063</i><i class="p" style="--t:3.9s">テスト T-176</i></div>
+        </div>
+        <p class="who p" style="--t:4.8s">保守の担当者が、根拠の記録を読んでから回答する</p>
+      </div>
+    </div>
+    <p class="fig__c">番号と日付は説明のための例です。AIは、回答の下書きに、根拠にした記録を必ず添えます。</p>
+  </figure>
+
+  <ol class="n">
+    <li><strong>保守の担当者が、問い合わせの内容を AI に伝える</strong>業務の担当者の質問を、そのまま入力します。</li>
+    <li><strong>AIが、関係する記録を検索する</strong>AIは、設計書・会議の決定・テストの記録から、質問に関係する記載を集めます。</li>
+    <li><strong>AIが、回答の下書きと根拠を作る</strong>AIは、下書きに、根拠にした記録の名前と該当する箇所を添えます。</li>
+    <li><strong>保守の担当者が、根拠を読んで回答する</strong>担当者は、根拠の記載が質問に合っているかを確認します。合っていない場合は、下書きを使いません。</li>
+  </ol>
+
+  <p>改修の調査でも、問い合わせへの回答と同じ手順を使います。保守の担当者が変更したい内容を伝えると、AIは、直す設計書・プログラム・テストの一覧を作ります。担当者は、一覧を読んで、改修の範囲を決めます。</p>
+
+  <div class="say">
+    <p>記録は、判断の材料です。判断と対応は、保守の担当者が行います。</p>
+    <span>記録があっても、保守に必要な人数が減るとは限りません。減るのは、資料を探す時間と、導入時の担当者を待つ時間です。</span>
+  </div>
+
+  <h2><i>06</i>稼働後の問い合わせと改修も、同じ場所に記録する</h2>
+  <p>導入時の記録は、稼働した日から古くなります。稼働後の改修で、設計が変わるからです。保守の担当者は、問い合わせの回答と、改修の内容を、導入時の記録と同じ場所に追加します。</p>
+
+  <figure class="fig b11f4" data-loop="9000">
+    <div class="fig__h"><span>図 4</span>記録は、稼働後も増え続ける。同じ質問には、前回の回答を使える</div>
+    <div class="fig__b">
+      <div class="grow">
+        <div class="col"><p class="k">導入時</p><i class="ty" style="--w:100%;--t:.3s">設計書・テストの記録・会議の決定</i></div>
+        <div class="col"><p class="k">稼働後 半年</p><i class="ty" style="--w:100%;--t:.3s">設計書・テストの記録・会議の決定</i><i class="ty add" style="--w:62%;--t:1.2s">問い合わせと回答</i></div>
+        <div class="col"><p class="k">稼働後 1年</p><i class="ty" style="--w:100%;--t:.3s">設計書・テストの記録・会議の決定</i><i class="ty add" style="--w:86%;--t:1.2s">問い合わせと回答</i><i class="ty add" style="--w:62%;--t:2.1s">改修の内容と理由</i></div>
+      </div>
+    </div>
+    <p class="fig__c">朱の部分が、稼働後に追加する記録です。追加しないと、AIは改修の前の設計書を根拠にして回答します。</p>
+  </figure>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>改修したのに設計書を直さないと、記録とシステムの動作が食い違います。AIの下書きも誤ります。<strong>改修の完了の条件に、設計書の更新を含めてください。</strong>設計書を直す担当と、直したことを確認する担当を、保守の体制の中で決めます。</p>
+  </div>
+
+  <h2><i>07</i>明日は、過去の問い合わせ3件で、記録を探せるかを試す</h2>
+  <div class="todo">
+    <b>半日でできる、3つの確認</b>
+    <ol>
+      <li><span>過去の問い合わせから、<b>「なぜ、こうなっているのか」と質問された3件</b>を選ぶ。</span></li>
+      <li><span>3件それぞれについて、<b>理由が書かれた記録</b>を探す。探すのにかかった時間を記録する。</span></li>
+      <li><span>記録が見つからなかった問い合わせについて、<b>理由を知っている人が、いま誰か</b>を書き出す。</span></li>
+    </ol>
+  </div>
+  <p>3件のうち2件以上で記録が見つからなかった場合、経緯は人の記憶にしか残っていません。その人が担当を離れる前に、会議の決定を集めて保存してください。</p>
+  <p>導入の途中のプロジェクトでは、PM が、設計が始まる前に記録の残し方を決めます。決める内容は、図2の3つの条件です。稼働の直前に引継ぎ資料を作る作業が、不要になります。</p>
+</PostLayout>
+
+<style is:global>
+  .b11f1 .two { display: grid; grid-template-columns: 1.15fr auto 1fr; gap: 16px; align-items: center; }
+  .b11f1 .k, .b11f4 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .b11f1 .rec { display: grid; gap: 2px; border: 1px solid var(--ink); background: var(--paper); padding: 8px 12px; margin-bottom: 7px; }
+  .b11f1 .rec b { font-size: 14px; background: none; }
+  .b11f1 .rec span { font-size: 12px; color: var(--ink-2); }
+  .b11f1 .rec.lost { border: 2px dashed var(--shu); }
+  .b11f1 .rec.lost b { color: var(--shu); }
+  .b11f1 .arr { width: 60px; height: 12px; fill: none; stroke: var(--ink); stroke-width: 1.5; }
+  .b11f1 .dst { border: 1.5px solid var(--ink); background: var(--paper); padding: 14px 16px; }
+  .b11f1 .miss { margin: 8px 0 0; font-size: 12.5px; font-weight: 700; color: var(--shu); line-height: 1.7; }
+  .b11f2 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .b11f2 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b11f2 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
+  .b11f2 h4 { margin: 0; font-family: var(--mincho); font-size: 17px; line-height: 1.55; }
+  .b11f2 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
+  .b11f2 .c em { font-style: normal; font-size: 12px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 7px; }
+  .b11f3 .chat { display: grid; gap: 12px; }
+  .b11f3 .q { margin: 0; justify-self: end; max-width: 80%; background: var(--paper-2); border: 1px solid var(--line); padding: 10px 16px; font-family: var(--mincho); font-weight: 500; font-size: 15px; line-height: 1.8; }
+  .b11f3 .q small { display: block; font-family: var(--gothic); font-size: 11.5px; color: var(--ink-2); }
+  .b11f3 .ai { display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: center; font-size: 13px; }
+  .b11f3 .ai b { width: 40px; height: 40px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-family: var(--mono); font-weight: 500; font-size: 13px; }
+  .b11f3 .ans { border: 1.5px solid var(--ink); background: var(--paper); padding: 12px 16px; max-width: 86%; }
+  .b11f3 .ans__k { margin: 0 0 4px; font-size: 12px; font-weight: 700; color: var(--shu); }
+  .b11f3 .ans__t { margin: 0 0 10px; font-size: 14.5px; line-height: 1.8; }
+  .b11f3 .refs { display: flex; flex-wrap: wrap; gap: 6px; }
+  .b11f3 .refs i { font-style: normal; font-size: 12px; border: 1px solid var(--ink); padding: 1px 10px; background: var(--paper-2); }
+  .b11f3 .who { margin: 0; font-size: 13px; font-weight: 700; border: 1px dashed var(--ink-2); padding: 4px 14px; justify-self: start; }
+  .b11f4 .grow { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; align-items: start; }
+  .b11f4 .col i { display: block; width: var(--w); background: var(--ink); color: var(--paper); font-style: normal; font-size: 12px; line-height: 1.5; padding: 8px 10px; margin-bottom: 6px; min-height: 52px; }
+  .b11f4 .col i.add { background: var(--shu); min-height: 0; }
+  @media (max-width: 760px) {
+    .b11f1 .two { grid-template-columns: 1fr; }
+    .b11f1 .arr { transform: rotate(90deg); width: 34px; margin-left: 14px; }
+    .b11f2 .three { grid-template-columns: 1fr; }
+    .b11f3 .q, .b11f3 .ans { max-width: 100%; }
+    .b11f4 .grow { grid-template-columns: 1fr; }
+    .b11f4 .col i { min-height: 0; }
+    .b11f4 .col i.add { width: 100% !important; white-space: normal; }
+  }
+</style>
