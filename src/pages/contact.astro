@@ -378,10 +378,11 @@ const after = [
       name: val('name'),
       email: val('email'),
       phone: val('phone'),
-      systemType: val('systemType'),
-      budget: '未定',
+      situation: val('systemType'),
+      phases,
+      topic: document.documentElement.classList.contains('is-asm') ? 'assessment' : 'general',
       timeline: val('timeline'),
-      message: (phases.length ? `【相談したい工程】${phases.join('・')}\n\n` : '') + val('message'),
+      message: val('message'),
     };
     send.classList.add('busy');
     sendLabel.textContent = '送信しています';
@@ -393,8 +394,8 @@ const after = [
       /* 相談の送信を、アナリティクスの「見込み客の獲得」として記録する。個人を特定する情報は送らない */
       (window as any).gtag?.('event', 'generate_lead', {
         form_name: 'contact',
-        lead_topic: document.documentElement.classList.contains('is-asm') ? 'assessment' : 'general',
-        lead_situation: body.systemType,
+        lead_topic: body.topic,
+        lead_situation: body.situation,
         lead_phases: phases.join('・').slice(0, 90) || '（未選択）',
       });
       slip.scrollIntoView({ behavior: 'smooth', block: 'center' });
