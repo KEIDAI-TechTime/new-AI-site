@@ -1,0 +1,1105 @@
+---
+import NightLayout from '@/layouts/NightLayout.astro';
+
+const title = 'TechTime | SAPの導入と保守を、生成AIで進める。（B案）';
+const description =
+  'TechTime は、SAP を中心とした基幹システムの導入と運用保守を、生成AIで進めるための手順と仕組みをお客様のプロジェクトに組み込みます。';
+
+const phases = [
+  { key: 'req', name: '要件定義', line: '会議の記録から、決定と未決を拾う。', human: 'どれを作るかを決める' },
+  { key: 'des', name: '設計', line: '初版を起こし、全件を点検する。', human: '指摘を反映するかを決める' },
+  { key: 'dev', name: '開発', line: '設計書から、ABAP とテストを起こす。', human: '動きを確かめる' },
+  { key: 'tst', name: 'テスト', line: 'SAP の画面を操作し、証跡を残す。', human: '合否を決める' },
+  { key: 'mig', name: '移行', line: '全件を変換し、全件を照合する。', human: '判断の要る項目だけを見る' },
+  { key: 'ope', name: '運用保守', line: '導入の記録を持ったまま、問い合わせに答える。', human: '確かめて返す' },
+];
+const W8 = [92, 70, 84, 56, 96, 64, 78, 44];
+const CODE = [[0, 46], [1, 70], [1, 58], [2, 80], [2, 52], [1, 34], [1, 66], [2, 74], [0, 28]];
+
+const COLS = 12;
+const ROWS = 7;
+const dots = Array.from({ length: COLS * ROWS }, (_, i) => i);
+const sampled = [2, 15, 20, 31, 38, 49, 57, 66, 77];
+const defects = [8, 27, 46, 70];
+
+const meritsBuild = [
+  { fig: 'shift', name: '不具合が、前の工程で見つかる', body: '誤りを後ろの工程へ持ち越さない。' },
+  { fig: 'time', name: '作る時間が縮み、決める時間が増える', body: '空いた時間を、業務の検討と合意へ。' },
+  { fig: 'daily', name: '進み具合と課題が、毎朝そろっている', body: '報告のための資料づくりが要らない。' },
+  { fig: 'even', name: '担当が替わっても、出来がそろう', body: '誰が頼んでも、同じ形で出る。' },
+];
+const feed = ['会議の記録を読みました', '課題を一覧に足しました', '期日の近い課題を並べました', '止まっている話題を見つけました', '担当への確認の下書きを作りました', 'チャットの投稿を読みました'];
+
+const meritsRun = [
+  { name: '引継ぎで知識が落ちない', body: '稼働の日から、導入の記録が使える。' },
+  { name: '問い合わせに、その場で答える', body: '記録を持ったAIが、回答の下書きを作る。' },
+  { name: '改修の影響が、すぐに分かる', body: '関係する設計書・プログラム・テストが並ぶ。' },
+  { name: '止まる前に気づく', body: '夜間の処理と締めを、AIが見張る。' },
+];
+
+const steps = [
+  { name: '現状を見る', body: '設計書・規約・進め方を見て、AIが効く工程を分ける。' },
+  { name: '手順を作る', body: 'お客様の様式と規約に合わせて作る。' },
+  { name: '一機能で試す', body: '実際の案件で、設計からテストまで通す。' },
+  { name: '広げて、渡す', body: '手順はお客様のものとして残す。' },
+];
+const rules = ['結果は人が確かめて決める。AIに決めさせない。', '本番環境では、AIに画面を操作させない。', 'お客様の情報を、AIの学習に使われない設定で扱う。'];
+
+const career = [
+  { yr: '2001', to: '2009', seat: '業務の当事者', org: '大手自動車メーカー', body: '受注・在庫・物流の運営。SAP PP の更改を業務側で主導。' },
+  { yr: '2009', to: '2017', seat: 'コンサルタント', org: '外資系コンサルティングファーム', body: 'SAP ECC・S/4HANA の導入（SD・MM）。構想から要件の確定まで。' },
+  { yr: '2017', to: '2024', seat: 'プロジェクト責任者', org: '外資系IT企業', body: 'S/4HANA の再構築を約120名のPMとして統括。アジア3拠点へ展開。' },
+  { yr: '2024', to: '現在', seat: '生成AIでの導入', org: 'TechTime', body: '大型の SAP 案件で、生成AIで作る手順と点検の仕組みを設計。' },
+];
+const band = ['要件定義', '設計', '開発', 'テスト', '移行', '運用保守'];
+---
+
+<NightLayout title={title} description={description}>
+  <header class="nav">
+    <a href="/b" class="nav__logo"><i></i>TechTime</a>
+    <nav class="nav__links">
+      <a href="#change">AIで変わること</a>
+      <a href="#pm">プロジェクト管理</a>
+      <a href="#build">導入</a>
+      <a href="#run">運用保守</a>
+      <a href="#how">進め方</a>
+    </nav>
+    <a href="#contact" class="nav__cta">相談する</a>
+  </header>
+
+  <main>
+    <!-- ============ HERO ============ -->
+    <section class="hero">
+      <canvas id="net" aria-hidden="true"></canvas>
+      <div class="hero__shade" aria-hidden="true"></div>
+      <div class="hero__copy">
+        <p class="chip"><i></i>SAP × 生成AI</p>
+        <h1 class="hero__h1">
+          <span class="hl"><span>SAPの導入と保守を、</span></span>
+          <span class="hl"><span><em>生成AI</em>で進める。</span></span>
+        </h1>
+        <p class="hero__lead">
+          AIが作り、全件を点検する。人は、決めることに集中する。<br />その進め方を、お客様のプロジェクトに組み込みます。
+        </p>
+        <div class="hero__act">
+          <a href="#contact" class="btn">相談する<span>→</span></a>
+          <a href="#change" class="ghost">AIで変わることを見る</a>
+        </div>
+      </div>
+      <p class="hero__legend" aria-hidden="true"><span><i class="lg-doc"></i>伝票の流れ</span><span><i class="lg-ai"></i>AIの点検</span></p>
+    </section>
+
+    <div class="band" aria-hidden="true">
+      <div class="band__in">
+        {[0, 1].map(() => band.map((b) => <span>{b}<i></i></span>))}
+      </div>
+    </div>
+
+    <!-- ============ CHANGE：スクロールで全件へ ============ -->
+    <section class="scan" id="change">
+      <div class="scan__sticky">
+        <div class="scan__copy">
+          <p class="chip"><i></i>AIで変わること</p>
+          <h2 class="scan__h">
+            <span class="was">抜き取りで<br />確かめる。</span>
+            <span class="now">AIが、全件を<br />確かめる。</span>
+          </h2>
+          <dl class="scan__read">
+            <div><dt>確かめた件数</dt><dd><b id="nChk">9</b><small>/ {dots.length}</small></dd></div>
+            <div><dt>見つけた誤り</dt><dd class="e"><b id="nHit">0</b><small>/ {defects.length}</small></dd></div>
+          </dl>
+        </div>
+        <div class="scan__grid" id="dots" aria-hidden="true">
+          {dots.map((i) => (
+            <i class:list={[{ s: sampled.includes(i), d: defects.includes(i) }]} data-w={(i % COLS) + Math.floor(i / COLS)}></i>
+          ))}
+        </div>
+        <p class="scan__hint" aria-hidden="true">スクロール<i></i></p>
+      </div>
+    </section>
+
+    <!-- ============ 工程：場面で見せる ============ -->
+    <section class="px" id="px">
+      <div class="px__sticky">
+        <div class="px__side">
+          <p class="chip"><i></i>工程ごとの変化</p>
+          <ol class="px__names">
+            {phases.map((p, i) => (
+              <li class:list={[{ 'is-on': i === 0 }]} data-i={i}><span>{String(i + 1).padStart(2, '0')}</span>{p.name}</li>
+            ))}
+          </ol>
+          <div class="px__caps">
+            {phases.map((p, i) => (
+              <div class:list={['px__cap', { 'is-on': i === 0 }]}>
+                <p class="px__line"><b>AI</b>{p.line}</p>
+                <p class="px__human"><b>人</b>{p.human}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="px__stage" aria-hidden="true">
+          <!-- 要件定義 -->
+          <div class="st st--req is-on">
+            <div class="box talk">
+              <em>会議の記録</em>
+              {[78, 54, 88, 62, 72].map((w, k) => <i class:list={['bb', 'p', { r: k % 2 === 1 }]} style={`--t:${0.1 + k * 0.22}s;--w:${w}%`}></i>)}
+            </div>
+            <span class="aibadge p" style="--t:1.5s">AI</span>
+            <div class="box out">
+              <em>決定</em>
+              {[0, 1, 2].map((k) => <b class="cp ok p" style={`--t:${2 + k * 0.4}s`}><i style={`width:${[70, 52, 84][k]}%`}></i></b>)}
+              <em class="mt">未決</em>
+              {[0, 1].map((k) => <b class="cp ng p" style={`--t:${3.4 + k * 0.4}s`}><i style={`width:${[60, 76][k]}%`}></i></b>)}
+            </div>
+          </div>
+
+          <!-- 設計 -->
+          <div class="st st--des">
+            <div class="box doc">
+              <em>設計書</em>
+              {W8.map((w, k) => <i class:list={['ln', 'ty', { flag: k === 2 || k === 5 }]} style={`--t:${0.2 + k * 0.28}s;--w:${w}%`}></i>)}
+              <span class="scanl"></span>
+            </div>
+            <div class="box side">
+              <em>AIの点検</em>
+              <b class="cp ng p" style="--t:4.5s">指摘</b>
+              <b class="cp ng p" style="--t:4.9s">指摘</b>
+              <b class="cp ok p" style="--t:5.4s">ほかは問題なし</b>
+            </div>
+          </div>
+
+          <!-- 開発 -->
+          <div class="st st--dev">
+            <div class="box src">
+              <em>設計書</em>
+              {[80, 60, 90, 50].map((w) => <i class="ln" style={`--w:${w}%`}></i>)}
+            </div>
+            <span class="aibadge p" style="--t:0.5s">AI</span>
+            <div class="box code">
+              <em>ABAP</em>
+              {CODE.map(([ind, w], k) => <i class:list={['ln', 'ty', `c${k % 3}`]} style={`--t:${0.9 + k * 0.24}s;--w:${w}%;--in:${ind * 9}%`}></i>)}
+            </div>
+            <div class="tags">
+              {['規約に合っている', '設計書と対応している', '単体テスト仕様', 'テストデータ'].map((t, k) => <b class="cp ok p" style={`--t:${3.6 + k * 0.4}s`}>{t}</b>)}
+            </div>
+          </div>
+
+          <!-- テスト -->
+          <div class="st st--tst">
+            <div class="box sap">
+              <div class="sap__bar"><i></i><i></i><i></i><span>受注登録</span></div>
+              {['受注先', '品目', '数量'].map((l, k) => (
+                <label><span>{l}</span><i class="fld"><u class="ty" style={`--t:${1 + k * 0.9}s;--w:${[62, 78, 30][k]}%`}></u></i></label>
+              ))}
+              <div class="sap__btn">保存</div>
+              <div class="sap__msg p" style="--t:4.4s">登録しました</div>
+              <span class="cur"></span>
+              <span class="flash"></span>
+            </div>
+            <div class="box ev">
+              <em>証跡</em>
+              <b class="shot p" style="--t:5.1s"><i></i><i></i><i></i></b>
+              <b class="cp ok p" style="--t:5.6s">OK</b>
+            </div>
+          </div>
+
+          <!-- 移行 -->
+          <div class="st st--mig">
+            <div class="box tbl">
+              <em>いまのシステム</em>
+              {[0, 1, 2, 3, 4, 5, 6].map(() => <i class="row"></i>)}
+            </div>
+            <div class="pipe">{[0, 1, 2, 3, 4, 5].map((k) => <u style={`--k:${k}`}></u>)}</div>
+            <div class="box tbl new">
+              <em>SAP</em>
+              {[0, 1, 2, 3, 4, 5, 6].map((k) => <i class:list={['row', 'ty', { warn: k === 4 }]} style={`--t:${0.5 + k * 0.42}s;--w:100%`}><s class="p" style={`--t:${0.9 + k * 0.42}s`}></s></i>)}
+            </div>
+            <div class="prog"><span>全件を照合</span><i><u></u></i></div>
+          </div>
+
+          <!-- 運用保守 -->
+          <div class="st st--ope">
+            <div class="q p" style="--t:0.3s">この伝票が止まっている理由は？</div>
+            <div class="dots"><i></i><i></i><i></i></div>
+            <div class="a p" style="--t:2.5s">
+              <i class="ln" style="--w:92%"></i><i class="ln" style="--w:76%"></i><i class="ln" style="--w:58%"></i>
+              <div class="srcs">
+                {['設計書', 'テストの記録', '決定の記録'].map((t, k) => <b class="cp ok p" style={`--t:${3.3 + k * 0.4}s`}>{t}</b>)}
+              </div>
+            </div>
+            <div class="by p" style="--t:5s">担当者が確かめて返す</div>
+          </div>
+
+          <div class="px__bar"><i id="pxBar"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ プロジェクト管理 ============ -->
+    <section class="sec pm" id="pm">
+      <p class="chip rv"><i></i>プロジェクト管理が変わる</p>
+      <h2 class="h2 rv">報告を待たない。<br />記録から、毎朝わかる。</h2>
+      <div class="pm__cmp rv">
+        {[['状況を知る', '週次の報告', '毎朝の画面'], ['期日の判断', '経験と勘', '間に合う確率'], ['会議の資料', '人が集計して作る', '作らない。画面を開く']].map((r) => (
+          <div><span>{r[0]}</span><s>{r[1]}</s><i>→</i><b>{r[2]}</b></div>
+        ))}
+      </div>
+      <div class="pm__grid">
+        <article class="pmt rv">
+          <div class="pmf pmf--pick" aria-hidden="true">
+            <div class="pk__in"><em>チャット・会議</em>{[70, 52, 84, 60].map((w, k) => <i class="pp" style={`--t:${0.1 + k * 0.3}s;--w:${w}%`}></i>)}</div>
+            <span class="pk__ai pp" style="--t:1.3s">AI</span>
+            <div class="pk__out"><em>課題・リスク一覧</em>{['課題', 'リスク', '課題'].map((t, k) => <b class="pp" style={`--t:${1.8 + k * 0.5}s`}><u class:list={[{ r: t === 'リスク' }]}>{t}</u><i></i></b>)}</div>
+          </div>
+          <h3>会話と会議から、課題とリスクを毎朝拾う</h3>
+        </article>
+        <article class="pmt rv" style="--d:.1s">
+          <div class="pmf pmf--prob" aria-hidden="true">
+            <div class="pb__num"><em>期日に間に合う確率（例）</em><p><b class="pbn">52</b><small>%</small></p></div>
+            <div class="pb__plot">
+              <span class="pb__late">遅れ</span>
+              <div class="pb__bars">{[4, 8, 14, 24, 38, 56, 72, 84, 72, 56, 38, 24, 14, 8, 4].map((h, k) => <i class="py" style={`--h:${h}%;--t:${k * 0.05}s`}></i>)}</div>
+              <span class="pb__dl"><u>期日</u></span>
+            </div>
+          </div>
+          <h3>期日に間に合うかを、確率で答える</h3>
+        </article>
+        <article class="pmt rv">
+          <div class="pmf pmf--order" aria-hidden="true">
+            <em>今日、手を打つ順</em>
+            <div class="od">{[[40, 3], [85, 0], [25, 4], [65, 1], [55, 2]].map(([w, r], k) => <div class:list={['od__r', { top: r < 3 }]} style={`--y0:${k};--y1:${r};--w:${w}%`}><u>{r + 1}</u><i></i></div>)}</div>
+          </div>
+          <h3>どの課題から片付けるかを、効き目の順に並べる</h3>
+        </article>
+        <article class="pmt rv" style="--d:.1s">
+          <div class="pmf pmf--net" aria-hidden="true">
+            <svg viewBox="0 0 220 124">
+              {[[30, 24], [38, 98], [104, 12], [182, 28], [190, 96], [112, 112]].map(([x, y], k) => (
+                <g><line x1={x} y1={y} x2="110" y2="62" pathLength="1" class="nl" style={`--t:${0.4 + k * 0.35}s`} /><circle cx={x} cy={y} r="6" class="nd" /></g>
+              ))}
+              <circle cx="110" cy="62" r="11" class="hub" />
+            </svg>
+            <b class="nt pp" style="--t:3s">問いが集まり、答えが止まっている</b>
+          </div>
+          <h3>問いが集まる人と、止まっている話題が見える</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ 導入 ============ -->
+    <section class="sec" id="build">
+      <p class="chip rv"><i></i>導入で得られること</p>
+      <h2 class="h2 rv">品質を落とさずに、<br />日程に余裕をつくる。</h2>
+      <div class="bento">
+        {meritsBuild.map((m, i) => (
+          <article class:list={['card', 'rv', `card--${m.fig}`]} style={`--d:${(i % 2) * 0.1}s`}>
+            <div class="card__fig" aria-hidden="true">
+              {m.fig === 'shift' && (
+                <div class="f-shift">
+                  {['設計', '単体', '結合', '統合'].map((l) => <div><i></i><span>{l}</span></div>)}
+                </div>
+              )}
+              {m.fig === 'time' && (
+                <div class="f-time">
+                  <div class="f-time__bar"><i class="mk"><span>作る</span></i><i class="dc"><span>決める</span></i></div>
+                </div>
+              )}
+              {m.fig === 'daily' && (
+                <div class="f-daily">
+                  <ul>
+                    {[...feed, ...feed].map((f) => <li><b>07:00</b>{f}</li>)}
+                  </ul>
+                </div>
+              )}
+              {m.fig === 'even' && (
+                <div class="f-even">
+                  {[0, 1, 2, 3, 4].map((k) => <i style={`--k:${k}`}></i>)}
+                </div>
+              )}
+            </div>
+            <h3 class="card__name">{m.name}</h3>
+            <p class="card__body">{m.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ============ 運用保守 ============ -->
+    <section class="sec" id="run">
+      <p class="chip rv"><i></i>運用保守で得られること</p>
+      <h2 class="h2 rv">導入の記録を、<br />そのまま保守で使う。</h2>
+
+      <div class="beam rv" aria-hidden="true">
+        <div class="beam__track">
+          <i class="beam__light"></i>
+          <span class="beam__gate"><b>稼働</b></span>
+          <span class="beam__pack">設計書・テスト・決定の記録</span>
+        </div>
+        <div class="beam__labels">
+          <span>要件定義</span><span>設計</span><span>開発</span><span>テスト</span><span>移行</span>
+          <span class="after">問い合わせ</span><span class="after">改修</span><span class="after">次の展開</span>
+        </div>
+      </div>
+
+      <div class="runs">
+        {meritsRun.map((m, i) => (
+          <article class="run rv" style={`--d:${i * 0.08}s`}>
+            <span class="run__no">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="run__name">{m.name}</h3>
+            <p class="run__body">{m.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ============ 進め方 ============ -->
+    <section class="sec how" id="how">
+      <div class="how__head">
+        <p class="chip rv"><i></i>TechTime の進め方</p>
+        <h2 class="h2 rv">お客様のプロジェクトの中で、<br />一機能から始める。</h2>
+<p class="lead rv">お客様の様式と規約に合わせた手順を作り、使える形でお渡しします。</p>
+      </div>
+      <div class="stack">
+        {steps.map((s, i) => (
+          <article class="sc" style={`--i:${i}`}>
+            <span class="sc__no">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="sc__name">{s.name}</h3>
+            <p class="sc__body">{s.body}</p>
+          </article>
+        ))}
+      </div>
+      <ul class="rules rv">
+        <li class="rules__k">守ること</li>
+        {rules.map((r) => <li>{r}</li>)}
+      </ul>
+    </section>
+
+    <!-- ============ 経歴 ============ -->
+    <section class="sec">
+      <p class="chip rv"><i></i>代表の経歴</p>
+      <h2 class="h2 rv">業務、構想、導入。<br />三つの立場で SAP に関わってきた。</h2>
+      <ol class="cv">
+        {career.map((c) => (
+          <li class="cv__row rv">
+            <p class="cv__yr">{c.yr}<small>— {c.to}</small></p>
+            <div>
+              <h3 class="cv__seat">{c.seat}<span>{c.org}</span></h3>
+              <p class="cv__body">{c.body}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+      <dl class="nums">
+        <div class="rv"><dt>基幹システムの現場</dt><dd><b data-count="25">0</b>年</dd></div>
+        <div class="rv"><dt>SAP の導入・展開・更改</dt><dd><b data-count="6">0</b>件</dd></div>
+        <div class="rv"><dt>率いた体制（最大）</dt><dd>約<b data-count="120">0</b>名</dd></div>
+        <div class="rv"><dt>扱ってきた領域</dt><dd><b class="t">PP・MM・SD</b></dd></div>
+      </dl>
+    </section>
+
+    <!-- ============ 相談 ============ -->
+    <section class="contact" id="contact">
+      <div class="contact__glow" aria-hidden="true"></div>
+      <h2 class="contact__h rv">いまの進め方を、<br />聞かせてください。</h2>
+      <p class="contact__lead rv">導入の途中でも、稼働したあとでも。AIが効くかどうかをお答えします。</p>
+      <a href="/contact" class="btn btn--lg rv">相談する<span>→</span></a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p><b>TechTime株式会社</b>　東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
+    <p>© TechTime Co., Ltd.</p>
+  </footer>
+
+  <nav class="ab" aria-label="案の切り替え"><a href="/">A案</a><a href="/b" class="on">B案</a></nav>
+</NightLayout>
+
+<style>
+  /* ---------- ナビ ---------- */
+  .nav {
+    position: fixed;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    width: min(1180px, calc(100% - 28px));
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 9px 9px 9px 22px;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    background: rgba(16, 18, 21, 0.72);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .nav__logo { font-family: var(--num); font-weight: 700; font-size: 18px; letter-spacing: -0.01em; display: flex; align-items: center; gap: 9px; }
+  .nav__logo i { width: 10px; height: 10px; border-radius: 50%; background: var(--ai); box-shadow: 0 0 14px var(--ai); display: block; }
+  .nav__links { display: flex; gap: clamp(14px, 2.4vw, 30px); font-size: 13.5px; color: var(--fg-2); }
+  .nav__links a { transition: color 0.25s; }
+  .nav__links a:hover { color: var(--fg); }
+  .nav__cta { background: var(--fg); color: var(--bg); font-weight: 700; font-size: 13.5px; padding: 7px 18px; border-radius: 999px; transition: background 0.25s; white-space: nowrap; }
+  .nav__cta:hover { background: var(--ai); }
+
+  /* ---------- 共通 ---------- */
+  main { overflow-x: clip; }
+  .sec { padding: clamp(90px, 12vw, 180px) var(--gutter); max-width: 1400px; margin: 0 auto; }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    font-size: 12.5px;
+    font-weight: 500;
+    color: var(--fg-2);
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 3px 14px 3px 11px;
+    margin: 0 0 26px;
+  }
+  .chip i { width: 7px; height: 7px; border-radius: 50%; background: var(--ai); display: block; }
+  .h2 { font-weight: 900; font-size: clamp(30px, 5vw, 72px); line-height: 1.3; letter-spacing: -0.01em; margin: 0; }
+  .lead { margin: 28px 0 0; max-width: 680px; color: var(--fg-2); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    background: var(--ai);
+    color: var(--bg);
+    font-weight: 900;
+    font-size: 15.5px;
+    padding: 14px 16px 14px 28px;
+    border-radius: 999px;
+    transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
+  }
+  .btn span { width: 34px; height: 34px; border-radius: 50%; background: var(--bg); color: var(--ai); display: grid; place-items: center; font-family: var(--num); transition: transform 0.3s; }
+  .btn:hover { transform: translateY(-2px); box-shadow: 0 12px 44px rgba(212, 255, 58, 0.32); }
+  .btn:hover span { transform: translateX(3px); }
+  .btn--lg { font-size: 19px; padding: 20px 20px 20px 38px; }
+  .btn--lg span { width: 46px; height: 46px; font-size: 20px; }
+  .ghost { font-size: 14px; color: var(--fg-2); border-bottom: 1px solid var(--rule); padding-bottom: 3px; transition: color 0.25s, border-color 0.25s; }
+  .ghost:hover { color: var(--fg); border-color: var(--fg); }
+  .rv { opacity: 0; transform: translateY(34px); filter: blur(6px); transition: opacity 0.9s var(--d, 0s), transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s), filter 0.9s var(--d, 0s); }
+  .rv.in { opacity: 1; transform: none; filter: none; }
+
+  /* ---------- HERO ---------- */
+  .hero { position: relative; min-height: 100svh; display: flex; align-items: flex-end; padding: 130px var(--gutter) clamp(60px, 8vw, 110px); overflow: hidden; }
+  #net { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+  .hero__shade { position: absolute; inset: 0; background: radial-gradient(120% 90% at 0% 100%, rgba(10, 11, 13, 0.94) 0%, rgba(10, 11, 13, 0.6) 38%, transparent 66%), linear-gradient(transparent 70%, var(--bg)); pointer-events: none; }
+  .hero__copy { position: relative; }
+  .hero__h1 { font-weight: 900; font-size: clamp(31px, 5.2vw, 84px); line-height: 1.2; letter-spacing: -0.02em; margin: 0 0 30px; white-space: nowrap; }
+  .hero__h1 .hl { display: block; overflow: hidden; padding-bottom: 0.08em; }
+  .hero__h1 .hl > span { display: inline-block; transform: translateY(110%); animation: rise 1.1s cubic-bezier(0.16, 0.9, 0.2, 1) 0.2s forwards; }
+  .hero__h1 .hl:nth-child(2) > span { animation-delay: 0.34s; }
+  .hero__h1 em { font-style: normal; color: var(--ai); }
+  @keyframes rise { to { transform: none; } }
+  @keyframes fade { to { opacity: 1; transform: none; } }
+  .hero__copy .chip, .hero__lead, .hero__act { opacity: 0; transform: translateY(18px); animation: fade 0.9s 0.9s forwards; }
+  .hero__lead { max-width: 600px; font-size: clamp(14.5px, 1.2vw, 17px); color: #c6c8c4; margin: 0 0 36px; animation-delay: 1s; }
+  .hero__act { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; animation-delay: 1.15s; }
+  .hero__legend { position: absolute; right: var(--gutter); bottom: clamp(60px, 8vw, 110px); margin: 0; display: flex; gap: 22px; font-size: 12px; color: var(--fg-2); }
+  .hero__legend span { display: flex; align-items: center; gap: 8px; }
+  .lg-doc { width: 8px; height: 8px; border-radius: 50%; background: var(--fg); display: block; }
+  .lg-ai { width: 13px; height: 13px; border-radius: 50%; border: 1.5px solid var(--ai); display: block; }
+
+  /* ---------- 帯 ---------- */
+  .band { border-block: 1px solid var(--rule); overflow: hidden; padding: 18px 0; }
+  .band__in { display: flex; width: max-content; animation: slide 36s linear infinite; }
+  .band span { font-weight: 900; font-size: clamp(22px, 3vw, 40px); color: transparent; -webkit-text-stroke: 1px rgba(241, 242, 238, 0.42); display: flex; align-items: center; white-space: nowrap; }
+  .band span i { width: 10px; height: 10px; border-radius: 50%; background: var(--ai); margin: 0 clamp(22px, 3vw, 44px); display: block; }
+  @keyframes slide { to { transform: translateX(-50%); } }
+
+  /* ---------- 抜き取りから全件へ ---------- */
+  .scan { height: 260vh; position: relative; }
+  .scan__sticky { position: sticky; top: 0; height: 100svh; display: grid; grid-template-columns: minmax(0, 0.95fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 90px); align-items: center; padding: 96px var(--gutter) 40px; max-width: 1400px; margin: 0 auto; }
+  .scan__h { font-weight: 900; font-size: clamp(30px, 5vw, 76px); line-height: 1.26; letter-spacing: -0.01em; margin: 0; display: grid; }
+  .scan__h span { grid-area: 1 / 1; transition: opacity 0.5s, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1), filter 0.5s; }
+  .scan__h .now { opacity: 0; transform: translateY(30px); filter: blur(8px); color: var(--ai); }
+  .scan.is-now .scan__h .was { opacity: 0; transform: translateY(-30px); filter: blur(8px); }
+  .scan.is-now .scan__h .now { opacity: 1; transform: none; filter: none; }
+  .scan__lead { color: var(--fg-2); max-width: 520px; margin: 26px 0 0; font-size: 15px; }
+  .scan__read { display: flex; gap: clamp(24px, 4vw, 60px); margin: 34px 0 0; }
+  .scan__read dt { font-size: 12.5px; color: var(--fg-2); }
+  .scan__read dd { margin: 0; font-family: var(--num); line-height: 1.1; }
+  .scan__read b { font-size: clamp(46px, 6vw, 92px); font-weight: 700; letter-spacing: -0.04em; }
+  .scan__read small { font-size: 18px; color: var(--fg-2); margin-left: 8px; }
+  .scan__read .e b { color: var(--err); }
+  .scan__grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: clamp(5px, 0.9vw, 13px); }
+  .scan__grid i { display: block; aspect-ratio: 1; border-radius: 26%; background: var(--bg-3); transition: background 0.35s, transform 0.45s cubic-bezier(0.3, 1.5, 0.5, 1), box-shadow 0.35s; }
+  .scan__grid i.s, .scan__grid i.on { background: var(--fg); }
+  .scan__grid i.on:not(.s):not(.d) { background: #cfd1cc; }
+  .scan__grid i.on.d { background: var(--err); transform: scale(1.22); box-shadow: 0 0 30px rgba(255, 90, 54, 0.75); }
+  .scan__grid i.edge { background: var(--ai); box-shadow: 0 0 22px rgba(212, 255, 58, 0.7); }
+  .scan__hint { position: absolute; left: 50%; bottom: 20px; transform: translateX(-50%); margin: 0; font-size: 11.5px; color: var(--fg-2); display: flex; flex-direction: column; align-items: center; gap: 6px; transition: opacity 0.4s; }
+  .scan__hint i { width: 1px; height: 26px; background: linear-gradient(var(--ai), transparent); display: block; animation: drip 1.6s infinite; }
+  .scan.is-now .scan__hint { opacity: 0; }
+  @keyframes drip { 0% { transform: scaleY(0); transform-origin: top; } 60% { transform: scaleY(1); transform-origin: top; } 100% { transform: scaleY(1); opacity: 0; } }
+
+  /* ---------- 工程：場面 ---------- */
+  .px { height: 620vh; position: relative; }
+  .px__sticky { position: sticky; top: 0; height: 100svh; display: grid; grid-template-columns: minmax(0, 0.72fr) minmax(0, 1fr); gap: clamp(24px, 4vw, 70px); align-items: center; padding: 96px var(--gutter) 36px; max-width: 1400px; margin: 0 auto; }
+  .px__names { list-style: none; margin: 0; padding: 0; }
+  .px__names li { cursor: pointer; font-weight: 900; font-size: clamp(24px, 3.7vw, 58px); line-height: 1.34; color: transparent; -webkit-text-stroke: 1px rgba(241, 242, 238, 0.3); display: flex; align-items: baseline; gap: 16px; transition: color 0.4s, -webkit-text-stroke-color 0.4s, transform 0.5s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .px__names span { font-family: var(--num); font-size: 13px; font-weight: 500; -webkit-text-stroke: 0; color: var(--fg-2); width: 1.8em; }
+  .px__names li.is-on { color: var(--fg); -webkit-text-stroke-color: transparent; transform: translateX(10px); }
+  .px__names li.is-on span { color: var(--ai); }
+  .px__caps { display: grid; margin-top: clamp(18px, 2.4vw, 34px); min-height: 104px; }
+  .px__cap { grid-area: 1 / 1; opacity: 0; transform: translateY(12px); }
+  .px__cap.is-on { opacity: 1; transform: none; transition: opacity 0.5s 0.1s, transform 0.5s 0.1s; }
+  .px__cap p { margin: 0 0 8px; display: flex; align-items: baseline; gap: 12px; }
+  .px__cap b { flex: none; font-size: 11.5px; font-weight: 700; border-radius: 999px; padding: 0 10px; line-height: 1.8; }
+  .px__line { font-weight: 700; font-size: clamp(15.5px, 1.45vw, 20px); }
+  .px__line b { background: var(--ai); color: var(--bg); }
+  .px__human { color: var(--fg-2); font-size: 14.5px; }
+  .px__human b { border: 1px solid var(--fg-2); }
+
+  .px__stage { position: relative; aspect-ratio: 16 / 11; max-height: calc(100svh - 170px); width: 100%; justify-self: center; background: var(--bg-2); border: 1px solid var(--rule); border-radius: 30px; overflow: hidden; font-size: clamp(10px, 0.95vw, 13.5px); }
+  .px__bar { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--bg-3); }
+  .px__bar i { display: block; height: 100%; background: var(--ai); transform-origin: left; transform: scaleX(var(--p, 0)); }
+  .st { position: absolute; inset: 0; padding: 6.5% 6%; display: grid; gap: 4%; opacity: 0; transform: scale(0.97); pointer-events: none; }
+  .st.is-on { opacity: 1; transform: none; transition: opacity 0.5s, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .st em { font-style: normal; font-size: 0.9em; color: var(--fg-2); display: block; margin-bottom: 0.9em; letter-spacing: 0.04em; }
+  .st em.mt { margin-top: 1.4em; }
+  .box { background: var(--bg); border: 1px solid var(--rule); border-radius: 18px; padding: 7% 8%; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0.8em; min-width: 0; }
+  .box > em { margin-bottom: 0.2em; }
+  .ln { display: block; height: 0.7em; border-radius: 999px; background: #4b4f57; width: var(--w, 80%); margin-left: var(--in, 0); transform-origin: left; flex: none; }
+  .cp { display: flex; align-items: center; gap: 0.7em; font-weight: 700; font-size: 0.95em; border-radius: 999px; padding: 0.42em 1em 0.42em 0.5em; background: var(--bg-3); white-space: nowrap; min-width: 0; }
+  .cp::before { content: '✓'; flex: none; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--ai); color: var(--bg); display: grid; place-items: center; font-size: 0.82em; font-weight: 900; }
+  .cp.ng::before { content: '!'; background: var(--err); color: #fff; }
+  .cp > i { display: block; height: 0.55em; border-radius: 999px; background: #6a6e76; }
+  .aibadge { align-self: center; justify-self: center; width: 3.6em; height: 3.6em; border-radius: 50%; background: var(--ai); color: var(--bg); font-family: var(--num); font-weight: 700; font-size: 1.15em; display: grid; place-items: center; box-shadow: 0 0 40px rgba(212, 255, 58, 0.55); }
+  .st.run .aibadge { animation: pop 0.5s var(--t, 0s) both, pulse 1.6s calc(var(--t, 0s) + 0.5s) infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 70px rgba(212, 255, 58, 0.9); transform: scale(1.07); } }
+
+  .st.run .p { animation: pop 0.55s var(--t, 0s) cubic-bezier(0.3, 1.4, 0.5, 1) both; }
+  .st.run .ty { animation: ty 0.5s var(--t, 0s) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  @keyframes pop { from { opacity: 0; transform: translateY(14px) scale(0.9); } to { opacity: 1; transform: none; } }
+  @keyframes ty { from { transform: scaleX(0); opacity: 0.3; } to { transform: scaleX(1); opacity: 1; } }
+
+  .st--req { grid-template-columns: 1fr auto 1fr; }
+  .bb { display: block; height: 2.1em; border-radius: 1em 1em 1em 0.25em; background: var(--bg-3); width: var(--w); flex: none; }
+  .bb.r { align-self: flex-end; border-radius: 1em 1em 0.25em 1em; background: #2a2e36; }
+  .st--req .cp > i { flex: 1; max-width: 100%; }
+
+  .st--des { grid-template-columns: 1.25fr 1fr; }
+  .st--des .doc { gap: 1.05em; }
+  .st.run .ln.flag { animation: ty 0.5s var(--t, 0s) cubic-bezier(0.2, 0.8, 0.2, 1) both, flag 0.4s 4.2s both; }
+  .ln.flag { background: var(--err); box-shadow: 0 0 18px rgba(255, 90, 54, 0.6); }
+  @keyframes flag { from { background: #4b4f57; box-shadow: none; } to { background: var(--err); box-shadow: 0 0 18px rgba(255, 90, 54, 0.6); } }
+  .scanl { position: absolute; left: 0; right: 0; top: 0; height: 22%; background: linear-gradient(transparent, rgba(212, 255, 58, 0.28)); border-bottom: 2px solid var(--ai); opacity: 0; }
+  .st.run .scanl { animation: scanl 1.7s 2.7s cubic-bezier(0.4, 0, 0.4, 1) both; }
+  @keyframes scanl { 0% { transform: translateY(-100%); opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(360%); opacity: 0; } }
+  .st--des .side { justify-content: center; }
+
+  .st--dev { grid-template-columns: 0.62fr auto 1.2fr; grid-template-rows: 1fr auto; }
+  .st--dev .tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.7em; }
+  .st--dev .code { background: #050607; gap: 0.75em; }
+  .ln.c0 { background: var(--ai); }
+  .ln.c1 { background: #8c9099; }
+  .ln.c2 { background: #5f8dff; }
+
+  .st--tst { grid-template-columns: 1.5fr 0.7fr; }
+  .sap { padding: 0 0 6%; gap: 1em; }
+  .sap__bar { display: flex; align-items: center; gap: 0.5em; background: var(--bg-3); padding: 0.8em 1.2em; }
+  .sap__bar i { width: 0.7em; height: 0.7em; border-radius: 50%; background: #50545c; display: block; }
+  .sap__bar span { margin-left: 0.8em; font-weight: 700; color: var(--fg); }
+  .sap label { display: grid; grid-template-columns: 5em 1fr; align-items: center; gap: 1em; padding: 0 8%; color: var(--fg-2); }
+  .fld { display: block; height: 2.3em; border: 1px solid #40444c; border-radius: 8px; padding: 0.72em 0.8em; }
+  .fld u { display: block; height: 100%; width: var(--w); background: var(--fg); border-radius: 999px; transform-origin: left; }
+  .sap__btn { align-self: flex-end; margin-right: 8%; background: var(--fg); color: var(--bg); font-weight: 700; border-radius: 8px; padding: 0.35em 1.6em; }
+  .st.run .sap__btn { animation: press 0.35s 4.05s both; }
+  @keyframes press { 50% { transform: scale(0.9); background: var(--ai); } }
+  .sap__msg { margin: 0 8%; color: var(--ai); font-weight: 700; border-left: 3px solid var(--ai); padding-left: 0.9em; }
+  .cur { position: absolute; left: 0; top: 0; width: 0; height: 0; border: 0.55em solid transparent; border-top: 1em solid var(--ai); border-left-color: var(--ai); transform: translate(60em, 3em); filter: drop-shadow(0 0 8px rgba(212, 255, 58, 0.8)); opacity: 0; }
+  .st.run .cur { animation: cur 4.4s 0.3s cubic-bezier(0.5, 0, 0.3, 1) both; }
+  @keyframes cur {
+    0% { left: 80%; top: 8%; opacity: 0; }
+    8% { opacity: 1; }
+    16%, 32% { left: 44%; top: 30%; }
+    38%, 52% { left: 44%; top: 46%; }
+    58%, 72% { left: 44%; top: 62%; }
+    84%, 96% { left: 82%; top: 78%; opacity: 1; }
+    100% { left: 82%; top: 78%; opacity: 0; }
+  }
+  .cur { transform: none; }
+  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  .st.run .flash { animation: flash 0.5s 4.9s both; }
+  @keyframes flash { 0% { opacity: 0; } 25% { opacity: 0.75; } 100% { opacity: 0; } }
+  .st--tst .ev { justify-content: center; }
+  .shot { display: flex; flex-direction: column; gap: 0.45em; border: 1.5px solid var(--err); border-radius: 10px; padding: 0.8em; background: var(--bg-2); }
+  .shot i { display: block; height: 0.5em; border-radius: 999px; background: #5a5e66; }
+  .shot i:nth-child(2) { width: 70%; }
+  .shot i:nth-child(3) { width: 40%; background: var(--ai); }
+
+  .st--mig { grid-template-columns: 1fr 0.5fr 1fr; grid-template-rows: 1fr auto; }
+  .tbl { gap: 0.62em; }
+  .row { display: block; height: 1.15em; border-radius: 6px; background: repeating-linear-gradient(90deg, #3a3e46 0 22%, transparent 22% 25%); position: relative; transform-origin: left; flex: none; }
+  .tbl.new .row { background: repeating-linear-gradient(90deg, #cfd1cc 0 22%, transparent 22% 25%); }
+  .tbl.new .row.warn { background: repeating-linear-gradient(90deg, var(--err) 0 22%, transparent 22% 25%); }
+  .row s { position: absolute; right: -0.2em; top: 50%; width: 1.25em; height: 1.25em; margin-top: -0.62em; border-radius: 50%; background: var(--ai); }
+  .row.warn s { background: var(--err); }
+  .pipe { position: relative; align-self: center; height: 2px; background: var(--rule); }
+  .pipe u { position: absolute; top: -0.35em; left: 0; width: 0.75em; height: 0.75em; border-radius: 50%; background: var(--ai); box-shadow: 0 0 12px var(--ai); animation: pipe 1.5s calc(var(--k) * -0.25s) linear infinite; }
+  @keyframes pipe { from { left: 0; opacity: 0; } 15%, 85% { opacity: 1; } to { left: 100%; opacity: 0; } }
+  .prog { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 1.2em; font-weight: 700; }
+  .prog i { display: block; height: 0.7em; border-radius: 999px; background: var(--bg-3); overflow: hidden; }
+  .prog u { display: block; height: 100%; background: var(--ai); border-radius: 999px; transform-origin: left; }
+  .st.run .prog u { animation: fill 3.6s 0.5s linear both; }
+  @keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .st--ope { grid-template-columns: 1fr; align-content: center; gap: 1.3em; padding-inline: 10%; }
+  .q { justify-self: end; background: var(--bg-3); border-radius: 1.4em 1.4em 0.3em 1.4em; padding: 0.8em 1.4em; font-weight: 700; font-size: 1.1em; }
+  .dots { display: flex; gap: 0.4em; height: 0; opacity: 0; }
+  .dots i { width: 0.6em; height: 0.6em; border-radius: 50%; background: var(--ai); display: block; animation: blink 0.9s infinite; }
+  .dots i:nth-child(2) { animation-delay: 0.15s; }
+  .dots i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes blink { 50% { opacity: 0.2; transform: translateY(-0.2em); } }
+  .st.run .dots { animation: dots 1.5s 1s both; }
+  @keyframes dots { 0%, 100% { opacity: 0; height: 0; } 12%, 88% { opacity: 1; height: 0.6em; } }
+  .a { justify-self: start; width: 78%; background: var(--bg); border: 1px solid var(--ai); border-radius: 1.4em 1.4em 1.4em 0.3em; padding: 1.3em 1.5em; display: grid; gap: 0.8em; box-shadow: 0 0 40px rgba(212, 255, 58, 0.14); }
+  .a .ln { background: #8c9099; }
+  .srcs { display: flex; flex-wrap: wrap; gap: 0.6em; margin-top: 0.4em; }
+  .by { justify-self: start; color: var(--fg-2); font-size: 0.95em; border: 1px dashed var(--fg-2); border-radius: 999px; padding: 0.2em 1.2em; }
+
+  .pm { --pm-card: var(--bg-2); --pm-edge: var(--rule); --pm-fig: var(--bg); --pm-figedge: transparent; --pm-fg: var(--fg); --pm-mute: var(--fg-2); --pm-dim: #4b4f57; --pm-ai: var(--ai); --pm-hot: var(--err); --pm-on: var(--bg); --pm-rad: 26px; --pm-gap: 16px; --pm-hf: 900 1em var(--sans); --pm-nf: var(--num); }
+
+  /* ---------- プロジェクト管理 ---------- */
+  .pm__cmp { display: grid; gap: 0; margin-top: clamp(40px, 5vw, 70px); border-top: 1px solid var(--pm-edge); }
+  .pm__cmp div { display: grid; grid-template-columns: 8em 1fr auto 1.4fr; gap: clamp(10px, 2vw, 30px); align-items: baseline; padding: clamp(10px, 1.3vw, 18px) 0; border-bottom: 1px solid var(--pm-edge); }
+  .pm__cmp span { font-size: 12.5px; color: var(--pm-mute); }
+  .pm__cmp s { color: var(--pm-mute); text-decoration-thickness: 1px; font-size: clamp(14px, 1.5vw, 20px); }
+  .pm__cmp i { font-style: normal; color: var(--pm-hot); }
+  .pm__cmp b { font: var(--pm-hf); font-size: clamp(18px, 2.4vw, 34px); line-height: 1.4; }
+  .pm__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--pm-gap); margin-top: clamp(30px, 4vw, 56px); }
+  .pmt { background: var(--pm-card); border: 1px solid var(--pm-edge); border-radius: var(--pm-rad); padding: clamp(18px, 2.2vw, 34px); }
+  .pmt h3 { margin: 22px 0 0; font: var(--pm-hf); font-size: clamp(17px, 1.7vw, 23px); line-height: 1.6; }
+  .pmf { height: 230px; border-radius: calc(var(--pm-rad) * 0.6); background: var(--pm-fig); border: 1px solid var(--pm-figedge); padding: 20px 24px; position: relative; overflow: hidden; font-size: 12px; color: var(--pm-mute); }
+  .pmf em { font-style: normal; display: block; font-size: 11.5px; margin-bottom: 10px; letter-spacing: 0.04em; }
+  .pmf.run .pp { animation: pop 0.55s var(--t, 0s) cubic-bezier(0.3, 1.4, 0.5, 1) both; }
+
+  .pmf--pick { display: grid; grid-template-columns: 1fr auto 1.15fr; gap: 18px; align-items: center; }
+  .pk__in, .pk__out { display: flex; flex-direction: column; gap: 9px; }
+  .pk__in i { display: block; height: 24px; width: var(--w); background: var(--pm-dim); border-radius: calc(var(--pm-rad) * 0.5); opacity: 0.7; }
+  .pk__in i:nth-of-type(even) { align-self: flex-end; }
+  .pk__ai { width: 46px; height: 46px; border-radius: 50%; background: var(--pm-ai); color: var(--pm-on); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .pk__out b { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; border: 1px solid var(--pm-edge); border-radius: calc(var(--pm-rad) * 0.4); padding: 7px 10px; background: var(--pm-card); }
+  .pk__out u { text-decoration: none; font-size: 11px; font-weight: 700; color: var(--pm-on); background: var(--pm-ai); padding: 0 8px; border-radius: var(--pm-rad); }
+  .pk__out u.r { background: var(--pm-hot); color: #fff; }
+  .pk__out b > i { display: block; height: 6px; background: var(--pm-dim); border-radius: 99px; }
+
+  .pmf--prob { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: end; }
+  .pb__num p { margin: 0; color: var(--pm-fg); line-height: 1; white-space: nowrap; }
+  .pb__num b { font-family: var(--pm-nf); font-weight: 500; font-size: clamp(54px, 6vw, 88px); letter-spacing: -0.04em; }
+  .pb__num small { font-size: 22px; margin-left: 4px; }
+  .pb__plot { position: relative; height: 100%; border-bottom: 1px solid var(--pm-fg); overflow: hidden; }
+  .pb__late { position: absolute; top: 0; bottom: 0; right: 0; left: 58%; background: color-mix(in srgb, var(--pm-hot) 20%, transparent); }
+  .pb__late { display: grid; place-items: start end; padding: 4px 8px; font-size: 11px; font-weight: 700; color: var(--pm-fg); }
+  .pb__dl { position: absolute; top: 0; bottom: 0; left: 58%; border-left: 2px dashed var(--pm-hot); }
+  .pb__dl u { position: absolute; top: 2px; right: 6px; text-decoration: none; font-size: 11px; font-weight: 700; color: var(--pm-hot); white-space: nowrap; }
+  .pb__bars { position: absolute; inset: 22px 0 0 14%; display: flex; align-items: flex-end; gap: 3px; width: 78%; }
+  .pb__bars i { flex: 1; height: var(--h); background: var(--pm-ai); transform-origin: bottom; border-radius: calc(var(--pm-rad) * 0.15) calc(var(--pm-rad) * 0.15) 0 0; }
+  .pmf.run .py { animation: py 0.5s var(--t) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .pmf.run .pb__bars { animation: pbs 1.6s 3.2s cubic-bezier(0.6, 0, 0.2, 1) both; }
+  @keyframes py { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @keyframes pbs { from { transform: translateX(0); } to { transform: translateX(-24%); } }
+  .pb__bars { transform: translateX(-24%); }
+
+  .od { position: relative; height: 160px; }
+  .od__r { position: absolute; left: 0; right: 0; top: calc(var(--y1) * 32px); height: 22px; display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: center; }
+  .od__r u { text-decoration: none; font-family: var(--pm-nf); font-size: 12px; color: var(--pm-mute); }
+  .od__r i { display: block; height: 100%; width: var(--w); background: var(--pm-dim); border-radius: calc(var(--pm-rad) * 0.3); }
+  .od__r.top i { background: var(--pm-ai); }
+  .od__r.top u { color: var(--pm-fg); font-weight: 700; }
+  .pmf.run .od__r { animation: odm 1s 1.4s cubic-bezier(0.6, 0, 0.2, 1) both; }
+  .pmf.run .od__r i { animation: odc 0.5s 2.5s both; }
+  .pmf.run .od__r u { animation: odu 0.4s 2.4s both; }
+  @keyframes odm { from { top: calc(var(--y0) * 32px); } to { top: calc(var(--y1) * 32px); } }
+  @keyframes odc { from { background: var(--pm-dim); } }
+  @keyframes odu { from { opacity: 0; } }
+
+  .pmf--net svg { position: absolute; inset: 16px 16px 44px; width: calc(100% - 32px); height: calc(100% - 60px); overflow: visible; }
+  .nl { stroke: var(--pm-fg); stroke-width: 1; stroke-dasharray: 1; opacity: 0.55; }
+  .nd { fill: var(--pm-card); stroke: var(--pm-fg); stroke-width: 1.2; }
+  .hub { fill: var(--pm-hot); }
+  .pmf.run .nl { animation: nl 0.7s var(--t) both; }
+  .pmf.run .hub { animation: hub 2.6s 0.2s both, hubp 1.4s 2.8s infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes nl { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes hub { 0%, 80% { fill: var(--pm-card); stroke: var(--pm-fg); stroke-width: 1.2; } 100% { fill: var(--pm-hot); } }
+  @keyframes hubp { 50% { transform: scale(1.3); } }
+  .nt { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); white-space: nowrap; font-size: 12px; color: #fff; background: var(--pm-hot); padding: 1px 14px; border-radius: var(--pm-rad); }
+  .pmf.run .nt { animation: ntp 0.5s 3s both; }
+  @keyframes ntp { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 900px) {
+    .pm__cmp div { grid-template-columns: 1fr auto 1.3fr; }
+    .pm__cmp span { grid-column: 1 / -1; }
+    .pm__grid { grid-template-columns: 1fr; }
+    .pmf { height: 210px; padding: 16px; }
+  }
+
+  /* ---------- 導入 ---------- */
+  .bento { display: grid; grid-template-columns: 1.25fr 1fr; gap: 16px; margin-top: clamp(40px, 6vw, 80px); }
+  .card { background: var(--bg-2); border: 1px solid var(--rule); border-radius: 28px; padding: clamp(20px, 2.4vw, 36px); position: relative; overflow: hidden; }
+  .card:nth-child(3) { grid-column: 2; grid-row: 1; }
+  .card:nth-child(2) { grid-column: 1; }
+  .card::after { content: ''; position: absolute; inset: 0; background: radial-gradient(420px circle at var(--mx, 50%) var(--my, 0%), rgba(212, 255, 58, 0.1), transparent 60%); opacity: 0; transition: opacity 0.4s; pointer-events: none; }
+  .card:hover::after { opacity: 1; }
+  .card__fig { height: 190px; border-radius: 18px; background: var(--bg); margin-bottom: 24px; padding: 20px 24px; display: grid; align-items: center; font-size: 11.5px; color: var(--fg-2); overflow: hidden; }
+  .card__name { margin: 0 0 10px; font-weight: 900; font-size: clamp(19px, 1.9vw, 26px); line-height: 1.5; }
+  .card__body { margin: 0; color: var(--fg-2); font-size: 14.5px; }
+
+  .f-shift { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; height: 100%; }
+  .f-shift div { display: grid; grid-template-rows: 1fr auto; gap: 8px; text-align: center; }
+  .f-shift i { align-self: end; display: block; border-radius: 8px 8px 3px 3px; background: var(--bg-3); animation: 7s cubic-bezier(0.6, 0, 0.2, 1) infinite; }
+  .f-shift div:nth-child(1) i { animation-name: b1; }
+  .f-shift div:nth-child(2) i { animation-name: b2; }
+  .f-shift div:nth-child(3) i { animation-name: b3; }
+  .f-shift div:nth-child(4) i { animation-name: b4; }
+  @keyframes b1 { 0%, 20% { height: 14%; } 45%, 82% { height: 96%; background: var(--ai); box-shadow: 0 0 30px rgba(212, 255, 58, 0.4); } 100% { height: 14%; } }
+  @keyframes b2 { 0%, 20% { height: 32%; } 45%, 82% { height: 38%; } 100% { height: 32%; } }
+  @keyframes b3 { 0%, 20% { height: 74%; background: #4a2018; } 45%, 82% { height: 14%; } 100% { height: 74%; background: #4a2018; } }
+  @keyframes b4 { 0%, 20% { height: 98%; background: var(--err); } 45%, 82% { height: 6%; } 100% { height: 98%; background: var(--err); } }
+
+  .f-time__bar { display: flex; height: 64px; border-radius: 999px; overflow: hidden; background: var(--bg-3); }
+  .f-time i { font-style: normal; display: grid; place-items: center; font-weight: 700; font-size: 13px; white-space: nowrap; overflow: hidden; }
+  .f-time .mk { color: var(--fg-2); animation: mk 7s cubic-bezier(0.6, 0, 0.2, 1) infinite; }
+  .f-time .dc { flex: 1; background: var(--ai); color: var(--bg); border-radius: 999px; }
+  @keyframes mk { 0%, 18% { width: 74%; } 46%, 84% { width: 24%; } 100% { width: 74%; } }
+
+  .f-daily { height: 150px; overflow: hidden; -webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent); }
+  .f-daily ul { list-style: none; margin: 0; padding: 0; animation: up 16s linear infinite; }
+  .f-daily li { display: flex; gap: 14px; align-items: center; height: 38px; font-size: 13px; color: var(--fg); border-bottom: 1px solid var(--rule); white-space: nowrap; }
+  .f-daily b { font-family: var(--num); font-weight: 500; color: var(--ai); font-size: 12px; }
+  @keyframes up { to { transform: translateY(-50%); } }
+
+  .f-even { display: grid; gap: 10px; }
+  .f-even i { display: block; height: 14px; border-radius: 999px; background: var(--fg-2); animation: ev 6s calc(var(--k) * 0.06s) cubic-bezier(0.6, 0, 0.2, 1) infinite; }
+  .f-even i:nth-child(1) { --w: 46%; }
+  .f-even i:nth-child(2) { --w: 96%; }
+  .f-even i:nth-child(3) { --w: 62%; }
+  .f-even i:nth-child(4) { --w: 30%; }
+  .f-even i:nth-child(5) { --w: 80%; }
+  @keyframes ev { 0%, 22% { width: var(--w); } 48%, 84% { width: 86%; background: var(--ai); } 100% { width: var(--w); } }
+
+  /* ---------- 運用保守 ---------- */
+  .beam { margin-top: clamp(50px, 6vw, 90px); }
+  .beam__track { position: relative; height: 6px; border-radius: 999px; background: var(--bg-3); margin: 60px 0 16px; }
+  .beam__light { position: absolute; inset: 0; border-radius: 999px; background: linear-gradient(90deg, transparent, var(--ai)); transform-origin: left; animation: beam 9s linear infinite; box-shadow: 0 0 26px rgba(212, 255, 58, 0.5); }
+  .beam__gate { position: absolute; left: 62.5%; top: -34px; bottom: -34px; border-left: 1px dashed var(--fg); }
+  .beam__gate b { position: absolute; top: -30px; left: 0; transform: translateX(-50%); background: var(--fg); color: var(--bg); font-size: 13px; padding: 0 14px; border-radius: 999px; white-space: nowrap; }
+  .beam__pack { position: absolute; top: -40px; left: 0; white-space: nowrap; font-size: 12.5px; font-weight: 700; color: var(--bg); background: var(--ai); padding: 1px 12px; border-radius: 999px; animation: pack 9s linear infinite; }
+  @keyframes beam { 0% { transform: scaleX(0); } 88%, 100% { transform: scaleX(1); } }
+  @keyframes pack { 0% { left: 0%; transform: translateX(0); opacity: 0; } 5% { opacity: 1; } 88% { left: 100%; transform: translateX(-100%); opacity: 1; } 96%, 100% { left: 100%; transform: translateX(-100%); opacity: 0; } }
+  .beam__labels { display: grid; grid-template-columns: repeat(8, 1fr); font-size: 13px; color: var(--fg-2); text-align: center; }
+  .beam__labels .after { color: var(--fg); font-weight: 700; }
+  .runs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-top: clamp(40px, 5vw, 70px); }
+  .run { background: var(--bg-2); border: 1px solid var(--rule); border-radius: 24px; padding: 24px; }
+  .run__no { font-family: var(--num); font-size: 13px; color: var(--ai); }
+  .run__name { margin: 8px 0 10px; font-weight: 900; font-size: clamp(17px, 1.6vw, 21px); line-height: 1.55; }
+  .run__body { margin: 0; color: var(--fg-2); font-size: 14px; }
+
+  /* ---------- 進め方：重なるカード ---------- */
+  .how { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: clamp(30px, 6vw, 100px); align-items: start; }
+  .how__head { position: sticky; top: 120px; }
+  .how .h2 { font-size: clamp(26px, 3.5vw, 52px); }
+  .stack { display: grid; gap: 18px; }
+  .sc { position: sticky; top: calc(108px + var(--i) * 20px); background: var(--bg-2); border: 1px solid var(--rule); border-radius: 28px; padding: clamp(24px, 3vw, 44px); min-height: 250px; box-shadow: 0 -18px 50px rgba(0, 0, 0, 0.5); }
+  .sc:last-child { background: var(--ai); color: var(--bg); border-color: var(--ai); }
+  .sc__no { font-family: var(--num); font-size: clamp(40px, 5vw, 76px); font-weight: 700; line-height: 1; letter-spacing: -0.04em; color: var(--ai); }
+  .sc:last-child .sc__no { color: var(--bg); }
+  .sc__name { margin: 12px 0 10px; font-weight: 900; font-size: clamp(22px, 2.3vw, 32px); }
+  .sc__body { margin: 0; color: var(--fg-2); font-size: 15px; max-width: 520px; }
+  .sc:last-child .sc__body { color: rgba(10, 11, 13, 0.78); }
+  .rules { grid-column: 1 / -1; list-style: none; margin: clamp(30px, 4vw, 60px) 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 10px; }
+  .rules li { border: 1px solid var(--rule); border-radius: 999px; padding: 8px 20px; font-size: 14px; }
+  .rules__k { background: var(--fg); color: var(--bg); font-weight: 700; border-color: var(--fg) !important; }
+
+  /* ---------- 経歴 ---------- */
+  .cv { list-style: none; margin: clamp(40px, 6vw, 80px) 0 0; padding: 0; }
+  .cv__row { display: grid; grid-template-columns: minmax(150px, 0.42fr) 1fr; gap: clamp(16px, 3vw, 50px); align-items: start; padding: clamp(20px, 2.6vw, 38px) 0; border-top: 1px solid var(--rule); }
+  .cv__row:last-child { border-bottom: 1px solid var(--rule); }
+  .cv__yr { margin: 0; font-family: var(--num); font-weight: 700; font-size: clamp(44px, 6.4vw, 104px); line-height: 0.95; letter-spacing: -0.05em; color: transparent; -webkit-text-stroke: 1px rgba(241, 242, 238, 0.5); }
+  .cv__row:last-child .cv__yr { color: var(--ai); -webkit-text-stroke: 0; }
+  .cv__yr small { display: block; font-size: 13px; letter-spacing: 0; color: var(--fg-2); -webkit-text-stroke: 0; margin-top: 10px; font-weight: 400; }
+  .cv__seat { margin: 0 0 10px; font-weight: 900; font-size: clamp(20px, 2.2vw, 30px); display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+  .cv__seat span { font-size: 13px; font-weight: 500; color: var(--fg-2); }
+  .cv__body { margin: 0; color: var(--fg-2); font-size: 15px; max-width: 640px; }
+  .nums { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin: clamp(40px, 5vw, 70px) 0 0; }
+  .nums > div { background: var(--bg-2); border: 1px solid var(--rule); border-radius: 24px; padding: 22px 24px; }
+  .nums dt { font-size: 12.5px; color: var(--fg-2); }
+  .nums dd { margin: 4px 0 0; font-weight: 700; font-size: 16px; white-space: nowrap; }
+  .nums b { font-family: var(--num); font-size: clamp(38px, 4.6vw, 68px); letter-spacing: -0.04em; margin: 0 4px; line-height: 1.2; }
+  .nums b.t { font-size: clamp(20px, 2.3vw, 34px); letter-spacing: -0.01em; margin: 0; line-height: 2.4; }
+
+  /* ---------- 相談 ---------- */
+  .contact { position: relative; padding: clamp(110px, 15vw, 230px) var(--gutter); text-align: center; overflow: hidden; }
+  .contact__glow { position: absolute; left: 50%; bottom: -55%; width: min(1100px, 130vw); aspect-ratio: 1; transform: translateX(-50%); border-radius: 50%; background: radial-gradient(closest-side, rgba(212, 255, 58, 0.3), transparent); animation: breathe 6s ease-in-out infinite; }
+  @keyframes breathe { 50% { transform: translateX(-50%) scale(1.12); opacity: 0.75; } }
+  .contact > :not(.contact__glow) { position: relative; }
+  .contact__h { font-weight: 900; font-size: clamp(34px, 7.6vw, 124px); line-height: 1.22; letter-spacing: -0.02em; margin: 0 0 30px; }
+  .contact__lead { max-width: 620px; margin: 0 auto 44px; color: #c6c8c4; }
+  .foot { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 6px 30px; padding: 22px var(--gutter) 34px; border-top: 1px solid var(--rule); font-size: 12.5px; color: var(--fg-2); }
+  .foot p { margin: 0; }
+  .foot b { color: var(--fg); }
+
+  .ab { position: fixed; right: 16px; bottom: 16px; z-index: 60; display: flex; background: #000; border: 1px solid #555; border-radius: 999px; padding: 3px; font: 700 12px/1 system-ui, sans-serif; }
+  .ab a { padding: 8px 14px; border-radius: 999px; color: #bbb; }
+  .ab a.on { background: #fff; color: #000; }
+
+  /* ---------- 小さい画面 ---------- */
+  @media (max-width: 900px) {
+    .nav__links { display: none; }
+    .hero { align-items: flex-start; padding-top: 110px; min-height: max(100svh, 900px); }
+    .hero__shade { background: linear-gradient(rgba(10, 11, 13, 0.9) 0%, rgba(10, 11, 13, 0.72) 46%, transparent 64%, transparent 88%, var(--bg)); }
+    .hero__legend { left: var(--gutter); right: auto; bottom: 22px; }
+    .scan__sticky { grid-template-columns: 1fr; align-content: center; gap: 26px; padding-top: 84px; }
+    .scan__lead { display: none; }
+    .scan__read { margin-top: 18px; }
+    .px { height: 560vh; }
+    .px__sticky { grid-template-columns: 1fr; align-content: center; gap: 16px; padding-top: 84px; }
+    .px__side { display: contents; }
+    .px__side .chip { display: none; }
+    .px__names { display: flex; flex-wrap: wrap; gap: 4px 14px; order: 1; }
+    .px__names li { font-size: 19px; transform: none !important; }
+    .px__names span { display: none; }
+    .px__stage { order: 2; aspect-ratio: 4 / 3.5; font-size: 9.5px; border-radius: 20px; }
+    .px__caps { order: 3; margin-top: 4px; min-height: 96px; }
+    .bento { grid-template-columns: 1fr; }
+    .card:nth-child(n) { grid-column: auto; grid-row: auto; }
+    .beam__labels { font-size: 10px; }
+    .beam__labels span:nth-child(even) { transform: translateY(16px); }
+    .runs { grid-template-columns: 1fr; }
+    .how { grid-template-columns: 1fr; }
+    .how__head { position: static; }
+    .cv__row { grid-template-columns: 1fr; }
+    .nums { grid-template-columns: 1fr 1fr; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation-duration: 0.01s !important; animation-delay: 0s !important; animation-iteration-count: 1 !important; transition-duration: 0.01s !important; transition-delay: 0s !important; }
+  }
+</style>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = <T extends Element>(s: string) => document.querySelector<T>(s)!;
+  const $$ = <T extends Element>(s: string) => [...document.querySelectorAll<T>(s)];
+  const clamp = (v: number, a = 0, b = 1) => Math.max(a, Math.min(b, v));
+
+  /* 現れ方 */
+  const io = new IntersectionObserver((es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))), { threshold: 0.12 });
+  $$('.rv').forEach((el) => io.observe(el));
+
+  /* 数字の読み上げ */
+  const co = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    co.unobserve(e.target);
+    const el = e.target as HTMLElement, to = Number(el.dataset.count);
+    if (reduce) { el.textContent = String(to); return; }
+    const t0 = performance.now();
+    const tick = (t: number) => {
+      const k = Math.min(1, (t - t0) / 1400);
+      el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 4))));
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }), { threshold: 0.6 });
+  $$('[data-count]').forEach((el) => co.observe(el));
+
+  /* カードの光がカーソルを追う */
+  $$<HTMLElement>('.card').forEach((c) => c.addEventListener('pointermove', (e) => {
+    const r = c.getBoundingClientRect();
+    c.style.setProperty('--mx', `${e.clientX - r.left}px`);
+    c.style.setProperty('--my', `${e.clientY - r.top}px`);
+  }));
+
+  /* ===== 見出しの背景：基幹システムの中を伝票が流れ、AIの点検が広がる ===== */
+  (() => {
+    const cv = $<HTMLCanvasElement>('#net'), ctx = cv.getContext('2d')!;
+    const N = [
+      ['SD', '受注', 0.06, 0.2], ['PP', '生産計画', 0.46, 0.04], ['MM', '購買', 0.9, 0.16],
+      ['MM', '入庫', 0.97, 0.55], ['PP', '製造', 0.54, 0.46], ['SD', '出荷', 0.1, 0.6],
+      ['SD', '請求', 0.2, 0.96], ['FI', '会計', 0.6, 0.9], ['CO', '原価', 0.93, 0.94],
+    ] as [string, string, number, number][];
+    const E = [[0, 1], [1, 2], [2, 3], [3, 4], [4, 5], [5, 6], [6, 7], [7, 8], [3, 7], [4, 8], [1, 4]];
+    let W = 0, H = 0, dpr = 1, pts: { x: number; y: number }[] = [], small = false;
+    const mouse = { x: 0, y: 0, tx: 0, ty: 0 };
+    const parts = E.flatMap((e, i) => Array.from({ length: i < 8 ? 3 : 2 }, (_, k) => ({ e: i, t: (k / 3 + i * 0.13) % 1, v: 0.00016 + ((i * 7 + k * 3) % 5) * 0.00003 })));
+    const checked = N.map(() => -1e9);
+    let waveT0 = -1e9, vis = true;
+
+    const size = () => {
+      const r = cv.getBoundingClientRect();
+      dpr = Math.min(2, devicePixelRatio || 1);
+      W = r.width; H = r.height; small = W < 900;
+      cv.width = W * dpr; cv.height = H * dpr;
+      const bx = small ? W * 0.1 : W * 0.6, bw = small ? W * 0.68 : W * 0.32;
+      const by = small ? H * 0.68 : H * 0.16, bh = small ? H * 0.24 : H * 0.58;
+      pts = N.map((n) => ({ x: bx + n[2] * bw, y: by + n[3] * bh }));
+    };
+    const ctrl = (a: { x: number; y: number }, b: { x: number; y: number }, i: number) => {
+      const mx = (a.x + b.x) / 2, my = (a.y + b.y) / 2, dx = b.x - a.x, dy = b.y - a.y, s = (i % 2 ? 1 : -1) * 0.16;
+      return { x: mx - dy * s, y: my + dx * s };
+    };
+    const bez = (a: any, c: any, b: any, t: number) => ({ x: (1 - t) * (1 - t) * a.x + 2 * (1 - t) * t * c.x + t * t * b.x, y: (1 - t) * (1 - t) * a.y + 2 * (1 - t) * t * c.y + t * t * b.y });
+
+    let prev = performance.now();
+    const draw = (now: number) => {
+      const dt = Math.min(50, now - prev); prev = now;
+      if (vis && !document.hidden) {
+        mouse.x += (mouse.tx - mouse.x) * 0.05; mouse.y += (mouse.ty - mouse.y) * 0.05;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, W, H);
+        const P = pts.map((p, i) => ({ x: p.x + mouse.x * (10 + (i % 3) * 9), y: p.y + mouse.y * (8 + (i % 4) * 6) + Math.sin(now / 1800 + i) * 5 }));
+        const cx = P.reduce((s, p) => s + p.x, 0) / P.length, cy = P.reduce((s, p) => s + p.y, 0) / P.length;
+
+        // AIの点検の波
+        if (now - waveT0 > 6200) waveT0 = now;
+        const wr = ((now - waveT0) / 2600) * Math.max(W, H) * 0.42;
+        const wa = clamp(1 - (now - waveT0) / 2600);
+        if (wa > 0) {
+          ctx.beginPath(); ctx.arc(cx, cy, wr, 0, 7);
+          ctx.strokeStyle = `rgba(212,255,58,${0.55 * wa})`; ctx.lineWidth = 1.5; ctx.stroke();
+          ctx.beginPath(); ctx.arc(cx, cy, wr * 0.93, 0, 7);
+          ctx.strokeStyle = `rgba(212,255,58,${0.16 * wa})`; ctx.lineWidth = 10; ctx.stroke();
+          P.forEach((p, i) => { if (Math.abs(Math.hypot(p.x - cx, p.y - cy) - wr) < 14 && now - checked[i] > 1500) checked[i] = now; });
+        }
+
+        // 線
+        E.forEach((e, i) => {
+          const a = P[e[0]], b = P[e[1]], c = ctrl(a, b, i);
+          ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(c.x, c.y, b.x, b.y);
+          ctx.strokeStyle = 'rgba(241,242,238,0.13)'; ctx.lineWidth = 1; ctx.stroke();
+        });
+        // 伝票
+        for (const p of parts) {
+          p.t += p.v * dt; if (p.t > 1) p.t -= 1;
+          const a = P[E[p.e][0]], b = P[E[p.e][1]], c = ctrl(a, b, p.e);
+          for (let k = 0; k < 7; k++) {
+            const t = p.t - k * 0.014; if (t < 0) break;
+            const q = bez(a, c, b, t);
+            ctx.beginPath(); ctx.arc(q.x, q.y, k === 0 ? 2.6 : 1.8, 0, 7);
+            ctx.fillStyle = `rgba(241,242,238,${(k === 0 ? 0.95 : 0.4) * (1 - k / 7)})`; ctx.fill();
+          }
+        }
+        // 処理
+        ctx.textBaseline = 'middle';
+        P.forEach((p, i) => {
+          const k = clamp(1 - (now - checked[i]) / 2600);
+          if (k > 0) {
+            const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, 54);
+            g.addColorStop(0, `rgba(212,255,58,${0.4 * k})`); g.addColorStop(1, 'rgba(212,255,58,0)');
+            ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p.x, p.y, 54, 0, 7); ctx.fill();
+          }
+          ctx.beginPath(); ctx.arc(p.x, p.y, 11, 0, 7);
+          ctx.fillStyle = '#0a0b0d'; ctx.fill();
+          ctx.strokeStyle = k > 0 ? `rgba(212,255,58,${0.4 + 0.6 * k})` : 'rgba(241,242,238,0.55)'; ctx.lineWidth = 1.5; ctx.stroke();
+          ctx.beginPath(); ctx.arc(p.x, p.y, 3.6, 0, 7);
+          ctx.fillStyle = k > 0.05 ? '#d4ff3a' : '#f1f2ee'; ctx.fill();
+          const s = small ? 0.86 : 1;
+          ctx.font = `700 ${15 * s}px "Noto Sans JP", sans-serif`; ctx.fillStyle = 'rgba(241,242,238,0.95)';
+          ctx.fillText(N[i][1], p.x + 19, p.y + 1);
+          ctx.font = `500 ${10.5 * s}px "Space Grotesk", sans-serif`; ctx.fillStyle = k > 0.05 ? 'rgba(212,255,58,0.95)' : 'rgba(154,157,163,0.95)';
+          ctx.fillText(k > 0.05 ? `${N[i][0]}  ✓ 点検済み` : N[i][0], p.x + 19, p.y - 16);
+        });
+      }
+      if (!reduce) requestAnimationFrame(draw);
+    };
+    size();
+    addEventListener('resize', size);
+    addEventListener('pointermove', (e) => { mouse.tx = e.clientX / innerWidth - 0.5; mouse.ty = e.clientY / innerHeight - 0.5; }, { passive: true });
+    new IntersectionObserver((es) => (vis = es[0].isIntersecting)).observe(cv);
+    if (reduce) { checked.fill(performance.now()); }
+    document.fonts.ready.then(() => requestAnimationFrame(draw));
+  })();
+
+  /* ===== 抜き取りから全件へ：スクロールに合わせて点検が広がる ===== */
+  (() => {
+    const sec = $<HTMLElement>('.scan'), cells = $$<HTMLElement>('#dots i');
+    const nChk = $('#nChk'), nHit = $('#nHit');
+    const order = cells.map((c, i) => ({ c, w: Number(c.dataset.w), i })).sort((a, b) => a.w - b.w || a.i - b.i);
+    const sN = cells.filter((c) => c.classList.contains('s')).length;
+    let last = -1;
+    const upd = () => {
+      const r = sec.getBoundingClientRect();
+      const p = clamp(-r.top / (r.height - innerHeight));
+      const k = clamp((p - 0.16) / 0.6), n = Math.round(k * k * (3 - 2 * k) * order.length);
+      if (n === last) return; last = n;
+      sec.classList.toggle('is-now', n > 0);
+      let hit = 0, chk = 0;
+      const edgeW = n > 0 && n < order.length ? order[n - 1].w : -1;
+      order.forEach((o, idx) => {
+        const on = idx < n;
+        o.c.classList.toggle('on', on);
+        o.c.classList.toggle('edge', on && o.w === edgeW && !o.c.classList.contains('d'));
+        if (on) { chk++; if (o.c.classList.contains('d')) hit++; }
+      });
+      nChk.textContent = String(n === 0 ? sN : Math.max(sN, chk));
+      nHit.textContent = String(hit);
+    };
+    addEventListener('scroll', upd, { passive: true });
+    addEventListener('resize', upd);
+    upd();
+  })();
+
+  /* ===== 工程：スクロールで場面が替わり、場面は繰り返し再生する ===== */
+  (() => {
+    const sec = $<HTMLElement>('#px'), bar = $<HTMLElement>('#pxBar');
+    const names = $$('.px__names li'), caps = $$('.px__cap'), sts = $$<HTMLElement>('.st');
+    let cur = -1, timer = 0;
+    const play = (el: HTMLElement) => { el.classList.remove('run'); void el.offsetWidth; el.classList.add('run'); };
+    const show = (i: number) => {
+      if (i === cur) return; cur = i;
+      names.forEach((n, k) => n.classList.toggle('is-on', k === i));
+      caps.forEach((n, k) => n.classList.toggle('is-on', k === i));
+      sts.forEach((n, k) => n.classList.toggle('is-on', k === i));
+      clearInterval(timer);
+      if (reduce) return;
+      play(sts[i]);
+      timer = window.setInterval(() => { if (!document.hidden) play(sts[i]); }, 8200);
+    };
+    const upd = () => {
+      const r = sec.getBoundingClientRect();
+      const p = clamp(-r.top / (r.height - innerHeight));
+      bar.style.setProperty('--p', String(p));
+      show(Math.min(sts.length - 1, Math.floor(p * sts.length)));
+    };
+    names.forEach((n, i) => n.addEventListener('click', () => {
+      const top = sec.getBoundingClientRect().top + scrollY;
+      scrollTo({ top: top + ((i + 0.5) / sts.length) * (sec.offsetHeight - innerHeight) });
+    }));
+    addEventListener('scroll', upd, { passive: true });
+    upd();
+  })();
+
+  /* ===== プロジェクト管理の図：見えている間、繰り返し再生する ===== */
+  (() => {
+    const figs = [...document.querySelectorAll<HTMLElement>('.pmf')];
+    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const on = new Set<HTMLElement>();
+    const num = document.querySelector<HTMLElement>('.pbn')!;
+    if (rm) { num.textContent = '81'; return; }
+    const play = (f: HTMLElement) => {
+      f.classList.remove('run'); void f.offsetWidth; f.classList.add('run');
+      if (!f.contains(num)) return;
+      num.textContent = '52';
+      const t0 = performance.now() + 3200;
+      const tick = (t: number) => {
+        if (!f.classList.contains('run')) return;
+        const k = Math.max(0, Math.min(1, (t - t0) / 1600));
+        num.textContent = String(Math.round(52 + 29 * k * k * (3 - 2 * k)));
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    new IntersectionObserver((es) => es.forEach((e) => {
+      const f = e.target as HTMLElement;
+      if (e.isIntersecting) { if (!on.has(f)) { on.add(f); play(f); } } else on.delete(f);
+    }), { threshold: 0.3 }).observe && figs.forEach((f) => {
+      new IntersectionObserver((es) => es.forEach((e) => {
+        if (e.isIntersecting) { if (!on.has(f)) { on.add(f); play(f); } } else on.delete(f);
+      }), { threshold: 0.3 }).observe(f);
+    });
+    setInterval(() => { if (!document.hidden) on.forEach(play); }, 7600);
+  })();
+</script>

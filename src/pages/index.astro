@@ -1,526 +1,2097 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import Navigation from '@/components/Navigation.astro';
+import DraftLayout from '@/layouts/DraftLayout.astro';
 
-const title = 'TechTime | AI駆動の低価格基幹システム開発';
-const description = '従来の半分以下のコストで御社専用の基幹システムを構築。AI駆動開発により設計からテストまで数分で初版生成。文書管理、在庫管理、顧客管理など各種システムに対応。見積もりシミュレーターで即座に概算金額を確認できます。';
+const title = 'TechTime | SAP 導入に、AIチームという選択肢を。';
+const description =
+  'TechTime は、SAP を中心とした基幹システムの導入と運用保守に、設計・開発・テスト・点検・進捗管理を受け持つAIチームを組み込みます。提供するのは工数ではなく、プロジェクトに残る仕組みです。';
 
-const systems = [
-  { id: 1, name: '顧客・販売管理システム', description: '顧客情報管理、案件管理、売上分析', image: 'https://image.thum.io/get/width/600/crop/600/https://salesforce-like-demo.vercel.app/', link: '/demo/crm/' },
-  { id: 2, name: '生産管理システム', description: '生産計画、工程管理、進捗管理', image: 'https://image.thum.io/get/width/600/crop/600/wait/5/noanimate/https://sap-like-fiori-demo.vercel.app/', link: '/demo/sap/' },
-  { id: 3, name: '文書管理システム', description: '社内文書の一元管理、承認ワークフロー', image: 'https://readdy.ai/api/search-image?query=professional%20document%20management%20system%20interface%20with%20organized%20files%20and%20folders%20on%20clean%20minimal%20light%20background%20modern%20business%20software%20design%20simple%20elegant%20style&width=400&height=400&seq=sys-doc-001&orientation=squarish', link: '/demo/dms/' },
-  { id: 4, name: '在庫管理システム', description: '入出庫管理、在庫最適化、棚卸機能', image: 'https://readdy.ai/api/search-image?query=modern%20inventory%20management%20system%20dashboard%20with%20warehouse%20shelves%20and%20stock%20data%20visualization%20on%20clean%20minimal%20light%20background%20professional%20logistics%20software%20simple%20elegant%20design&width=400&height=400&seq=sys-inv-002&orientation=squarish' },
-  { id: 5, name: '購買・調達管理システム', description: '発注管理、仕入先管理、購買データ分析', image: 'https://readdy.ai/api/search-image?query=procurement%20and%20purchasing%20management%20system%20with%20supplier%20data%20and%20order%20tracking%20on%20clean%20minimal%20light%20background%20professional%20business%20software%20simple%20elegant%20design&width=400&height=400&seq=sys-proc-004&orientation=squarish' },
-  { id: 6, name: '経営ダッシュボード（BI）', description: '経営指標の可視化、リアルタイムレポート', image: 'https://readdy.ai/api/search-image?query=business%20intelligence%20dashboard%20with%20charts%20graphs%20and%20kpi%20metrics%20visualization%20on%20clean%20minimal%20light%20background%20modern%20analytics%20software%20simple%20elegant%20style&width=400&height=400&seq=sys-bi-005&orientation=squarish' },
-  { id: 7, name: '倉庫・物流管理システム', description: '入出荷管理、配送管理、ロケーション管理', image: 'https://readdy.ai/api/search-image?query=warehouse%20and%20logistics%20management%20system%20with%20shipping%20tracking%20and%20location%20data%20on%20clean%20minimal%20light%20background%20modern%20supply%20chain%20software%20simple%20elegant%20style&width=400&height=400&seq=sys-wms-007&orientation=squarish' },
-  { id: 8, name: '人事・給与システム', description: '人事情報管理、給与計算、勤怠管理', image: 'https://readdy.ai/api/search-image?query=human%20resources%20and%20payroll%20management%20system%20with%20employee%20data%20and%20attendance%20tracking%20on%20clean%20minimal%20light%20background%20professional%20hr%20software%20simple%20elegant%20design&width=400&height=400&seq=sys-hr-008&orientation=squarish' },
-  { id: 9, name: '原価・会計システム', description: '原価計算、会計処理、財務レポート', image: 'https://readdy.ai/api/search-image?query=cost%20accounting%20and%20financial%20management%20system%20with%20budget%20reports%20and%20expense%20tracking%20on%20clean%20minimal%20light%20background%20professional%20finance%20software%20simple%20elegant%20style&width=400&height=400&seq=sys-acc-009&orientation=squarish' }
+const trace = [
+  { id: 'F-01', step: '受注を受ける', msg: '受注データ', req: 'R-004', des: 'D-011', prg: 'ZSD_ORDER_IN', tst: 'T-031' },
+  { id: 'F-02', step: '在庫を引き当てる', msg: '引当の依頼', req: 'R-012', des: 'D-034', prg: 'ZSD_ALLOC', tst: 'T-108' },
+  { id: 'F-03', step: '出荷する', msg: '出荷の実績', req: 'R-019', des: 'D-047', prg: 'ZLE_SHIP', tst: 'T-142' },
+  { id: 'F-04', step: '請求する', msg: '請求データ', req: 'R-027', des: 'D-063', prg: 'ZFI_BILL', tst: 'T-176' },
+];
+/* 業務の流れ：手順の箱の位置と、次の手順への線 */
+const fbox = [[66, 58], [186, 138], [306, 138], [406, 218]];
+const fline = ['M114 102V160H186', 'M282 160H306', 'M354 182V240H406'];
+/* シーケンス図：どこからどこへ（x）と高さ（y） */
+const smsg = [[90, 260, 96], [260, 430, 146], [430, 260, 196], [260, 90, 246]];
+
+const team = [
+  { k: 'pmo', name: '進捗管理のAI', unit: '拾った課題', job: '課題とリスクを拾い、並べる' },
+  { k: 'des', name: '設計のAI', unit: '設計書の初版', job: '設計書の初版を起こす' },
+  { k: 'dev', name: '開発のAI', unit: 'ABAP', job: 'ABAP とテストを起こす' },
+  { k: 'tst', name: 'テストのAI', unit: '実施したケース', job: '画面を操作し、証跡を残す' },
+  { k: 'chk', name: '点検のAI', unit: '点検した件数', job: '全件を同じ観点で確かめる' },
 ];
 
-const features = [
+/* 図1：基幹システムの伝票の流れ */
+const nodes = [
+  { k: 'SD', n: '受注', x: 125, y: 110 },
+  { k: 'PP', n: '生産計画', x: 325, y: 110 },
+  { k: 'MM', n: '購買', x: 525, y: 110 },
+  { k: 'MM', n: '入庫', x: 525, y: 270 },
+  { k: 'PP', n: '製造', x: 325, y: 270 },
+  { k: 'SD', n: '出荷', x: 125, y: 270 },
+  { k: 'SD', n: '請求', x: 125, y: 430 },
+  { k: 'FI', n: '会計', x: 325, y: 430 },
+  { k: 'CO', n: '原価', x: 525, y: 430 },
+];
+const flowD = 'M' + nodes.map((p) => `${p.x} ${p.y}`).join(' L');
+
+/* 図2：工程ごとの変化 */
+const phases = [
+  { name: '要件定義', line: '会議の記録から決定と未決を拾い、業務の流れとシーケンス図を起こす。', human: '流れを確かめ、どれを作るかを決める' },
+  { name: '設計', line: '初版を起こし、全件を点検する。', human: '指摘を反映するかを決める' },
+  { name: '開発', line: '設計書から、ABAP とテストを起こす。', human: '動きを確かめる' },
+  { name: 'テスト', line: 'SAP の画面を操作し、証跡を残す。', human: '合否を決める' },
+  { name: '移行', line: '全件を変換し、全件を照合する。', human: '判断の要る項目だけを見る' },
+  { name: '運用保守', line: '導入の記録を持ったまま、問い合わせに答える。', human: '確かめて返す' },
+];
+const W8 = [92, 70, 84, 56, 96, 64, 78, 44];
+const CODE = [[0, 46], [1, 70], [1, 58], [2, 80], [2, 52], [1, 34], [1, 66], [2, 74], [0, 28]];
+
+/* 図2：抜き取りと全件 */
+const COLS = 14;
+const ROWS = 6;
+const cells = Array.from({ length: COLS * ROWS }, (_, i) => i);
+const sampled = [3, 17, 22, 36, 41, 55, 63, 70, 78];
+const defects = [9, 30, 52, 72];
+
+const meritsBuild = [
   {
-    icon: 'ri-calculator-line',
-    title: '見積もりシミュレーター',
-    subtitle: '打ち合わせ不要、その場で概算金額がわかる',
-    description: 'システム種別と規模を選択するだけで、即座に概算見積もりを表示。営業との打ち合わせや見積もり待ちの時間は不要です。',
-    link: '/simulator'
+    fig: 'shift',
+    name: '不具合が、前の工程で見つかる',
+    body: '誤りを後ろの工程へ持ち越さない。',
   },
   {
-    icon: 'ri-robot-2-line',
-    title: 'AI駆動開発',
-    subtitle: '設計からテストまで、AIが開発を加速',
-    description: '要件定義から外部設計、内部設計、コード生成、テスト仕様作成、テスト実行まで、AIが一貫してサポート。',
-    link: '/ai-development'
+    fig: 'time',
+    name: '作る時間が縮み、決める時間が増える',
+    body: '空いた時間を、業務の検討と合意へ。',
   },
   {
-    icon: 'ri-shield-check-line',
-    title: '品質保証',
-    subtitle: '多段階レビューと自動テストで確実な品質',
-    description: '構造化された設計テンプレート、多段階レビュー、実行確認による早期検証、自動テストによる品質チェック。',
-    link: '/quality-assurance'
-  }
+    fig: 'daily',
+    name: '進み具合と課題が、毎朝そろっている',
+    body: '報告のための資料づくりが要らない。',
+  },
+  {
+    fig: 'even',
+    name: '担当が替わっても、出来がそろう',
+    body: '誰が頼んでも、同じ形で出る。',
+  },
 ];
 
-const faqs = [
-  { question: 'AI開発でも品質は大丈夫？', answer: 'はい、品質は担保されます。AIは初版生成のスピードに優れていますが、生成物は必ず人間がレビューします。構造化された設計テンプレートによる一貫性の確保、多段階レビュー、実行確認による早期検証、自動テストによる品質チェックなど、複数の品質担保の仕組みを組み合わせています。' },
-  { question: 'なぜこんなに安いの？', answer: 'AI駆動開発により、従来は日単位を要した作業を数分～数十分で完了できるためです。人手による「書き下す作業」を大幅に削減し、人間は要件視点での本質的なレビューや意思決定に集中できます。' },
-  { question: '納期はどのくらい？', answer: 'システムの規模により異なりますが、小規模で2～3ヶ月、標準規模で3～6ヶ月、大規模で6ヶ月以上が目安です。AI駆動開発により、従来の開発期間から30～50%程度の短縮が可能です。' },
-  { question: 'カスタマイズは可能？', answer: 'はい、完全なスクラッチ開発ですので、御社の業務フローに合わせた自由なカスタマイズが可能です。パッケージ製品の制約はありません。' },
-  { question: 'セキュリティは大丈夫？', answer: 'お客様の情報資産は厳重に保護します。データの分離管理、アクセス制御、暗号化など、多層的なセキュリティ対策を実施しています。また、お客様のデータをAIモデルの学習に使用することは一切ありません。' },
-  { question: '運用保守もお願いできますか？', answer: 'はい、対応可能です。システム稼働後の保守運用、機能追加、トラブル対応など、継続的なサポートを提供いたします。' }
+const meritsRun = [
+  { name: '引継ぎで知識が落ちない', body: '稼働の日から、導入の記録が使える。' },
+  { name: '問い合わせに、その場で答える', body: '記録を持ったAIが、回答の下書きを作る。' },
+  { name: '改修の影響が、すぐに分かる', body: '関係する設計書・プログラム・テストが並ぶ。' },
+  { name: '止まる前に気づく', body: '夜間の処理と締めを、AIが見張る。' },
 ];
 
-const devSteps = [
-  { step: 1, title: '業務機能記述・概要設計', description: 'お客様の要件をヒアリングし、システム概要を定義', icon: 'ri-file-list-3-line' },
-  { step: 2, title: 'AI駆動での設計・開発', description: 'AIが設計書とコードを自動生成。実行結果を確認しながら設計を洗練', icon: 'ri-robot-2-line' },
-  { step: 3, title: 'レビューとチューニング', description: 'AI生成物を人間がレビュー。要件との整合性を確認し修正指示', icon: 'ri-search-eye-line' },
-  { step: 4, title: 'テスト', description: 'AIが単体テスト仕様を自動生成。自動テスト実行により品質を担保', icon: 'ri-checkbox-circle-line' }
+const steps = [
+  { no: '01', name: '現状を見る', body: '設計書・規約・進め方を見て、AIが効く工程を分ける。' },
+  { no: '02', name: '手順を作る', body: 'お客様の様式と規約に合わせて作る。' },
+  { no: '03', name: '一機能で試す', body: '実際の案件で、設計からテストまで通す。' },
+  { no: '04', name: '広げて、渡す', body: '手順はお客様のものとして残す。' },
 ];
 
-const securityItems = [
-  { icon: 'ri-database-2-line', title: 'データの分離管理', desc: 'お客様ごとに開発環境を分離し、データの混在を防止' },
-  { icon: 'ri-lock-line', title: 'アクセス制御', desc: '開発メンバーのアクセス権限を厳格に管理' },
-  { icon: 'ri-key-line', title: 'データ暗号化', desc: '設計書、ソースコード、テストデータなどすべて暗号化して保存' },
-  { icon: 'ri-eye-off-line', title: 'AI学習への非利用', desc: 'お客様のデータをAIモデルの学習には一切使用しません' },
-  { icon: 'ri-shield-star-line', title: 'セキュアな開発環境', desc: '外部からの不正アクセスを防ぐ、多層防御のセキュリティ対策' }
+const rules = [
+  '結果は人が確かめて決める。AIに決めさせない。',
+  '本番環境では、AIに画面を操作させない。',
+  'お客様の情報を、AIの学習に使われない設定で扱う。',
 ];
+
+const career = [
+  { from: 2001, to: 2009, seat: '業務の当事者', org: '大手自動車メーカー', body: '受注・在庫・物流の運営。SAP PP の更改を業務側で主導。' },
+  { from: 2009, to: 2017, seat: 'コンサルタント', org: '外資系コンサルティングファーム', body: 'SAP ECC・S/4HANA の導入（SD・MM）。構想から要件の確定まで。' },
+  { from: 2017, to: 2024, seat: 'プロジェクト責任者', org: '外資系IT企業', body: 'S/4HANA の再構築を約120名のPMとして統括。アジア3拠点へ展開。' },
+  { from: 2024, to: 2026, seat: '生成AIでの導入', org: 'TechTime', body: '大型の SAP 案件で、生成AIで作る手順と点検の仕組みを設計。' },
+];
+const Y0 = 2001;
+const Y1 = 2026;
+const years = Array.from({ length: Y1 - Y0 + 1 }, (_, i) => Y0 + i);
+const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
 ---
 
-<BaseLayout title={title} description={description}>
-  <Navigation currentPath="/" transparent={true} />
+<DraftLayout title={title} description={description}>
+  <div class="grid-bg" aria-hidden="true"></div>
+  <div class="frame" aria-hidden="true">
+    <span class="frame__tl">TECHTIME CO., LTD.</span>
+    <span class="frame__tr"><b id="sheetNo">01</b> / 12</span>
+  </div>
 
-  <div class="min-h-screen bg-gradient-to-br from-[#0A1628] via-[#0D1B2E] to-[#0A1628]">
-    <!-- Hero Section -->
-    <section class="relative min-h-screen bg-gradient-to-b from-[#0A1628] via-[#0F1F3A] to-[#1E40AF] overflow-hidden">
-      <div class="absolute inset-0 opacity-20">
-        <div class="absolute inset-0" style="background-image: linear-gradient(rgba(0, 217, 255, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 217, 255, 0.1) 1px, transparent 1px); background-size: 50px 50px;"></div>
+  <header class="nav">
+    <a href="/" class="nav__logo">TechTime<i></i></a>
+    <nav class="nav__links">
+      <a href="#team">AIチーム</a>
+      <a href="#assess" class="nav__hot">アセスメント</a>
+      <a href="#change">AIで変わること</a>
+      <a href="#pm">プロジェクト管理</a>
+      <a href="#build">導入</a>
+      <a href="#run">運用保守</a>
+      <a href="#how">進め方</a>
+      <div class="nav__act"><a href="/contact?topic=assess" class="nav__cta"><span class="nav__cta-l">アセスメントの相談はこちら</span><span class="nav__cta-s">アセスメントの相談</span><svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+        <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="nav__smp"><b>アセスメントのサンプル</b><span>PDF・29枚</span><i>↗</i></a>
       </div>
+    </nav>
+  </header>
 
-      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 pt-24 sm:pt-28 lg:pt-32 pb-12 sm:pb-16 lg:pb-20 flex items-center min-h-screen">
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center w-full">
-          <div class="space-y-4 sm:space-y-6 lg:space-y-8">
-            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-extrabold text-white leading-tight">
-              AI駆動開発で実現する、<span class="bg-gradient-to-r from-[#00D9FF] to-[#3B82F6] bg-clip-text text-transparent">圧倒的低価格</span>の基幹システム
-            </h1>
-            <p class="text-lg sm:text-xl lg:text-2xl text-white/80 font-medium">
-              従来の半分以下のコストで、御社専用システムを構築
-            </p>
-            <p class="text-sm sm:text-base lg:text-lg text-white/70 leading-relaxed max-w-xl">
-              人手では日単位を要した設計・開発工程を、AIが数分で初版生成。圧倒的な開発効率化により、これまでにない低価格を実現しました。
-            </p>
-            <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-2 sm:pt-4">
-              <a href="/simulator" class="bg-[#00D9FF] text-[#0A1628] px-6 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl text-sm sm:text-base lg:text-lg font-bold hover:bg-[#00F0FF] transition-all duration-300 hover:shadow-2xl hover:shadow-[#00D9FF]/50 hover:-translate-y-1 text-center">
-                見積もりシミュレーターで概算金額を確認
-              </a>
-            </div>
-          </div>
-
-          <!-- Right Visual - All Devices -->
-          <div class="relative mt-8 lg:mt-0 overflow-hidden rounded-2xl">
-            <video
-              src="/techtime-promo.mp4"
-              autoplay
-              muted
-              loop
-              playsinline
-              class="w-full h-auto object-cover scale-[1.2] lg:scale-[1.5]"
-            ></video>
-          </div>
+  <main>
+    <!-- ============ 01 HERO ============ -->
+    <section class="hero" data-sheet="01">
+      <div class="hero__copy">
+        <p class="tag"><span>01</span>SAP の導入と保守への、新しい入り方</p>
+        <h1 class="hero__h1">
+          <span class="hl"><span>SAP 導入に、</span></span>
+          <span class="hl"><span><em>AIチーム</em>という選択肢を。</span></span>
+        </h1>
+        <p class="hero__lead rv">
+          設計、開発、テスト、点検、進捗管理。それぞれを受け持つAIチームを、SAP の導入と保守のプロジェクトに組み込みます。<br />工数ではなく、プロジェクトに残る仕組みを納めます。
+        </p>
+        <div class="hero__act rv">
+          <a href="#contact" class="btn">相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+          <a href="#assess" class="btn btn--line">アセスメントのサンプルを見る<small>PDF・29枚</small></a>
+          <a href="#film" class="link">現場を見る</a>
         </div>
       </div>
 
+      <div class="hero__fig">
+        <svg id="erp" viewBox="0 0 650 540" role="img" aria-label="受注から会計まで、伝票が基幹システムの中を流れ、AIが各処理を点検していく図">
+          <path d={flowD} class="erp__path" />
+          <path d={flowD} class="erp__march" />
+          <g id="tokens"></g>
+          {nodes.map((p, i) => (
+            <g class="node" data-i={i} transform={`translate(${p.x - 68} ${p.y - 38})`}>
+              <rect width="136" height="76" class="node__box" />
+              <rect width="136" height="76" class="node__hit" />
+              <text x="12" y="22" class="node__k">{p.k}</text>
+              <text x="12" y="50" class="node__n">{p.n}</text>
+              <text x="124" y="66" class="node__c" text-anchor="end">0000</text>
+              <g transform="translate(116 14)">
+                <g class="node__ok">
+                  <circle r="13" />
+                  <text y="5" text-anchor="middle">済</text>
+                </g>
+              </g>
+            </g>
+          ))}
+          <g id="scan"><circle r="15" /><circle r="4" class="dot" /><text x="22" y="5">AI</text></g>
+        </svg>
+        <p class="hero__cap">
+          <span><i class="lg lg--doc"></i>伝票の流れ（受注から会計まで）</span>
+          <span><i class="lg lg--ai"></i>AIの点検</span>
+        </p>
+      </div>
     </section>
 
-    <div class="bg-white">
-      <!-- Features Section -->
-      <section id="features" class="py-16 sm:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-          <div class="text-center mb-12 sm:mb-16 lg:mb-20">
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-[#0A1628] mb-4 sm:mb-6">TechTimeが選ばれる理由</h2>
-            <div class="w-24 sm:w-32 h-1 bg-gradient-to-r from-[#00D9FF] to-[#3B82F6] mx-auto mb-4 sm:mb-6"></div>
-            <p class="text-base sm:text-lg lg:text-xl text-gray-600 mx-auto leading-relaxed max-w-3xl px-4">
-              AI技術を活用した革新的な開発手法で、高品質なシステムを低価格・短納期で提供します
-            </p>
+    <!-- ============ 02 現場の映像 ============ -->
+    <section class="sec film" id="film" data-sheet="02">
+      <div class="sec__head">
+        <p class="tag rv"><span>02</span>AIチームがいる現場</p>
+        <h2 class="h2 rv">ある一日の、<br />SAP 導入プロジェクト。</h2>
+      </div>
+      <div class="scr rv" id="scr" aria-hidden="true">
+        <div class="scr__top">
+          <span class="scr__pj"><i></i>S/4HANA 導入プロジェクト（架空の例）</span>
+          <span class="scr__day"><u id="scrDay"></u></span>
+          <b class="scr__clock" id="scrClock">07:00</b>
+        </div>
+        <div class="scr__grid">
+          {team.map((m) => (
+            <div class="pane" data-k={m.k}>
+              <div class="pane__h"><i></i><b>{m.name}</b><span>{m.unit}<u>0</u></span></div>
+              <div class="pane__b"></div>
+            </div>
+          ))}
+          <div class="pane pane--human" data-k="human">
+            <div class="pane__h"><i></i><b>人（PM・業務担当）</b><span>決めたこと<u>0</u></span></div>
+            <div class="pane__b"></div>
           </div>
+        </div>
+        <p class="scr__cap" id="scrCap">朝、AIチームが記録を読みはじめる。</p>
+      </div>
+    </section>
 
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
-            {features.map((feature) => (
-              <div class="group bg-white rounded-2xl sm:rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-500 overflow-hidden hover:-translate-y-2">
-                <div class="h-48 sm:h-56 lg:h-64 bg-gradient-to-br from-[#0A1628] via-[#1E40AF] to-[#3B82F6] flex items-center justify-center relative overflow-hidden">
-                  <div class="absolute inset-0 bg-gradient-to-br from-[#00D9FF]/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-                  <div class="relative">
-                    <div class="w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
-                      <i class={`${feature.icon} text-white text-5xl sm:text-6xl lg:text-7xl group-hover:rotate-12 transition-transform duration-500`}></i>
-                    </div>
-                  </div>
-                </div>
-                <div class="p-5 sm:p-6 lg:p-8 space-y-3 sm:space-y-4">
-                  <h3 class="text-xl sm:text-2xl font-bold text-[#0A1628] group-hover:text-[#1E40AF] transition-colors duration-300">{feature.title}</h3>
-                  <p class="text-sm sm:text-base font-semibold text-[#3B82F6]">{feature.subtitle}</p>
-                  <p class="text-sm sm:text-base text-gray-600 leading-relaxed">{feature.description}</p>
-                  <div class="pt-2 sm:pt-4">
-                    <a href={feature.link} class="text-[#00D9FF] font-semibold inline-flex items-center gap-2 group-hover:gap-4 transition-all duration-300">
-                      詳しく見る
-                      <i class="ri-arrow-right-line"></i>
-                    </a>
-                  </div>
-                </div>
-              </div>
+    <!-- ============ 03 AIチームという入り方 ============ -->
+    <section class="sec team" id="team" data-sheet="03">
+      <div class="sec__head">
+        <p class="tag rv"><span>03</span>AIチームという入り方</p>
+        <h2 class="h2 rv">工数ではなく、<br />仕組みを納める。</h2>
+      </div>
+
+      <div class="org rv">
+        <div class="org__top"><b>お客様と PM</b><span>業務を決める。合否を決める。</span></div>
+        <div class="org__ai">
+          {team.map((m, i) => (
+            <div class="mem" style={`--d:${0.3 + i * 0.12}s`}><em>AI</em><b>{m.name.replace('のAI', '')}</b><span>{m.job}</span></div>
+          ))}
+        </div>
+        <div class="org__tt"><b>TechTime</b><span>手順と点検の観点を作り、AIチームを組み、育てる。</span></div>
+      </div>
+
+      <div class="vs">
+        <article class="vs__c rv">
+          <p class="vs__k">工数の提供</p>
+          <svg viewBox="0 0 400 190" aria-hidden="true">
+            <path d="M24 160H388M24 160V18" class="ax" />
+            <path d="M284 14V160" class="end" /><text x="290" y="24">契約の終わり</text>
+            <path d="M24 160H52V74H284V160H388" pathLength="1" class="ln2" />
+            {[70, 110, 150, 190, 230].map((x) => <g class="man" transform={`translate(${x} 50)`}><circle r="6" /><path d="M-8 20a8 9 0 0 1 16 0" /></g>)}
+          </svg>
+          <h3>人が離れると、止まる。</h3>
+        </article>
+        <article class="vs__c vs__c--on rv" style="--d:.12s">
+          <p class="vs__k">仕組みの提供</p>
+          <svg viewBox="0 0 400 190" aria-hidden="true">
+            <path d="M24 160H388M24 160V18" class="ax" />
+            <path d="M284 14V160" class="end" /><text x="290" y="24">契約の終わり</text>
+            <path d="M24 160C120 160 150 72 284 58C330 53 360 42 388 30V160H24Z" class="area" />
+            <path d="M24 160C120 160 150 72 284 58C330 53 360 42 388 30" pathLength="1" class="ln2" />
+          </svg>
+          <h3>納めたあとも、残って育つ。</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ 04 アセスメント ============ -->
+    <section class="sec asm" id="assess" data-sheet="04">
+      <div class="asm__in">
+        <div class="asm__txt">
+          <p class="tag rv"><span>04</span>最初の一歩は、アセスメント</p>
+          <h2 class="h2 rv">貴社の資料を読み、<br />どこに効くかを報告書にする。</h2>
+          <p class="sec__lead rv">設計書や会議の記録をお預かりし、AIチームが効く工程と、最初に手を打つ所を報告書にまとめます。架空の会社を題材にした、結果報告書のサンプルをご覧いただけます。</p>
+          <ul class="asm__pts rv">
+            <li><b>全件を読む</b>抜き取りではなく、預かった資料をすべて</li>
+            <li><b>統計で測る</b>期日に間に合う確率、減る工数の見込み</li>
+            <li><b>根拠を並べる</b>所見ごとに、資料の抜粋を添える</li>
+          </ul>
+          <div class="asm__act rv">
+            <a href="/downloads/techtime-assessment-sample.pdf" download="TechTime_アセスメント結果報告書_サンプル.pdf" class="btn">サンプルをダウンロード<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+            <a href="/contact?topic=assess" class="link">アセスメントを相談する</a>
+          </div>
+          <p class="asm__note rv">PDF・29枚・約2MB。お名前やメールアドレスの入力は要りません。</p>
+        </div>
+        <a class="asm__deck rv" id="deck" href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" aria-label="アセスメント結果報告書のサンプルを開く">
+          {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.jpg`} alt="" loading="lazy" width="1120" height="792" style={`--i:${i}`} data-i={i} />)}
+        </a>
+      </div>
+    </section>
+
+
+    <!-- ============ 02 CHANGE ============ -->
+    <section class="sec" id="change" data-sheet="05">
+      <div class="sec__head">
+        <p class="tag rv"><span>05</span>AIで変わること</p>
+        <h2 class="h2 rv">抜き取りから、全件へ。<br />書くことから、決めることへ。</h2>
+      </div>
+
+      <div class="cmp rv" id="cmp" aria-hidden="true">
+        <div class="cmp__col">
+          <p class="cmp__name">これまで　抜き取りで確かめる</p>
+          <div class="cells" data-side="l">
+            {cells.map((i) => (
+              <i class:list={[{ s: sampled.includes(i), d: defects.includes(i) }]}></i>
             ))}
           </div>
+          <p class="cmp__read">確かめた <b id="lChk">0</b> / {cells.length}　　見つけた誤り <b id="lHit">0</b>　　<span class="miss" id="lMiss">残った誤り {defects.length}</span></p>
         </div>
-      </section>
-
-      <!-- Systems Section -->
-      <section id="systems" class="py-16 sm:py-24 lg:py-32 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-          <div class="flex flex-col lg:flex-row justify-between items-start lg:items-end mb-12 sm:mb-16 lg:mb-20 gap-4 sm:gap-8">
-            <div>
-              <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-[#0A1628] leading-tight">開発対応システム</h2>
-            </div>
-            <div class="max-w-xl">
-              <p class="text-base sm:text-lg text-gray-600 leading-relaxed">
-                企業の基幹業務を支える各種システムをスクラッチ開発。御社の業務フローに完全に適合した、専用システムを構築します。
-              </p>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {systems.map((system) => {
-              const isInternalDemo = system.link && system.link.startsWith('/demo/');
-              const isExternalDemo = system.link && system.link.startsWith('http');
-              return (
-              <a
-                href={system.link || '#'}
-                target={system.link ? '_blank' : undefined}
-                rel={system.link ? 'noopener noreferrer' : undefined}
-                class={`group relative rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 cursor-pointer aspect-square block ${!system.link ? 'pointer-events-none' : ''}`}
-              >
-                <div class="absolute inset-0 w-full h-full">
-                  {isInternalDemo ? (
-                    <iframe
-                      src={system.link}
-                      class="w-[200%] h-[200%] origin-top-left scale-50 pointer-events-none"
-                      loading="lazy"
-                      title={`${system.name} プレビュー`}
-                    ></iframe>
-                  ) : (
-                    <img src={system.image} alt={system.name} class="w-full h-full object-cover" />
-                  )}
-                </div>
-                <div class="absolute inset-0 bg-gradient-to-t from-[#0A1628]/90 via-[#0A1628]/50 to-transparent group-hover:from-[#0A1628]/70 group-hover:via-[#0A1628]/30 transition-all duration-500"></div>
-                <div class="absolute top-4 right-4 w-12 h-12 rounded-full bg-[#00D9FF] flex items-center justify-center shadow-lg">
-                  <span class="text-[#0A1628] font-bold text-lg">{system.id}</span>
-                </div>
-                {system.link ? (
-                  <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-green-500/90 text-white text-xs font-bold flex items-center gap-1">
-                    <i class="ri-play-circle-line"></i>
-                    デモ体験可能
-                  </div>
-                ) : (
-                  <div class="absolute top-4 left-4 px-3 py-1 rounded-full bg-gray-600/90 text-white text-xs font-bold flex items-center gap-1">
-                    <i class="ri-time-line"></i>
-                    準備中
-                  </div>
-                )}
-                <div class="absolute bottom-0 left-0 right-0 p-6 space-y-3">
-                  <h3 class="text-2xl font-bold text-white">{system.name}</h3>
-                  <p class="text-sm text-white/90 leading-relaxed">{system.description}</p>
-                  {system.link && (
-                    <div class="opacity-0 group-hover:opacity-100 transform translate-y-4 group-hover:translate-y-0 transition-all duration-500">
-                      <span class="mt-2 px-6 py-2 rounded-full border-2 border-green-400 text-green-400 hover:bg-green-400/20 text-sm font-semibold transition-all duration-300 whitespace-nowrap inline-block">
-                        デモを体験する →
-                      </span>
-                    </div>
-                  )}
-                </div>
-              </a>
-              );
-            })}
-          </div>
-
-          <div class="mt-16 text-center">
-            <p class="text-lg text-gray-600">上記以外のシステムも開発可能です。お気軽にご相談ください。</p>
-          </div>
-        </div>
-      </section>
-
-      <!-- AI Development Section -->
-      <section class="py-16 sm:py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-          <div class="text-center mb-12 sm:mb-16 lg:mb-20">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-[#0A1628] mb-4 sm:mb-6 leading-tight">なぜ、圧倒的な低価格を<br class="sm:hidden" />実現できるのか</h2>
-            <div class="w-24 sm:w-32 h-1 bg-gradient-to-r from-[#00D9FF] to-[#3B82F6] mx-auto"></div>
-          </div>
-
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-8 mb-12 sm:mb-16 lg:mb-20">
-            <!-- Traditional Development -->
-            <div class="bg-gray-100 rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 space-y-4 sm:space-y-6">
-              <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
-                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-gray-400 rounded-xl sm:rounded-2xl flex items-center justify-center">
-                  <i class="ri-user-line text-white text-2xl sm:text-3xl"></i>
-                </div>
-                <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-800">従来の開発</h3>
-              </div>
-              <div class="space-y-3 sm:space-y-4">
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-time-line text-gray-600 text-lg sm:text-xl"></i><p class="text-gray-700 text-sm sm:text-base lg:text-lg">外部設計書作成：<span class="font-bold">2～3日</span></p></div>
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-time-line text-gray-600 text-lg sm:text-xl"></i><p class="text-gray-700 text-sm sm:text-base lg:text-lg">内部設計書作成：<span class="font-bold">1～2日</span></p></div>
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-time-line text-gray-600 text-lg sm:text-xl"></i><p class="text-gray-700 text-sm sm:text-base lg:text-lg">コード作成：<span class="font-bold">3～5日</span></p></div>
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-time-line text-gray-600 text-lg sm:text-xl"></i><p class="text-gray-700 text-sm sm:text-base lg:text-lg">単体テスト仕様作成：<span class="font-bold">1～2日</span></p></div>
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-time-line text-gray-600 text-lg sm:text-xl"></i><p class="text-gray-700 text-sm sm:text-base lg:text-lg">単体テスト実行：<span class="font-bold">1～2日</span></p></div>
-              </div>
-              <div class="pt-4 sm:pt-6 border-t-2 border-gray-300">
-                <p class="text-xl sm:text-2xl font-bold text-gray-800">合計：<span class="text-2xl sm:text-3xl">8～14日</span></p>
-                <p class="text-xs sm:text-sm text-gray-600 mt-2">（一機能あたり）</p>
-              </div>
-            </div>
-
-            <!-- AI-Driven Development -->
-            <div class="bg-gradient-to-br from-[#1E40AF] to-[#3B82F6] rounded-2xl sm:rounded-3xl p-6 sm:p-8 lg:p-10 space-y-4 sm:space-y-6 relative overflow-hidden">
-              <div class="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-[#00D9FF]/20 rounded-full blur-3xl"></div>
-              <div class="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6 relative z-10">
-                <div class="w-12 h-12 sm:w-16 sm:h-16 bg-[#00D9FF] rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg">
-                  <i class="ri-robot-2-line text-[#0A1628] text-2xl sm:text-3xl"></i>
-                </div>
-                <h3 class="text-xl sm:text-2xl lg:text-3xl font-bold text-white">AI駆動開発</h3>
-              </div>
-              <div class="space-y-3 sm:space-y-4 relative z-10">
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-flashlight-line text-[#00D9FF] text-lg sm:text-xl"></i><p class="text-white text-sm sm:text-base lg:text-lg">外部設計書初版生成：<span class="font-bold">約10分</span></p></div>
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-flashlight-line text-[#00D9FF] text-lg sm:text-xl"></i><p class="text-white text-sm sm:text-base lg:text-lg">内部設計書初版生成：<span class="font-bold">約4分</span></p></div>
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-flashlight-line text-[#00D9FF] text-lg sm:text-xl"></i><p class="text-white text-sm sm:text-base lg:text-lg">コード初版生成：<span class="font-bold">約1.5分</span></p></div>
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-flashlight-line text-[#00D9FF] text-lg sm:text-xl"></i><p class="text-white text-sm sm:text-base lg:text-lg">単体テスト仕様初版生成：<span class="font-bold">約6分</span></p></div>
-                <div class="flex items-center gap-2 sm:gap-3"><i class="ri-flashlight-line text-[#00D9FF] text-lg sm:text-xl"></i><p class="text-white text-sm sm:text-base lg:text-lg">単体テスト実行・報告書生成：<span class="font-bold">約3分</span></p></div>
-              </div>
-              <div class="pt-4 sm:pt-6 border-t-2 border-white/30 relative z-10">
-                <p class="text-xl sm:text-2xl font-bold text-white">合計：<span class="text-3xl sm:text-4xl text-[#00D9FF]">約25分</span></p>
-                <p class="text-xs sm:text-sm text-white/90 mt-2">（一機能あたりの初版生成）</p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Development Process Steps -->
-          <div class="mt-16 sm:mt-24 lg:mt-32 space-y-8 sm:space-y-12 lg:space-y-16">
-            <div class="text-center">
-              <h3 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#0A1628] mb-3 sm:mb-4">開発の流れ</h3>
-              <p class="text-sm sm:text-base lg:text-lg text-gray-600 max-w-3xl mx-auto px-4">AIが各工程を自動化し、人間は本質的なレビューと意思決定に集中できます</p>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {devSteps.map((item, index) => (
-                <div class="relative">
-                  <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 h-full space-y-4">
-                    <div class="text-8xl font-bold text-[#00D9FF]/10 absolute top-4 right-4">{item.step}</div>
-                    <div class="relative z-10">
-                      <p class="text-sm font-bold text-[#3B82F6] mb-2">Step {item.step}</p>
-                      <h4 class="text-xl font-bold text-[#0A1628] mb-4 leading-tight">{item.title}</h4>
-                      <p class="text-base text-gray-600 leading-relaxed mb-6">{item.description}</p>
-                      <div class="w-10 h-10 flex items-center justify-center">
-                        <i class={`${item.icon} text-[#3B82F6] text-3xl`}></i>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <!-- Quality Assurance -->
-          <div class="mt-32 bg-[#0F172A] rounded-3xl p-12 lg:p-16">
-            <div class="grid grid-cols-1 lg:grid-cols-5 gap-12 items-center">
-              <div class="lg:col-span-3 space-y-6">
-                <div class="inline-block px-4 py-2 bg-[#00D9FF] rounded-full">
-                  <span class="text-[#0A1628] font-bold text-sm">品質担保</span>
-                </div>
-                <h3 class="text-4xl font-bold text-white leading-tight">
-                  品質担保の仕組み
-                </h3>
-                <div class="space-y-4 text-white/85 text-base leading-relaxed">
-                  <p>
-                    AIによる初版生成は驚異的なスピードですが、品質も重要です。TechTimeでは以下の方法で品質を担保します：
-                  </p>
-                  <ul class="space-y-3 ml-4">
-                    <li class="flex items-start gap-3">
-                      <i class="ri-checkbox-circle-fill text-[#00D9FF] text-xl mt-1"></i>
-                      <span><strong class="text-white">構造化された設計テンプレート</strong> - 長年の開発経験から培った設計の「型」をAIに学習させ、一貫性のある設計書を生成</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                      <i class="ri-checkbox-circle-fill text-[#00D9FF] text-xl mt-1"></i>
-                      <span><strong class="text-white">多段階レビュー</strong> - AI生成物に対して、要件視点での本質的なレビューを実施</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                      <i class="ri-checkbox-circle-fill text-[#00D9FF] text-xl mt-1"></i>
-                      <span><strong class="text-white">実行確認による早期検証</strong> - 設計段階からコードを生成し実行することで、後工程でのギャップ発生リスクを低減</span>
-                    </li>
-                    <li class="flex items-start gap-3">
-                      <i class="ri-checkbox-circle-fill text-[#00D9FF] text-xl mt-1"></i>
-                      <span><strong class="text-white">自動テスト</strong> - テスト仕様の生成から実行まで自動化し、基礎品質を底上げ</span>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-              <div class="lg:col-span-2">
-                <img
-                  src="https://readdy.ai/api/search-image?query=software%20quality%20assurance%20testing%20process%20with%20automated%20checks%20and%20validation%20on%20clean%20minimal%20light%20background%20modern%20development%20workflow%20simple%20elegant%20professional%20style&width=500&height=600&seq=qa-process-001&orientation=portrait"
-                  alt="Quality Assurance"
-                  class="w-full h-auto rounded-2xl shadow-2xl"
-                />
-              </div>
-            </div>
-          </div>
-
-          <!-- Security Section -->
-          <div class="mt-20 bg-gradient-to-br from-gray-50 to-white rounded-3xl p-12 border-2 border-gray-200">
-            <div class="flex items-start gap-6 mb-8">
-              <div class="w-16 h-16 bg-gradient-to-br from-[#1E40AF] to-[#3B82F6] rounded-2xl flex items-center justify-center flex-shrink-0">
-                <i class="ri-shield-check-line text-white text-3xl"></i>
-              </div>
-              <div>
-                <h3 class="text-3xl font-bold text-[#0A1628] mb-4">セキュリティへの配慮</h3>
-                <p class="text-lg text-gray-600 leading-relaxed">AI開発環境においても、お客様の情報資産を厳重に保護します</p>
-              </div>
-            </div>
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {securityItems.map((item) => (
-                <div class="flex items-start gap-4 p-4 bg-white rounded-xl">
-                  <div class="w-12 h-12 bg-[#3B82F6]/10 rounded-xl flex items-center justify-center flex-shrink-0">
-                    <i class={`${item.icon} text-[#3B82F6] text-2xl`}></i>
-                  </div>
-                  <div>
-                    <h4 class="font-bold text-[#0A1628] mb-1">{item.title}</h4>
-                    <p class="text-sm text-gray-600 leading-relaxed">{item.desc}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Simulator Section -->
-      <section id="simulator" class="py-16 sm:py-24 lg:py-32 bg-gradient-to-b from-white to-gray-50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-          <div class="text-center mb-10 sm:mb-12 lg:mb-16">
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-[#0A1628] mb-4 sm:mb-6">見積もりシミュレーター</h2>
-            <p class="text-lg sm:text-xl lg:text-2xl text-gray-600 mb-4 sm:mb-8">打ち合わせ不要、今すぐ概算金額を確認</p>
-            <p class="text-sm sm:text-base lg:text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed px-4">
-              システム種別、ユーザー数、拠点数、機能の複雑度などを選択するだけで、御社のシステム開発にかかる概算金額を即座に表示します。
-            </p>
-          </div>
-
-          <div class="max-w-4xl mx-auto bg-gradient-to-br from-[#1E40AF] to-[#3B82F6] rounded-2xl sm:rounded-3xl shadow-2xl p-6 sm:p-10 lg:p-16 text-center">
-            <div class="mb-6 sm:mb-8">
-              <div class="inline-block p-3 sm:p-4 bg-white/10 backdrop-blur-sm rounded-xl sm:rounded-2xl mb-4 sm:mb-6">
-                <i class="ri-calculator-line text-4xl sm:text-5xl lg:text-6xl text-white"></i>
-              </div>
-              <h3 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white mb-3 sm:mb-4">詳細な見積もりシミュレーター</h3>
-              <p class="text-base sm:text-lg lg:text-xl text-white/90 mb-4 sm:mb-6">7つの項目を選択して、3つの価格帯で見積もりを表示</p>
-            </div>
-
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
-              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4"><i class="ri-time-line text-3xl text-[#00D9FF] mb-2"></i><p class="text-sm text-white font-semibold">わずか3分</p></div>
-              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4"><i class="ri-shield-check-line text-3xl text-[#00D9FF] mb-2"></i><p class="text-sm text-white font-semibold">個人情報不要</p></div>
-              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4"><i class="ri-phone-line text-3xl text-[#00D9FF] mb-2"></i><p class="text-sm text-white font-semibold">営業連絡なし</p></div>
-              <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4"><i class="ri-refresh-line text-3xl text-[#00D9FF] mb-2"></i><p class="text-sm text-white font-semibold">何度でもOK</p></div>
-            </div>
-
-            <a href="/simulator" class="inline-block w-full md:w-auto px-12 py-5 bg-white text-[#1E40AF] text-lg font-bold rounded-xl hover:shadow-2xl hover:bg-gray-100 transition-all duration-300 hover:-translate-y-1">
-              見積もりシミュレーターを試す
-              <i class="ri-arrow-right-line ml-2"></i>
-            </a>
-
-            <p class="text-white/70 text-sm mt-6">
-              ※システム種別、ユーザー数、拠点数、機能の複雑度など7つの項目から詳細に試算できます
-            </p>
-          </div>
-
-          <!-- Development Timeline -->
-          <div class="mt-20 max-w-4xl mx-auto bg-blue-50 rounded-2xl p-8">
-            <h3 class="text-2xl font-bold text-[#0A1628] mb-6 text-center">開発期間の目安</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div class="text-center p-6 bg-white rounded-xl">
-                <div class="w-16 h-16 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i class="ri-time-line text-white text-2xl"></i>
-                </div>
-                <p class="font-bold text-[#0A1628] mb-2">小規模システム</p>
-                <p class="text-3xl font-extrabold text-[#3B82F6]">2〜3ヶ月</p>
-              </div>
-              <div class="text-center p-6 bg-white rounded-xl">
-                <div class="w-16 h-16 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i class="ri-time-line text-white text-2xl"></i>
-                </div>
-                <p class="font-bold text-[#0A1628] mb-2">標準規模システム</p>
-                <p class="text-3xl font-extrabold text-[#3B82F6]">3〜6ヶ月</p>
-              </div>
-              <div class="text-center p-6 bg-white rounded-xl">
-                <div class="w-16 h-16 bg-gradient-to-br from-[#00D9FF] to-[#3B82F6] rounded-full flex items-center justify-center mx-auto mb-4">
-                  <i class="ri-time-line text-white text-2xl"></i>
-                </div>
-                <p class="font-bold text-[#0A1628] mb-2">大規模システム</p>
-                <p class="text-3xl font-extrabold text-[#3B82F6]">6ヶ月〜</p>
-              </div>
-            </div>
-            <p class="text-center text-sm text-gray-600 mt-6">
-              ※システムの複雑度により変動します
-            </p>
-          </div>
-        </div>
-      </section>
-
-      <!-- FAQ Section -->
-      <section id="faq" class="py-16 sm:py-24 lg:py-32 bg-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-          <div class="mb-10 sm:mb-12 lg:mb-16">
-            <div class="inline-block px-3 sm:px-4 py-1.5 sm:py-2 bg-[#00D9FF] rounded-full mb-3 sm:mb-4">
-              <span class="text-[#0A1628] font-bold text-xs sm:text-sm">FAQ</span>
-            </div>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold text-[#0A1628] leading-tight">よくある質問</h2>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {faqs.map((faq) => (
-              <div class="bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1 space-y-4 border border-gray-100">
-                <div class="flex items-start gap-4">
-                  <div class="w-12 h-12 bg-gradient-to-br from-[#1E40AF] to-[#3B82F6] rounded-full flex items-center justify-center flex-shrink-0">
-                    <span class="text-white font-bold text-xl">Q</span>
-                  </div>
-                  <h3 class="text-xl font-bold text-[#0A1628] leading-tight pt-2">{faq.question}</h3>
-                </div>
-                <p class="text-base text-gray-600 leading-relaxed pl-16">{faq.answer}</p>
-              </div>
+        <div class="cmp__col cmp__col--now">
+          <p class="cmp__name">いま　AIが全件を確かめる</p>
+          <div class="cells" data-side="r">
+            {cells.map((i) => (
+              <i class:list={[{ d: defects.includes(i) }]} style={`--w:${(i % COLS) + Math.floor(i / COLS)}`}></i>
             ))}
           </div>
+          <p class="cmp__read">確かめた <b id="rChk">0</b> / {cells.length}　　見つけた誤り <b id="rHit">0</b></p>
         </div>
-      </section>
+      </div>
 
-      <!-- CTA Section -->
-      <section class="py-16 sm:py-24 lg:py-32 bg-gradient-to-b from-gray-50 to-white">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6">
-          <div class="text-center mb-12 sm:mb-16 lg:mb-20">
-            <h2 class="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-extrabold text-[#0A1628] mb-6 sm:mb-8 leading-tight">
-              まずは見積もりシミュレーターで<br />概算を確認
-            </h2>
-            <p class="text-base sm:text-lg lg:text-xl text-gray-600 mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-4">
-              御社のシステム開発にかかる費用を、今すぐ確認できます。<br class="hidden sm:inline" />
-              打ち合わせや営業との面談は不要。数分で概算金額がわかります。
-            </p>
-            <a href="/simulator" class="inline-flex items-center gap-2 sm:gap-3 bg-[#1E40AF] text-white px-6 sm:px-10 lg:px-12 py-3 sm:py-4 lg:py-5 rounded-full text-sm sm:text-base lg:text-xl font-bold hover:bg-[#3B82F6] transition-all duration-300 hover:shadow-2xl hover:shadow-[#3B82F6]/30 hover:-translate-y-1">
-              見積もりシミュレーターで概算を確認する
-              <i class="ri-arrow-right-line text-lg sm:text-xl lg:text-2xl"></i>
-            </a>
-          </div>
-
-          <div class="max-w-4xl mx-auto bg-gradient-to-br from-[#0A1628] to-[#1E40AF] rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-16 text-center space-y-6 sm:space-y-8 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-48 sm:w-72 lg:w-96 h-48 sm:h-72 lg:h-96 bg-[#00D9FF]/10 rounded-full blur-3xl"></div>
-            <div class="absolute bottom-0 left-0 w-48 sm:w-72 lg:w-96 h-48 sm:h-72 lg:h-96 bg-[#3B82F6]/10 rounded-full blur-3xl"></div>
-
-            <div class="relative z-10">
-              <h3 class="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4">より詳しい相談をご希望の方</h3>
-              <p class="text-base sm:text-lg lg:text-xl text-white/90 mb-6 sm:mb-8 leading-relaxed">
-                要件のヒアリング、詳細見積もり、開発事例のご紹介など、<br class="hidden sm:inline" />
-                専門スタッフが丁寧にご対応いたします。
-              </p>
-              <a href="/contact" class="inline-block bg-white text-[#1E40AF] px-6 sm:px-10 py-3 sm:py-4 rounded-full text-base sm:text-lg font-bold hover:bg-gray-100 transition-all duration-300 hover:shadow-xl mb-8 sm:mb-12">
-                詳しい相談をする
-              </a>
-
-              <div class="border-t border-white/20 pt-6 sm:pt-8 space-y-3 sm:space-y-4">
-                <p class="text-white font-bold text-lg sm:text-xl mb-3 sm:mb-4">お問い合わせ先</p>
-                <div class="space-y-2 sm:space-y-3 text-white/90">
-                  <p class="text-base sm:text-lg"><strong class="text-white">TechTime株式会社</strong></p>
-                  <p class="flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base lg:text-lg">
-                    <i class="ri-phone-line text-[#00D9FF]"></i>
-                    <span>TEL：03-4222-3363（月～金/9～19時）</span>
-                  </p>
-                  <p class="flex items-center justify-center gap-2 sm:gap-3 text-sm sm:text-base lg:text-lg">
-                    <i class="ri-mail-line text-[#00D9FF]"></i>
-                    <span>Email：kdm@techtime-link.com</span>
-                  </p>
+      <div class="ph rv" id="ph">
+        <div class="ph__bar">
+          {phases.map((p, i) => (
+            <button type="button" class:list={['ph__tab', { 'is-on': i === 0 }]} data-i={i}>
+              <small>{String(i + 1).padStart(2, '0')}</small>{p.name}
+            </button>
+          ))}
+        </div>
+        <div class="ph__panes">
+          <div class:list={['ph__pane', { 'is-on': true }]} data-i={0}>
+            <div class="ph__cap">
+              <p class="ph__line"><b>AI</b>{phases[0].line}</p>
+              <p class="ph__human"><b>人</b>{phases[0].human}</p>
+            </div>
+            <div class="ph__stage" aria-hidden="true">
+              <div class="st st--req">
+                <div class="box talk">
+                  <em>会議の記録</em>
+                  {[78, 54, 88, 62, 72].map((w, k) => <i class:list={['bb', 'p', { r: k % 2 === 1 }]} style={`--t:${0.1 + k * 0.22}s;--w:${w}%`}></i>)}
+                </div>
+                <span class="aibadge p" style="--t:1.5s">AI</span>
+                <div class="box out">
+                  <em>決定</em>
+                  {[0, 1, 2].map((k) => <b class="cp ok p" style={`--t:${2 + k * 0.4}s`}><i style={`width:${[70, 52, 84][k]}%`}></i></b>)}
+                  <em class="mt">未決</em>
+                  {[0, 1].map((k) => <b class="cp ng p" style={`--t:${3.4 + k * 0.4}s`}><i style={`width:${[60, 76][k]}%`}></i></b>)}
                 </div>
               </div>
             </div>
           </div>
+          <div class:list={['ph__pane', { 'is-on': false }]} data-i={1}>
+            <div class="ph__cap">
+              <p class="ph__line"><b>AI</b>{phases[1].line}</p>
+              <p class="ph__human"><b>人</b>{phases[1].human}</p>
+            </div>
+            <div class="ph__stage" aria-hidden="true">
+              <div class="st st--des">
+                <div class="box doc">
+                  <em>設計書</em>
+                  {W8.map((w, k) => <i class:list={['ln', 'ty', { flag: k === 2 || k === 5 }]} style={`--t:${0.2 + k * 0.28}s;--w:${w}%`}></i>)}
+                  <span class="scanl"></span>
+                </div>
+                <div class="box side">
+                  <em>AIの点検</em>
+                  <b class="cp ng p" style="--t:4.5s">指摘</b>
+                  <b class="cp ng p" style="--t:4.9s">指摘</b>
+                  <b class="cp ok p" style="--t:5.4s">ほかは問題なし</b>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class:list={['ph__pane', { 'is-on': false }]} data-i={2}>
+            <div class="ph__cap">
+              <p class="ph__line"><b>AI</b>{phases[2].line}</p>
+              <p class="ph__human"><b>人</b>{phases[2].human}</p>
+            </div>
+            <div class="ph__stage" aria-hidden="true">
+              <div class="st st--dev">
+                <div class="box src">
+                  <em>設計書</em>
+                  {[80, 60, 90, 50].map((w) => <i class="ln" style={`--w:${w}%`}></i>)}
+                </div>
+                <span class="aibadge p" style="--t:0.5s">AI</span>
+                <div class="box code">
+                  <em>ABAP</em>
+                  {CODE.map(([ind, w], k) => <i class:list={['ln', 'ty', `c${k % 3}`]} style={`--t:${0.9 + k * 0.24}s;--w:${w}%;--in:${ind * 9}%`}></i>)}
+                </div>
+                <div class="tags">
+                  {['規約に合っている', '設計書と対応している', '単体テスト仕様', 'テストデータ'].map((t, k) => <b class="cp ok p" style={`--t:${3.6 + k * 0.4}s`}>{t}</b>)}
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class:list={['ph__pane', { 'is-on': false }]} data-i={3}>
+            <div class="ph__cap">
+              <p class="ph__line"><b>AI</b>{phases[3].line}</p>
+              <p class="ph__human"><b>人</b>{phases[3].human}</p>
+            </div>
+            <div class="ph__stage" aria-hidden="true">
+              <div class="st st--tst">
+                <div class="box sap">
+                  <div class="sap__bar"><i></i><i></i><i></i><span>受注登録</span></div>
+                  {['受注先', '品目', '数量'].map((l, k) => (
+                    <label><span>{l}</span><i class="fld"><u class="ty" style={`--t:${1 + k * 0.9}s;--w:${[62, 78, 30][k]}%`}></u></i></label>
+                  ))}
+                  <div class="sap__btn">保存</div>
+                  <div class="sap__msg p" style="--t:4.4s">登録しました</div>
+                  <span class="cur"></span>
+                  <span class="flash"></span>
+                </div>
+                <div class="box ev">
+                  <em>証跡</em>
+                  <b class="shot p" style="--t:5.1s"><i></i><i></i><i></i></b>
+                  <b class="cp ok p" style="--t:5.6s">OK</b>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class:list={['ph__pane', { 'is-on': false }]} data-i={4}>
+            <div class="ph__cap">
+              <p class="ph__line"><b>AI</b>{phases[4].line}</p>
+              <p class="ph__human"><b>人</b>{phases[4].human}</p>
+            </div>
+            <div class="ph__stage" aria-hidden="true">
+              <div class="st st--mig">
+                <div class="box tbl">
+                  <em>いまのシステム</em>
+                  {[0, 1, 2, 3, 4, 5, 6].map(() => <i class="row"></i>)}
+                </div>
+                <div class="pipe">{[0, 1, 2, 3, 4, 5].map((k) => <u style={`--k:${k}`}></u>)}</div>
+                <div class="box tbl new">
+                  <em>SAP</em>
+                  {[0, 1, 2, 3, 4, 5, 6].map((k) => <i class:list={['row', 'ty', { warn: k === 4 }]} style={`--t:${0.5 + k * 0.42}s;--w:100%`}><s class="p" style={`--t:${0.9 + k * 0.42}s`}></s></i>)}
+                </div>
+                <div class="prog"><span>全件を照合</span><i><u></u></i></div>
+              </div>
+            </div>
+          </div>
+          <div class:list={['ph__pane', { 'is-on': false }]} data-i={5}>
+            <div class="ph__cap">
+              <p class="ph__line"><b>AI</b>{phases[5].line}</p>
+              <p class="ph__human"><b>人</b>{phases[5].human}</p>
+            </div>
+            <div class="ph__stage" aria-hidden="true">
+              <div class="st st--ope">
+                <div class="q p" style="--t:0.3s">この伝票が止まっている理由は？</div>
+                <div class="dots"><i></i><i></i><i></i></div>
+                <div class="a p" style="--t:2.5s">
+                  <i class="ln" style="--w:92%"></i><i class="ln" style="--w:76%"></i><i class="ln" style="--w:58%"></i>
+                  <div class="srcs">
+                    {['設計書', 'テストの記録', '決定の記録'].map((t, k) => <b class="cp ok p" style={`--t:${3.3 + k * 0.4}s`}>{t}</b>)}
+                  </div>
+                </div>
+                <div class="by p" style="--t:5s">担当者が確かめて返す</div>
+              </div>
+            </div>
+          </div>
         </div>
-      </section>
-    </div>
-  </div>
-</BaseLayout>
+      </div>
+    </section>
+
+    <!-- ============ 05 流れとつながり ============ -->
+    <section class="sec trc" id="trace" data-sheet="06">
+      <div class="sec__head">
+        <p class="tag rv"><span>06</span>要件定義からテストまで</p>
+        <h2 class="h2 rv">業務の流れを描く。<br />その線が、テストまでつながる。</h2>
+      </div>
+
+      <div class="tr rv" id="tr">
+        <div class="tr__figs">
+          <figure class="tr__fig">
+            <figcaption>業務の流れ</figcaption>
+            <svg viewBox="0 0 520 290" aria-hidden="true">
+              {['営業', '倉庫', '経理'].map((l, k) => (
+                <g><rect x="4" y={40 + k * 80} width="512" height="80" class="lane" /><text x="16" y={84 + k * 80} class="lane__t">{l}</text></g>
+              ))}
+              {fline.map((d, k) => <path d={d} pathLength="1" class="fl" style={`--t:${0.5 + k * 0.35}s`} data-l={k} />)}
+              {trace.map((t, k) => (
+                <g class="fs" data-s={k} transform={`translate(${fbox[k][0]} ${fbox[k][1]})`} style={`--t:${0.2 + k * 0.3}s`}>
+                  <rect width="96" height="44" />
+                  <text x="48" y="27" text-anchor="middle">{t.step}</text>
+                  <text x="0" y="-6" class="idt">{t.id}</text>
+                </g>
+              ))}
+            </svg>
+          </figure>
+          <div class="tr__mid" aria-hidden="true"><span>AI</span><p>同じ元データ<br />から描く</p></div>
+          <figure class="tr__fig">
+            <figcaption>システムの流れ（シーケンス図）</figcaption>
+            <svg viewBox="0 0 520 290" aria-hidden="true">
+              {[['販売管理', 90], ['SAP', 260], ['倉庫システム', 430]].map(([l, x]) => (
+                <g><line x1={x} y1="52" x2={x} y2="282" class="life" /><rect x={Number(x) - 54} y="22" width="108" height="30" class="head" /><text x={x} y="42" text-anchor="middle" class="head__t">{l}</text></g>
+              ))}
+              {trace.map((t, k) => {
+                const [a, b, y] = smsg[k]; const dir = b > a ? 1 : -1;
+                return (
+                  <g class="sm" data-s={k} style={`--t:${0.5 + k * 0.35}s`}>
+                    <path d={`M${a + dir * 2} ${y}H${b - dir * 4}`} pathLength="1" class="sm__l" />
+                    <path d={`M${b - dir * 12} ${y - 5}L${b - dir * 3} ${y}L${b - dir * 12} ${y + 5}`} class="sm__h" />
+                    <text x={(a + b) / 2} y={y - 9} text-anchor="middle">{t.msg}</text>
+                    <text x={Math.min(a, b) + 8} y={y - 9} class="idt">{t.id}</text>
+                  </g>
+                );
+              })}
+            </svg>
+          </figure>
+        </div>
+
+        <div class="tr__chain">
+          <p class="tr__lead"><b id="trId">F-02</b><span id="trStep">在庫を引き当てる</span>を変えると、どこに響くか。</p>
+          <ol>
+            {[['業務の流れ', 'id'], ['要件', 'req'], ['設計書', 'des'], ['プログラム', 'prg'], ['テスト', 'tst']].map(([l, k], i) => (
+              <li style={`--i:${i}`}><em>{l}</em><b data-f={k}>{(trace[1] as any)[k]}</b></li>
+            ))}
+          </ol>
+        </div>
+      </div>
+      <script type="application/json" id="trData" set:html={JSON.stringify(trace)} />
+    </section>
+
+    <!-- ============ プロジェクト管理 ============ -->
+    <section class="sec pm" id="pm" data-sheet="07">
+      <div class="sec__head">
+        <p class="tag rv"><span>07</span>プロジェクト管理が変わる</p>
+        <h2 class="h2 rv">報告を待たない。<br />記録から、毎朝わかる。</h2>
+      </div>
+      <div class="pm__cmp rv">
+        {[['状況を知る', '週次の報告', '毎朝の画面'], ['期日の判断', '経験と勘', '間に合う確率'], ['会議の資料', '人が集計して作る', '作らない。画面を開く']].map((r) => (
+          <div><span>{r[0]}</span><s>{r[1]}</s><i>→</i><b>{r[2]}</b></div>
+        ))}
+      </div>
+      <div class="pm__grid">
+        <article class="pmt rv">
+          <div class="pmf pmf--pick" aria-hidden="true">
+            <div class="pk__in"><em>チャット・会議</em>{[70, 52, 84, 60].map((w, k) => <i class="pp" style={`--t:${0.1 + k * 0.3}s;--w:${w}%`}></i>)}</div>
+            <span class="pk__ai pp" style="--t:1.3s">AI</span>
+            <div class="pk__out"><em>課題・リスク一覧</em>{['課題', 'リスク', '課題'].map((t, k) => <b class="pp" style={`--t:${1.8 + k * 0.5}s`}><u class:list={[{ r: t === 'リスク' }]}>{t}</u><i></i></b>)}</div>
+          </div>
+          <h3>会話と会議から、課題とリスクを毎朝拾う</h3>
+        </article>
+        <article class="pmt rv" style="--d:.1s">
+          <div class="pmf pmf--prob" aria-hidden="true">
+            <div class="pb__num"><em>期日に間に合う確率（例）</em><p><b class="pbn">52</b><small>%</small></p></div>
+            <div class="pb__plot">
+              <span class="pb__late">遅れ</span>
+              <div class="pb__bars">{[4, 8, 14, 24, 38, 56, 72, 84, 72, 56, 38, 24, 14, 8, 4].map((h, k) => <i class="py" style={`--h:${h}%;--t:${k * 0.05}s`}></i>)}</div>
+              <span class="pb__dl"><u>期日</u></span>
+            </div>
+          </div>
+          <h3>期日に間に合うかを、確率で答える</h3>
+        </article>
+        <article class="pmt rv">
+          <div class="pmf pmf--order" aria-hidden="true">
+            <em>今日、手を打つ順</em>
+            <div class="od">{[[40, 3], [85, 0], [25, 4], [65, 1], [55, 2]].map(([w, r], k) => <div class:list={['od__r', { top: r < 3 }]} style={`--y0:${k};--y1:${r};--w:${w}%`}><u>{r + 1}</u><i></i></div>)}</div>
+          </div>
+          <h3>どの課題から片付けるかを、効き目の順に並べる</h3>
+        </article>
+        <article class="pmt rv" style="--d:.1s">
+          <div class="pmf pmf--net" aria-hidden="true">
+            <svg viewBox="0 0 220 124">
+              {[[30, 24], [38, 98], [104, 12], [182, 28], [190, 96], [112, 112]].map(([x, y], k) => (
+                <g><line x1={x} y1={y} x2="110" y2="62" pathLength="1" class="nl" style={`--t:${0.4 + k * 0.35}s`} /><circle cx={x} cy={y} r="6" class="nd" /></g>
+              ))}
+              <circle cx="110" cy="62" r="11" class="hub" />
+            </svg>
+            <b class="nt pp" style="--t:3s">問いが集まり、答えが止まっている</b>
+          </div>
+          <h3>問いが集まる人と、止まっている話題が見える</h3>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ 03 BUILD ============ -->
+    <section class="sec" id="build" data-sheet="08">
+      <div class="sec__head">
+        <p class="tag rv"><span>08</span>導入で得られること</p>
+        <h2 class="h2 rv">品質を落とさずに、<br />日程に余裕をつくる。</h2>
+      </div>
+      <div class="merits">
+        {meritsBuild.map((m, i) => (
+          <article class="merit rv" style={`--d:${(i % 2) * 0.12}s`}>
+            <div class="merit__fig" aria-hidden="true">
+              {m.fig === 'shift' && (
+                <div class="g-shift">
+                  {['設計', '単体', '結合', '統合'].map((l, k) => (
+                    <div class="g-shift__c"><i style={`--k:${k}`}></i><span>{l}</span></div>
+                  ))}
+                </div>
+              )}
+              {m.fig === 'time' && (
+                <div class="g-time">
+                  <div class="g-time__row"><span>これまで</span><div><i class="mk" style="width:74%">作る</i><i class="dc">決める</i></div></div>
+                  <div class="g-time__row"><span>いま</span><div><i class="mk mk--now">作る</i><i class="dc dc--now">決める</i></div></div>
+                </div>
+              )}
+              {m.fig === 'daily' && (
+                <div class="g-daily">
+                  <p>07:00　取り込み</p>
+                  {[0, 1, 2, 3, 4].map((k) => (
+                    <div class="g-daily__r" style={`--k:${k}`}><i></i><b></b><em></em></div>
+                  ))}
+                </div>
+              )}
+              {m.fig === 'even' && (
+                <div class="g-even">
+                  <div>{[0, 1, 2, 3].map((k) => <i class="raw" style={`--k:${k}`}></i>)}</div>
+                  <svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg>
+                  <div>{[0, 1, 2, 3].map((k) => <i class="fix" style={`--k:${k}`}></i>)}</div>
+                </div>
+              )}
+            </div>
+            <h3 class="merit__name">{m.name}</h3>
+            <p class="merit__body">{m.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ============ 04 RUN ============ -->
+    <section class="sec" id="run" data-sheet="09">
+      <div class="sec__head">
+        <p class="tag rv"><span>09</span>運用保守で得られること</p>
+        <h2 class="h2 rv">導入の記録を、<br />そのまま保守で使う。</h2>
+      </div>
+
+      <div class="carry rv" aria-hidden="true">
+        <svg viewBox="0 0 1200 190" preserveAspectRatio="xMidYMid meet">
+          <line x1="20" y1="120" x2="1180" y2="120" class="carry__base" />
+          <line x1="20" y1="120" x2="1180" y2="120" class="carry__prog" pathLength="1" />
+          {[['要件定義', 60], ['設計', 200], ['開発', 340], ['テスト', 480], ['移行', 620]].map(([l, x]) => (
+            <g><line x1={x} y1="112" x2={x} y2="128" class="carry__tk" /><text x={x} y="152" text-anchor="middle">{l}</text></g>
+          ))}
+          <g class="carry__go">
+            <line x1="760" y1="40" x2="760" y2="150" />
+            <rect x="722" y="18" width="76" height="26" />
+            <text x="760" y="36" text-anchor="middle">稼働</text>
+          </g>
+          {[['問い合わせ', 880], ['改修', 1010], ['次の展開', 1140]].map(([l, x]) => (
+            <g><line x1={x} y1="112" x2={x} y2="128" class="carry__tk" /><text x={x} y="152" text-anchor="middle">{l}</text></g>
+          ))}
+          <g class="carry__pack">
+            <g class="docs">
+              <rect x="-26" y="-46" width="30" height="38" class="dc1" />
+              <rect x="-13" y="-52" width="30" height="38" class="dc2" />
+              <rect x="0" y="-58" width="30" height="38" class="dc3" />
+              <path d="M6 -46h18M6 -38h18M6 -30h10" />
+            </g>
+            <text x="2" y="-70" text-anchor="middle">設計書・テスト・決定の記録</text>
+          </g>
+        </svg>
+      </div>
+
+      <div class="runs">
+        {meritsRun.map((m, i) => (
+          <article class="run rv" style={`--d:${i * 0.08}s`}>
+            <span class="run__no">{String(i + 1).padStart(2, '0')}</span>
+            <h3 class="run__name">{m.name}</h3>
+            <p class="run__body">{m.body}</p>
+          </article>
+        ))}
+      </div>
+    </section>
+
+    <!-- ============ 05 HOW ============ -->
+    <section class="sec flow" id="how" data-sheet="10">
+      <div class="sec__head">
+        <p class="tag rv"><span>10</span>TechTime の進め方</p>
+        <h2 class="h2 rv">お客様のプロジェクトの中で、<br />一機能から始める。</h2>
+        <p class="sec__lead rv">お客様の様式と規約に合わせた手順を作り、使える形でお渡しします。</p>
+      </div>
+      <div class="flow__rail" id="flowRail">
+        <div class="flow__line"><i id="flowProg"></i></div>
+        <ol class="flow__steps">
+          {steps.map((s) => (
+            <li class="step">
+              <span class="step__dot"></span>
+              <span class="step__no">{s.no}</span>
+              <h3 class="step__name">{s.name}</h3>
+              <p class="step__body">{s.body}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div class="rules rv">
+        <p class="rules__k">守ること</p>
+        <ul>{rules.map((r) => <li>{r}</li>)}</ul>
+      </div>
+    </section>
+
+    <!-- ============ 06 MAKER ============ -->
+    <section class="sec maker" id="maker" data-sheet="11">
+      <div class="sec__head">
+        <p class="tag rv"><span>11</span>代表の経歴</p>
+        <h2 class="h2 rv">業務、構想、導入。<br />三つの立場で SAP に関わってきた。</h2>
+      </div>
+
+      <div class="ruler rv" id="ruler">
+        <div class="ruler__scale">
+          {years.map((y) => (
+            <span class:list={['tick', { 'tick--major': (y - Y0) % 5 === 0 || y === Y1 }]} style={`left:${pct(y)}%`}>
+              {((y - Y0) % 5 === 0 || y === Y1) && <b>{y}</b>}
+            </span>
+          ))}
+        </div>
+        <div class="ruler__bars">
+          {career.map((c, i) => (
+            <button class:list={['seg', { 'is-on': i === 0 }]} style={`left:${pct(c.from)}%;width:${pct(c.to) - pct(c.from)}%;--d:${i * 0.25}s`} data-i={i} type="button">
+              <span>{c.seat}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="seats">
+        {career.map((c, i) => (
+          <article class:list={['seat', { 'is-on': i === 0 }]} data-i={i}>
+            <p class="seat__yr">{c.from} — {c.to === Y1 ? '現在' : c.to}</p>
+            <h3 class="seat__name">{c.seat}</h3>
+            <p class="seat__org">{c.org}</p>
+            <p class="seat__body">{c.body}</p>
+          </article>
+        ))}
+      </div>
+
+      <dl class="nums">
+        <div class="num rv"><dt>基幹システムの現場</dt><dd><b data-count="25">0</b>年</dd></div>
+        <div class="num rv"><dt>SAP の導入・展開・更改</dt><dd><b data-count="6">0</b>件</dd></div>
+        <div class="num rv"><dt>率いた体制（最大）</dt><dd>約<b data-count="120">0</b>名</dd></div>
+        <div class="num rv"><dt>扱ってきた領域</dt><dd class="num__txt">PP・MM・SD</dd></div>
+      </dl>
+    </section>
+
+    <!-- 相談の前の念押し -->
+    <a class="asmband rv" href="/downloads/techtime-assessment-sample.pdf" download="TechTime_アセスメント結果報告書_サンプル.pdf">
+      <span class="asmband__k">アセスメント 結果報告書のサンプル</span>
+      <span class="asmband__t">架空の会社を題材にした、29枚の報告書。入力なしでダウンロードできます。</span>
+      <span class="asmband__b">ダウンロード<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></span>
+    </a>
+
+    <!-- ============ 07 CONTACT ============ -->
+    <section class="sec contact" id="contact" data-sheet="12">
+      <p class="tag rv"><span>12</span>相談</p>
+      <h2 class="contact__h rv">いまの進め方を、<br />聞かせてください。</h2>
+      <p class="contact__lead rv">導入の途中でも、稼働したあとでも。AIが効くかどうかをお答えします。</p>
+      <a href="/contact" class="btn btn--lg rv">相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <p class="foot__n">TechTime株式会社</p>
+    <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
+    <p class="foot__c">© TechTime Co., Ltd.</p>
+  </footer>
+
+</DraftLayout>
+
+<style>
+  /* ---------- 下地 ---------- */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(var(--hair) 1px, transparent 1px),
+      linear-gradient(90deg, var(--hair) 1px, transparent 1px),
+      linear-gradient(rgba(28, 27, 24, 0.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28, 27, 24, 0.035) 1px, transparent 1px);
+    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  }
+  .frame {
+    position: fixed;
+    inset: 10px;
+    border: 1px solid var(--ink);
+    pointer-events: none;
+    z-index: 40;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--ink-2);
+  }
+  .frame span {
+    position: absolute;
+    background: var(--paper);
+    padding: 2px 10px;
+    line-height: 1.4;
+  }
+  .frame b { font-weight: 500; color: var(--ink); }
+  .frame__tl { top: -9px; left: 22px; }
+  .frame__tr { top: -9px; right: 22px; }
+
+  /* ---------- ナビ ---------- */
+  .nav {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 30;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 22px var(--gutter) 14px;
+    background: linear-gradient(var(--paper) 55%, transparent);
+  }
+  .nav__logo {
+    font-family: var(--mincho);
+    font-weight: 800;
+    font-size: 21px;
+    letter-spacing: 0.02em;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+  .nav__logo i { width: 8px; height: 8px; background: var(--shu); display: block; }
+  .nav__links {
+    display: flex;
+    align-items: center;
+    gap: clamp(14px, 2.4vw, 32px);
+    font-size: 13.5px;
+    font-weight: 500;
+  }
+  .nav__links a:not(.nav__cta) { position: relative; }
+  .nav__links a:not(.nav__cta)::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    width: 100%;
+    height: 1px;
+    background: var(--ink);
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .nav__links a:not(.nav__cta):hover::after { transform: scaleX(1); transform-origin: left; }
+  .nav__cta { display: flex; align-items: center; gap: 14px; background: var(--shu); color: var(--paper); font-weight: 700; font-size: 14.5px; letter-spacing: 0.04em; padding: 11px 18px 11px 22px; box-shadow: 4px 4px 0 var(--ink); transition: box-shadow 0.25s, transform 0.25s; white-space: nowrap; }
+  .nav__cta:hover { box-shadow: 1px 1px 0 var(--ink); transform: translate(3px, 3px); }
+  .nav__cta svg { width: 26px; }
+  .nav__cta-s { display: none; }
+  .nav__act { position: relative; }
+  .nav .nav__links .nav__act .nav__smp::after { display: none; }
+  .nav .nav__links .nav__act .nav__smp { position: absolute; top: calc(100% + 14px); right: -4px; display: flex; align-items: baseline; gap: 9px; white-space: nowrap; background: var(--paper); border: 1px solid var(--ink); padding: 5px 12px 6px 14px; font-size: 12.5px; line-height: 1.5; transition: background 0.25s, color 0.25s; }
+  .nav__smp::before { content: ''; position: absolute; right: 26px; bottom: 100%; width: 1px; height: 8px; background: var(--ink); }
+  .nav__smp b { font-weight: 700; }
+  .nav__smp span { font-family: var(--mono); font-size: 10.5px; color: var(--shu); transition: color 0.25s; }
+  .nav__smp i { font-style: normal; font-size: 12px; }
+  .nav__smp:hover { background: var(--ink); color: var(--paper); }
+  .nav__smp:hover span { color: var(--paper); }
+
+  /* ---------- 共通 ---------- */
+  main { padding: 0 calc(var(--gutter) + 10px); }
+  .tag {
+    font-family: var(--mono);
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--ink-2);
+    margin: 0 0 26px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .tag span { color: var(--paper); background: var(--ink); padding: 1px 9px; }
+  .h2 {
+    font-family: var(--mincho);
+    font-weight: 700;
+    font-size: clamp(27px, 4.2vw, 56px);
+    line-height: 1.42;
+    letter-spacing: 0.02em;
+    margin: 0;
+  }
+  .sec {
+    padding: clamp(90px, 12vw, 180px) 0;
+    border-top: 1px solid var(--ink);
+    position: relative;
+  }
+  .sec__head { max-width: 980px; }
+  .sec__lead { margin: 30px 0 0; max-width: 680px; color: var(--ink-2); }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 22px;
+    background: var(--ink);
+    color: var(--paper);
+    padding: 15px 26px 15px 30px;
+    font-weight: 700;
+    font-size: 15px;
+    letter-spacing: 0.08em;
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: var(--shu);
+    transform: translateX(-101%);
+    transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+    z-index: -1;
+  }
+  .btn:hover::before { transform: none; }
+  svg[viewBox='0 0 40 10'] {
+    width: 40px;
+    height: 10px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.2;
+    flex: none;
+    transition: transform 0.35s;
+  }
+  .btn:hover svg { transform: translateX(6px); }
+  .btn--lg { font-size: 18px; padding: 22px 38px 22px 44px; }
+  .link { font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
+
+  .rv {
+    opacity: 0;
+    transform: translateY(26px);
+    transition:
+      opacity 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s),
+      transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d, 0s);
+  }
+  .rv.in { opacity: 1; transform: none; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    min-height: 100svh;
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+    gap: clamp(20px, 4vw, 70px);
+    align-items: center;
+    padding: 130px 0 80px;
+  }
+  .hero__h1 {
+    font-family: var(--mincho);
+    font-weight: 800;
+    font-size: clamp(26px, 3.5vw, 60px);
+    line-height: 1.3;
+    letter-spacing: 0.01em;
+    margin: 0 0 34px;
+    white-space: nowrap;
+  }
+  .hero__h1 .hl { display: block; overflow: hidden; padding-bottom: 0.06em; }
+  .hero__h1 .hl > span {
+    display: inline-block;
+    transform: translateY(108%);
+    animation: rise 1.1s cubic-bezier(0.16, 0.9, 0.2, 1) forwards;
+  }
+  .hero__h1 .hl:nth-child(2) > span { animation-delay: 0.16s; }
+  .hero__h1 em { font-style: normal; color: var(--shu); position: relative; }
+  .hero__h1 em::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.04em;
+    height: 0.05em;
+    background: var(--shu);
+    transform: scaleX(0);
+    transform-origin: left;
+    animation: sx 0.9s 1.1s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  @keyframes rise { to { transform: none; } }
+  @keyframes sx { to { transform: scaleX(1); } }
+  @keyframes fadeIn { to { opacity: 1; } }
+  .hero__lead { max-width: 580px; font-size: clamp(15px, 1.2vw, 17px); margin: 0 0 40px; --d: 0.55s; }
+  .hero__act { display: flex; align-items: center; gap: 30px; flex-wrap: wrap; --d: 0.7s; }
+  .hero__fig svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .hero__cap {
+    display: flex;
+    gap: 26px;
+    flex-wrap: wrap;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    margin: 4px 0 0;
+  }
+  .hero__cap span { display: flex; align-items: center; gap: 8px; }
+  .lg { display: block; }
+  .lg--doc { width: 16px; height: 11px; background: var(--ink); }
+  .lg--ai { width: 13px; height: 13px; border: 1.6px solid var(--shu); border-radius: 50%; }
+
+  #erp .erp__path {
+    fill: none;
+    stroke: var(--ink);
+    stroke-width: 1;
+    stroke-dasharray: 1600;
+    stroke-dashoffset: 1600;
+    animation: draw 2.4s 0.3s cubic-bezier(0.5, 0, 0.2, 1) forwards;
+  }
+  @keyframes draw { to { stroke-dashoffset: 0; } }
+  #erp .node { opacity: 0; animation: fadeIn 0.6s forwards; }
+  #erp .node:nth-of-type(1) { animation-delay: 0.3s; }
+  #erp .node:nth-of-type(2) { animation-delay: 0.5s; }
+  #erp .node:nth-of-type(3) { animation-delay: 0.7s; }
+  #erp .node:nth-of-type(4) { animation-delay: 0.9s; }
+  #erp .node:nth-of-type(5) { animation-delay: 1.1s; }
+  #erp .node:nth-of-type(6) { animation-delay: 1.3s; }
+  #erp .node:nth-of-type(7) { animation-delay: 1.5s; }
+  #erp .node:nth-of-type(8) { animation-delay: 1.7s; }
+  #erp .node:nth-of-type(9) { animation-delay: 1.9s; }
+  #erp .node__box { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
+  #erp .node__hit { fill: var(--ink); opacity: 0; transition: opacity 0.9s; }
+  #erp .node.hit .node__hit { opacity: 0.1; transition: opacity 0.05s; }
+  #erp text { font-family: var(--mono); fill: var(--ink); }
+  #erp .node__k { font-size: 11px; letter-spacing: 0.12em; fill: var(--ink-2); }
+  #erp .node__n { font-family: var(--gothic); font-weight: 700; font-size: 19px; }
+  #erp .node__c { font-size: 10.5px; fill: var(--ink-2); letter-spacing: 0.06em; }
+  #erp .node__ok { opacity: 0; transform: rotate(-12deg) scale(1.7); transform-box: fill-box; transform-origin: center; transition: opacity 1.2s 2.4s, transform 0s 3.6s; }
+  #erp .node__ok circle { fill: var(--paper); stroke: var(--shu); stroke-width: 1.8; }
+  #erp .node__ok text { font-family: var(--mincho); font-weight: 800; font-size: 14px; fill: var(--shu); }
+  #erp .node.ok .node__ok { opacity: 1; transform: rotate(-12deg) scale(1); transition: opacity 0.12s, transform 0.28s cubic-bezier(0.3, 1.6, 0.5, 1); }
+  #erp #tokens rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
+  #erp #tokens path { fill: none; stroke: var(--ink); stroke-width: 1.2; }
+  #erp .erp__march { fill: none; stroke: var(--ink); stroke-width: 3; stroke-dasharray: 2 14; opacity: 0; animation: fadeIn 0.8s 2.6s forwards, march 1.1s linear infinite; }
+  @keyframes march { to { stroke-dashoffset: -16; } }
+  #erp #scan { opacity: 0; }
+  #erp #scan circle { fill: none; stroke: var(--shu); stroke-width: 2; }
+  #erp #scan .dot { fill: var(--shu); stroke: none; }
+  #erp #scan text { fill: var(--shu); font-size: 12px; font-weight: 500; letter-spacing: 0.1em; }
+
+
+  /* ---------- 02 現場の映像 ---------- */
+  .scr { margin-top: clamp(40px, 5vw, 70px); background: #151412; color: #e9e4d7; border: 1px solid var(--ink); box-shadow: 14px 14px 0 var(--paper-2), 14px 14px 0 1px var(--ink); position: relative; overflow: hidden; --hl: #34322d; }
+  .scr__top { display: grid; grid-template-columns: auto 1fr auto; gap: clamp(12px, 2vw, 28px); align-items: center; padding: 12px clamp(14px, 1.8vw, 26px); border-bottom: 1px solid var(--hl); font-size: 12px; }
+  .scr__pj { display: flex; align-items: center; gap: 9px; color: #a8a396; white-space: nowrap; }
+  .scr__pj i { width: 8px; height: 8px; border-radius: 50%; background: var(--shu); animation: rec 1.2s infinite; }
+  @keyframes rec { 50% { opacity: 0.25; } }
+  .scr__day { height: 2px; background: var(--hl); position: relative; }
+  .scr__day u { position: absolute; inset: 0; background: #e9e4d7; transform-origin: left; transform: scaleX(var(--p, 0)); }
+  .scr__clock { font-family: var(--mono); font-weight: 500; font-size: clamp(20px, 2.4vw, 34px); letter-spacing: 0.02em; line-height: 1; }
+  .scr__grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+  .pane { border-right: 1px solid var(--hl); border-bottom: 1px solid var(--hl); height: clamp(170px, 17vw, 250px); display: flex; flex-direction: column; min-width: 0; }
+  .pane:nth-child(3n) { border-right: 0; }
+  .pane__h { display: flex; align-items: center; gap: 9px; padding: 9px 14px; font-size: 12px; border-bottom: 1px solid var(--hl); white-space: nowrap; }
+  .pane__h i { width: 7px; height: 7px; background: #e9e4d7; flex: none; animation: rec 0.9s infinite; }
+  .pane__h span { margin-left: auto; color: #8f8a7e; font-size: 11px; overflow: hidden; text-overflow: ellipsis; }
+  .pane__h u { text-decoration: none; font-family: var(--mono); color: #e9e4d7; font-size: 14px; margin-left: 8px; }
+  .pane__b { flex: 1; overflow: hidden; padding: 8px 14px; display: flex; flex-direction: column; justify-content: flex-end; gap: 5px; font-family: var(--mono); font-size: clamp(10px, 0.82vw, 12px); line-height: 1.5; -webkit-mask-image: linear-gradient(transparent, #000 34%); mask-image: linear-gradient(transparent, #000 34%); }
+  @keyframes rowin { from { opacity: 0; transform: translateY(10px); } }
+  @keyframes codein { from { transform: scaleX(0); } }
+  .pane--human { background: #e9e4d7; color: var(--ink); }
+  .pane--human .pane__h { border-color: var(--line); }
+  .pane--human .pane__h i { background: var(--shu); border-radius: 50%; }
+  .pane--human .pane__h span { color: var(--ink-2); }
+  .pane--human .pane__h u { color: var(--ink); }
+  .pane--human .pane__b { -webkit-mask-image: none; mask-image: none; }
+  .scr__cap { margin: 0; padding: clamp(16px, 2.2vw, 30px) clamp(14px, 1.8vw, 26px); font-family: var(--mincho); font-weight: 700; font-size: clamp(19px, 2.9vw, 42px); line-height: 1.4; letter-spacing: 0.02em; }
+  .scr__cap.sw { animation: capin 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  @keyframes capin { from { opacity: 0; transform: translateY(16px); } }
+
+  /* ---------- 03 AIチームという入り方 ---------- */
+  .org { margin-top: clamp(44px, 6vw, 84px); display: grid; justify-items: center; }
+  .org__top, .org__tt { border: 1px solid var(--ink); background: var(--paper); padding: 14px 30px; text-align: center; position: relative; }
+  .org b { display: block; font-family: var(--mincho); font-weight: 800; font-size: clamp(18px, 1.9vw, 26px); line-height: 1.5; }
+  .org span { display: block; font-size: 13px; color: var(--ink-2); line-height: 1.7; }
+  .org__top::after, .org__tt::before { content: ''; position: absolute; left: 50%; width: 1px; height: 34px; background: var(--ink); }
+  .org__top::after { top: 100%; }
+  .org__tt::before { bottom: 100%; border-left: 1px dashed var(--shu); background: none; }
+  .org__ai { margin-top: 34px; margin-bottom: 34px; display: grid; grid-template-columns: repeat(5, 1fr); width: 100%; border-top: 1px solid var(--ink); gap: clamp(8px, 1.2vw, 18px); padding-top: 24px; position: relative; }
+  .mem { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); padding: 16px 14px 18px; position: relative; opacity: 0; transform: translateY(20px); }
+  .org.in .mem { opacity: 1; transform: none; transition: opacity 0.7s var(--d), transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1) var(--d); }
+  .mem::before { content: ''; position: absolute; left: 50%; bottom: 100%; width: 1px; height: 24px; background: var(--ink); }
+  .mem em { font-style: normal; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; background: var(--shu); padding: 0 8px; }
+  .mem b { margin-top: 8px; }
+  .mem span { color: #c9c4b6; }
+  .org__tt { border-color: var(--shu); }
+  .org__tt b { color: var(--shu); }
+  .vs { display: grid; grid-template-columns: 1fr 1fr; margin-top: clamp(44px, 6vw, 84px); border: 1px solid var(--ink); background: var(--paper); }
+  .vs__c { padding: clamp(20px, 2.8vw, 44px); }
+  .vs__c + .vs__c { border-left: 1px solid var(--ink); }
+  .vs__k { margin: 0 0 10px; font-size: 13px; font-weight: 700; display: inline-block; border: 1px solid var(--ink); padding: 0 12px; }
+  .vs__c--on .vs__k { background: var(--shu); border-color: var(--shu); color: var(--paper); }
+  .vs svg { width: 100%; height: auto; display: block; }
+  .vs .ax { fill: none; stroke: var(--ink); stroke-width: 1; }
+  .vs .end { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 4 4; }
+  .vs text { font-size: 11px; fill: var(--ink-2); font-family: var(--gothic); }
+  .vs .ln2 { fill: none; stroke: var(--ink); stroke-width: 2.6; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 2.4s cubic-bezier(0.5, 0, 0.2, 1) calc(var(--d, 0s) + 0.4s); }
+  .vs__c--on .ln2 { stroke: var(--shu); stroke-width: 3; }
+  .vs .area { fill: var(--shu); opacity: 0; transition: opacity 1.2s 2.2s; }
+  .vs__c.in .ln2 { stroke-dashoffset: 0; }
+  .vs__c.in .area { opacity: 0.12; }
+  .vs .man circle, .vs .man path { fill: none; stroke: var(--ink); stroke-width: 1.4; }
+  .vs .man { opacity: 0; transition: opacity 0.5s 1s; }
+  .vs__c.in .man { opacity: 1; animation: leave 0.8s 3s forwards; }
+  @keyframes leave { to { opacity: 0.12; } }
+  .vs h3 { margin: 14px 0 0; font-family: var(--mincho); font-weight: 700; font-size: clamp(19px, 2.2vw, 30px); line-height: 1.5; }
+
+
+  /* ---------- 05 流れとつながり ---------- */
+  .tr { margin-top: clamp(40px, 5vw, 70px); border: 1px solid var(--ink); background: var(--paper); }
+  .tr__figs { display: grid; grid-template-columns: 1fr auto 1fr; align-items: stretch; }
+  .tr__fig { margin: 0; padding: clamp(14px, 2vw, 30px); min-width: 0; }
+  .tr__fig figcaption { font-size: 13px; font-weight: 700; margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+  .tr__fig figcaption::before { content: ''; width: 9px; height: 9px; background: var(--ink); }
+  .tr__fig svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .tr__mid { display: grid; align-content: center; justify-items: center; gap: 10px; padding: 0 6px; border-inline: 1px solid var(--line); text-align: center; }
+  .tr__mid span { width: 48px; height: 48px; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-family: var(--mono); font-size: 14px; }
+  .tr__mid p { margin: 0; font-size: 11.5px; line-height: 1.6; color: var(--ink-2); padding: 0 10px; }
+  .tr svg text { font-family: var(--gothic); font-size: 12px; fill: var(--ink); }
+  .tr .lane { fill: none; stroke: var(--line); stroke-width: 1; }
+  .tr .lane__t { fill: var(--ink-2); font-size: 11.5px; }
+  .tr .idt { font-family: var(--mono); font-size: 10px; fill: var(--ink-2); letter-spacing: 0.04em; }
+  .tr .fl, .tr .sm__l { fill: none; stroke: var(--ink); stroke-width: 1.3; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.7s var(--t) cubic-bezier(0.5, 0, 0.2, 1), stroke 0.3s; }
+  .tr .sm__h { fill: none; stroke: var(--ink); stroke-width: 1.3; opacity: 0; transition: opacity 0.3s calc(var(--t) + 0.6s), stroke 0.3s; }
+  .tr .life { stroke: var(--line); stroke-width: 1; stroke-dasharray: 4 4; }
+  .tr .head { fill: var(--paper); stroke: var(--ink); stroke-width: 1.2; }
+  .tr .head__t { font-weight: 700; }
+  .tr .fs { opacity: 0; cursor: pointer; transition: opacity 0.5s var(--t); }
+  .tr .fs rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.3; transition: fill 0.3s, stroke 0.3s; }
+  .tr .fs text { transition: fill 0.3s; }
+  .tr .fs text:not(.idt) { font-size: 10.5px; font-weight: 700; }
+  .tr .sm { cursor: pointer; }
+  .tr .sm text { opacity: 0; transition: opacity 0.4s calc(var(--t) + 0.3s), fill 0.3s; }
+  .tr.in .fl, .tr.in .sm__l { stroke-dashoffset: 0; }
+  .tr.in .sm__h, .tr.in .fs, .tr.in .sm text { opacity: 1; }
+  .tr .fs.hi rect { fill: var(--shu); stroke: var(--shu); }
+  .tr .fs.hi text { fill: var(--paper); }
+  .tr .fs.hi .idt { fill: var(--shu); font-weight: 500; }
+  .tr .sm.hi .sm__l, .tr .sm.hi .sm__h { stroke: var(--shu); stroke-width: 2.4; }
+  .tr .sm.hi text { fill: var(--shu); font-weight: 700; }
+  .tr__chain { border-top: 1px solid var(--ink); padding: clamp(18px, 2.4vw, 36px); }
+  .tr__lead { margin: 0 0 20px; font-family: var(--mincho); font-weight: 700; font-size: clamp(17px, 2vw, 28px); line-height: 1.5; display: flex; flex-wrap: wrap; align-items: baseline; gap: 0 12px; }
+  .tr__lead b { font-family: var(--mono); font-weight: 500; font-size: 0.72em; background: var(--shu); color: var(--paper); padding: 0 10px; }
+  .tr__lead span { color: var(--shu); }
+  .tr__chain ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, 1fr); gap: 0 34px; }
+  .tr__chain li { border: 1px solid var(--ink); padding: 10px 14px 12px; position: relative; background: var(--paper); }
+  .tr__chain li:first-child { border-color: var(--shu); }
+  .tr__chain li + li::before { content: ''; position: absolute; right: 100%; top: 50%; width: 34px; height: 2px; background: var(--shu); transform-origin: left; transform: scaleX(0); margin-right: 0; }
+  .tr__chain li + li::after { content: ''; position: absolute; right: calc(100% + 1px); top: 50%; width: 8px; height: 8px; border-top: 2px solid var(--shu); border-right: 2px solid var(--shu); transform: translateY(-50%) rotate(45deg) translate(-1px, 1px); opacity: 0; }
+  .tr__chain em { font-style: normal; display: block; font-size: 11.5px; color: var(--ink-2); }
+  .tr__chain b { font-family: var(--mono); font-weight: 500; font-size: clamp(13px, 1.5vw, 21px); letter-spacing: 0.02em; white-space: nowrap; }
+  .tr.go .tr__chain li { animation: pop 0.45s calc(var(--i) * 0.28s) cubic-bezier(0.3, 1.4, 0.5, 1) both; }
+  .tr.go .tr__chain li + li::before { animation: trl 0.3s calc(var(--i) * 0.28s - 0.12s) both; }
+  .tr.go .tr__chain li + li::after { animation: fadeIn 0.2s calc(var(--i) * 0.28s) both; }
+  .tr__chain li + li::before { transform: scaleX(1); }
+  .tr__chain li + li::after { opacity: 1; }
+  @keyframes trl { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  /* ---------- 02 抜き取りと全件 ---------- */
+  .cmp {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(20px, 4vw, 60px);
+    margin-top: clamp(50px, 6vw, 90px);
+  }
+  .cmp__name { font-size: 13.5px; font-weight: 700; margin: 0 0 12px; }
+  .cmp__col--now .cmp__name { color: var(--shu); }
+  .cells { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; }
+  .cells i {
+    display: block;
+    aspect-ratio: 1 / 1.25;
+    border: 1px solid var(--line);
+    background: var(--paper);
+    transition: background 0.3s, border-color 0.3s, transform 0.3s;
+  }
+  .cells i.on { background: var(--ink); border-color: var(--ink); }
+  .cells i.on.d,
+  .cells i.left { background: var(--shu); border-color: var(--shu); }
+  .cells i.left { background: transparent; border-style: dashed; border-width: 2px; }
+  .cells i.on.d { transform: scale(1.14); }
+  .cmp__read {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    letter-spacing: 0.03em;
+    color: var(--ink-2);
+    margin: 12px 0 0;
+  }
+  .cmp__read b { font-weight: 500; color: var(--ink); font-size: 15px; }
+  .cmp__read .miss { color: var(--shu); opacity: 0; transition: opacity 0.4s; }
+  .cmp__read .miss.on { opacity: 1; }
+
+  /* ---------- 02 工程 ---------- */
+  .ph { margin-top: clamp(60px, 7vw, 100px); }
+  .ph__bar { display: grid; grid-template-columns: repeat(6, 1fr); border: 1px solid var(--ink); background: var(--paper); }
+  .ph__tab {
+    font: inherit;
+    font-weight: 700;
+    font-size: clamp(12px, 1.15vw, 15px);
+    background: transparent;
+    color: var(--ink);
+    border: 0;
+    border-right: 1px solid var(--ink);
+    padding: 12px 6px 14px;
+    cursor: pointer;
+    position: relative;
+    transition: background 0.35s, color 0.35s;
+    line-height: 1.5;
+  }
+  .ph__tab:last-child { border-right: 0; }
+  .ph__tab small { display: block; font-family: var(--mono); font-weight: 400; font-size: 10.5px; opacity: 0.6; }
+  .ph__tab.is-on { background: var(--ink); color: var(--paper); }
+  .ph__tab::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    height: 3px;
+    width: 100%;
+    background: var(--shu);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+  .ph.auto .ph__tab.is-on::after { animation: sx 8.2s linear forwards; }
+  .ph__panes { display: grid; border: 1px solid var(--ink); border-top: 0; background: var(--paper); }
+  .ph__pane {
+    grid-area: 1 / 1;
+    display: grid;
+    grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr);
+    gap: clamp(16px, 3vw, 44px);
+    align-items: center;
+    padding: clamp(24px, 3.4vw, 50px);
+    opacity: 0;
+    transform: translateY(10px);
+    pointer-events: none;
+  }
+  .ph__pane.is-on { opacity: 1; transform: none; pointer-events: auto; transition: opacity 0.5s 0.05s, transform 0.5s 0.05s; }
+
+  .st { position: absolute; inset: 0; padding: 6.5% 6%; display: grid; gap: 4%; opacity: 0; transform: scale(0.97); pointer-events: none; }
+  .st.is-on { opacity: 1; transform: none; transition: opacity 0.5s, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1); }
+  .st em { font-style: normal; font-size: 0.9em; color: var(--ink-2); display: block; margin-bottom: 0.9em; letter-spacing: 0.04em; }
+  .st em.mt { margin-top: 1.4em; }
+  .box { background: var(--paper); border: 1px solid var(--line); border-radius: 0; padding: 7% 8%; position: relative; overflow: hidden; display: flex; flex-direction: column; gap: 0.8em; min-width: 0; }
+  .box > em { margin-bottom: 0.2em; }
+  .ln { display: block; height: 0.7em; border-radius: 0; background: var(--line); width: var(--w, 80%); margin-left: var(--in, 0); transform-origin: left; flex: none; }
+  .cp { display: flex; align-items: center; gap: 0.7em; font-weight: 700; font-size: 0.95em; border-radius: 0; padding: 0.42em 1em 0.42em 0.5em; background: var(--paper-2); white-space: nowrap; min-width: 0; }
+  .cp::before { content: '✓'; flex: none; width: 1.6em; height: 1.6em; border-radius: 50%; background: var(--ink); color: var(--paper); display: grid; place-items: center; font-size: 0.82em; font-weight: 900; }
+  .cp.ng::before { content: '!'; background: var(--shu); color: var(--paper); }
+  .cp > i { display: block; height: 0.55em; border-radius: 0; background: var(--line); }
+  .aibadge { align-self: center; justify-self: center; width: 3.6em; height: 3.6em; border-radius: 50%; background: var(--ink); color: var(--paper); font-family: var(--mono); font-weight: 700; font-size: 1.15em; display: grid; place-items: center; box-shadow: 0 0 40px transparent; }
+  .st.run .aibadge { animation: pop 0.5s var(--t, 0s) both, pulse 1.6s calc(var(--t, 0s) + 0.5s) infinite; }
+  @keyframes pulse { 50% { box-shadow: 0 0 70px transparent; transform: scale(1.07); } }
+
+  .st.run .p { animation: pop 0.55s var(--t, 0s) cubic-bezier(0.3, 1.4, 0.5, 1) both; }
+  .st.run .ty { animation: ty 0.5s var(--t, 0s) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  @keyframes pop { from { opacity: 0; transform: translateY(14px) scale(0.9); } to { opacity: 1; transform: none; } }
+  @keyframes ty { from { transform: scaleX(0); opacity: 0.3; } to { transform: scaleX(1); opacity: 1; } }
+
+  .st--req { grid-template-columns: 1fr auto 1fr; }
+  .bb { display: block; height: 2.1em; border-radius: 0; background: var(--paper-2); width: var(--w); flex: none; }
+  .bb.r { align-self: flex-end; border-radius: 0; background: var(--line); }
+  .st--req .cp > i { flex: 1; max-width: 100%; }
+
+  .st--des { grid-template-columns: 1.25fr 1fr; }
+  .st--des .doc { gap: 1.05em; }
+  .st.run .ln.flag { animation: ty 0.5s var(--t, 0s) cubic-bezier(0.2, 0.8, 0.2, 1) both, flag 0.4s 4.2s both; }
+  .ln.flag { background: var(--shu); box-shadow: 0 0 18px transparent; }
+  @keyframes flag { from { background: var(--line); box-shadow: none; } to { background: var(--shu); box-shadow: 0 0 18px transparent; } }
+  .scanl { position: absolute; left: 0; right: 0; top: 0; height: 22%; background: linear-gradient(transparent, transparent); border-bottom: 2px solid var(--ink); opacity: 0; }
+  .st.run .scanl { animation: scanl 1.7s 2.7s cubic-bezier(0.4, 0, 0.4, 1) both; }
+  @keyframes scanl { 0% { transform: translateY(-100%); opacity: 1; } 90% { opacity: 1; } 100% { transform: translateY(360%); opacity: 0; } }
+  .st--des .side { justify-content: center; }
+
+  .st--dev { grid-template-columns: 0.62fr auto 1.2fr; grid-template-rows: 1fr auto; }
+  .st--dev .tags { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 0.7em; }
+  .st--dev .code { background: var(--paper-2); gap: 0.75em; }
+  .ln.c0 { background: var(--ink); }
+  .ln.c1 { background: var(--line); }
+  .ln.c2 { background: var(--ink-2); }
+
+  .st--tst { grid-template-columns: 1.5fr 0.7fr; }
+  .sap { padding: 0 0 6%; gap: 1em; }
+  .sap__bar { display: flex; align-items: center; gap: 0.5em; background: var(--paper-2); padding: 0.8em 1.2em; }
+  .sap__bar i { width: 0.7em; height: 0.7em; border-radius: 50%; background: var(--line); display: block; }
+  .sap__bar span { margin-left: 0.8em; font-weight: 700; color: var(--ink); }
+  .sap label { display: grid; grid-template-columns: 5em 1fr; align-items: center; gap: 1em; padding: 0 8%; color: var(--ink-2); }
+  .fld { display: block; height: 2.3em; border: 1px solid var(--line); border-radius: 0; padding: 0.72em 0.8em; }
+  .fld u { display: block; height: 100%; width: var(--w); background: var(--ink); border-radius: 0; transform-origin: left; }
+  .sap__btn { align-self: flex-end; margin-right: 8%; background: var(--ink); color: var(--paper); font-weight: 700; border-radius: 0; padding: 0.35em 1.6em; }
+  .st.run .sap__btn { animation: press 0.35s 4.05s both; }
+  @keyframes press { 50% { transform: scale(0.9); background: var(--ink); } }
+  .sap__msg { margin: 0 8%; color: var(--ink); font-weight: 700; border-left: 3px solid var(--ink); padding-left: 0.9em; }
+  .cur { position: absolute; left: 0; top: 0; width: 0; height: 0; border: 0.55em solid transparent; border-top: 1em solid var(--ink); border-left-color: var(--ink); transform: translate(60em, 3em); filter: drop-shadow(0 0 8px transparent); opacity: 0; }
+  .st.run .cur { animation: cur 4.4s 0.3s cubic-bezier(0.5, 0, 0.3, 1) both; }
+  @keyframes cur {
+    0% { left: 80%; top: 8%; opacity: 0; }
+    8% { opacity: 1; }
+    16%, 32% { left: 44%; top: 30%; }
+    38%, 52% { left: 44%; top: 46%; }
+    58%, 72% { left: 44%; top: 62%; }
+    84%, 96% { left: 82%; top: 78%; opacity: 1; }
+    100% { left: 82%; top: 78%; opacity: 0; }
+  }
+  .cur { transform: none; }
+  .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
+  .st.run .flash { animation: flash 0.5s 4.9s both; }
+  @keyframes flash { 0% { opacity: 0; } 25% { opacity: 0.75; } 100% { opacity: 0; } }
+  .st--tst .ev { justify-content: center; }
+  .shot { display: flex; flex-direction: column; gap: 0.45em; border: 1.5px solid var(--shu); border-radius: 0; padding: 0.8em; background: var(--paper); }
+  .shot i { display: block; height: 0.5em; border-radius: 0; background: var(--line); }
+  .shot i:nth-child(2) { width: 70%; }
+  .shot i:nth-child(3) { width: 40%; background: var(--ink); }
+
+  .st--mig { grid-template-columns: 1fr 0.5fr 1fr; grid-template-rows: 1fr auto; }
+  .tbl { gap: 0.62em; }
+  .row { display: block; height: 1.15em; border-radius: 0; background: repeating-linear-gradient(90deg, var(--line) 0 22%, transparent 22% 25%); position: relative; transform-origin: left; flex: none; }
+  .tbl.new .row { background: repeating-linear-gradient(90deg, var(--ink) 0 22%, transparent 22% 25%); }
+  .tbl.new .row.warn { background: repeating-linear-gradient(90deg, var(--shu) 0 22%, transparent 22% 25%); }
+  .row s { position: absolute; right: -0.2em; top: 50%; width: 1.25em; height: 1.25em; margin-top: -0.62em; border-radius: 50%; background: var(--ink); }
+  .row.warn s { background: var(--shu); }
+  .pipe { position: relative; align-self: center; height: 2px; background: var(--line); }
+  .pipe u { position: absolute; top: -0.35em; left: 0; width: 0.75em; height: 0.75em; border-radius: 50%; background: var(--ink); box-shadow: 0 0 12px var(--ink); animation: pipe 1.5s calc(var(--k) * -0.25s) linear infinite; }
+  @keyframes pipe { from { left: 0; opacity: 0; } 15%, 85% { opacity: 1; } to { left: 100%; opacity: 0; } }
+  .prog { grid-column: 1 / -1; display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 1.2em; font-weight: 700; }
+  .prog i { display: block; height: 0.7em; border-radius: 0; background: var(--paper-2); overflow: hidden; }
+  .prog u { display: block; height: 100%; background: var(--ink); border-radius: 0; transform-origin: left; }
+  .st.run .prog u { animation: fill 3.6s 0.5s linear both; }
+  @keyframes fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  .st--ope { grid-template-columns: 1fr; align-content: center; gap: 1.3em; padding-inline: 10%; }
+  .q { justify-self: end; background: var(--paper-2); border-radius: 0; padding: 0.8em 1.4em; font-weight: 700; font-size: 1.1em; }
+  .dots { display: flex; gap: 0.4em; height: 0; opacity: 0; }
+  .dots i { width: 0.6em; height: 0.6em; border-radius: 50%; background: var(--ink); display: block; animation: blink 0.9s infinite; }
+  .dots i:nth-child(2) { animation-delay: 0.15s; }
+  .dots i:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes blink { 50% { opacity: 0.2; transform: translateY(-0.2em); } }
+  .st.run .dots { animation: dots 1.5s 1s both; }
+  @keyframes dots { 0%, 100% { opacity: 0; height: 0; } 12%, 88% { opacity: 1; height: 0.6em; } }
+  .a { justify-self: start; width: 78%; background: var(--paper); border: 1px solid var(--ink); border-radius: 0; padding: 1.3em 1.5em; display: grid; gap: 0.8em; box-shadow: 0 0 40px transparent; }
+  .a .ln { background: var(--line); }
+  .srcs { display: flex; flex-wrap: wrap; gap: 0.6em; margin-top: 0.4em; }
+  .by { justify-self: start; color: var(--ink-2); font-size: 0.95em; border: 1px dashed var(--ink-2); border-radius: 0; padding: 0.2em 1.2em; }
+
+  .ph__stage { position: relative; aspect-ratio: 16 / 10; border: 1px solid var(--line); overflow: hidden; font-size: clamp(9.5px, 0.92vw, 13px); background: linear-gradient(var(--hair) 1px, transparent 1px) 0 0 / 14px 14px, linear-gradient(90deg, var(--hair) 1px, transparent 1px) 0 0 / 14px 14px; }
+  .ph__stage .st { opacity: 1; transform: none; }
+  .ph__stage .box { border-color: var(--ink); }
+  .ph__stage .a { border-color: var(--ink); }
+  .ph__stage .cp { border: 1px solid var(--line); }
+  .ph__cap p { margin: 0 0 12px; display: flex; align-items: baseline; gap: 12px; }
+  .ph__cap b { flex: none; font-size: 11.5px; font-weight: 700; padding: 0 9px; line-height: 1.8; }
+  .ph__line { font-family: var(--mincho); font-weight: 700; font-size: clamp(18px, 2vw, 28px); line-height: 1.6; }
+  .ph__line b { background: var(--shu); color: var(--paper); font-family: var(--gothic); }
+  .ph__human { color: var(--ink-2); font-size: 15px; }
+  .ph__human b { border: 1px solid var(--ink-2); }
+
+  .pm { --pm-card: var(--paper); --pm-edge: var(--ink); --pm-fig: linear-gradient(var(--hair) 1px, transparent 1px) 0 0 / 14px 14px, linear-gradient(90deg, var(--hair) 1px, transparent 1px) 0 0 / 14px 14px; --pm-figedge: var(--line); --pm-fg: var(--ink); --pm-mute: var(--ink-2); --pm-dim: var(--line); --pm-ai: var(--ink); --pm-hot: var(--shu); --pm-on: var(--paper); --pm-rad: 0px; --pm-gap: 0px; --pm-hf: 700 1em var(--mincho); --pm-nf: var(--mono); }
+  .pm .pmt:nth-child(odd) { border-right: 0; }
+  .pm .pmt:nth-child(-n + 2) { border-bottom: 0; }
+
+  /* ---------- プロジェクト管理 ---------- */
+  .pm__cmp { display: grid; gap: 0; margin-top: clamp(40px, 5vw, 70px); border-top: 1px solid var(--pm-edge); }
+  .pm__cmp div { display: grid; grid-template-columns: 8em 1fr auto 1.4fr; gap: clamp(10px, 2vw, 30px); align-items: baseline; padding: clamp(10px, 1.3vw, 18px) 0; border-bottom: 1px solid var(--pm-edge); }
+  .pm__cmp span { font-size: 12.5px; color: var(--pm-mute); }
+  .pm__cmp s { color: var(--pm-mute); text-decoration-thickness: 1px; font-size: clamp(14px, 1.5vw, 20px); }
+  .pm__cmp i { font-style: normal; color: var(--pm-hot); }
+  .pm__cmp b { font: var(--pm-hf); font-size: clamp(18px, 2.4vw, 34px); line-height: 1.4; }
+  .pm__grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--pm-gap); margin-top: clamp(30px, 4vw, 56px); }
+  .pmt { background: var(--pm-card); border: 1px solid var(--pm-edge); border-radius: var(--pm-rad); padding: clamp(18px, 2.2vw, 34px); }
+  .pmt h3 { margin: 22px 0 0; font: var(--pm-hf); font-size: clamp(17px, 1.7vw, 23px); line-height: 1.6; }
+  .pmf { height: 230px; border-radius: calc(var(--pm-rad) * 0.6); background: var(--pm-fig); border: 1px solid var(--pm-figedge); padding: 20px 24px; position: relative; overflow: hidden; font-size: 12px; color: var(--pm-mute); }
+  .pmf em { font-style: normal; display: block; font-size: 11.5px; margin-bottom: 10px; letter-spacing: 0.04em; }
+  .pmf.run .pp { animation: pop 0.55s var(--t, 0s) cubic-bezier(0.3, 1.4, 0.5, 1) both; }
+
+  .pmf--pick { display: grid; grid-template-columns: 1fr auto 1.15fr; gap: 18px; align-items: center; }
+  .pk__in, .pk__out { display: flex; flex-direction: column; gap: 9px; }
+  .pk__in i { display: block; height: 24px; width: var(--w); background: var(--pm-dim); border-radius: calc(var(--pm-rad) * 0.5); opacity: 0.7; }
+  .pk__in i:nth-of-type(even) { align-self: flex-end; }
+  .pk__ai { width: 46px; height: 46px; border-radius: 50%; background: var(--pm-ai); color: var(--pm-on); display: grid; place-items: center; font-weight: 700; font-size: 13px; }
+  .pk__out b { display: grid; grid-template-columns: auto 1fr; gap: 10px; align-items: center; border: 1px solid var(--pm-edge); border-radius: calc(var(--pm-rad) * 0.4); padding: 7px 10px; background: var(--pm-card); }
+  .pk__out u { text-decoration: none; font-size: 11px; font-weight: 700; color: var(--pm-on); background: var(--pm-ai); padding: 0 8px; border-radius: var(--pm-rad); }
+  .pk__out u.r { background: var(--pm-hot); color: #fff; }
+  .pk__out b > i { display: block; height: 6px; background: var(--pm-dim); border-radius: 99px; }
+
+  .pmf--prob { display: grid; grid-template-columns: auto 1fr; gap: 24px; align-items: end; }
+  .pb__num p { margin: 0; color: var(--pm-fg); line-height: 1; white-space: nowrap; }
+  .pb__num b { font-family: var(--pm-nf); font-weight: 500; font-size: clamp(54px, 6vw, 88px); letter-spacing: -0.04em; }
+  .pb__num small { font-size: 22px; margin-left: 4px; }
+  .pb__plot { position: relative; height: 100%; border-bottom: 1px solid var(--pm-fg); overflow: hidden; }
+  .pb__late { position: absolute; top: 0; bottom: 0; right: 0; left: 58%; background: color-mix(in srgb, var(--pm-hot) 20%, transparent); }
+  .pb__late { display: grid; place-items: start end; padding: 4px 8px; font-size: 11px; font-weight: 700; color: var(--pm-fg); }
+  .pb__dl { position: absolute; top: 0; bottom: 0; left: 58%; border-left: 2px dashed var(--pm-hot); }
+  .pb__dl u { position: absolute; top: 2px; right: 6px; text-decoration: none; font-size: 11px; font-weight: 700; color: var(--pm-hot); white-space: nowrap; }
+  .pb__bars { position: absolute; inset: 22px 0 0 14%; display: flex; align-items: flex-end; gap: 3px; width: 78%; }
+  .pb__bars i { flex: 1; height: var(--h); background: var(--pm-ai); transform-origin: bottom; border-radius: calc(var(--pm-rad) * 0.15) calc(var(--pm-rad) * 0.15) 0 0; }
+  .pmf.run .py { animation: py 0.5s var(--t) cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+  .pmf.run .pb__bars { animation: pbs 1.6s 3.2s cubic-bezier(0.6, 0, 0.2, 1) both; }
+  @keyframes py { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+  @keyframes pbs { from { transform: translateX(0); } to { transform: translateX(-24%); } }
+  .pb__bars { transform: translateX(-24%); }
+
+  .od { position: relative; height: 160px; }
+  .od__r { position: absolute; left: 0; right: 0; top: calc(var(--y1) * 32px); height: 22px; display: grid; grid-template-columns: 22px 1fr; gap: 12px; align-items: center; }
+  .od__r u { text-decoration: none; font-family: var(--pm-nf); font-size: 12px; color: var(--pm-mute); }
+  .od__r i { display: block; height: 100%; width: var(--w); background: var(--pm-dim); border-radius: calc(var(--pm-rad) * 0.3); }
+  .od__r.top i { background: var(--pm-ai); }
+  .od__r.top u { color: var(--pm-fg); font-weight: 700; }
+  .pmf.run .od__r { animation: odm 1s 1.4s cubic-bezier(0.6, 0, 0.2, 1) both; }
+  .pmf.run .od__r i { animation: odc 0.5s 2.5s both; }
+  .pmf.run .od__r u { animation: odu 0.4s 2.4s both; }
+  @keyframes odm { from { top: calc(var(--y0) * 32px); } to { top: calc(var(--y1) * 32px); } }
+  @keyframes odc { from { background: var(--pm-dim); } }
+  @keyframes odu { from { opacity: 0; } }
+
+  .pmf--net svg { position: absolute; inset: 16px 16px 44px; width: calc(100% - 32px); height: calc(100% - 60px); overflow: visible; }
+  .nl { stroke: var(--pm-fg); stroke-width: 1; stroke-dasharray: 1; opacity: 0.55; }
+  .nd { fill: var(--pm-card); stroke: var(--pm-fg); stroke-width: 1.2; }
+  .hub { fill: var(--pm-hot); }
+  .pmf.run .nl { animation: nl 0.7s var(--t) both; }
+  .pmf.run .hub { animation: hub 2.6s 0.2s both, hubp 1.4s 2.8s infinite; transform-box: fill-box; transform-origin: center; }
+  @keyframes nl { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } }
+  @keyframes hub { 0%, 80% { fill: var(--pm-card); stroke: var(--pm-fg); stroke-width: 1.2; } 100% { fill: var(--pm-hot); } }
+  @keyframes hubp { 50% { transform: scale(1.3); } }
+  .nt { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); white-space: nowrap; font-size: 12px; color: #fff; background: var(--pm-hot); padding: 1px 14px; border-radius: var(--pm-rad); }
+  .pmf.run .nt { animation: ntp 0.5s 3s both; }
+  @keyframes ntp { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 900px) {
+    .pm__cmp div { grid-template-columns: 1fr auto 1.3fr; }
+    .pm__cmp span { grid-column: 1 / -1; }
+    .pm__grid { grid-template-columns: 1fr; }
+    .pmf { height: 210px; padding: 16px; }
+  }
+
+  /* ---------- 03 導入 ---------- */
+  .merits {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    margin-top: clamp(50px, 6vw, 90px);
+    border: 1px solid var(--ink);
+    background: var(--paper);
+  }
+  .merit { padding: clamp(22px, 3vw, 46px); border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); }
+  .merit:nth-child(2n) { border-right: 0; }
+  .merit:nth-last-child(-n + 2) { border-bottom: 0; }
+  .merit__fig {
+    height: 170px;
+    border: 1px solid var(--line);
+    margin-bottom: 26px;
+    padding: 18px 22px;
+    display: grid;
+    align-items: center;
+    background:
+      linear-gradient(var(--hair) 1px, transparent 1px) 0 0 / 14px 14px,
+      linear-gradient(90deg, var(--hair) 1px, transparent 1px) 0 0 / 14px 14px;
+    font-size: 11.5px;
+    color: var(--ink-2);
+  }
+  .merit__name { font-family: var(--mincho); font-weight: 700; font-size: clamp(19px, 1.9vw, 26px); margin: 0 0 12px; line-height: 1.55; }
+  .merit__body { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+
+  .g-shift { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; height: 100%; align-items: end; }
+  .g-shift__c { display: grid; grid-template-rows: 1fr auto; height: 100%; text-align: center; gap: 6px; }
+  .g-shift__c i {
+    align-self: end;
+    display: block;
+    background: repeating-linear-gradient(-45deg, var(--ink) 0 1px, transparent 1px 6px);
+    border: 1px solid var(--ink);
+    animation: 7s ease-in-out infinite;
+  }
+  .g-shift__c:nth-child(1) i { animation-name: sh1; }
+  .g-shift__c:nth-child(2) i { animation-name: sh2; }
+  .g-shift__c:nth-child(3) i { animation-name: sh3; }
+  .g-shift__c:nth-child(4) i { animation-name: sh4; }
+  @keyframes sh1 { 0%, 22% { height: 16%; } 45%, 82% { height: 92%; background: var(--shu); border-color: var(--shu); } 100% { height: 16%; } }
+  @keyframes sh2 { 0%, 22% { height: 34%; } 45%, 82% { height: 40%; } 100% { height: 34%; } }
+  @keyframes sh3 { 0%, 22% { height: 74%; } 45%, 82% { height: 16%; } 100% { height: 74%; } }
+  @keyframes sh4 { 0%, 22% { height: 96%; } 45%, 82% { height: 7%; } 100% { height: 96%; } }
+
+  .g-time { display: grid; gap: 18px; }
+  .g-time__row { display: grid; grid-template-columns: 62px 1fr; align-items: center; gap: 8px; }
+  .g-time__row div { display: flex; height: 36px; border: 1px solid var(--ink); }
+  .g-time i { font-style: normal; display: grid; place-items: center; font-size: 11.5px; overflow: hidden; white-space: nowrap; }
+  .g-time .mk { background: repeating-linear-gradient(-45deg, var(--line) 0 1px, transparent 1px 6px); border-right: 1px solid var(--ink); color: var(--ink); }
+  .g-time .dc { flex: 1; color: var(--ink); }
+  .g-time .mk--now { animation: mk 7s ease-in-out infinite; }
+  .g-time .dc--now { background: var(--shu); color: var(--paper); }
+  @keyframes mk { 0%, 15% { width: 74%; } 45%, 85% { width: 26%; } 100% { width: 74%; } }
+
+  .g-daily { display: grid; gap: 7px; }
+  .g-daily p { margin: 0 0 2px; font-family: var(--mono); font-size: 11px; color: var(--shu); }
+  .g-daily__r { display: grid; grid-template-columns: 10px 1fr 44px; gap: 10px; align-items: center; animation: row 6s calc(var(--k) * 0.35s) infinite both; }
+  .g-daily__r i { width: 9px; height: 9px; background: var(--ink); }
+  .g-daily__r:nth-of-type(2) i, .g-daily__r:nth-of-type(5) i { background: var(--shu); }
+  .g-daily__r b { height: 7px; background: var(--ink); opacity: 0.75; width: calc(92% - var(--k) * 11%); }
+  .g-daily__r em { height: 7px; border: 1px solid var(--ink); }
+  @keyframes row { 0% { opacity: 0; transform: translateX(-14px); } 8%, 86% { opacity: 1; transform: none; } 96%, 100% { opacity: 0; } }
+
+  .g-even { display: grid; grid-template-columns: 1fr auto 1fr; gap: 18px; align-items: center; color: var(--ink); }
+  .g-even div { display: grid; gap: 7px; }
+  .g-even i { display: block; height: 14px; border: 1px solid var(--ink); background: repeating-linear-gradient(-45deg, var(--ink) 0 1px, transparent 1px 6px); }
+  .g-even .raw { animation: vary 5.2s calc(var(--k) * -1.1s) ease-in-out infinite; }
+  .g-even .fix { width: 86%; border-color: var(--shu); background: repeating-linear-gradient(-45deg, var(--shu) 0 1px, transparent 1px 6px); }
+  @keyframes vary { 0%, 100% { width: 52%; } 20% { width: 92%; } 40% { width: 64%; } 60% { width: 100%; } 80% { width: 42%; } }
+
+  /* ---------- 04 運用保守 ---------- */
+  .carry { margin-top: clamp(40px, 5vw, 70px); }
+  .carry svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .carry text { font-family: var(--gothic); font-size: 15px; fill: var(--ink-2); }
+  .carry__base { stroke: var(--line); stroke-width: 1; }
+  .carry__prog { stroke: var(--shu); stroke-width: 3; stroke-dasharray: 1; stroke-dashoffset: 1; animation: carryL 9s linear infinite; }
+  .carry__tk { stroke: var(--ink); stroke-width: 1; }
+  .carry__go line { stroke: var(--ink); stroke-width: 1; stroke-dasharray: 5 4; }
+  .carry__go rect { fill: var(--ink); }
+  .carry__go text { fill: var(--paper); font-weight: 700; font-size: 14px; }
+  .carry__pack { animation: carryP 9s linear infinite; }
+  .carry__pack text { fill: var(--shu); font-size: 13px; font-weight: 700; }
+  .carry__pack rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.3; }
+  .carry__pack path { fill: none; stroke: var(--shu); stroke-width: 1.4; }
+  .carry__pack .dc1 { animation: grow 9s linear infinite; animation-delay: 0s; }
+  .carry__pack .dc2 { animation: grow2 9s linear infinite; }
+  @keyframes carryL { 0% { stroke-dashoffset: 1; } 88%, 100% { stroke-dashoffset: 0; } }
+  @keyframes carryP { 0% { transform: translate(20px, 120px); opacity: 0; } 4% { opacity: 1; } 88% { transform: translate(1180px, 120px); opacity: 1; } 96%, 100% { transform: translate(1180px, 120px); opacity: 0; } }
+  @keyframes grow { 0%, 10% { opacity: 0; } 14%, 100% { opacity: 1; } }
+  @keyframes grow2 { 0%, 3% { opacity: 0; } 6%, 100% { opacity: 1; } }
+  .runs { display: grid; grid-template-columns: repeat(4, 1fr); gap: clamp(16px, 2.4vw, 36px); margin-top: clamp(40px, 5vw, 70px); }
+  .run { border-top: 1px solid var(--ink); padding-top: 18px; }
+  .run__no { font-family: var(--mono); font-size: 12px; color: var(--shu); letter-spacing: 0.1em; }
+  .run__name { font-family: var(--mincho); font-weight: 700; font-size: clamp(18px, 1.7vw, 23px); line-height: 1.6; margin: 6px 0 12px; }
+  .run__body { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+
+  /* ---------- 05 進め方 ---------- */
+  .flow__rail { margin-top: clamp(60px, 7vw, 100px); position: relative; }
+  .flow__line { height: 1px; background: var(--line); position: relative; }
+  .flow__line i {
+    position: absolute;
+    left: 0;
+    top: -1px;
+    height: 3px;
+    width: 100%;
+    background: var(--shu);
+    transform: scaleX(var(--p, 0));
+    transform-origin: left;
+  }
+  .flow__steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: clamp(16px, 2.4vw, 40px); }
+  .step { position: relative; padding-top: 34px; opacity: 0.28; transition: opacity 0.6s; }
+  .step.on { opacity: 1; }
+  .step__dot {
+    position: absolute;
+    top: -7px;
+    left: 0;
+    width: 13px;
+    height: 13px;
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    transition: background 0.4s, border-color 0.4s, transform 0.4s;
+  }
+  .step.on .step__dot { background: var(--shu); border-color: var(--shu); transform: rotate(45deg); }
+  .step__no { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink-2); }
+  .step__name { font-family: var(--mincho); font-weight: 800; font-size: clamp(24px, 2.7vw, 40px); line-height: 1.4; margin: 4px 0 14px; }
+  .step__body { margin: 0; font-size: 14.5px; color: var(--ink-2); }
+  .rules {
+    margin-top: clamp(50px, 6vw, 80px);
+    border: 1px solid var(--ink);
+    background: var(--paper);
+    display: grid;
+    grid-template-columns: auto 1fr;
+  }
+  .rules__k { margin: 0; padding: 20px 26px; background: var(--ink); color: var(--paper); font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+  .rules ul { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(3, 1fr); }
+  .rules li { padding: 20px 24px; border-right: 1px solid var(--line); font-size: 14.5px; line-height: 1.75; }
+  .rules li:last-child { border-right: 0; }
+
+  /* ---------- 06 経歴 ---------- */
+  .ruler { margin-top: clamp(60px, 7vw, 100px); position: relative; padding-top: 30px; }
+  .ruler__scale { position: relative; height: 26px; border-bottom: 1px solid var(--ink); }
+  .tick { position: absolute; bottom: 0; width: 1px; height: 8px; background: var(--ink); }
+  .tick--major { height: 16px; }
+  .tick b {
+    position: absolute;
+    bottom: 22px;
+    left: 0;
+    transform: translateX(-50%);
+    font-family: var(--mono);
+    font-weight: 400;
+    font-size: 11px;
+    letter-spacing: 0.04em;
+    color: var(--ink-2);
+  }
+  .tick:first-child b { transform: none; }
+  .tick:last-child b { transform: translateX(-100%); }
+  .ruler__bars { position: relative; height: 54px; margin-top: 10px; }
+  .seg {
+    position: absolute;
+    top: 0;
+    height: 100%;
+    border: 1px solid var(--ink);
+    border-left-width: 0;
+    background: transparent;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--ink);
+    cursor: pointer;
+    padding: 0 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    clip-path: inset(0 100% 0 0);
+    transition: clip-path 1s cubic-bezier(0.5, 0, 0.2, 1) var(--d, 0s), background 0.35s, color 0.35s;
+  }
+  .seg:first-child { border-left-width: 1px; }
+  .seg:last-child { font-size: 11.5px; }
+  .ruler.in .seg { clip-path: inset(0); }
+  .seg.is-on { background: var(--ink); color: var(--paper); }
+  .seg:last-child.is-on { background: var(--shu); border-color: var(--shu); }
+  .seats { display: grid; margin-top: 38px; min-height: 190px; }
+  .seat { grid-area: 1 / 1; max-width: 720px; opacity: 0; transform: translateY(12px); pointer-events: none; }
+  .seat.is-on { opacity: 1; transform: none; pointer-events: auto; transition: opacity 0.5s 0.05s, transform 0.5s 0.05s; }
+  .seat__yr { font-family: var(--mono); font-size: 13px; letter-spacing: 0.08em; color: var(--shu); margin: 0; }
+  .seat__name { font-family: var(--mincho); font-weight: 800; font-size: clamp(24px, 2.8vw, 38px); margin: 2px 0; line-height: 1.5; }
+  .seat__org { font-size: 13px; font-weight: 700; margin: 0 0 12px; }
+  .seat__body { margin: 0; color: var(--ink-2); font-size: 15px; }
+  .nums {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: clamp(50px, 6vw, 80px) 0 0;
+    border-top: 1px solid var(--ink);
+    border-bottom: 1px solid var(--ink);
+  }
+  .num { padding: 26px 20px 22px; border-right: 1px solid var(--line); }
+  .num:first-child { padding-left: 0; }
+  .num:last-child { border-right: 0; }
+  .num dt { font-size: 12.5px; color: var(--ink-2); font-weight: 500; }
+  .num dd { margin: 4px 0 0; font-family: var(--mincho); font-weight: 700; font-size: clamp(15px, 1.4vw, 19px); line-height: 1.3; }
+  .num dd b { font-family: var(--mono); font-weight: 500; font-size: clamp(40px, 5vw, 72px); letter-spacing: -0.03em; margin: 0 4px 0 2px; }
+  .num__txt { font-family: var(--mono) !important; font-weight: 500 !important; font-size: clamp(22px, 2.6vw, 38px) !important; line-height: 2.2 !important; }
+
+
+  /* ---------- 11 アセスメント ---------- */
+  .asm__in { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1fr); gap: clamp(30px, 6vw, 100px); align-items: center; }
+  .asm .h2 { font-size: clamp(23px, 2.9vw, 40px); }
+  .asm__pts { list-style: none; margin: 30px 0 0; padding: 0; border-top: 1px solid var(--ink); }
+  .asm__pts li { display: grid; grid-template-columns: 7.5em 1fr; gap: 10px; padding: 11px 0; border-bottom: 1px solid var(--line); font-size: 14.5px; color: var(--ink-2); align-items: baseline; }
+  .asm__pts b { font-family: var(--mincho); font-size: 16px; color: var(--ink); }
+  .asm__act { display: flex; align-items: center; gap: 28px; flex-wrap: wrap; margin-top: 34px; }
+  .asm__note { margin: 16px 0 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.8; }
+  .asm__deck { position: relative; display: block; aspect-ratio: 1120 / 860; margin: 20px 60px 40px 0; }
+  .asm__deck img { position: absolute; inset: 0; width: 100%; height: auto; border: 1px solid var(--ink); background: var(--paper); box-shadow: 0 8px 26px rgba(28, 27, 24, 0.16);
+    transform: translate(calc(var(--i) * 13px), calc(var(--i) * 10px)) rotate(calc(var(--i) * 0.5deg)); z-index: calc(10 - var(--i)); opacity: calc(1 - var(--i) * 0.07);
+    transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.9s; }
+  .asm__deck img.out { transform: translate(-46%, -6%) rotate(-7deg); opacity: 0; transition: transform 0.6s cubic-bezier(0.6, 0, 0.9, 0.4), opacity 0.5s 0.1s; }
+  .asm__deck:hover img { transform: translate(calc(var(--i) * 19px), calc(var(--i) * 12px)) rotate(calc(var(--i) * 0.9deg)); }
+
+
+  /* アセスメントを目立たせる：黒地の章・見出し下のボタン・相談前の帯・右下の札 */
+  .asm { background: var(--ink); color: var(--paper); margin: 0 calc(-1 * (var(--gutter) + 10px)); padding-inline: calc(var(--gutter) + 10px); border-top: 0; }
+  .asm + .sec { border-top: 0; }
+  .asm .tag { color: #c9c4b6; }
+  .asm .tag span { background: var(--shu); color: var(--paper); }
+  .asm .sec__lead { color: #c9c4b6; }
+  .asm__pts { border-top-color: #6b675d; }
+  .asm__pts li { border-bottom-color: #4a4740; color: #c9c4b6; }
+  .asm__pts b { color: var(--paper); }
+  .asm .btn { background: var(--shu); color: var(--paper); }
+  .asm .btn::before { background: var(--paper); }
+  .asm .btn:hover { color: var(--ink); }
+  .asm .link { border-color: var(--paper); }
+  .asm__note { color: #a8a396; }
+  .asm__deck img { border-color: var(--paper-2); box-shadow: 0 14px 40px rgba(0, 0, 0, 0.5); }
+  .btn--line { background: transparent; color: var(--ink); border: 1px solid var(--ink); padding: 14px 22px; gap: 14px; letter-spacing: 0.04em; }
+  .btn--line small { font-family: var(--mono); font-weight: 400; font-size: 11px; color: var(--shu); transition: color 0.3s; }
+  .btn--line:hover { color: var(--paper); }
+  .btn--line:hover small { color: var(--paper); }
+  .nav__hot { display: flex; align-items: center; gap: 7px; font-weight: 700 !important; }
+  .nav__hot::before { content: ''; width: 7px; height: 7px; background: var(--shu); border-radius: 50%; }
+  .asmband { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px 30px; margin: 0 0 clamp(50px, 6vw, 90px); padding: 22px 28px; border: 1px solid var(--shu); background: var(--paper); transition: opacity 0.9s, transform 0.9s, background 0.3s, color 0.3s; }
+  .asmband:hover { background: var(--shu); color: var(--paper); }
+  .asmband__k { font-family: var(--mincho); font-weight: 800; font-size: clamp(17px, 1.9vw, 25px); }
+  .asmband__t { font-size: 14px; }
+  .asmband__b { display: flex; align-items: center; gap: 14px; font-weight: 700; font-size: 14.5px; color: var(--shu); transition: color 0.3s; white-space: nowrap; }
+  .asmband:hover .asmband__b { color: var(--paper); }
+
+  /* ---------- 07 相談 ---------- */
+  .contact { padding-bottom: clamp(100px, 12vw, 170px); }
+  .contact__h { font-family: var(--mincho); font-weight: 800; font-size: clamp(36px, 7.4vw, 116px); line-height: 1.25; margin: 0 0 34px; }
+  .contact__lead { max-width: 600px; margin: 0 0 44px; color: var(--ink-2); }
+  .foot {
+    margin: 0 calc(var(--gutter) + 10px) 40px;
+    border-top: 1px solid var(--ink);
+    padding-top: 20px;
+    font-size: 12.5px;
+    color: var(--ink-2);
+    display: flex;
+    gap: 8px 30px;
+    flex-wrap: wrap;
+    align-items: baseline;
+  }
+  .foot p { margin: 0; }
+  .foot__n { font-weight: 700; color: var(--ink); }
+  .foot__c { margin-left: auto !important; font-family: var(--mono); font-size: 10.5px; }
+
+  .ab { position: fixed; right: 22px; bottom: 22px; z-index: 60; display: flex; background: #000; border: 1px solid #555; border-radius: 999px; padding: 3px; font: 700 12px/1 system-ui, sans-serif; }
+  .ab a { padding: 8px 14px; border-radius: 999px; color: #bbb; }
+  .ab a.on { background: #fff; color: #000; }
+
+  /* ---------- 小さい画面 ---------- */
+  @media (max-width: 900px) {
+    .nav__links a:not(.nav__cta) { display: none; }
+    .nav__cta { font-size: 13px; padding: 9px 12px 9px 14px; gap: 8px; box-shadow: 3px 3px 0 var(--ink); }
+    .nav__cta-l { display: none; }
+    .nav .nav__links .nav__act .nav__smp { display: flex !important; font-size: 11px; padding: 3px 9px 4px 10px; top: calc(100% + 11px); right: -3px; }
+    .nav__smp span { display: none; }
+    .nav__cta-s { display: inline; }
+    .nav__cta svg { width: 18px; }
+    .hero { grid-template-columns: 1fr; padding-top: 120px; }
+    .scr { box-shadow: none; }
+    .asm__in { grid-template-columns: 1fr; }
+    .asmband { grid-template-columns: 1fr; }
+    .asm__deck { margin: 0 44px 30px 0; }
+    .asm__pts li { grid-template-columns: 1fr; gap: 0; }
+    .tr__figs { grid-template-columns: 1fr; }
+    .tr__mid { grid-auto-flow: column; justify-content: center; border-inline: 0; border-block: 1px solid var(--line); padding: 10px; }
+    .tr__mid br { display: none; }
+    .tr svg text { font-size: 15px; }
+    .tr .idt { font-size: 12px; }
+    .tr__chain ol { grid-template-columns: 1fr; gap: 22px 0; }
+    .tr__chain li + li::before { right: auto; left: 22px; top: auto; bottom: 100%; width: 2px; height: 22px; transform-origin: top; }
+    .tr__chain li + li::after { display: none; }
+    .scr__grid { grid-template-columns: 1fr 1fr; }
+    .pane { height: 150px; }
+    .pane:nth-child(3n) { border-right: 1px solid var(--hl); }
+    .pane:nth-child(2n) { border-right: 0; }
+    .pane__h span { display: none; }
+    .scr__pj { font-size: 10.5px; white-space: normal; }
+    .org__ai { grid-template-columns: 1fr 1fr; }
+    .mem:last-child { grid-column: 1 / -1; }
+    .vs { grid-template-columns: 1fr; }
+    .vs__c + .vs__c { border-left: 0; border-top: 1px solid var(--ink); }
+    .cmp { grid-template-columns: 1fr; }
+    .ph__bar { grid-template-columns: repeat(3, 1fr); }
+    .ph__tab:nth-child(3) { border-right: 0; }
+    .ph__tab:nth-child(-n + 3) { border-bottom: 1px solid var(--ink); }
+    .ph__pane { grid-template-columns: 1fr; }
+    .ph__stage { aspect-ratio: 4 / 3.7; font-size: 9px; }
+    .ph__arrow { transform: rotate(90deg); width: 40px; }
+    .merits { grid-template-columns: 1fr; }
+    .merit { border-right: 0; border-bottom: 1px solid var(--ink) !important; }
+    .merit:last-child { border-bottom: 0 !important; }
+    .runs { grid-template-columns: 1fr; }
+    .carry text { font-size: 26px; }
+    .carry__pack text { display: none; }
+    .flow__line { display: none; }
+    .flow__steps { grid-template-columns: 1fr; border-left: 1px solid var(--line); gap: 40px; }
+    .step { padding: 0 0 0 26px; }
+    .step__dot { top: 8px; left: -7px; }
+    .rules { grid-template-columns: 1fr; }
+    .rules__k { place-items: start; padding: 12px 20px; }
+    .rules ul { grid-template-columns: 1fr; }
+    .rules li { border-right: 0; border-bottom: 1px solid var(--line); padding: 14px 20px; }
+    .rules li:last-child { border-bottom: 0; }
+    .seg { font-size: 0 !important; }
+    .nums { grid-template-columns: 1fr 1fr; }
+    .num:nth-child(2) { border-right: 0; }
+    .num:nth-child(3) { padding-left: 0; }
+    .num:nth-child(-n + 2) { border-bottom: 1px solid var(--line); }
+    .foot__c { margin-left: 0 !important; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01s !important;
+      animation-delay: 0s !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01s !important;
+      transition-delay: 0s !important;
+    }
+  }
+</style>
+
+<style is:global>
+  /* 映像の中の行は実行時に作るので、ここに置く */
+  #scr .pane__b > div { display: flex; gap: 10px; white-space: nowrap; animation: rowin 0.35s cubic-bezier(0.2, 0.8, 0.2, 1) both; flex: none; }
+  #scr .pane__b time { color: #77736a; }
+  #scr .pane__b span { font-family: var(--gothic); color: #d9d4c7; overflow: hidden; text-overflow: ellipsis; }
+  #scr .pane__b em { font-style: normal; margin-left: auto; padding: 0 7px; font-size: 0.9em; border: 1px solid #e9e4d7; }
+  #scr .pane__b em.ng { background: var(--shu); border-color: var(--shu); color: #fff; }
+  #scr .pane__b .code { gap: 6px; height: 1.5em; align-items: center; }
+  #scr .pane__b .code i { display: block; height: 5px; background: #8f8a7e; transform-origin: left; animation: codein 0.45s both; }
+  #scr .pane__b .code i.k { background: #e9e4d7; }
+  #scr .pane__b .code i.s { background: var(--shu); }
+  #scr .pane--human .pane__b > div { border: 1px solid var(--ink); padding: 5px 10px; align-items: center; background: var(--paper); position: relative; }
+  #scr .pane--human .pane__b span { color: var(--ink); font-weight: 700; }
+  #scr .pane--human .pane__b s { text-decoration: none; margin-left: auto; width: 24px; height: 24px; border-radius: 50%; border: 1.6px solid var(--shu); color: var(--shu); font-family: var(--mincho); font-weight: 800; font-size: 13px; display: grid; place-items: center; opacity: 0; transform: scale(1.8) rotate(-12deg); flex: none; }
+  #scr .pane--human .pane__b .done s { opacity: 1; transform: rotate(-12deg); transition: opacity 0.1s, transform 0.25s cubic-bezier(0.3, 1.6, 0.5, 1); }
+  #scr .pane--human .pane__b .done { opacity: 0.55; transition: opacity 0.6s 0.5s; }
+</style>
+
+<script>
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const $ = <T extends Element>(s: string) => document.querySelector<T>(s)!;
+  const $$ = <T extends Element>(s: string) => [...document.querySelectorAll<T>(s)];
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+  const SVGNS = 'http://www.w3.org/2000/svg';
+
+  /* 現れ方 */
+  const io = new IntersectionObserver(
+    (es) => es.forEach((e) => e.isIntersecting && (e.target.classList.add('in'), io.unobserve(e.target))),
+    { threshold: 0.15 },
+  );
+  $$('.rv, .ruler, .org').forEach((el) => io.observe(el));
+
+  /* いまの章の番号 */
+  const sheetNo = $('#sheetNo');
+  const so = new IntersectionObserver(
+    (es) => es.forEach((e) => e.isIntersecting && (sheetNo.textContent = (e.target as HTMLElement).dataset.sheet!)),
+    { rootMargin: '-45% 0px -45% 0px' },
+  );
+  $$('[data-sheet]').forEach((s) => so.observe(s));
+
+  /* 見えている間だけ動かすための目印 */
+  const seen = new Map<Element, boolean>();
+  const vo = new IntersectionObserver((es) => es.forEach((e) => seen.set(e.target, e.isIntersecting)));
+  const watch = (el: Element) => (vo.observe(el), el);
+  const live = (el: Element) => seen.get(el) !== false && !document.hidden;
+
+  /* 数字の読み上げ */
+  const co = new IntersectionObserver((es) => es.forEach((e) => {
+    if (!e.isIntersecting) return;
+    co.unobserve(e.target);
+    const el = e.target as HTMLElement, to = Number(el.dataset.count);
+    if (reduce) { el.textContent = String(to); return; }
+    const t0 = performance.now(), dur = 1400;
+    const tick = (t: number) => {
+      const k = Math.min(1, (t - t0) / dur);
+      el.textContent = String(Math.round(to * (1 - Math.pow(1 - k, 4))));
+      if (k < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  }), { threshold: 0.6 });
+  $$('[data-count]').forEach((el) => co.observe(el));
+
+  /* ===== 図1：伝票が基幹システムを流れ、AIが点検して回る ===== */
+  (() => {
+    const svg = watch($('#erp'));
+    const nodes = $$<SVGGElement>('#erp .node');
+    const pts = nodes.map((n) => {
+      const m = /translate\(([\d.]+) ([\d.]+)\)/.exec(n.getAttribute('transform')!)!;
+      return { x: +m[1] + 68, y: +m[2] + 38 };
+    });
+    const cum = [0];
+    for (let i = 1; i < pts.length; i++) cum.push(cum[i - 1] + Math.hypot(pts[i].x - pts[i - 1].x, pts[i].y - pts[i - 1].y));
+    const L = cum[cum.length - 1];
+    const at = (d: number) => {
+      let i = 1;
+      while (i < cum.length - 1 && cum[i] < d) i++;
+      const k = (d - cum[i - 1]) / (cum[i] - cum[i - 1]);
+      return { x: pts[i - 1].x + (pts[i].x - pts[i - 1].x) * k, y: pts[i - 1].y + (pts[i].y - pts[i - 1].y) * k };
+    };
+    const counts = nodes.map((_, i) => 1200 + i * 137);
+    const cEls = nodes.map((n) => n.querySelector('.node__c')!);
+    cEls.forEach((c, i) => (c.textContent = String(counts[i])));
+
+    const N = 5;
+    const layer = $('#tokens');
+    const toks = Array.from({ length: N }, (_, i) => {
+      const r = document.createElementNS(SVGNS, 'g');
+      r.innerHTML = '<rect x="-13" y="-9" width="26" height="18"/><path d="M-8 -3h16M-8 2h10"/>';
+      layer.appendChild(r);
+      return { el: r, d: -(i * L) / N, last: -1 };
+    });
+    const scan = $<SVGGElement>('#scan');
+    let sd = 0, sLast = -1;
+
+    if (reduce) {
+      nodes.forEach((n) => n.classList.add('ok'));
+      toks.forEach((t, i) => { const p = at(((i + 0.5) * L) / N); t.el.setAttribute('transform', `translate(${p.x} ${p.y})`); });
+      return;
+    }
+    let prev = performance.now(), started = false;
+    setTimeout(() => (started = true, scan.style.opacity = '1', scan.style.transition = 'opacity .6s'), 2600);
+    const frame = (now: number) => {
+      const dt = Math.min(50, now - prev); prev = now;
+      if (started && live(svg)) {
+        for (const t of toks) {
+          t.d += dt * 0.085;
+          if (t.d > L) { t.d -= L; t.last = -1; }
+          if (t.d < 0) { t.el.setAttribute('opacity', '0'); continue; }
+          const p = at(t.d);
+          t.el.setAttribute('opacity', '1');
+          t.el.setAttribute('transform', `translate(${p.x} ${p.y})`);
+          const ni = cum.findIndex((c) => Math.abs(c - t.d) < 34);
+          if (ni >= 0 && ni !== t.last) {
+            t.last = ni;
+            counts[ni]++; cEls[ni].textContent = String(counts[ni]);
+            const n = nodes[ni]; n.classList.add('hit'); setTimeout(() => n.classList.remove('hit'), 120);
+          }
+        }
+        sd += dt * 0.26;
+        if (sd > L + 260) { sd = -60; sLast = -1; }
+        const q = at(Math.max(0, Math.min(L, sd)));
+        scan.setAttribute('transform', `translate(${q.x + 46} ${q.y - 30})`);
+        const si = cum.findIndex((c) => Math.abs(c - sd) < 26);
+        if (si >= 0 && si !== sLast) {
+          sLast = si;
+          const n = nodes[si]; n.classList.add('ok'); setTimeout(() => n.classList.remove('ok'), 900);
+        }
+      }
+      requestAnimationFrame(frame);
+    };
+    requestAnimationFrame(frame);
+  })();
+
+  /* ===== 図2：抜き取りと全件 ===== */
+  (async () => {
+    const box = watch($('#cmp'));
+    const l = $$<HTMLElement>('.cells[data-side="l"] i'), r = $$<HTMLElement>('.cells[data-side="r"] i');
+    const lChk = $('#lChk'), lHit = $('#lHit'), rChk = $('#rChk'), rHit = $('#rHit'), lMiss = $('#lMiss');
+    const ls = l.filter((c) => c.classList.contains('s'));
+    const total = r.length, dTotal = r.filter((c) => c.classList.contains('d')).length;
+    if (reduce) {
+      ls.forEach((c) => c.classList.add('on')); r.forEach((c) => c.classList.add('on'));
+      l.filter((c) => c.classList.contains('d')).forEach((c) => c.classList.add('left'));
+      lChk.textContent = String(ls.length); rChk.textContent = String(total); rHit.textContent = String(dTotal); lMiss.classList.add('on');
+      return;
+    }
+    for (;;) {
+      while (!live(box)) await sleep(400);
+      [...l, ...r].forEach((c) => c.classList.remove('on', 'left'));
+      lMiss.classList.remove('on');
+      lChk.textContent = lHit.textContent = rChk.textContent = rHit.textContent = '0';
+      await sleep(700);
+      let rc = 0, rh = 0;
+      const maxW = Math.max(...r.map((c) => +c.style.getPropertyValue('--w')));
+      const right = (async () => {
+        for (let w = 0; w <= maxW; w++) {
+          r.filter((c) => +c.style.getPropertyValue('--w') === w).forEach((c) => {
+            c.classList.add('on'); rc++; if (c.classList.contains('d')) rh++;
+          });
+          rChk.textContent = String(rc); rHit.textContent = String(rh);
+          await sleep(95);
+        }
+      })();
+      for (let i = 0; i < ls.length; i++) {
+        ls[i].classList.add('on'); lChk.textContent = String(i + 1);
+        await sleep(430);
+      }
+      await right;
+      await sleep(500);
+      l.filter((c) => c.classList.contains('d')).forEach((c) => c.classList.add('left'));
+      lMiss.classList.add('on');
+      await sleep(4200);
+    }
+  })();
+
+  /* ===== 図2：工程の切り替え（触らなければ順に送る） ===== */
+  const tabset = (root: string, tabSel: string, paneSel: string, ms: number, onPick?: (pane: HTMLElement) => void) => {
+    const box = watch($(root));
+    const tabs = $$<HTMLElement>(`${root} ${tabSel}`), panes = $$<HTMLElement>(`${root} ${paneSel}`);
+    let cur = 0, touched = false;
+    const pick = (i: number) => {
+      cur = i;
+      tabs.forEach((t, k) => t.classList.toggle('is-on', k === i));
+      panes.forEach((p, k) => p.classList.toggle('is-on', k === i));
+      if (!reduce) onPick?.(panes[i]);
+    };
+    const stop = () => { touched = true; box.classList.remove('auto'); };
+    tabs.forEach((t, i) => {
+      t.addEventListener('click', () => { stop(); pick(i); });
+      t.addEventListener('pointerenter', (e) => { if ((e as PointerEvent).pointerType === 'mouse') { stop(); pick(i); } });
+    });
+    if (reduce) return;
+    onPick?.(panes[0]);
+    box.classList.add('auto');
+    setInterval(() => { if (!touched && live(box) && box.classList.contains('in')) pick((cur + 1) % tabs.length); }, ms);
+  };
+  tabset('#ph', '.ph__tab', '.ph__pane', 8200, (pane) => {
+    const st = pane.querySelector<HTMLElement>('.st')!;
+    st.classList.remove('run'); void st.offsetWidth; st.classList.add('run');
+  });
+  tabset('#ruler', '.seg', '~ .seats .seat', 3800);
+
+  /* ===== 進め方：スクロールに合わせて線が伸びる ===== */
+  const rail = $<HTMLElement>('#flowRail'), prog = $<HTMLElement>('#flowProg');
+  const stepEls = $$('.step');
+  const onScroll = () => {
+    const r = rail.getBoundingClientRect(), vh = innerHeight;
+    const p = Math.max(0, Math.min(1, (vh * 0.82 - r.top) / (vh * 0.5)));
+    prog.style.setProperty('--p', String(p));
+    stepEls.forEach((s, i) => s.classList.toggle('on', p > i / stepEls.length + 0.02));
+  };
+  addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+
+  /* ===== プロジェクト管理の図：見えている間、繰り返し再生する ===== */
+  (() => {
+    const figs = [...document.querySelectorAll<HTMLElement>('.pmf')];
+    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const on = new Set<HTMLElement>();
+    const num = document.querySelector<HTMLElement>('.pbn')!;
+    if (rm) { num.textContent = '81'; return; }
+    const play = (f: HTMLElement) => {
+      f.classList.remove('run'); void f.offsetWidth; f.classList.add('run');
+      if (!f.contains(num)) return;
+      num.textContent = '52';
+      const t0 = performance.now() + 3200;
+      const tick = (t: number) => {
+        if (!f.classList.contains('run')) return;
+        const k = Math.max(0, Math.min(1, (t - t0) / 1600));
+        num.textContent = String(Math.round(52 + 29 * k * k * (3 - 2 * k)));
+        if (k < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+    new IntersectionObserver((es) => es.forEach((e) => {
+      const f = e.target as HTMLElement;
+      if (e.isIntersecting) { if (!on.has(f)) { on.add(f); play(f); } } else on.delete(f);
+    }), { threshold: 0.3 }).observe && figs.forEach((f) => {
+      new IntersectionObserver((es) => es.forEach((e) => {
+        if (e.isIntersecting) { if (!on.has(f)) { on.add(f); play(f); } } else on.delete(f);
+      }), { threshold: 0.3 }).observe(f);
+    });
+    setInterval(() => { if (!document.hidden) on.forEach(play); }, 7600);
+  })();
+
+  /* ===== 現場の映像：AIチームと人が、一日を通して動く ===== */
+  (() => {
+    const scr = document.querySelector<HTMLElement>('#scr')!;
+    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const clock = scr.querySelector<HTMLElement>('#scrClock')!, day = scr.querySelector<HTMLElement>('#scrDay')!, cap = scr.querySelector<HTMLElement>('#scrCap')!;
+    const pane = (k: string) => scr.querySelector<HTMLElement>(`.pane[data-k="${k}"]`)!;
+    const body = (k: string) => pane(k).querySelector<HTMLElement>('.pane__b')!;
+    const cnt = (k: string) => pane(k).querySelector<HTMLElement>('.pane__h u')!;
+    const LOG: Record<string, string[]> = {
+      pmo: ['チャットの投稿を読む', '会議の記録を読む', '課題を追加　移行データの桁数', 'リスクを追加　連携先の回答待ち', '期日の近い課題を並べ替え', '止まっている話題を検出', '担当への確認を下書き', '間に合う確率を更新'],
+      des: ['外部設計書　受注取込　初版', '会議の決定を反映', '外部設計書　出荷指示　初版', '要件との対応を記入', '内部設計書　在庫引当　初版', '様式に合わせて整形'],
+      chk: ['設計書を点検　記載の抜け', '設計書を点検　項目の桁数', 'コードを点検　命名規約', 'コードを点検　設計書との対応', '移行データを照合', '指摘を一覧に追加'],
+      tst: ['受注登録', '出荷指示', '在庫引当', '請求書発行', '入庫', '購買発注'],
+      human: ['設計書の指摘 3件を反映するか', 'この要件を作るか', 'テストの合否', '移行の桁数の扱い', '優先して片付ける課題'],
+    };
+    const CAPS: [number, string][] = [[7, '朝、AIチームが記録を読みはじめる。'], [9, '会議の前に、設計書の初版がそろう。'], [11, '点検は、抜き取りではなく全件。'], [13, 'テストは、AIが画面を操作して流す。'], [15, '人が受け取るのは、決めることだけ。'], [17, 'SAP 導入に、AIチームという選択肢を。']];
+    const N: Record<string, number> = { pmo: 0, des: 0, dev: 0, tst: 0, chk: 0, human: 0 };
+    const idx: Record<string, number> = {};
+    let hour = 7, capI = -1, vis = false, tc = 0;
+    const hhmm = () => `${String(Math.floor(hour)).padStart(2, '0')}:${String(Math.floor((hour % 1) * 60)).padStart(2, '0')}`;
+    const push = (k: string, html: string, cls = '') => {
+      const b = body(k), d = document.createElement('div');
+      if (cls) d.className = cls;
+      d.innerHTML = html; b.appendChild(d);
+      while (b.children.length > (k === 'human' ? 4 : 8)) b.firstElementChild!.remove();
+      return d;
+    };
+    const next = (k: string) => { idx[k] = ((idx[k] ?? -1) + 1) % LOG[k].length; return LOG[k][idx[k]]; };
+    const bump = (k: string, by: number) => { N[k] += by; cnt(k).textContent = String(N[k]); };
+    const step: Record<string, () => void> = {
+      pmo: () => { const t = next('pmo'); push('pmo', `<time>${hhmm()}</time><span>${t}</span>`); if (t.includes('追加')) bump('pmo', 1); },
+      des: () => { const t = next('des'); push('des', `<time>${hhmm()}</time><span>${t}</span>`); if (t.includes('初版')) bump('des', 1); },
+      chk: () => { push('chk', `<time>${hhmm()}</time><span>${next('chk')}</span>`); bump('chk', 12 + Math.floor(Math.random() * 30)); },
+      dev: () => {
+        const ind = [0, 1, 1, 2, 2, 1, 0][Math.floor(Math.random() * 7)], n = 1 + Math.floor(Math.random() * 3);
+        let h = `<i style="width:${ind * 16}px;background:none"></i>`;
+        for (let i = 0; i < n; i++) h += `<i class="${['k', '', '', 's'][Math.floor(Math.random() * 4)]}" style="width:${18 + Math.random() * 90}px;animation-delay:${i * 0.12}s"></i>`;
+        push('dev', h, 'code'); if (Math.random() < 0.12) bump('dev', 1);
+      },
+      tst: () => { tc++; const ng = tc % 9 === 0; push('tst', `<time>TC-${String(tc).padStart(3, '0')}</time><span>${next('tst')}</span><em class="${ng ? 'ng' : ''}">${ng ? 'NG 起票' : 'OK'}</em>`); bump('tst', 1); },
+      human: () => { const d = push('human', `<span>${next('human')}</span><s>決</s>`); setTimeout(() => { d.classList.add('done'); bump('human', 1); }, 1500); },
+    };
+    const EVERY: Record<string, number> = { pmo: 950, des: 1300, chk: 700, dev: 260, tst: 620, human: 3100 };
+    if (rm) { Object.keys(step).forEach((k) => { for (let i = 0; i < 5; i++) step[k](); }); return; }
+    Object.keys(step).forEach((k) => {
+      for (let i = 0; i < 4; i++) step[k]();
+      setInterval(() => { if (vis && !document.hidden) step[k](); }, EVERY[k]);
+    });
+    const DUR = 46000; let t0 = performance.now(), prev = t0;
+    const frame = (now: number) => {
+      if (vis && !document.hidden) {
+        t0 += 0; const p = ((now - t0) % DUR) / DUR;
+        hour = 7 + p * 11.5;
+        clock.textContent = hhmm();
+        day.style.setProperty('--p', String(p));
+        let ci = 0; CAPS.forEach((c, i) => { if (hour >= c[0]) ci = i; });
+        if (ci !== capI) { capI = ci; cap.textContent = CAPS[ci][1]; cap.classList.remove('sw'); void cap.offsetWidth; cap.classList.add('sw'); }
+      } else t0 += now - prev;
+      prev = now;
+      requestAnimationFrame(frame);
+    };
+    new IntersectionObserver((es) => (vis = es[0].isIntersecting), { threshold: 0.15 }).observe(scr);
+    requestAnimationFrame(frame);
+  })();
+
+  /* ===== 流れとつながり：手順を選ぶと、要件からテストまでの番号が替わる ===== */
+  (() => {
+    const box = document.querySelector<HTMLElement>('#tr')!;
+    const data = JSON.parse(document.querySelector('#trData')!.textContent!) as Record<string, string>[];
+    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const parts = [...box.querySelectorAll<SVGGElement>('[data-s]')];
+    let cur = -1, touched = false, vis = false;
+    const pick = (i: number) => {
+      if (i === cur) return; cur = i;
+      parts.forEach((g) => g.classList.toggle('hi', Number(g.dataset.s) === i));
+      const t = data[i];
+      box.querySelector('#trId')!.textContent = t.id;
+      box.querySelector('#trStep')!.textContent = t.step;
+      box.querySelectorAll<HTMLElement>('[data-f]').forEach((b) => (b.textContent = t[b.dataset.f!]));
+      if (rm) return;
+      box.classList.remove('go'); void box.offsetWidth; box.classList.add('go');
+    };
+    parts.forEach((g) => g.addEventListener('click', () => { touched = true; pick(Number(g.dataset.s)); }));
+    pick(1);
+    new IntersectionObserver((es) => (vis = es[0].isIntersecting), { threshold: 0.3 }).observe(box);
+    if (!rm) setInterval(() => { if (vis && !touched && !document.hidden) pick((cur + 1) % data.length); }, 4200);
+  })();
+
+  /* ===== アセスメント：報告書の頁を1枚ずつ送る ===== */
+  (() => {
+    const deck = document.querySelector<HTMLElement>('#deck')!;
+    const imgs = [...deck.querySelectorAll<HTMLImageElement>('img')];
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    let vis = false, busy = false;
+    new IntersectionObserver((es) => (vis = es[0].isIntersecting), { threshold: 0.4 }).observe(deck);
+    setInterval(() => {
+      if (!vis || busy || document.hidden || deck.matches(':hover')) return;
+      busy = true;
+      const top = imgs.find((im) => im.style.getPropertyValue('--i') === '0')!;
+      top.classList.add('out');
+      setTimeout(() => {
+        imgs.forEach((im) => { const i = Number(im.style.getPropertyValue('--i')); im.style.setProperty('--i', String(i === 0 ? imgs.length - 1 : i - 1)); });
+        top.classList.remove('out'); busy = false;
+      }, 650);
+    }, 3200);
+  })();
+
+</script>
