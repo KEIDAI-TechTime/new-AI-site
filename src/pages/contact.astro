@@ -308,9 +308,6 @@ const after = [
     .stamp { width: 52px; height: 52px; font-size: 15px; top: 6px; }
     .foot__c { margin-left: 0 !important; }
   }
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after { animation-duration: 0.01s !important; animation-delay: 0s !important; transition-duration: 0.01s !important; transition-delay: 0s !important; }
-  }
 </style>
 
 <script>
@@ -335,7 +332,7 @@ const after = [
 
   /* 報告書の頁を1枚ずつ送る */
   const deck = document.querySelector<HTMLElement>('#deck');
-  if (deck && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (deck && !false) {
     const imgs = [...deck.querySelectorAll<HTMLImageElement>('img')];
     let busy = false;
     setInterval(() => {

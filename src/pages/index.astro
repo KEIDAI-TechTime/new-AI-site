@@ -1270,7 +1270,7 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
   .cur { transform: none; }
   .flash { position: absolute; inset: 0; background: #fff; opacity: 0; pointer-events: none; }
   .st.run .flash { animation: flash 0.5s 4.9s both; }
-  @keyframes flash { 0% { opacity: 0; } 25% { opacity: 0.75; } 100% { opacity: 0; } }
+  @keyframes flash { 0% { opacity: 0; } 25% { opacity: 0.3; } 100% { opacity: 0; } }
   .st--tst .ev { justify-content: center; }
   .shot { display: flex; flex-direction: column; gap: 0.45em; border: 1.5px solid var(--shu); border-radius: 0; padding: 0.8em; background: var(--paper); }
   .shot i { display: block; height: 0.5em; border-radius: 0; background: var(--line); }
@@ -1731,15 +1731,6 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
     .foot__c { margin-left: 0 !important; }
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    *, *::before, *::after {
-      animation-duration: 0.01s !important;
-      animation-delay: 0s !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01s !important;
-      transition-delay: 0s !important;
-    }
-  }
 </style>
 
 <style is:global>
@@ -1761,7 +1752,8 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
 </style>
 
 <script>
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  /* 動く図がこのページの中身なので、端末の「動きを減らす」設定でも止めない（2026-11-15 iPhone で止まって見えたため） */
+  const reduce = false;
   const $ = <T extends Element>(s: string) => document.querySelector<T>(s)!;
   const $$ = <T extends Element>(s: string) => [...document.querySelectorAll<T>(s)];
   const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
@@ -1959,7 +1951,7 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
   /* ===== プロジェクト管理の図：見えている間、繰り返し再生する ===== */
   (() => {
     const figs = [...document.querySelectorAll<HTMLElement>('.pmf')];
-    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const rm = false;
     const on = new Set<HTMLElement>();
     const num = document.querySelector<HTMLElement>('.pbn')!;
     if (rm) { num.textContent = '81'; return; }
@@ -1990,7 +1982,7 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
   /* ===== 現場の映像：AIチームと人が、一日を通して動く ===== */
   (() => {
     const scr = document.querySelector<HTMLElement>('#scr')!;
-    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const rm = false;
     const clock = scr.querySelector<HTMLElement>('#scrClock')!, day = scr.querySelector<HTMLElement>('#scrDay')!, cap = scr.querySelector<HTMLElement>('#scrCap')!;
     const pane = (k: string) => scr.querySelector<HTMLElement>(`.pane[data-k="${k}"]`)!;
     const body = (k: string) => pane(k).querySelector<HTMLElement>('.pane__b')!;
@@ -2056,7 +2048,7 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
   (() => {
     const box = document.querySelector<HTMLElement>('#tr')!;
     const data = JSON.parse(document.querySelector('#trData')!.textContent!) as Record<string, string>[];
-    const rm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const rm = false;
     const parts = [...box.querySelectorAll<SVGGElement>('[data-s]')];
     let cur = -1, touched = false, vis = false;
     const pick = (i: number) => {
@@ -2079,7 +2071,7 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
   (() => {
     const deck = document.querySelector<HTMLElement>('#deck')!;
     const imgs = [...deck.querySelectorAll<HTMLImageElement>('img')];
-    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (false) return;
     let vis = false, busy = false;
     new IntersectionObserver((es) => (vis = es[0].isIntersecting), { threshold: 0.4 }).observe(deck);
     setInterval(() => {
