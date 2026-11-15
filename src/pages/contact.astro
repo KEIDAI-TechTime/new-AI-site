@@ -390,6 +390,13 @@ const after = [
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.success) throw new Error('failed');
       slip.classList.add('is-done');
+      /* 相談の送信を、アナリティクスの「見込み客の獲得」として記録する。個人を特定する情報は送らない */
+      (window as any).gtag?.('event', 'generate_lead', {
+        form_name: 'contact',
+        lead_topic: document.documentElement.classList.contains('is-asm') ? 'assessment' : 'general',
+        lead_situation: body.systemType,
+        lead_phases: phases.join('・').slice(0, 90) || '（未選択）',
+      });
       slip.scrollIntoView({ behavior: 'smooth', block: 'center' });
     } catch {
       err.textContent = '送信できませんでした。お手数ですが、もう一度お試しいただくか、電話・メールでご連絡ください。';

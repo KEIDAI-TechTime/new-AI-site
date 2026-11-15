@@ -43,6 +43,18 @@ const graph = [org, site, ...ld];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
       gtag('config', 'G-V7Q3QV7HGR');
+      /* アセスメントのサンプル（PDF）が開かれた・保存された回数を、押された場所と一緒に記録する */
+      document.addEventListener('click', function (e) {
+        var a = e.target && e.target.closest ? e.target.closest('a[href$=".pdf"]') : null;
+        if (!a) return;
+        var sec = a.closest('[id]'), part = a.closest('header, footer, aside');
+        var where = sec ? '#' + sec.id : (part ? '(' + part.tagName.toLowerCase() + ')' : '');
+        gtag('event', 'sample_download', {
+          file_name: a.getAttribute('href').split('/').pop(),
+          link_place: location.pathname + where,
+          link_text: (a.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40)
+        });
+      }, true);
     </script>
     <link rel="icon" type="image/png" href="/favicon.png" />
     <title>{title}</title>
