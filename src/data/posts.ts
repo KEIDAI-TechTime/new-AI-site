@@ -6,7 +6,7 @@ export type Post = {
   short: string;     // 検索結果に出す短い題（30字以内）
   related: string[]; // 記事の最後に出す関連する記事（slug）
   dek: string;
-  problem: string;   // 読み手の困りごと（「困りごとから探す」に出す）
+  problem: string;   // 読み手の困りごと（一覧のカードの「こんな困りごとに」に出す）
   words: string[];   // 検索で当てる語（題と説明に無い言い方も入れる）
   date: string;
   min: number;

@@ -13,7 +13,7 @@ for m in re.finditer(r"\{\s*slug: '([^']+)',\s*no: '([^']+)',\s*cat: '([^']+)',\
 items += [
     dict(file="site.jpg", kicker="SAP の導入と保守への、新しい入り方", no="", title="SAP 導入に、<br><em>AIチーム</em>という選択肢を。", foot="工数ではなく、プロジェクトに残る仕組みを納めます"),
     dict(file="assessment.jpg", kicker="アセスメント", no="", title="SAP 導入のプロジェクトを、<br><em>資料から診断</em>する。", foot="全件を読み、統計で測り、根拠を並べる"),
-    dict(file="blog.jpg", kicker="ブログ", no="", title="効果があった進め方を、<br><em>手順と測り方</em>まで書く。", foot="要件定義から運用保守まで"),
+    dict(file="blog.jpg", kicker="ブログ", no="", title="SAP 導入の困りごとを、<br><em>AI</em>でどう解決するか。", foot="要件定義から運用保守まで、明日から試せる手順"),
     dict(file="contact.jpg", kicker="相談", no="", title="いまの進め方を、<br><em>聞かせてください。</em>", foot="導入の検討中でも、途中でも、稼働したあとでも"),
 ]
 CSS = """
