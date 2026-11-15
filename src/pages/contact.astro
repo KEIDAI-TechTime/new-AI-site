@@ -19,7 +19,7 @@ const after = [
 ];
 ---
 
-<DraftLayout title={title} description={description}>
+<DraftLayout title={title} description={description} og="contact.jpg">
   <script is:inline>if (new URLSearchParams(location.search).get("topic") === "assess") document.documentElement.classList.add("is-asm");</script>
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="frame" aria-hidden="true">
@@ -62,18 +62,19 @@ const after = [
 
       <div class="side__asm">
         <p class="tag"><span>アセスメント</span>最初の一歩は、アセスメント</p>
-        <h1 class="h1 h1--s">
+        <h2 class="h1 h1--s">
           <span class="hl"><span>貴社の資料を読み、</span></span>
           <span class="hl"><span>どこに効くかを報告書にする。</span></span>
-        </h1>
+        </h2>
         <p class="lead">設計書や会議の記録をお預かりし、AIチームが効く工程と、最初に手を打つ所を報告書にまとめます。</p>
 
         <a class="deck" id="deck" href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" aria-label="アセスメント結果報告書のサンプルを開く">
-          {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.jpg`} alt="" width="1120" height="792" style={`--i:${i}`} />)}
+          {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.jpg`} alt={i === 0 ? 'アセスメント結果報告書のサンプルの頁' : ''} width="1120" height="792" style={`--i:${i}`} />)}
         </a>
         <div class="asmact">
           <a href="/downloads/techtime-assessment-sample.pdf" download="TechTime_アセスメント結果報告書_サンプル.pdf" class="btn btn--s">サンプルをダウンロード<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
           <span>PDF・29枚・約2MB。入力は要りません。</span>
+          <a href="/assessment" class="asmlink">アセスメントの内容を詳しく見る</a>
         </div>
 
         <ul class="pts">
@@ -228,6 +229,7 @@ const after = [
   .asmact { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 30px; font-size: 12.5px; color: var(--ink-2); animation: up 0.8s 0.6s both; }
   .btn--s { background: var(--shu); padding: 13px 22px 13px 26px; font-size: 14.5px; text-decoration: none; }
   .btn--s::before { background: var(--ink); }
+  .asmlink { font-size: 13px; font-weight: 500; color: var(--ink); border-bottom: 1px solid var(--ink); }
   .pts { list-style: none; margin: 0 0 30px; padding: 0; border-top: 1px solid var(--ink); animation: up 0.8s 0.7s both; }
   .pts li { display: grid; grid-template-columns: 7.5em 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); align-items: baseline; }
   .pts b { font-family: var(--mincho); font-size: 15.5px; color: var(--ink); }

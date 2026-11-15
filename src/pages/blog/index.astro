@@ -8,7 +8,7 @@ const count = (c: string) => posts.filter((p) => p.cat === c).length;
 const sorted = [...posts].sort((a, b) => Number(b.no) - Number(a.no));
 ---
 
-<DraftLayout title={title} description={description}>
+<DraftLayout title={title} description={description} og="blog.jpg" ld={[{ '@type': 'Blog', '@id': 'https://techtime-jp.com/blog#blog', name: 'TechTime ブログ', url: 'https://techtime-jp.com/blog', inLanguage: 'ja', publisher: { '@id': 'https://techtime-jp.com/#org' }, blogPost: posts.map((p) => ({ '@type': 'BlogPosting', headline: p.title, url: `https://techtime-jp.com/blog/${p.slug}`, datePublished: p.date.replace(/\./g, '-') })) }]}>
   <div class="grid-bg" aria-hidden="true"></div>
   <div class="frame" aria-hidden="true"><span class="frame__tl">TECHTIME CO., LTD.</span><span class="frame__tr">BLOG</span></div>
 

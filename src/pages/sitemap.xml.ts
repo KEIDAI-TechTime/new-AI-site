@@ -9,6 +9,7 @@ const latest = posts.map((p) => day(p.date)).sort().pop()!;
 
 const pages = [
   { loc: '/', lastmod: latest, changefreq: 'weekly', priority: '1.0' },
+  { loc: '/assessment', lastmod: latest, changefreq: 'monthly', priority: '0.9' },
   { loc: '/blog', lastmod: latest, changefreq: 'weekly', priority: '0.9' },
   { loc: '/contact', lastmod: latest, changefreq: 'monthly', priority: '0.8' },
   { loc: '/downloads/techtime-assessment-sample.pdf', lastmod: latest, changefreq: 'monthly', priority: '0.7' },
