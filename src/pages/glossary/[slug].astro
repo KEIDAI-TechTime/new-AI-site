@@ -1,0 +1,70 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { terms, termBySlug } from '@/data/glossary';
+import { posts } from '@/data/posts';
+import { serviceBySlug } from '@/data/services';
+
+export function getStaticPaths() {
+  return terms.map((t) => ({ params: { slug: t.slug }, props: { t } }));
+}
+const { t } = Astro.props;
+const SITE = 'https://techtime-jp.com';
+const url = `${SITE}/glossary/${t.slug}`;
+const rel = (t.posts ?? []).map((x) => posts.find((p) => p.slug === x)!).filter(Boolean);
+const see = (t.see ?? []).map(termBySlug).filter(Boolean);
+const svc = t.service ? serviceBySlug(t.service) : null;
+const title = `${t.word}とは：意味と、生成AIで変わること | TechTime`;
+const ld = [
+  { '@type': 'DefinedTerm', '@id': `${url}#term`, name: t.word, description: t.def, url, inDefinedTermSet: `${SITE}/glossary#set` },
+];
+---
+
+<PageLayout title={title} description={t.def} mark="GLOSSARY" crumbs={[{ name: '用語集', href: '/glossary' }, { name: t.word }]} ld={ld}>
+  <section class="top">
+    <p class="tag"><span>用語集</span>{t.group}</p>
+    <h1 class="h1"><span class="hl"><span>{t.word}とは</span></span></h1>
+    <p class="lead def">{t.def}</p>
+  </section>
+
+  {t.body.length > 0 && (
+    <section class="sec">
+      <p class="tag"><span>01</span>くわしく</p>
+      <div class="prose">{t.body.map((b) => <p>{b}</p>)}</div>
+    </section>
+  )}
+
+  <section class="sec">
+    <p class="tag"><span>02</span>生成AIを使うと</p>
+    <div class="prose">
+      <p>{t.ai}</p>
+      {svc && <p><a href={`/services/${svc.slug}`}>{svc.name}のサービスのページ</a>で、AIが行うことと、人が決めることを説明しています。</p>}
+    </div>
+  </section>
+
+  {rel.length > 0 && (
+    <section class="list">
+      <p class="tag"><span>ブログ</span>この言葉が出てくる記事</p>
+      <ul>{rel.map((p) => <li><a href={`/blog/${p.slug}`}><small>{p.cat}</small>{p.title}</a></li>)}</ul>
+    </section>
+  )}
+
+  {see.length > 0 && (
+    <section class="list">
+      <p class="tag"><span>用語</span>関係する言葉</p>
+      <ul>{see.map((x) => <li><a href={`/glossary/${x!.slug}`}><small>用語集</small>{x!.word}</a></li>)}</ul>
+    </section>
+  )}
+
+  <section class="cta">
+    <h2>SAP の導入と運用保守に、AIチームを組み込みます。</h2>
+    <p>最初の一歩は、アセスメントです。プロジェクトの資料を全件読み、AIチームが効く工程を報告書にまとめます。</p>
+    <div class="act">
+      <a href="/assessment" class="btn btn--inv">アセスメントの内容を見る<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+      <a href="/services" class="link link--inv">サービスの一覧を見る</a>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .def { color: var(--ink) !important; font-size: 17.5px !important; max-width: 760px !important; }
+</style>

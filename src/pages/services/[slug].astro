@@ -1,0 +1,126 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import ServiceFig from '@/components/ServiceFig.astro';
+import { services } from '@/data/services';
+import { posts } from '@/data/posts';
+import { termBySlug } from '@/data/glossary';
+
+export function getStaticPaths() {
+  return services.map((s) => ({ params: { slug: s.slug }, props: { s } }));
+}
+const { s } = Astro.props;
+const SITE = 'https://techtime-jp.com';
+const url = `${SITE}/services/${s.slug}`;
+const rel = s.posts.map((x) => posts.find((p) => p.slug === x)!).filter(Boolean);
+const tms = s.terms.map(termBySlug).filter(Boolean);
+const others = services.filter((x) => x.slug !== s.slug);
+const ld = [
+  {
+    '@type': 'Service',
+    '@id': `${url}#service`,
+    name: `SAP 導入の${s.name}に、生成AIのチームを組み込むサービス`,
+    serviceType: `SAP ${s.name}の支援`,
+    description: s.description,
+    provider: { '@id': `${SITE}/#org` },
+    areaServed: 'JP',
+    url,
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: s.faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+  },
+];
+---
+
+<PageLayout title={s.title} description={s.description} mark={s.mark} crumbs={[{ name: 'サービス', href: '/services' }, { name: s.name }]} ld={ld}>
+  <section class="top top--fig">
+    <div>
+    <p class="tag"><span>{s.name}</span>SAP の導入と運用保守</p>
+    <h1 class="h1">
+      <span class="hl"><span>{s.h1[0]}</span></span>
+      <span class="hl"><span>{s.h1[1]}</span></span>
+    </h1>
+    <p class="lead">{s.lead}</p>
+    <ul class="pts">{s.pts.map(([a, b]) => <li><b>{a}</b>{b}</li>)}</ul>
+    <div class="act">
+      <a href={`/contact?from=${s.slug}`} class="btn">{s.name}の進め方を相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+      <a href="/assessment" class="link">アセスメントの内容を見る</a>
+    </div>
+    <p class="note">ご相談には、24時間以内に返信します。</p>
+    </div>
+    <ServiceFig slug={s.slug} />
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>01</span>{s.name}で起きていること</p>
+    <h2 class="h2">次のことに、心当たりはありませんか。</h2>
+    <div class="cards">
+      {s.pains.map(([a, b], i) => <div><span>{String(i + 1).padStart(2, '0')}</span><b>{a}</b><p>{b}</p></div>)}
+    </div>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>02</span>AIが行うこと、人が決めること</p>
+    <h2 class="h2">AIが作って確かめ、人が決める。</h2>
+    <p class="sub">作業ごとに、AIの受け持ちと、人の受け持ちを分けます。業務の内容と合否は、人が決めます。</p>
+    <table class="tbl">
+      <thead><tr><th>作業</th><th>AIが行うこと</th><th>人が決めること</th></tr></thead>
+      <tbody>{s.roles.map(([a, b, c]) => <tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>)}</tbody>
+    </table>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>03</span>組み込み方</p>
+    <h2 class="h2">小さく試してから、広げる。</h2>
+    <p class="sub">お客様の様式と規約に合わせて手順を作ります。最初は小さな範囲で試し、結果を確かめてから広げます。</p>
+    <ol class="steps">
+      {s.steps.map(([a, b], i) => <li><span>{String(i + 1).padStart(2, '0')}</span><div><b>{a}</b><p>{b}</p></div></li>)}
+    </ol>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>04</span>プロジェクトに残るもの</p>
+    <h2 class="h2">手順と記録が、お客様の側に残る。</h2>
+    <table class="tbl">
+      <thead><tr><th>残るもの</th><th>内容</th></tr></thead>
+      <tbody>{s.gets.map(([a, b]) => <tr><th>{a}</th><td>{b}</td></tr>)}</tbody>
+    </table>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>05</span>よくある質問</p>
+    <h2 class="h2">{s.name}について、よくいただく質問。</h2>
+    <dl class="faq">{s.faqs.map(([q, a]) => <div><dt>{q}</dt><dd>{a}</dd></div>)}</dl>
+  </section>
+
+  <section class="cta">
+    <h2>いまの{s.name}の進め方を、聞かせてください。</h2>
+    <p>AIが効くかどうかを、お答えします。資料をお預かりして、全件を読んで診断するアセスメントもあります。</p>
+    <div class="act">
+      <a href={`/contact?from=${s.slug}`} class="btn btn--inv">相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+      <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="link link--inv">アセスメントの報告書のサンプルを見る</a>
+    </div>
+  </section>
+
+  <section class="list">
+    <p class="tag"><span>ブログ</span>{s.name}の進め方を、詳しく読む</p>
+    <ul>{rel.map((p) => <li><a href={`/blog/${p.slug}`}><small>{p.cat}</small>{p.title}</a></li>)}</ul>
+  </section>
+
+  {tms.length > 0 && (
+    <section class="list">
+      <p class="tag"><span>用語</span>このページに関係する言葉</p>
+      <ul>{tms.map((t) => <li><a href={`/glossary/${t!.slug}`}><small>用語集</small>{t!.word}</a></li>)}</ul>
+    </section>
+  )}
+
+  <section class="list">
+    <p class="tag"><span>サービス</span>ほかの工程</p>
+    <ul>{others.map((o) => <li><a href={`/services/${o.slug}`}><small>{o.name}</small>{o.h1.join('')}</a></li>)}</ul>
+  </section>
+</PageLayout>
+
+<style>
+  .top--fig { max-width: none !important; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr); gap: clamp(28px, 4.5vw, 70px); align-items: center; }
+  @media (max-width: 900px) { .top--fig { grid-template-columns: 1fr; } }
+</style>

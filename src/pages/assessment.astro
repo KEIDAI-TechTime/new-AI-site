@@ -66,6 +66,7 @@ const ld = [
   <header class="nav">
     <a href="/" class="nav__logo">TechTime<i></i></a>
     <nav class="nav__links">
+      <a href="/services">サービス</a>
       <a href="/blog">ブログ</a>
       <a href="/contact?topic=assess" class="nav__cta">アセスメントの相談はこちら<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
     </nav>
@@ -93,7 +94,7 @@ const ld = [
         <p class="note">サンプルは PDF・29枚・約2MB で、架空の会社を題材にしています。ダウンロードに、お名前などの入力は要りません。</p>
       </div>
       <a class="deck" id="deck" href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" aria-label="アセスメント結果報告書のサンプルを開く">
-        {pages.map((p, i) => <img src={`/images/assess/p${p.n}.jpg`} alt={`報告書のサンプルの「${p.name}」の頁`} width="1120" height="792" style={`--i:${i}`} />)}
+        {pages.map((p, i) => <img src={`/images/assess/p${p.n}.webp`} alt={`報告書のサンプルの「${p.name}」の頁`} width="1120" height="792" style={`--i:${i}`} loading={i === 0 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} decoding="async" />)}
       </a>
     </section>
 
@@ -104,7 +105,7 @@ const ld = [
       <div class="gal">
         {pages.map((p) => (
           <figure>
-            <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener"><img src={`/images/assess/p${p.n}.jpg`} alt={`報告書のサンプルの「${p.name}」の頁`} width="1120" height="792" loading="lazy" /></a>
+            <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener"><img src={`/images/assess/p${p.n}.webp`} alt={`報告書のサンプルの「${p.name}」の頁`} width="1120" height="792" loading="lazy" /></a>
             <figcaption><b>{p.name}</b>{p.body}</figcaption>
           </figure>
         ))}
@@ -170,7 +171,13 @@ const ld = [
   <footer class="foot">
     <p class="foot__n">TechTime株式会社</p>
     <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
+    <p><a href="/services">サービス</a></p>
+    <p><a href="/assessment">アセスメント</a></p>
     <p><a href="/blog">ブログ</a></p>
+    <p><a href="/glossary">用語集</a></p>
+    <p><a href="/resources">資料とひな形</a></p>
+    <p><a href="/faq">よくある質問</a></p>
+    <p><a href="/company">会社概要</a></p>
     <p class="foot__c">© TechTime Co., Ltd.</p>
   </footer>
 </DraftLayout>

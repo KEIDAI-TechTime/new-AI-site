@@ -1,0 +1,204 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '提案書の人数と単価が同じでも、進め方が違うと、プロジェクトの結果は違います。<b>比べるのは、支援会社の進め方です。</b>',
+  '進め方は、5つの質問への答えで比べます。<b>5つ目の質問は、プロジェクトが終わったあと、発注した会社の側に何が残るかです。</b>',
+  '「生成AIを使います」という提案は、<b>使う作業、結果を確かめる人、誤りの割合の測り方</b>を聞いて確かめます。',
+];
+const same = [
+  ['体制の人数', '30人', '30人'],
+  ['単価', '同じ', '同じ'],
+  ['期間', '18か月', '18か月'],
+];
+const diff = [
+  ['設計書のレビュー', '一部だけを確かめる', '観点を文章にして、全件を確かめる'],
+  ['会議の決定の反映', '担当者の判断に任せる', '担当者と期限を決める'],
+  ['進捗の数え方', '担当者の申告で数える', '成果物の状態で数える'],
+  ['終了後に残るもの', '成果物', '成果物、手順、点検の観点、記録'],
+];
+const states = [
+  ['作成が終わった設計書', 80],
+  ['レビューが終わった設計書', 55],
+  ['発注した会社が承認した設計書', 35],
+];
+---
+
+<PostLayout slug="choose-sap-partner-by-what-remains" points={points}>
+  <p class="lead2">SAP の導入や S/4HANA への移行では、発注する会社は、複数の支援会社から提案書を受け取ります。提案書には、体制の人数、人月、単価、期間が書いてあります。人数と単価は数字なので、発注する会社は、提案書を並べるとすぐに比べられます。</p>
+  <p>しかし、人数と単価が同じ提案でも、プロジェクトの結果は同じになりません。<b>結果を決めるのは、支援会社の進め方</b>です。進め方は、提案書を読むだけでは分からないことがあります。</p>
+  <p>この記事では、進め方を比べるために支援会社に聞く5つの質問を書きます。あわせて、「生成AIを使います」という提案の確かめ方を書きます。この記事は、特定の会社や、会社の規模の優劣を扱いません。支援会社を選ぶ側が聞くことだけを書きます。</p>
+
+  <h2><i>01</i>人数と単価が同じ提案でも、進め方が違うと結果は違う</h2>
+  <p>人数と単価が同じ2つの提案でも、進め方が違うと、プロジェクトの結果は違います。人月は、作業に使う時間の量を表す数字です。人月は、作業の方法を表しません。</p>
+
+  <figure class="fig a19f1" data-loop="10000">
+    <div class="fig__h"><span>図 1</span>人数と単価が同じ2つの提案でも、進め方は違う（例）</div>
+    <div class="fig__b">
+      <table class="cmp">
+        <thead><tr><th>比べる項目</th><th>提案A</th><th>提案B</th></tr></thead>
+        <tbody>
+          <tr class="sep"><td colspan="3">提案書を読めば分かる項目</td></tr>
+          {same.map(([n, a, b], k) => (
+            <tr class="p" style={`--t:${0.2 + k * 0.25}s`}><td class="b">{n}</td><td>{a}</td><td>{b}</td></tr>
+          ))}
+          <tr class="sep sep--on f" style="--t:1.3s"><td colspan="3">質問しないと分からない項目</td></tr>
+          {diff.map(([n, a, b], k) => (
+            <tr class="p" style={`--t:${1.6 + k * 0.35}s`}><td class="b">{n}</td><td class="d">{a}</td><td class="d">{b}</td></tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+    <p class="fig__c">数字は例です。上の3行は、2つの提案で同じです。下の4行は、発注する会社が質問して、初めて分かります。</p>
+  </figure>
+
+  <p>たとえば、設計書のレビューに同じ人月を使う提案が、2つあるとします。一方の提案は、設計書の一部だけを確かめます。もう一方の提案は、確かめる観点を文章にして、設計書の全件を確かめます。2つの提案の人月は同じです。しかし、一部だけを確かめる提案では、確かめていない設計書の誤りが、結合テストまで残ります。</p>
+  <p>発注する会社が人数と単価だけを比べると、支援会社は人数と単価を中心に説明します。発注する会社が進め方を質問すると、支援会社は進め方を説明します。</p>
+
+  <div class="say">
+    <p>人数と単価は、提案書を読めば分かります。進め方は、質問しないと分かりません。</p>
+  </div>
+
+  <h2><i>02</i>進め方は、5つの質問への答えで比べる</h2>
+  <p>進め方は、次の5つの質問への答えで比べます。発注する会社は、5つの質問を、すべての支援会社に同じ文で聞きます。質問の文が同じであれば、答えを並べて比べられます。</p>
+
+  <table class="tbl a19t">
+    <thead><tr><th>質問</th><th>聞く理由</th><th>良い答えの例</th></tr></thead>
+    <tbody>
+      <tr><th>1　設計書のレビューは、全件か一部か。何を確かめるかは、文章になっているか。</th><td>一部だけを確かめるレビューでは、確かめていない設計書の誤りが、結合テストまで残る。確かめる内容が文章になっていないと、レビューする人によって結果が変わる。</td><td>「全件を確かめます。確かめる観点の一覧を、要件定義の開始前にお渡しします。」</td></tr>
+      <tr><th>2　会議で決めたことを、誰が、いつまでに設計書へ反映するか。</th><td>会議の決定が設計書に反映されないと、開発は古い設計書のまま進む。</td><td>「決定の一覧を、会議の当日に作ります。設計書の担当者が、決めた期限までに反映します。PM が、反映されていない決定を毎週数えます。」</td></tr>
+      <tr><th>3　進捗は、担当者の申告で数えるか、成果物の状態で数えるか。</th><td>申告の基準は、担当者によって違う。申告の進捗と、実際の成果物の状態に差が出る。</td><td>「設計書の本数を、作成が終わった、レビューが終わった、承認されたの3つの状態で数えます。数えた結果を、毎週お見せします。」</td></tr>
+      <tr><th>4　「期日に間に合うか」に、どう答えるか。</th><td>「間に合います」という答えだけでは、発注する会社は根拠を確かめられない。</td><td>「残っている作業の数と、直近の数週間に終わった作業の数から、見込みを計算します。見込みは、前提と一緒にお伝えします。」</td></tr>
+      <tr><th>5　プロジェクトが終わったあと、発注した会社の側に何が残るか。</th><td>支援会社の担当者は、プロジェクトが終わると離れる。作業の方法が残らないと、発注した会社は、修正や点検を同じ方法で続けられない。</td><td>「成果物に加えて、作業の手順書、点検の観点の一覧、決定と変更の記録をお渡しします。」</td></tr>
+    </tbody>
+  </table>
+
+  <p>良い答えには、共通する点が3つあります。</p>
+  <ul>
+    <li><strong>担当する人が決まっている。</strong>良い答えは、「誰が行うか」を役割の名前で書いています。</li>
+    <li><strong>期限か頻度が決まっている。</strong>良い答えは、「いつまでに」「週に何回」を書いています。</li>
+    <li><strong>発注する会社が、結果を自分で確かめられる。</strong>良い答えは、発注する会社に見せる一覧や記録の名前を書いています。</li>
+  </ul>
+
+  <p>3つ目の質問を例にして、答えによる違いを図に示します。同じ時点の同じプロジェクトでも、数え方が違うと、進捗の数字は違います。</p>
+
+  <figure class="fig a19f2" data-loop="9000">
+    <div class="fig__h"><span>図 2</span>同じ時点の進捗を、申告で数えた場合と、成果物の状態で数えた場合（例）</div>
+    <div class="fig__b">
+      <p class="k">担当者の申告で数える</p>
+      <div class="row"><span>担当者が「完了」と申告した設計書</span><div><i class="ty" style="--w:80%;--t:.3s"></i></div><b>80%</b></div>
+      <p class="k k--on">成果物の状態で数える</p>
+      {states.map(([n, v], k) => (
+        <div class:list={['row', { on: k === 2 }]}><span>{n}</span><div><i class="ty" style={`--w:${v}%;--t:${1.2 + k * 0.4}s`}></i></div><b>{v}%</b></div>
+      ))}
+      <p class="note f" style="--t:2.8s">申告で数えた進捗は80%。発注した会社が承認した設計書は35%</p>
+    </div>
+    <p class="fig__c">数字は例です。成果物の状態で数えると、発注する会社は、レビューと承認が残っている設計書の本数を確かめられます。</p>
+  </figure>
+
+  <p>4つ目の質問では、支援会社が見込みの根拠を示すかを確かめます。根拠は、残っている作業の数と、過去に終わった作業の数です。根拠がある答えであれば、発注する会社は、翌月に同じ計算をして、見込みの変化を確かめられます。</p>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>発注する会社が、5つの質問への答えを提案の説明の場で口頭で聞くだけにすると、プロジェクトの開始後に答えを確かめられません。<strong>答えは文書で受け取り、提案書と一緒に保管してください。</strong>プロジェクトの開始後は、発注する会社の PM が、答えのとおりに進んでいるかを毎月確かめます。</p>
+  </div>
+
+  <h2><i>03</i>「生成AIを使います」という提案は、5つの点を聞いて確かめる</h2>
+  <p>「生成AIを使います」という提案は、次の5つの点を聞いて確かめます。「生成AIを使います」という文だけでは、発注する会社は、どの作業がどう変わるかを判断できません。</p>
+
+  <table class="tbl">
+    <thead><tr><th>確かめる点</th><th>支援会社に聞くこと</th><th>答えに含まれている内容</th></tr></thead>
+    <tbody>
+      <tr><th>使う作業</th><td>生成AIを、どの工程の、どの作業に使うか。</td><td>作業の名前が書いてある。例：設計書の点検、会議の決定の一覧の作成、結合テストの結果の確認。</td></tr>
+      <tr><th>結果を確かめる人</th><td>生成AIの結果を、誰が確かめるか。</td><td>確かめる人の役割と、確かめる時点が決まっている。人が確かめていない結果を、成果物にしない。</td></tr>
+      <tr><th>誤りの割合</th><td>生成AIの誤りの割合を、どう測るか。</td><td>人が直した箇所の数を記録する。記録を、発注した会社に見せる。</td></tr>
+      <tr><th>本番の環境</th><td>本番の環境で、生成AIに操作させるか。</td><td>本番の環境では、生成AIに操作させない。生成AIが操作する環境を、開発と検証の環境に限る。</td></tr>
+      <tr><th>情報の扱い</th><td>預けた情報を、AIの学習に使わせない設定か。</td><td>学習に使わせない設定になっている。設定を確かめた方法を、文書で示す。</td></tr>
+    </tbody>
+  </table>
+
+  <p>発注する会社は、効果の説明も確かめます。「工数が何割減ります」という説明は、実績ではなく見積もりです。生成AIを使わなかった場合の工数を、誰も測れないからです。</p>
+  <p>効果は、プロジェクトの記録に残る数字で確かめます。たとえば、点検した設計書の割合と、会議の決定から設計書への反映までの日数です。数字の選び方は、<a href="/blog/measure-ai-without-counterfactual">AIの効果を測る方法の記事</a>に書きました。発注する会社は、支援会社に、どの数字を、どの記録から計算して、毎月報告するかを聞きます。</p>
+
+  <h2><i>04</i>人を増やす提案と、仕組みを残す提案の違いは、担当者が離れたあとに現れる</h2>
+  <p>人を増やす提案と、仕組みを残す提案の違いは、支援会社の担当者が離れたあとに現れます。この記事では、作業の手順、点検の観点、決定と変更の記録の3つを、仕組みと呼びます。</p>
+
+  <figure class="fig a19f3">
+    <div class="fig__h"><span>図 3</span>支援会社の担当者が離れたあと、作業が止まる場合と、続けられる場合</div>
+    <div class="fig__b">
+      <div class="two">
+        <div class="col">
+          <p class="k">作業の方法を、担当者だけが知っている場合</p>
+          <i class="p" style="--t:.2s">支援会社の担当者が、設計書の点検と修正を行う</i><u>↓</u>
+          <i class="p" style="--t:.6s">プロジェクトが終わり、担当者が離れる</i><u>↓</u>
+          <i class="p" style="--t:1s">発注した会社に、成果物が残る</i><u>↓</u>
+          <i class="p end" style="--t:1.4s">発注した会社は、点検と修正を、同じ方法で続けられない</i>
+        </div>
+        <div class="col col--on">
+          <p class="k">作業の方法が、仕組みとして残る場合</p>
+          <i class="p" style="--t:.4s">支援会社の担当者が、手順書に沿って点検と修正を行う</i><u>↓</u>
+          <i class="p" style="--t:.8s">プロジェクトが終わり、担当者が離れる</i><u>↓</u>
+          <i class="p" style="--t:1.2s">発注した会社に、成果物、手順、点検の観点、記録が残る</i><u>↓</u>
+          <i class="p end" style="--t:1.6s">発注した会社の担当者が、手順書に沿って点検と修正を続けられる</i>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">2つの場合で、プロジェクトの期間中の人数は同じでも構いません。違いは、作業の方法が文書になっているかどうかです。</p>
+  </figure>
+
+  <p>本番の稼働のあとも、追加開発の修正、設計書の更新、移行したデータの確認は続きます。作業の方法を支援会社の担当者だけが知っている場合、担当者が離れると、発注した会社は同じ方法で作業を続けられません。作業の方法が手順書になっている場合、発注した会社の担当者が、手順書に沿って作業を続けられます。</p>
+  <p>人を増やす提案が必要な工程もあります。作業の量が多い工程では、人数が必要です。発注する会社は、人数とあわせて、増やした人が行う作業の手順が文書に残るかを聞きます。</p>
+  <p>生成AIを使う手順も、仕組みに含まれます。生成AIを使うかどうかを担当者の判断に任せていると、担当者が替わったあとに、生成AIは使われなくなります。生成AIを使う手順を工程の進め方に組み込む方法は、<a href="/blog/keep-using-ai">AIを使い続ける方法の記事</a>に書きました。</p>
+  <p>発注する会社は、5つ目の質問への答えを、契約の成果物の一覧で確かめます。手順書、点検の観点の一覧、決定と変更の記録が成果物の一覧に入っていれば、3つの文書は発注した会社に残ります。</p>
+
+  <h2><i>05</i>明日は、提案の依頼の文書に、5つの質問を入れる</h2>
+  <div class="todo">
+    <b>半日でできる、3つの準備</b>
+    <ol>
+      <li><span>提案の依頼の文書（RFP）に、<b>この記事の5つの質問</b>を入れる。支援会社には、答えを文書で提出するように依頼する。</span></li>
+      <li><span>提案を比べる表に、人数と単価の列に加えて、<b>5つの質問への答えを書く列</b>を作る。</span></li>
+      <li><span>生成AIを使うという提案を受け取った場合は、<b>この記事の03の表の5つの点</b>を、追加で質問する。</span></li>
+    </ol>
+  </div>
+  <p>提案の依頼をすでに出している場合は、提案の説明の場で5つの質問を聞いてください。説明のあとに、支援会社から答えを文書で受け取ります。</p>
+  <p>発注する会社は、5つの質問への答えを並べると、人数と単価が同じ提案の違いを確かめられます。発注する会社は、人数と単価に加えて、プロジェクトが終わったあとに自社に残るものを比べて、支援会社を選びます。</p>
+</PostLayout>
+
+<style is:global>
+  .a19f1 .cmp { width: 100%; border-collapse: collapse; background: var(--paper); font-size: 13.5px; line-height: 1.7; table-layout: fixed; }
+  .a19f1 .cmp th, .a19f1 .cmp td { border: 1px solid var(--ink); padding: 9px 12px; text-align: left; vertical-align: top; }
+  .a19f1 .cmp thead th { background: var(--ink); color: var(--paper); font-size: 12px; }
+  .a19f1 .cmp thead th:first-child { width: 30%; }
+  .a19f1 .cmp .b { font-weight: 700; }
+  .a19f1 .cmp .sep td { background: var(--paper-2); font-size: 12px; font-weight: 700; color: var(--ink-2); padding: 5px 12px; }
+  .a19f1 .cmp .sep--on td { background: var(--shu); color: var(--paper); }
+  .a19f1 .cmp .d { color: var(--shu); font-weight: 700; }
+  .a19f2 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .a19f2 .k--on { color: var(--shu); margin-top: 20px; }
+  .a19f2 .row { display: grid; grid-template-columns: 16em 1fr 3.4em; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+  .a19f2 .row div { height: 24px; border: 1px solid var(--ink); background: var(--paper); }
+  .a19f2 .row i { display: block; height: 100%; width: var(--w); background: var(--ink); }
+  .a19f2 .row.on i { background: var(--shu); }
+  .a19f2 .row b { font-family: var(--mono); font-weight: 500; background: none; text-align: right; }
+  .a19f2 .row.on b { color: var(--shu); }
+  .a19f2 .note { margin: 16px 0 0; border-left: 3px solid var(--shu); padding-left: 12px; font-size: 13px; line-height: 1.7; font-weight: 700; }
+  .a19f3 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .a19f3 .col { display: grid; gap: 4px; align-content: start; }
+  .a19f3 .k { margin: 0 0 6px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .a19f3 .col--on .k { color: var(--shu); }
+  .a19f3 .col i { font-style: normal; border: 1px solid var(--line); background: var(--paper); padding: 9px 14px; font-size: 13.5px; font-weight: 700; line-height: 1.65; }
+  .a19f3 .col--on i { border-color: var(--ink); }
+  .a19f3 .col u { text-decoration: none; color: var(--ink-2); padding-left: 16px; line-height: 1.3; }
+  .a19f3 .col i.end { border: 2px dashed var(--ink-2); color: var(--ink-2); }
+  .a19f3 .col--on i.end { border: 1px solid var(--shu); background: var(--shu); color: var(--paper); }
+  .a19t tbody th { white-space: normal; width: 30%; }
+  .a19t td:last-child { width: 34%; }
+  @media (max-width: 760px) {
+    .a19f1 .cmp { font-size: 12px; }
+    .a19f1 .cmp th, .a19f1 .cmp td { padding: 6px 6px; }
+    .a19f2 .row { grid-template-columns: 1fr 3.4em; gap: 4px 10px; }
+    .a19f2 .row span { grid-column: 1 / -1; }
+    .a19f3 .two { grid-template-columns: 1fr; }
+    .a19t tbody th { width: 28%; }
+  }
+</style>

@@ -1,6 +1,7 @@
 ---
 import DraftLayout from '@/layouts/DraftLayout.astro';
 import { posts } from '@/data/posts';
+import { serviceByCat, serviceBySlug } from '@/data/services';
 
 interface Props {
   slug: string;
@@ -13,6 +14,7 @@ const bySlug = (s: string) => posts.find((p) => p.slug === s)!;
 const rel = post.related.map(bySlug);
 const same = posts.filter((p) => p.slug !== slug && p.cat === post.cat && !post.related.includes(p.slug));
 const others = [...rel, ...same].slice(0, 3);
+const svc = serviceByCat[post.cat] ? serviceBySlug(serviceByCat[post.cat]) : null;
 const SITE = 'https://techtime-jp.com';
 const url = `${SITE}/blog/${slug}`;
 const iso = post.date.replace(/\./g, '-');
@@ -55,6 +57,7 @@ const ld = [
   <header class="pnav">
     <a href="/" class="pnav__logo">TechTime<i></i></a>
     <nav class="pnav__links">
+      <a href="/services">サービス</a>
       <a href="/blog">ブログの一覧</a>
       <a href="/contact?topic=assess" class="pnav__cta">アセスメントの相談はこちら<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
     </nav>
@@ -98,6 +101,9 @@ const ld = [
           <em>{o.cat}</em>
         </a>
       ))}
+      {svc
+        ? <a href={`/services/${svc.slug}`} class="more__all"><span></span><b>{svc.name}に、AIチームを組み込む進め方を見る</b><em>サービス</em></a>
+        : <a href="/services" class="more__all"><span></span><b>工程ごとの、AIチームの組み込み方を見る</b><em>サービス</em></a>}
       <a href="/blog" class="more__all"><span></span><b>すべての記事を、工程や言葉で探す</b><em>一覧へ</em></a>
     </nav>
   </article>
@@ -105,6 +111,13 @@ const ld = [
   <footer class="pfoot">
     <p class="pfoot__n">TechTime株式会社</p>
     <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
+    <p><a href="/services">サービス</a></p>
+    <p><a href="/assessment">アセスメント</a></p>
+    <p><a href="/blog">ブログ</a></p>
+    <p><a href="/glossary">用語集</a></p>
+    <p><a href="/resources">資料とひな形</a></p>
+    <p><a href="/faq">よくある質問</a></p>
+    <p><a href="/company">会社概要</a></p>
     <p class="pfoot__c">© TechTime Co., Ltd.</p>
   </footer>
 </DraftLayout>

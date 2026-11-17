@@ -69,7 +69,7 @@ const after = [
         <p class="lead">設計書や会議の記録をお預かりし、AIチームが効く工程と、最初に手を打つ所を報告書にまとめます。</p>
 
         <a class="deck" id="deck" href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" aria-label="アセスメント結果報告書のサンプルを開く">
-          {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.jpg`} alt={i === 0 ? 'アセスメント結果報告書のサンプルの頁' : ''} width="1120" height="792" style={`--i:${i}`} />)}
+          {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.webp`} alt={i === 0 ? 'アセスメント結果報告書のサンプルの頁' : ''} width="1120" height="792" style={`--i:${i}`} />)}
         </a>
         <div class="asmact">
           <a href="/downloads/techtime-assessment-sample.pdf" download="TechTime_アセスメント結果報告書_サンプル.pdf" class="btn btn--s">サンプルをダウンロード<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
@@ -151,11 +151,16 @@ const after = [
           <span id="sendLabel">送信する</span>
           <svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg>
         </button>
+        <p class="reply">24時間以内に、メールで返信します。</p>
       </form>
 
       <div class="done" id="done" role="status">
         <p class="done__h">受け付けました。</p>
-        <p>担当からメールでご連絡します。</p>
+        <p>24時間以内に、担当からメールで返信します。</p>
+        <p class="done__n">ご連絡までの間に、次の資料をご覧いただけます。</p>
+        <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="link">アセスメント結果報告書のサンプル（PDF・29枚）</a>
+        <a href="/process" class="link">相談のあとの進め方</a>
+        <a href="/blog" class="link">ブログ</a>
         <a href="/" class="link">トップへ戻る</a>
       </div>
     </section>
@@ -164,6 +169,13 @@ const after = [
   <footer class="foot">
     <p class="foot__n">TechTime株式会社</p>
     <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
+    <p><a href="/services">サービス</a></p>
+    <p><a href="/assessment">アセスメント</a></p>
+    <p><a href="/blog">ブログ</a></p>
+    <p><a href="/glossary">用語集</a></p>
+    <p><a href="/resources">資料とひな形</a></p>
+    <p><a href="/faq">よくある質問</a></p>
+    <p><a href="/company">会社概要</a></p>
     <p class="foot__c">© TechTime Co., Ltd.</p>
   </footer>
 </DraftLayout>
@@ -292,6 +304,9 @@ const after = [
   .slip.is-done .done { display: block; animation: up 0.7s 0.5s both; }
   .done__h { font-family: var(--mincho); font-weight: 800; font-size: clamp(28px, 3.4vw, 46px); margin: 0 0 10px; }
   .done p { margin: 0 0 26px; }
+  .reply { margin: 14px 0 0; font-size: 13px; color: var(--ink-2); }
+  .done__n { margin: 0 0 12px !important; font-size: 14px; color: var(--ink-2); }
+  .done .link { display: table; margin: 0 0 12px; }
   .link { font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
 
   .foot { margin: 0 calc(var(--gutter) + 10px) 40px; border-top: 1px solid var(--ink); padding-top: 20px; font-size: 12.5px; color: var(--ink-2); display: flex; gap: 8px 30px; flex-wrap: wrap; align-items: baseline; }
@@ -395,6 +410,7 @@ const after = [
       (window as any).gtag?.('event', 'generate_lead', {
         form_name: 'contact',
         lead_topic: body.topic,
+        lead_from: new URLSearchParams(location.search).get('from') || '',
         lead_situation: body.situation,
         lead_phases: phases.join('・').slice(0, 90) || '（未選択）',
       });

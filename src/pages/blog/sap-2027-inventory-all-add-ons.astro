@@ -1,0 +1,243 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  'SAP ERP 6.0 の標準保守は、2027年末に終わります。<b>移行の日程と費用の見積もりは、いまのアドオン・設計書・連携を調べる最初の調査の精度で決まります。</b>',
+  '調査を一部のアドオンだけで行うと、見積もりに入っていない作業が設計以降で見つかります。<b>調査は、全件のプログラムと設計書を対象にします。</b>',
+  '生成AIは、全件を読み、アドオンを4つの区分に分ける材料をそろえます。<b>どの区分にするかは、業務の責任者と各領域の担当者が決めます。</b>',
+];
+/* 図3：アドオン1,200本を4つの区分に分けた結果（例） */
+const kinds = [
+  { n: 'やめる', v: 380, c: 'a' },
+  { n: '標準機能に置き換える', v: 260, c: 'a' },
+  { n: 'そのまま引き継ぐ', v: 400, c: 'b' },
+  { n: '作り直す', v: 160, c: 'b' },
+];
+---
+
+<PostLayout slug="sap-2027-inventory-all-add-ons" points={points}>
+  <p class="lead2">経営会議で、情報システム部門の責任者が質問を受けます。「S/4HANA への移行は、2027年末までに終わりますか」。責任者は、移行の日程をまだ答えられません。</p>
+  <p>責任者が答えられない理由は、移行の作業量が分かっていないことです。移行の作業量は、いまのシステムにあるアドオンの本数と内容で決まります。長く運用したシステムでは、アドオンの一覧と設計書が、実際のプログラムと合わなくなっていることがあります。</p>
+  <p>この記事では、移行の前に行う調査を、一部ではなく全件で行う方法を書きます。あわせて、調査の結果から移行の範囲と順番を決める手順を書きます。</p>
+
+  <h2><i>01</i>SAP ERP 6.0 の標準保守は、2027年末に終わる</h2>
+  <p>SAP の2027年問題とは、SAP ERP 6.0（ECC 6.0）の標準保守が2027年末に終わることです。2027年末まで標準保守を受けられるのは、拡張パッケージ6以降を適用したシステムです。追加の料金を支払うと、保守を2030年末まで延長できます。</p>
+
+  <figure class="fig a18f1">
+    <div class="fig__h"><span>図 1</span>保守の期限は2つ。会社の選択肢は3つ</div>
+    <div class="fig__b">
+      <ol class="tl">
+        <li class="p" style="--t:.2s"><time>2027年末</time><b>標準保守が終わる</b><span>対象は、SAP ERP 6.0 の拡張パッケージ6以降</span></li>
+        <li class="p" style="--t:.7s"><time>2030年末</time><b>延長した保守が終わる</b><span>延長には、追加の料金がかかる</span></li>
+      </ol>
+      <div class="three">
+        <div class="c p" style="--t:1.3s"><b>1</b><h4>S/4HANA へ移行する</h4><p>いまのアドオンと設計書を、S/4HANA に合わせて見直す。</p></div>
+        <div class="c p" style="--t:1.6s"><b>2</b><h4>保守を延長する</h4><p>移行の期限が2030年末に変わる。移行の作業量は変わらない。</p></div>
+        <div class="c p" style="--t:1.9s"><b>3</b><h4>別の製品へ移る</h4><p>業務の要件を、別の製品の機能と比べ直す。</p></div>
+      </div>
+    </div>
+    <p class="fig__c">3つの選択肢のどれを選ぶ場合も、いまのシステムにあるアドオンと連携の内容を、会社が把握している必要があります。</p>
+  </figure>
+
+  <p>3つの選択肢のどれを選ぶ場合も、最初に必要な情報は同じです。必要な情報は、いまのシステムで動いているアドオンの本数と内容です。保守を延長しても、移行の作業量は減りません。</p>
+
+  <h2><i>02</i>移行の日程と費用の見積もりは、最初の調査の精度で決まる</h2>
+  <p>移行の日程と費用の見積もりは、移行の前に行う調査の精度で決まります。この調査は、現状調査、またはアドオンの棚卸しと呼ばれます。調査の対象は、次の3つです。</p>
+  <ul>
+    <li><strong>アドオンのプログラム。</strong>追加開発した帳票・画面・バッチ処理・拡張の、本数と内容を調べます。</li>
+    <li><strong>設計書。</strong>設計書があるか、設計書の内容がいまのプログラムと合っているかを調べます。</li>
+    <li><strong>ほかのシステムとの連携。</strong>連携の相手・データの項目・実行の頻度を調べます。</li>
+  </ul>
+  <p>調査の期間が短い場合、PM は代表的なアドオンだけを調べ、残りの作業量を本数の比率で見積もります。しかし、調べていないアドオンの内容は、調べたアドオンの内容と同じではありません。調べていないアドオンの作業は、設計以降の工程で見つかります。</p>
+
+  <figure class="fig a18f2" data-loop="9500">
+    <div class="fig__h"><span>図 2</span>一部だけを調べた見積もりは、設計以降で延びる（例）</div>
+    <div class="fig__b">
+      <div class="cmp">
+        <div class="blk">
+          <p class="k">一部だけを調べた場合<em>1,200本のうち120本</em></p>
+          <div class="row"><span>見積もり</span><div class="track"><i class="ty" style="--w:50%;--t:.3s"></i><b class="f" style="--t:.9s">18か月</b></div></div>
+          <div class="row"><span>実際</span><div class="track"><i class="ty" style="--w:50%;--t:1.3s"></i><i class="ty add" style="--w:22%;--t:1.9s"></i><b class="f on" style="--t:2.5s">26か月</b></div></div>
+          <p class="note f" style="--t:2.5s"><i></i>設計以降で見つかった作業</p>
+        </div>
+        <div class="blk">
+          <p class="k">全件を調べた場合<em>1,200本のうち1,200本</em></p>
+          <div class="row"><span>見積もり</span><div class="track"><i class="ty" style="--w:66%;--t:3.1s"></i><b class="f" style="--t:3.7s">24か月</b></div></div>
+          <div class="row"><span>実際</span><div class="track"><i class="ty" style="--w:66%;--t:3.9s"></i><b class="f" style="--t:4.5s">24か月</b></div></div>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">全件を調べた見積もりは、最初から長くなります。しかし、見積もりと実際の日程が合います。数字は例です。</p>
+  </figure>
+
+  <p>設計以降で見つかった作業は、日程を2回延ばします。1回目は、見つかった作業そのものの日数です。2回目は、すでに終えた設計とテストをやり直す日数です。全件を調べた見積もりは、一部だけを調べた見積もりより長くなります。しかし、責任者は、長い見積もりを見たうえで、移行の範囲を減らすか、保守を延長するかを早い時期に決められます。</p>
+
+  <div class="say">
+    <p>移行が期日に間に合わなくなる原因は、設計や開発の遅れだけではありません。最初の見積もりに入っていない作業が、後の工程で見つかることです。</p>
+  </div>
+
+  <h2><i>03</i>調査は全件で行う。生成AIが読み、人が区分を決める</h2>
+  <p>調査は、全件のアドオンと設計書を対象にします。人の手だけで全件を読むと、調査の期間が長くなります。生成AIは、全件のプログラムと設計書を読み、アドオンごとに判断の材料をそろえられます。</p>
+  <p>調査の目的は、アドオンを次の4つの区分に分けることです。</p>
+
+  <table class="tbl">
+    <thead><tr><th>区分</th><th>当てはまるアドオン</th><th>判断に使う材料</th></tr></thead>
+    <tbody>
+      <tr><th>やめる</th><td>業務で使われていないアドオン。同じ処理をする別のアドオンがあるもの</td><td>実行の記録、呼び出し元の有無、内容が重なるアドオンの一覧</td></tr>
+      <tr><th>標準機能に置き換える</th><td>S/4HANA の標準機能や設定で、同じ業務ができるアドオン</td><td>アドオンの処理の内容、対応する標準機能の候補</td></tr>
+      <tr><th>そのまま引き継ぐ</th><td>業務に必要で、S/4HANA でも修正が少ないアドオン</td><td>使っているテーブルと項目、修正が必要な箇所の数</td></tr>
+      <tr><th>作り直す</th><td>業務に必要だが、修正の箇所が多いアドオン</td><td>修正が必要な箇所の一覧、処理の内容</td></tr>
+    </tbody>
+  </table>
+
+  <figure class="fig a18f3" data-loop="9000">
+    <div class="fig__h"><span>図 3</span>1,200本のアドオンを、4つの区分に分けた結果（例）</div>
+    <div class="fig__b">
+      <div class="res">
+        {kinds.map((k, i) => (
+          <div class="r"><span>{k.n}</span><div><i class:list={['ty', k.c]} style={`--w:${k.v / 5.6}%;--t:${0.3 + i * 0.4}s`}></i><b class="f" style={`--t:${0.8 + i * 0.4}s`}>{k.v}本</b></div></div>
+        ))}
+      </div>
+      <p class="sum f" style="--t:2.6s">設計と開発の対象から外れるアドオン <b>640本</b>　／　設計と開発の対象に残るアドオン <b>560本</b></p>
+    </div>
+    <p class="fig__c">「やめる」と「標準機能に置き換える」に分けたアドオンは、設計と開発の対象から外れます。数字は例です。</p>
+  </figure>
+
+  <p>区分を決めるのは人です。生成AIは、その会社の業務の例外と、今後の業務の方針を知りません。各領域の担当者が、生成AIのそろえた材料を確認します。業務の責任者が、アドオンごとの区分を決めます。</p>
+  <p>「標準機能に置き換える」の区分では、追加開発と標準機能を比べる資料が必要です。比べる資料の作り方は、<a href="/blog/recheck-add-ons-against-standard">追加開発を標準機能と比べ直す方法の記事</a>に書いています。</p>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>実行の記録が無いことだけを理由に、アドオンを「やめる」に分けないでください。システムに残っている実行の記録は、保存の期間が限られています。年に1回の決算の処理や、障害のときだけ使う処理は、記録に出ないことがあります。<strong>「やめる」の候補は、領域の担当者が必ず確認します。</strong></p>
+  </div>
+
+  <h2><i>04</i>設計書が無いアドオンは、プログラムから内容を読み取って一覧にする</h2>
+  <p>設計書が無いアドオンと、設計書が古いアドオンは、プログラムから内容を読み取ります。設計書が無いアドオンを調査の対象から外すと、全件の調査になりません。内容が分からないアドオンは、4つの区分のどれにも分けられないからです。</p>
+
+  <figure class="fig a18f4">
+    <div class="fig__h"><span>図 4</span>プログラムから読み取った内容を、一覧の1行にする（例）</div>
+    <div class="fig__b">
+      <div class="flow">
+        <div class="src p" style="--t:.2s">
+          <p class="k">入力</p>
+          <h4>アドオンのプログラム</h4>
+          <p>設計書が無い。または、設計書の最終更新がプログラムの最終変更より古い。</p>
+        </div>
+        <div class="mid p" style="--t:.8s">
+          <p class="k">生成AIが読み取る項目</p>
+          <ul><li>処理の目的</li><li>入力と出力</li><li>読み書きするテーブル</li><li>呼び出し元と連携先</li><li>設計書との違い</li></ul>
+        </div>
+        <div class="out p" style="--t:1.4s">
+          <p class="k">出力：一覧の1行</p>
+          <dl>
+            <dt>プログラム</dt><dd class="mo">ZSD_0123</dd>
+            <dt>処理の目的</dt><dd>出荷の実績を、倉庫のシステムへ送る</dd>
+            <dt>連携先</dt><dd>倉庫管理システム（1日1回）</dd>
+            <dt>設計書</dt><dd>あり。送る項目が3つ違う</dd>
+            <dt>根拠</dt><dd>該当する行の番号</dd>
+          </dl>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">一覧の1行には、読み取った内容の根拠として、プログラムの該当する行の番号を書きます。プログラムの名前と内容は例です。</p>
+  </figure>
+
+  <p>設計書があるアドオンも、プログラムと比べます。稼働後の修正が、設計書に反映されていないことがあるからです。生成AIは、設計書の記載とプログラムの処理を比べ、違う箇所を一覧にします。</p>
+  <p>生成AIが読み取った内容には、誤りが含まれることがあります。そのため、一覧の各行に、根拠となるプログラムの行の番号を書かせます。領域の担当者は、根拠の行を見て、読み取った内容を確認します。</p>
+
+  <h2><i>05</i>移行の範囲と順番は、調査の結果から5つの手順で決める</h2>
+  <p>移行の範囲と順番は、全件の一覧ができた後に、次の5つの手順で決めます。5つの手順のうち、生成AIが行う手順は最初の1つだけです。</p>
+
+  <table class="tbl">
+    <thead><tr><th>手順</th><th>行うこと</th><th>行う人</th></tr></thead>
+    <tbody>
+      <tr><th>1　全件の一覧を作る</th><td>アドオン・設計書・連携を全件読み、アドオンごとに判断の材料を書く</td><td>生成AI</td></tr>
+      <tr><th>2　材料を確認する</th><td>読み取った内容と、「やめる」の候補を、根拠の行を見て確認する</td><td>各領域の担当者</td></tr>
+      <tr><th>3　区分を決める</th><td>アドオンごとに、4つの区分のどれにするかを決める。決めた理由を一覧に書く</td><td>業務の責任者</td></tr>
+      <tr><th>4　範囲を決める</th><td>「そのまま引き継ぐ」と「作り直す」のアドオンと、残す連携を、移行の範囲にする。範囲から作業量を見積もる</td><td>PM</td></tr>
+      <tr><th>5　順番を決める</th><td>連携の相手が多い領域と、作り直すアドオンが多い領域を、先に始める</td><td>PM と各領域の担当者</td></tr>
+    </tbody>
+  </table>
+
+  <p>手順4の見積もりができると、PM は、期日に間に合うかどうかを確率で答えられます。PM は、領域ごとの作業の日数を、早い場合・普通の場合・遅い場合の3通りで見積もります。確率の計算の方法は、<a href="/blog/answer-with-probability">期日に間に合うかを確率で答える方法の記事</a>に書いています。</p>
+  <p>確率が低い場合、責任者が選べる対策は3つです。1つ目は、「作り直す」のアドオンを減らすことです。2つ目は、移行を領域ごとの段階に分けることです。3つ目は、保守を延長することです。全件の一覧があると、責任者は、3つの対策を作業量の数字で比べられます。</p>
+
+  <h2><i>06</i>明日は、アドオンの本数と設計書の有無を数える</h2>
+  <div class="todo">
+    <b>人の手で始められる、3つの確認</b>
+    <ol>
+      <li><span>システムからアドオンのプログラムの一覧を出力し、<b>種類ごとの本数</b>を数える。</span></li>
+      <li><span>プログラムの一覧と設計書の一覧を比べ、<b>設計書が無いアドオンの本数</b>と、設計書の最終更新がプログラムの最終変更より古いアドオンの本数を数える。</span></li>
+      <li><span>ほかのシステムとの連携を一覧にし、<b>連携ごとの担当者</b>を書く。担当者が分からない連携に印を付ける。</span></li>
+    </ol>
+  </div>
+  <p>3つの確認は、内容を読まずに、本数を数えるだけでできます。3つの数字がそろうと、調査の対象の大きさが分かります。設計書が無いアドオンの本数は、プログラムから内容を読み取る作業の量を示します。</p>
+  <p>担当者が分からない連携は、早い時期に担当者を決めてください。連携の相手のシステムにも、移行に合わせた修正とテストが必要になるからです。</p>
+  <p>内容を読む調査は、その次の段階です。全件を読む作業は生成AIに任せ、担当者の時間を、材料の確認と区分の決定に使います。</p>
+</PostLayout>
+
+<style is:global>
+  .a18f1 .tl { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); background: var(--paper); }
+  .a18f1 .tl li { padding: 14px 18px; display: grid; gap: 4px; align-content: start; border-right: 1px solid var(--ink); }
+  .a18f1 .tl li:last-child { border-right: 0; background: repeating-linear-gradient(-45deg, rgba(212, 65, 42, 0.12) 0 6px, transparent 6px 12px); }
+  .a18f1 .tl time { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--shu); line-height: 1.3; }
+  .a18f1 .tl b { font-family: var(--mincho); font-size: 17px; line-height: 1.5; background: none; }
+  .a18f1 .tl span { font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+  .a18f1 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .a18f1 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .a18f1 .c > b { font-family: var(--mono); font-weight: 500; font-size: 24px; color: var(--shu); line-height: 1; background: none; }
+  .a18f1 h4 { margin: 0; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .a18f1 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
+
+  .a18f2 .cmp { display: grid; gap: 14px; }
+  .a18f2 .blk { border: 1px solid var(--ink); background: var(--paper); padding: 14px 18px; display: grid; gap: 8px; }
+  .a18f2 .k { margin: 0 0 2px; font-family: var(--mincho); font-weight: 700; font-size: 16px; }
+  .a18f2 .k em { font-style: normal; font-family: var(--gothic); font-weight: 500; font-size: 12px; color: var(--ink-2); margin-left: 12px; }
+  .a18f2 .row { display: grid; grid-template-columns: 5em 1fr; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
+  .a18f2 .track { display: flex; align-items: center; height: 26px; }
+  .a18f2 .track i { display: block; height: 100%; width: var(--w); background: var(--ink); flex: none; }
+  .a18f2 .track i.add { background: var(--shu); }
+  .a18f2 .track b { font-family: var(--mono); font-weight: 500; font-size: 13px; background: none; margin-left: 10px; white-space: nowrap; }
+  .a18f2 .track b.on { color: var(--shu); }
+  .a18f2 .note { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding-left: calc(5em + 12px); }
+  .a18f2 .note i { width: 14px; height: 14px; background: var(--shu); display: block; flex: none; }
+
+  .a18f3 .res { display: grid; gap: 12px; }
+  .a18f3 .r { display: grid; grid-template-columns: 11.5em 1fr; gap: 12px; align-items: center; font-size: 13.5px; font-weight: 700; }
+  .a18f3 .r div { display: flex; align-items: center; gap: 10px; }
+  .a18f3 .r i { display: block; height: 26px; width: var(--w); background: var(--shu); flex: none; }
+  .a18f3 .r i.b { background: var(--ink); }
+  .a18f3 .r b { font-family: var(--mono); font-weight: 500; background: none; white-space: nowrap; }
+  .a18f3 .sum { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--ink); font-size: 13.5px; font-weight: 700; }
+  .a18f3 .sum b { font-family: var(--mono); font-weight: 500; font-size: 17px; color: var(--shu); background: none; }
+
+  .a18f4 .flow { display: grid; grid-template-columns: 1fr 1fr 1.35fr; gap: 26px; align-items: stretch; }
+  .a18f4 .flow > div { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; position: relative; }
+  .a18f4 .flow > div + div::before { content: ''; position: absolute; left: -20px; top: 50%; width: 0; height: 0; border: 7px solid transparent; border-left: 10px solid var(--ink); transform: translateY(-50%); }
+  .a18f4 .k { margin: 0 0 6px; font-size: 11.5px; font-weight: 700; color: var(--ink-2); }
+  .a18f4 h4 { margin: 0 0 6px; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .a18f4 .src p:last-child { margin: 0; font-size: 13px; line-height: 1.75; }
+  .a18f4 .mid ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+  .a18f4 .mid li { padding: 5px 0 5px 16px; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 700; position: relative; }
+  .a18f4 .mid li::before { content: ''; position: absolute; left: 2px; top: 1em; width: 6px; height: 6px; background: var(--shu); }
+  .a18f4 .out { border-width: 1.5px !important; }
+  .a18f4 .out .k { color: var(--shu); }
+  .a18f4 dl { margin: 0; display: grid; grid-template-columns: 6.2em 1fr; font-size: 13px; line-height: 1.7; border-top: 1px solid var(--line); }
+  .a18f4 dt, .a18f4 dd { margin: 0; padding: 5px 0; border-bottom: 1px solid var(--line); }
+  .a18f4 dt { font-size: 11.5px; font-weight: 700; color: var(--ink-2); padding-top: 7px; }
+  .a18f4 dd { font-weight: 700; }
+  .a18f4 dd.mo { font-family: var(--mono); font-weight: 500; }
+
+  @media (max-width: 760px) {
+    .a18f1 .three { grid-template-columns: 1fr; }
+    .a18f1 .tl time { font-size: 18px; }
+    .a18f1 .tl li { padding: 12px; }
+    .a18f2 .blk { padding: 12px; }
+    .a18f2 .k em { display: block; margin: 2px 0 0; }
+    .a18f2 .row { grid-template-columns: 4.2em 1fr; gap: 8px; }
+    .a18f2 .note { padding-left: calc(4.2em + 8px); }
+    .a18f3 .r { grid-template-columns: 1fr; gap: 4px; }
+    .a18f4 .flow { grid-template-columns: 1fr; }
+    .a18f4 .flow > div + div::before { left: 50%; top: -22px; border: 7px solid transparent; border-top: 10px solid var(--ink); transform: translateX(-50%); }
+  }
+</style>

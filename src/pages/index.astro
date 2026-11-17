@@ -131,6 +131,7 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
       <a href="#run" class="nav__lo">運用保守</a>
       <a href="#how" class="nav__lo">進め方</a>
       <span class="nav__sep" aria-hidden="true"></span>
+      <a href="/services" class="nav__page nav__hot">サービス</a>
       <a href="/assessment" class="nav__page nav__hot">アセスメント</a>
       <a href="/blog" class="nav__page">ブログ</a>
       <div class="nav__act"><a href="/contact?topic=assess" class="nav__cta"><span class="nav__cta-l">アセスメントの相談はこちら</span><span class="nav__cta-s">アセスメントの相談</span><svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
@@ -276,7 +277,7 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
           <p class="asm__note rv">PDF・29枚・約2MB。お名前やメールアドレスの入力は要りません。</p>
         </div>
         <a class="asm__deck rv" id="deck" href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" aria-label="アセスメント結果報告書のサンプルを開く">
-          {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.jpg`} alt={i === 0 ? 'アセスメント結果報告書のサンプルの頁' : ''} loading="lazy" width="1120" height="792" style={`--i:${i}`} data-i={i} />)}
+          {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.webp`} alt={i === 0 ? 'アセスメント結果報告書のサンプルの頁' : ''} loading="lazy" width="1120" height="792" style={`--i:${i}`} data-i={i} />)}
         </a>
       </div>
     </section>
@@ -761,8 +762,13 @@ const pct = (y: number) => ((y - Y0) / (Y1 - Y0)) * 100;
 
   <footer class="foot">
     <p class="foot__n">TechTime株式会社</p>
+    <p><a href="/services">サービス</a></p>
     <p><a href="/assessment">アセスメント</a></p>
     <p><a href="/blog">ブログ</a></p>
+    <p><a href="/glossary">用語集</a></p>
+    <p><a href="/resources">資料とひな形</a></p>
+    <p><a href="/faq">よくある質問</a></p>
+    <p><a href="/company">会社概要</a></p>
     <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
     <p class="foot__c">© TechTime Co., Ltd.</p>
   </footer>

@@ -1,0 +1,231 @@
+---
+import PostLayout from '@/layouts/PostLayout.astro';
+
+const points = [
+  '保守の作業は「調べる・直す・確かめる」の3つに分けられます。<b>問い合わせでも改修でも、最初に行うのは調べる作業です。</b>',
+  '保守の費用を下げるには、単価の交渉より先に、<b>問い合わせと改修の記録から、調べる時間を2〜4週間分測ります。</b>',
+  '調べる時間は、導入時の記録をまとめ、手順の番号でつなぎ、AIに根拠を探させることで減らします。<b>回答と本番の環境の操作は、人が行います。</b>',
+];
+/* 図1・図4の数字は、すべて説明のための例 */
+const cases = [
+  { name: '問い合わせ 1件', total: '合計 4.0時間', seg: [['調べる', '3.0時間', 75], ['直す', '0.5時間', 12.5], ['確かめる', '0.5時間', 12.5]] },
+  { name: '改修 1件', total: '合計 24時間', seg: [['調べる', '12時間', 50], ['直す', '6時間', 25], ['確かめる', '6時間', 25]] },
+];
+const measure = [
+  ['調べる', '問い合わせ・改修の依頼を受け付けた時', '原因と影響範囲が分かった時', '現象の再現、設計書とプログラムの確認、導入時の担当者への質問'],
+  ['直す', '原因と影響範囲が分かった時', '修正、または回答の文面ができた時', '設定の変更、プログラムの修正、設計書の更新、回答の作成'],
+  ['確かめる', '修正、または回答の文面ができた時', '依頼者に回答した時、または本番の環境に反映した時', 'テスト、依頼者による確認、本番の環境への移送'],
+];
+const reasons = [
+  ['1', '「なぜこの仕様か」が、引継ぎ資料に無い', '引継ぎ資料には、機能の一覧と運用の手順が書かれています。仕様を決めた理由は、導入時の会議の記録にしか残っていません。', '担当者は、導入時の担当者を探して質問する'],
+  ['2', '設計書・プログラム・テストが、つながっていない', '1つの業務の手順に関係する設計書・プログラム・テストの記録が、別々の場所に保存されています。', '担当者は、資料を1本ずつ開いて探す'],
+  ['3', '調べ方を知っている人が、限られている', 'どの資料のどこを読むか、どのプログラムから確認するかは、担当者の経験に頼っています。', '調査の依頼が、特定の担当者に集まる'],
+];
+const linked = [['業務フローの手順', 'BF-031-04'], ['設計書', 'D-058'], ['プログラム', 'ZFI_PAYDUE'], ['テストの記録', 'T-203'], ['決定の記録', 'K-017']];
+const roles = [
+  ['1　記録をまとめる', '設計書・テストの記録・決定の記録を、文字として読める形に変換する', '残す記録と、保存する場所を決める'],
+  ['2　番号でつなぐ', '設計書・プログラム・テストに、関係する手順の番号の案を書く', '番号の案を確認し、採用するか直すかを決める'],
+  ['3　根拠を探す', '記録から根拠を探し、回答の下書きと、関係する資料の一覧を作る', '根拠を読んで確かめ、依頼者に回答する'],
+];
+const compare = [
+  { name: '始める前の4週間', total: '平均 4.0時間', w: [75, 12.5, 12.5], t: ['3.0時間', '0.5時間', '0.5時間'] },
+  { name: '始めた後の4週間', total: '平均 2.0時間', w: [25, 12.5, 12.5], t: ['1.0時間', '0.5時間', '0.5時間'] },
+];
+---
+
+<PostLayout slug="sap-maintenance-cost-is-search-time" points={points}>
+  <p class="lead2">SAP の保守費用を見直すとき、多くの会社は、保守ベンダーとの契約の単価と、対応の範囲から検討を始めます。しかし、単価と範囲を見直しても、1件の問い合わせにかかる作業時間は変わりません。</p>
+  <p>保守の費用は、多くの契約で、作業時間と単価をもとに決まります。作業時間を減らすには、保守の担当者が何に時間を使っているかを知る必要があります。多くの場合、時間がかかっているのは、直す作業ではなく、調べる作業です。</p>
+  <p>この記事では、保守の作業時間を「調べる・直す・確かめる」に分けて測る方法を書きます。あわせて、<b>調べる時間を減らす3つの手順</b>と、効果の確かめ方を書きます。</p>
+
+  <h2><i>01</i>保守の作業は「調べる・直す・確かめる」に分けられ、最初に行うのは調べる作業</h2>
+  <p>保守の作業は、問い合わせでも改修でも、「調べる・直す・確かめる」の3つに分けられます。問い合わせを受け付けた担当者は、最初に、原因と影響範囲を調べます。改修の依頼を受け付けた担当者も、最初に、直す設計書とプログラムを調べます。</p>
+
+  <figure class="fig a20f1" data-loop="9000">
+    <div class="fig__h"><span>図 1</span>1件の作業時間を「調べる・直す・確かめる」に分けた内訳（例）</div>
+    <div class="fig__b">
+      <div class="rows">
+        {cases.map((c, n) => (
+          <div class="row">
+            <p class="k"><b>{c.name}</b><span>{c.total}</span></p>
+            <div class="bar">{c.seg.map(([, , w], k) => <i class:list={['ty', `s${k}`]} style={`--w:${w}%;--t:${0.3 + n * 1.6 + k * 0.45}s`}></i>)}</div>
+            <ul class="leg">{c.seg.map(([a, b], k) => <li class:list={['f', `s${k}`]} style={`--t:${0.5 + n * 1.6 + k * 0.45}s`}><u></u>{a}<em>{b}</em></li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">数字は例です。朱の部分が、調べる時間です。自社の内訳は、次の章の方法で測ってください。</p>
+  </figure>
+
+  <p>直す作業と確かめる作業は、原因と影響範囲が分かれば、必要な時間を見積もれます。調べる作業は、原因が分かるまで、必要な時間を見積もれません。そのため、作業時間が予定より長くなる場合、長くなるのは調べる時間であることが多いです。</p>
+
+  <div class="say">
+    <p>保守の費用を下げたい場合は、単価を交渉する前に、調べる時間を測ります。</p>
+    <span>単価を下げても、1件にかかる作業時間は変わりません。調べる時間が減ると、作業時間が減ります。</span>
+  </div>
+
+  <h2><i>02</i>調べる時間は、問い合わせと改修の記録から、2〜4週間分を測る</h2>
+  <p>調べる時間は、問い合わせと改修の記録（チケット）に、3つの時間を分けて書くことで測れます。新しい道具は要りません。担当者は、1件ごとに、次の表の区切りで作業時間を記録します。</p>
+  <table class="tbl">
+    <thead><tr><th>区分</th><th>始まり</th><th>終わり</th><th>含める作業</th></tr></thead>
+    <tbody>
+      {measure.map(([a, b, c, d]) => <tr><th>{a}</th><td>{b}</td><td>{c}</td><td>{d}</td></tr>)}
+    </tbody>
+  </table>
+  <p>測る期間は、2〜4週間で足ります。目的は、3つの時間の割合を知ることだからです。月次の締めの処理に関する問い合わせも含めるため、月末と月初が入る期間を選びます。</p>
+  <p>記録するのは、担当者が作業した時間です。導入時の担当者の回答を待った日数は、作業した時間とは別の欄に書きます。回答を待った日数が長い問い合わせは、記録が残っていない領域を示します。</p>
+  <p>保守を保守ベンダーに委託している会社は、保守ベンダーの担当者と一緒に測ります。調べる時間が減ると、保守ベンダーの担当者は、同じ時間で多くの問い合わせに対応できます。測る目的を最初に共有してください。</p>
+
+  <div class="trap">
+    <b>落とし穴</b>
+    <p>測った時間を、担当者の評価に使わないでください。評価に使うと、担当者は調べる時間を短く書くようになります。記録が正確でなくなり、調べる時間が長い領域が分からなくなります。測った時間は、<strong>領域ごと・問い合わせの種類ごと</strong>に集計します。</p>
+  </div>
+
+  <h2><i>03</i>調べる時間が長くなる理由は、3つある</h2>
+  <p>調べる時間が長くなる理由は、記録の残り方と、調べ方の共有にあります。担当者の能力の問題ではありません。理由は次の3つです。</p>
+
+  <figure class="fig a20f2">
+    <div class="fig__h"><span>図 2</span>調べる時間が長くなる3つの理由と、そのとき担当者が行う作業</div>
+    <div class="fig__b">
+      <div class="three">
+        {reasons.map(([n, h, p, e], k) => (
+          <div class="c p" style={`--t:${0.2 + k * 0.4}s`}><b>{n}</b><h4>{h}</h4><p>{p}</p><em>{e}</em></div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">3つの理由は、同じ問い合わせで重なることがあります。測った記録のうち、調べる時間が長い問い合わせから、当てはまる理由を確認します。</p>
+  </figure>
+
+  <p>1つ目の理由がある場合、担当者は「何を作ったか」を調べられても、「なぜそう作ったか」を調べられません。2つ目の理由がある場合、担当者は、1つの変更の影響範囲を調べるために、関係のない資料も読みます。3つ目の理由がある場合、経験のある担当者が不在の日は、調査が進みません。</p>
+
+  <h2><i>04</i>調べる時間は、記録をまとめ、番号でつなぎ、AIに根拠を探させる手順で減らす</h2>
+  <p>調べる時間は、3つの手順で減らせます。3つの手順は、前の章の3つの理由に、1つずつ対応しています。</p>
+  <ol class="n">
+    <li><strong>導入時の記録を、AIが読める形でまとめる</strong>まとめる記録は、設計書・テストの記録・決定の記録です。決定の記録は、仕様を決めた会議の記録を指します。記録を残す形は、<a href="/blog/keep-implementation-records">導入時の記録をそのまま残す記事</a>に書きました。</li>
+    <li><strong>業務フローの手順の番号で、設計書・プログラム・テストをつなぐ</strong>業務フローの手順に番号を付け、設計書・プログラム・テストの記録にも同じ番号を書きます。番号の付け方は、<a href="/blog/number-the-steps">業務フローの手順に番号を付ける記事</a>に書きました。</li>
+    <li><strong>問い合わせが来たら、AIが記録から根拠を探す</strong>AIは、回答の下書きと、関係する資料の一覧を作ります。保守の担当者は、根拠を読んで確かめてから、依頼者に回答します。</li>
+  </ol>
+
+  <figure class="fig a20f3" data-loop="10000">
+    <div class="fig__h"><span>図 3</span>記録が手順の番号でつながっていると、AIは根拠を探し、回答の下書きと資料の一覧を作れる</div>
+    <div class="fig__b">
+      <p class="q p" style="--t:.2s">「支払条件を変更した仕入先で、支払予定日が以前と違うのはなぜですか」</p>
+      <div class="flow">
+        <div class="st">
+          <p class="k">番号でつながった記録</p>
+          <ol class="chain">{linked.map(([a, b], k) => <li class="p" style={`--t:${0.8 + k * 0.3}s`}><em>{a}</em><b>{b}</b></li>)}</ol>
+        </div>
+        <svg viewBox="0 0 60 12" class="arr f" style="--t:2.5s"><path d="M0 6h56M50 1l6 5-6 5" /></svg>
+        <div class="st st--ai">
+          <p class="k">AIが作るもの</p>
+          <div class="out p" style="--t:2.9s"><b>回答の下書き</b><span>根拠にした記録の名前と、該当する箇所を添える</span></div>
+          <div class="out p" style="--t:3.4s"><b>関係する資料の一覧</b><span>設計書・プログラム・テストの記録</span></div>
+        </div>
+        <svg viewBox="0 0 60 12" class="arr f" style="--t:4s"><path d="M0 6h56M50 1l6 5-6 5" /></svg>
+        <div class="st st--man p" style="--t:4.4s">
+          <p class="k">保守の担当者</p>
+          <p class="do">根拠を読んで確かめ、依頼者に回答する</p>
+        </div>
+      </div>
+    </div>
+    <p class="fig__c">番号とプログラムの名前は、説明のための例です。根拠が質問に合っていない場合、担当者は下書きを使いません。</p>
+  </figure>
+
+  <p>3つの手順でAIが行う作業と、人が行う作業は、次の表のとおりです。</p>
+  <table class="tbl">
+    <thead><tr><th>手順</th><th>AIが行う作業</th><th>人が行う作業</th></tr></thead>
+    <tbody>
+      {roles.map(([a, b, c]) => <tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>)}
+    </tbody>
+  </table>
+  <p>設計書が残っていない領域もあります。設計書が残っていない領域では、AIがプログラムを読み、処理の内容を文章にします。保守の担当者は、AIが書いた文章をプログラムと比べて確かめ、設計書の代わりの記録として保存します。</p>
+  <p>3つの手順を、すべての領域で同時に始める必要はありません。前の章で測った記録から、調べる時間が長い領域を1つ選び、その領域から始めます。</p>
+
+  <h2><i>05</i>効果は、同じ測り方で、始める前と後の調べる時間を比べて確かめる</h2>
+  <p>効果は、02章と同じ測り方で、調べる時間を前と後で比べて確かめます。比べるのは、同じ領域の、同じ種類の問い合わせです。測る期間の長さも、前と後でそろえます。</p>
+
+  <figure class="fig a20f4" data-loop="9000">
+    <div class="fig__h"><span>図 4</span>問い合わせ1件あたりの作業時間を、始める前と後で比べる（例）</div>
+    <div class="fig__b">
+      <div class="rows">
+        {compare.map((c, n) => (
+          <div class="row">
+            <p class="k"><b>{c.name}</b><span>{c.total}</span></p>
+            <div class="bar">{c.w.map((w, k) => <i class:list={['ty', `s${k}`]} style={`--w:${w}%;--t:${0.3 + n * 1.5 + k * 0.4}s`}></i>)}</div>
+            <ul class="leg">{['調べる', '直す', '確かめる'].map((a, k) => <li class:list={['f', `s${k}`]} style={`--t:${0.5 + n * 1.5 + k * 0.4}s`}><u></u>{a}<em>{c.t[k]}</em></li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+    <p class="fig__c">数字は例です。減るのは、朱の調べる時間です。減る量は、記録の残り方と、問い合わせの種類によって変わります。</p>
+  </figure>
+
+  <p>調べる時間が減らなかった場合は、AIが作った下書きを、担当者が使ったかどうかを確認します。担当者が下書きを使わなかった問い合わせでは、根拠になる記録が不足しています。不足している記録を追加してから、もう一度測ります。</p>
+  <p>AIが読む対象は、記録と、プログラムの写しです。本番の環境では、AIに操作させません。設定の変更、データの更新、本番の環境への移送は、これまでと同じ手続きで、人が行います。AIには、本番の環境に接続する権限を与えません。</p>
+
+  <div class="say">
+    <p>AIが作るのは、回答の下書きと、資料の一覧です。回答するのは、保守の担当者です。</p>
+    <span>AIの下書きには、根拠にした記録の名前を必ず添えさせます。担当者は、根拠を読んでから回答します。</span>
+  </div>
+
+  <h2><i>06</i>明日は、来週の問い合わせ10件で、調べる時間を記録する</h2>
+  <p>調べる時間の記録は、AIが無くても、明日から始められます。必要なものは、問い合わせの記録に追加する3つの欄です。</p>
+  <div class="todo">
+    <b>明日からできる、3つの作業</b>
+    <ol>
+      <li><span>来週に受け付ける問い合わせ<b>10件</b>で、「調べる・直す・確かめる」の時間を分けて記録する。</span></li>
+      <li><span>10件のうち、<b>調べる時間が長かった3件</b>を選ぶ。何を探すのに時間がかかったかを、1件につき1行で書く。</span></li>
+      <li><span>選んだ3件が、<b>03章の3つの理由のどれに当てはまるか</b>を分ける。</span></li>
+    </ol>
+  </div>
+  <p>3件に最も多く当てはまった理由が、最初に取り組む対象です。1つ目の理由が多い場合は、導入時の決定の記録を集めます。2つ目の理由が多い場合は、業務フローの手順に番号を付けます。3つ目の理由が多い場合は、経験のある担当者の調べ方を、手順として書き残します。</p>
+  <p>10件の記録は、保守の費用を見直す会議の資料にもなります。会議の参加者は、単価と範囲に加えて、調べる時間を減らす方法を検討できます。</p>
+</PostLayout>
+
+<style is:global>
+  .a20f1 .rows, .a20f4 .rows { display: grid; gap: 24px; }
+  .a20f1 .k, .a20f4 .k { margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 2px 14px; align-items: baseline; font-size: 13px; }
+  .a20f1 .k b, .a20f4 .k b { font-weight: 700; background: none; }
+  .a20f1 .k span, .a20f4 .k span { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
+  .a20f1 .bar, .a20f4 .bar { display: flex; height: 30px; border: 1px solid var(--ink); background: var(--paper); }
+  .a20f1 .bar i, .a20f4 .bar i { display: block; flex: none; width: var(--w); height: 100%; border-right: 1px solid var(--paper); }
+  .a20f1 .bar i:last-child { border-right: 0; }
+  .a20f1 .bar .s0, .a20f4 .bar .s0 { background: var(--shu); }
+  .a20f1 .bar .s1, .a20f4 .bar .s1 { background: var(--ink); }
+  .a20f1 .bar .s2, .a20f4 .bar .s2 { background: var(--ink-2); }
+  .a20f1 .leg, .a20f4 .leg { list-style: none; margin: 8px 0 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: 4px 20px; }
+  .a20f1 .leg li, .a20f4 .leg li { padding: 0; border: 0; display: flex; align-items: center; gap: 6px; font-size: 12.5px; line-height: 1.6; }
+  .a20f1 .leg li::before, .a20f4 .leg li::before { content: none; }
+  .a20f1 .leg u, .a20f4 .leg u { width: 11px; height: 11px; display: block; text-decoration: none; background: var(--ink); }
+  .a20f1 .leg .s0 u, .a20f4 .leg .s0 u { background: var(--shu); }
+  .a20f1 .leg .s2 u, .a20f4 .leg .s2 u { background: var(--ink-2); }
+  .a20f1 .leg em, .a20f4 .leg em { font-style: normal; font-family: var(--mono); font-size: 13px; }
+  .a20f1 .leg .s0, .a20f4 .leg .s0 { font-weight: 700; color: var(--shu); }
+  .a20f2 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .a20f2 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .a20f2 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
+  .a20f2 h4 { margin: 0; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .a20f2 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
+  .a20f2 .c em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--shu); border-top: 1px solid var(--line); padding-top: 7px; }
+  .a20f3 .q { margin: 0 0 18px; font-family: var(--mincho); font-weight: 700; font-size: 16px; text-align: center; line-height: 1.7; }
+  .a20f3 .flow { display: grid; grid-template-columns: 1.15fr auto 1.1fr auto 0.8fr; gap: 12px; align-items: center; }
+  .a20f3 .st { min-width: 0; }
+  .a20f3 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .a20f3 .chain { list-style: none; margin: 0; padding: 0; border: 0; display: grid; gap: 6px; }
+  .a20f3 .chain li { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: baseline; border: 1px solid var(--ink); background: var(--paper); padding: 5px 10px; position: relative; }
+  .a20f3 .chain li + li::before { content: ''; position: absolute; left: 18px; bottom: 100%; width: 2px; height: 7px; background: var(--shu); }
+  .a20f3 .chain em { font-style: normal; font-size: 12px; color: var(--ink-2); }
+  .a20f3 .chain b { font-family: var(--mono); font-weight: 500; font-size: 12.5px; background: none; }
+  .a20f3 .arr { width: 40px; height: 12px; fill: none; stroke: var(--ink); stroke-width: 1.5; }
+  .a20f3 .out { display: grid; gap: 2px; border: 1.5px solid var(--ink); background: var(--paper); padding: 8px 12px; margin-bottom: 7px; }
+  .a20f3 .out b { font-size: 14px; color: var(--shu); background: none; }
+  .a20f3 .out span { font-size: 12px; color: var(--ink-2); line-height: 1.6; }
+  .a20f3 .st--man { border: 1px dashed var(--ink-2); background: var(--paper); padding: 10px 12px; }
+  .a20f3 .do { margin: 0; font-size: 13px; font-weight: 700; line-height: 1.7; }
+  @media (max-width: 760px) {
+    .a20f2 .three { grid-template-columns: 1fr; }
+    .a20f3 .q { text-align: left; font-size: 15px; }
+    .a20f3 .flow { grid-template-columns: 1fr; }
+    .a20f3 .arr { transform: rotate(90deg); width: 34px; margin-left: 14px; }
+  }
+</style>

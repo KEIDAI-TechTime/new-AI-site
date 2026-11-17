@@ -1,0 +1,65 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const SITE = 'https://techtime-jp.com';
+const title = '会社概要 | TechTime株式会社';
+const description = 'TechTime株式会社の会社概要です。SAP を中心とした基幹システムの導入と運用保守に、生成AIのチームを組み込む仕組みを提供しています。所在地、設立、事業の内容を掲載しています。';
+const rows: [string, string][] = [
+  ['会社名', 'TechTime株式会社（TechTime Co., Ltd.）'],
+  ['設立', '2020年4月1日'],
+  ['資本金', '800万円'],
+  ['所在地（東京）', '〒150-0002　東京都渋谷区渋谷2-19-15 宮益坂ビルディング609'],
+  ['所在地（大阪）', '〒530-0001　大阪府大阪市北区梅田1丁目2番2号 大阪駅前第2ビル12-12'],
+  ['電話', '03-4222-3363（月曜から金曜　9時から19時）'],
+];
+const works = [
+  ['アセスメント', 'プロジェクトの設計書・会議の記録・課題表を全件読み、生成AIが効く工程を報告書にまとめます。', '/assessment'],
+  ['導入への組み込み', '要件定義、設計、開発、テスト、移行、プロジェクト管理のそれぞれに、AIの手順を組み込みます。', '/services'],
+  ['運用保守への組み込み', '導入の記録を、問い合わせへの回答と、改修の影響の調査に使える形にします。', '/services/operations'],
+];
+const ld = [{ '@type': 'AboutPage', '@id': `${SITE}/company#page`, name: title, about: { '@id': `${SITE}/#org` }, url: `${SITE}/company` }];
+---
+
+<PageLayout title={title} description={description} mark="COMPANY" crumbs={[{ name: '会社概要' }]} ld={ld} cta={{ href: '/contact', label: '相談する' }}>
+  <section class="top">
+    <p class="tag"><span>会社概要</span>TechTime株式会社</p>
+    <h1 class="h1">
+      <span class="hl"><span>SAP の導入と運用保守に、</span></span>
+      <span class="hl"><span>生成AIの仕組みを提供する会社。</span></span>
+    </h1>
+    <p class="lead">TechTime は、SAP を中心とした基幹システムの導入と運用保守に、生成AIのチームを組み込みます。提供するのは、人の作業時間ではありません。プロジェクトに残る、手順と点検の観点です。</p>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>01</span>会社の情報</p>
+    <table class="tbl">
+      <tbody>{rows.map(([a, b]) => <tr><th>{a}</th><td>{b}</td></tr>)}</tbody>
+    </table>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>02</span>事業の内容</p>
+    <h2 class="h2">3つの形で、AIチームを提供する。</h2>
+    <div class="cards">
+      {works.map(([a, b, h], i) => <a class="card" href={h}><span>{String(i + 1).padStart(2, '0')}</span><b>{a}</b><p>{b}</p></a>)}
+    </div>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>03</span>守ること</p>
+    <h2 class="h2">決めるのは人。AIには決めさせない。</h2>
+    <div class="cards">
+      <div><span>01</span><b>結果は人が確かめて決める</b><p>AIは、材料と下書きを作ります。業務の内容と合否は、人が決めます。</p></div>
+      <div><span>02</span><b>本番環境では、AIに操作させない</b><p>AIが画面を操作するのは、検証環境だけです。</p></div>
+      <div><span>03</span><b>情報を、AIの学習に使わせない</b><p>お客様の情報は、AIの学習に使われない設定で扱います。</p></div>
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>いまの進め方を、聞かせてください。</h2>
+    <p>導入の検討中でも、途中でも、稼働したあとでも構いません。</p>
+    <div class="act">
+      <a href="/contact" class="btn btn--inv">相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+      <a href="/services" class="link link--inv">サービスの一覧を見る</a>
+    </div>
+  </section>
+</PageLayout>

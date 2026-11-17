@@ -1,4 +1,4 @@
-"""ブログの一覧のカードに載せる絵を作る。各記事の中の図を1つ撮って public/images/blog/<slug>.jpg にする。
+"""ブログの一覧のカードに載せる絵を作る。各記事の中の図を1つ撮って public/images/blog/<slug>.jpg にする。 作ったあとに python3 tools/to_webp.py で表示用の WebP も作る。
 開発サーバー（http://localhost:4391）を動かしてから実行する：
   ~/.venvs/playwright/bin/python tools/make_thumbs.py            … 全記事
   ~/.venvs/playwright/bin/python tools/make_thumbs.py <slug> …    … 指定の記事だけ
@@ -8,6 +8,8 @@ from playwright.sync_api import sync_playwright
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OUT = os.path.join(ROOT, "public", "images", "blog"); os.makedirs(OUT, exist_ok=True)
 PICK = {
+    "sap-2027-inventory-all-add-ons": 2,
+    "sap-maintenance-cost-is-search-time": 3,
     "answer-with-probability": 2,
     "recheck-add-ons-against-standard": 4,
     "check-code-against-design": 2,

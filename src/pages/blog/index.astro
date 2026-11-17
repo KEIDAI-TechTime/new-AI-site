@@ -21,6 +21,7 @@ const ld = [{
   <header class="nav">
     <a href="/" class="nav__logo">TechTime<i></i></a>
     <nav class="nav__links">
+      <a href="/services" class="nav__page">サービス</a>
       <a href="/assessment" class="nav__page">アセスメント</a>
       <a href="/contact?topic=assess" class="nav__cta">アセスメントの相談はこちら</a>
     </nav>
@@ -51,7 +52,7 @@ const ld = [{
         <li class="card" style={`--d:${Math.min(i, 8) * 0.06}s`} data-cat={p.cat} data-no={p.no} data-order={catOrder.indexOf(p.cat)} data-text={[p.title, p.dek, p.problem, p.cat, ...p.words].join(' ').toLowerCase()}>
           <a href={`/blog/${p.slug}`}>
             <div class="card__img">
-              <img src={`/images/blog/${p.slug}.jpg`} alt={`記事「${p.short}」の図`} loading={i < 6 ? 'eager' : 'lazy'} />
+              <img src={`/images/blog/${p.slug}.webp`} alt={`記事「${p.short}」の図`} loading={i < 3 ? 'eager' : 'lazy'} fetchpriority={i === 0 ? 'high' : 'auto'} decoding="async" />
               <span class="card__no">{p.no}</span>
             </div>
             <div class="card__body">
@@ -81,7 +82,13 @@ const ld = [{
     <p class="foot__n">TechTime株式会社</p>
     <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
     <p><a href="/">ホーム</a></p>
+    <p><a href="/services">サービス</a></p>
     <p><a href="/assessment">アセスメント</a></p>
+    <p><a href="/blog">ブログ</a></p>
+    <p><a href="/glossary">用語集</a></p>
+    <p><a href="/resources">資料とひな形</a></p>
+    <p><a href="/faq">よくある質問</a></p>
+    <p><a href="/company">会社概要</a></p>
     <p class="foot__c">© TechTime Co., Ltd.</p>
   </footer>
 </DraftLayout>

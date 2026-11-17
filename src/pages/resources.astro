@@ -1,0 +1,59 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const title = '資料とひな形：SAP 導入で使える Excel のひな形 | TechTime';
+const description = 'SAP の導入で使える資料とひな形を配布しています。アセスメント結果報告書のサンプル、設計書レビューの観点表、移行データの照合の記録表、会議の決定と未決の記録表を、入力なしでダウンロードできます。';
+const items = [
+  { tag: 'PDF・29枚', name: 'アセスメント結果報告書のサンプル', body: '架空の会社を題材にした報告書です。期日に間に合う確率、設計書の指摘の偏り、減る工数の見込みを掲載しています。', file: '/downloads/techtime-assessment-sample.pdf', save: 'TechTime_アセスメント結果報告書_サンプル.pdf', more: ['/assessment', 'アセスメントの内容'] },
+  { tag: 'Excel', name: '設計書レビューの観点表', body: 'レビューで確かめる12の観点と、設計書ごとの結果を記録する表です。観点を文章にすると、誰がレビューしても同じ基準で確かめられます。', file: '/downloads/techtime-design-review-viewpoints.xlsx', save: 'TechTime_設計書レビューの観点表.xlsx', more: ['/blog/review-every-document', '設計書は全件をレビューする'] },
+  { tag: 'Excel', name: '移行データの照合の記録表', body: '移行の前と後の件数と合計を、対象ごとに比べる表です。合わない項目は、理由を3つに分けて記録します。', file: '/downloads/techtime-migration-reconciliation.xlsx', save: 'TechTime_移行データの照合の記録表.xlsx', more: ['/blog/reconcile-all-migration-data', '移行データは全件を照合する'] },
+  { tag: 'Excel', name: '会議の決定と未決の記録表', body: '会議で決まったことを、要件一覧や設計書に反映するまで追いかける表です。決まらなかった議題は、理由と一緒に残します。', file: '/downloads/techtime-meeting-decisions.xlsx', save: 'TechTime_会議の決定と未決の記録表.xlsx', more: ['/blog/decisions-that-never-reach-the-design', '会議の決定が設計書に反映されないのは、反映する担当がいないからだ'] },
+];
+---
+
+<PageLayout title={title} description={description} mark="RESOURCES" crumbs={[{ name: '資料とひな形' }]}>
+  <section class="top">
+    <p class="tag"><span>資料とひな形</span>入力なしでダウンロードできます</p>
+    <h1 class="h1">
+      <span class="hl"><span>SAP 導入で使える、</span></span>
+      <span class="hl"><span>資料とひな形。</span></span>
+    </h1>
+    <p class="lead">ブログで説明している進め方を、すぐに試せる形にしました。お名前などの入力は要りません。ひな形は、自由に書き換えてお使いください。</p>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>01</span>ダウンロード</p>
+    <div class="dl">
+      {items.map((x) => (
+        <article>
+          <p class="k">{x.tag}</p>
+          <h2>{x.name}</h2>
+          <p>{x.body}</p>
+          <div>
+            <a class="btn" href={x.file} download={x.save} data-dl>ダウンロード<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+            <a class="link" href={x.more[0]}>{x.more[1]}</a>
+          </div>
+        </article>
+      ))}
+    </div>
+  </section>
+
+  <section class="cta">
+    <h2>貴社の設計書と移行データで、点検と照合を全件行います。</h2>
+    <p>ひな形は、人が記録するための表です。AIチームを組み込むと、点検と照合を全件で行えます。</p>
+    <div class="act">
+      <a href="/assessment" class="btn btn--inv">アセスメントの内容を見る<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+      <a href="/services" class="link link--inv">サービスの一覧を見る</a>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--ink); background: var(--paper); }
+  .dl article { padding: 26px 28px 30px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); margin: 0 -1px -1px 0; display: grid; gap: 10px; align-content: start; }
+  .dl .k { margin: 0; font-family: var(--mono); font-size: 12px; color: var(--shu); }
+  .dl h2 { margin: 0; font-family: var(--mincho); font-weight: 800; font-size: 22px; line-height: 1.5; }
+  .dl p { margin: 0; font-size: 14.5px; line-height: 1.9; color: var(--ink-2); }
+  .dl div { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
+  .dl .btn { padding: 12px 18px 12px 22px; font-size: 14px; }
+  @media (max-width: 900px) { .dl { grid-template-columns: 1fr; } }
+</style>

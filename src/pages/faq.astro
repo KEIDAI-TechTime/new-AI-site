@@ -1,0 +1,36 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { faqGroups } from '@/data/faq';
+const title = 'よくある質問 | TechTime';
+const description = 'TechTime のサービスについて、よくいただく質問と答えです。人を出すサービスとの違い、始め方、預かった資料の扱い、費用と期間の決まり方を説明します。';
+const ld = [
+  {
+    '@type': 'FAQPage',
+    mainEntity: faqGroups.flatMap((g) => g.items).map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
+  },
+];
+---
+
+<PageLayout title={title} description={description} mark="FAQ" crumbs={[{ name: 'よくある質問' }]} ld={ld}>
+  <section class="top">
+    <p class="tag"><span>よくある質問</span>サービス・始め方・情報の扱い・費用</p>
+    <h1 class="h1"><span class="hl"><span>よくある質問</span></span></h1>
+    <p class="lead">サービスの内容、始め方、お預かりした資料の扱い、費用と期間の決まり方について、よくいただく質問に答えます。</p>
+  </section>
+
+  {faqGroups.map((g, i) => (
+    <section class="sec">
+      <p class="tag"><span>{String(i + 1).padStart(2, '0')}</span>{g.name}</p>
+      <dl class="faq">{g.items.map(([q, a]) => <div><dt>{q}</dt><dd>{a}</dd></div>)}</dl>
+    </section>
+  ))}
+
+  <section class="cta">
+    <h2>ここに無い質問は、相談票からお送りください。</h2>
+    <p>導入の検討中でも、途中でも、稼働したあとでも構いません。</p>
+    <div class="act">
+      <a href="/contact" class="btn btn--inv">相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+      <a href="/process" class="link link--inv">進め方とお見積もりを見る</a>
+    </div>
+  </section>
+</PageLayout>

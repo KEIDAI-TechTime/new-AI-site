@@ -1,0 +1,42 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { terms, groups } from '@/data/glossary';
+const SITE = 'https://techtime-jp.com';
+const title = 'SAP 導入の用語集 | TechTime';
+const description = `SAP の導入と運用保守で使う言葉を、${terms.length}語まとめました。Fit to Standard、クリーンコア、2027年問題、結合テスト、データ移行などの意味と、生成AIを使うと何が変わるかを説明します。`;
+const ld = [
+  {
+    '@type': 'DefinedTermSet',
+    '@id': `${SITE}/glossary#set`,
+    name: 'SAP 導入の用語集',
+    hasDefinedTerm: terms.map((t) => ({ '@type': 'DefinedTerm', name: t.word, description: t.def, url: `${SITE}/glossary/${t.slug}` })),
+  },
+];
+---
+
+<PageLayout title={title} description={description} mark="GLOSSARY" crumbs={[{ name: '用語集' }]} ld={ld}>
+  <section class="top">
+    <p class="tag"><span>用語集</span>{terms.length}語</p>
+    <h1 class="h1">
+      <span class="hl"><span>SAP 導入の言葉を、</span></span>
+      <span class="hl"><span>短く説明する。</span></span>
+    </h1>
+    <p class="lead">SAP の導入と運用保守で使う言葉をまとめました。言葉ごとに、意味と、生成AIを使うと何が変わるかを説明します。</p>
+  </section>
+
+  {groups.map((g, gi) => (
+    <section class="sec">
+      <p class="tag"><span>{String(gi + 1).padStart(2, '0')}</span>{g}</p>
+      <dl class="faq gl">
+        {terms.filter((t) => t.group === g).map((t) => (
+          <div><dt><a href={`/glossary/${t.slug}`}>{t.word}</a></dt><dd>{t.def}</dd></div>
+        ))}
+      </dl>
+    </section>
+  ))}
+</PageLayout>
+
+<style>
+  .gl dt::before { content: none !important; }
+  .gl dt a { border-bottom: 1px solid var(--shu); }
+</style>

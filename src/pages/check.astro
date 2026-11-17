@@ -1,0 +1,142 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import { serviceBySlug } from '@/data/services';
+const title = 'SAP 導入の AI 活用 自己診断（10問）| TechTime';
+const description = 'SAP の導入と運用保守の進め方を、10問で自己診断します。お名前などの入力は要りません。回答すると、生成AIが効きやすい工程と、関係する記事がその場で表示されます。';
+/* はい＝すでに行えている。いいえ・一部＝AIが効く余地がある */
+const qs: { q: string; svc: string; tip: string; post: [string, string] }[] = [
+  { q: '会議で決めたことが要件一覧と設計書に反映されたかを、確かめる担当が決まっている。', svc: 'requirements', tip: '決定の反映漏れは、AIが会議の記録と資料を比べて毎回取り出せます。', post: ['decisions-that-never-reach-the-design', '会議の決定が設計書に反映されないのは、反映する担当がいないからだ'] },
+  { q: '業務フローの手順に番号があり、要件や設計書から、その番号を参照している。', svc: 'requirements', tip: '番号の対応表は、AIが作って保てます。稼働後の改修で、影響の調査が速くなります。', post: ['number-the-steps', '業務フローの手順に番号を付ける'] },
+  { q: '設計書のレビューで何を確かめるかが、文章になっている。', svc: 'design', tip: '観点を文章にすると、AIが全件を同じ基準で点検できます。', post: ['consistent-ai-output', 'AIの成果物がばらつく原因は、頼み方ではない'] },
+  { q: 'すべての設計書が、レビューを受けている。', svc: 'design', tip: 'AIは、全件を点検できます。人は、指摘を反映するかどうかの判断に時間を使えます。', post: ['review-every-document', '設計書は全件をレビューする'] },
+  { q: 'プログラムの処理が設計書のどこに対応するかを、処理ごとに確かめている。', svc: 'development', tip: 'AIが、処理ごとに設計書の該当する箇所を示します。設計書に無い処理が見つかります。', post: ['check-code-against-design', 'AIが書いたプログラムには、設計書に無い処理が入る'] },
+  { q: '不具合票に、再現の手順と、原因の仮説が書かれている。', svc: 'test', tip: 'AIが、再現の手順と原因の仮説まで書いてから、担当者に渡せます。', post: ['defect-tickets-with-hypothesis', '不具合票は、原因の仮説まで書いてから担当者に渡す'] },
+  { q: '移行データは、一部ではなく全件を照合している。', svc: 'migration', tip: '全件の照合は、プログラムで行えます。AIは、合わない項目を理由ごとに分けます。', post: ['reconcile-all-migration-data', '移行データは全件を照合する'] },
+  { q: '「期日に間に合うか」という質問に、数字で答えられる。', svc: 'project-management', tip: '未決の課題から、期日に間に合う確率を計算できます。', post: ['answer-with-probability', '「間に合いますか」には確率で答える'] },
+  { q: '課題表に書かれていない課題を、会議やチャットの記録から見つける仕組みがある。', svc: 'project-management', tip: 'AIが、会議とチャットの記録から、課題とリスクを毎朝取り出せます。', post: ['issues-missing-from-the-log', '課題表に書かれていない課題が、プロジェクトを遅らせる'] },
+  { q: '導入時の設計書と決定の記録を、保守の担当者がすぐに探せる。', svc: 'operations', tip: '導入の記録をAIが読める形で残すと、問い合わせと改修の調査に使えます。', post: ['keep-implementation-records', '引継ぎ資料を新しく作らない'] },
+];
+const data = qs.map((x) => ({ ...x, name: serviceBySlug(x.svc).name }));
+---
+
+<PageLayout title={title} description={description} mark="SELF CHECK" crumbs={[{ name: 'AI活用の自己診断' }]}>
+  <section class="top">
+    <p class="tag"><span>自己診断</span>10問・約2分</p>
+    <h1 class="h1">
+      <span class="hl"><span>いまの進め方を、</span></span>
+      <span class="hl"><span>10問で確かめる。</span></span>
+    </h1>
+    <p class="lead">SAP の導入と運用保守の進め方について、10問に答えてください。生成AIが効きやすい工程と、関係する記事を、その場で表示します。お名前などの入力は要りません。回答は、どこにも送信されません。</p>
+  </section>
+
+  <section class="sec" id="quiz">
+    <p class="tag"><span>01</span>質問</p>
+    <h2 class="h2">いまのプロジェクトに、当てはまるものを選ぶ。</h2>
+    <ol class="qs">
+      {data.map((x, i) => (
+        <li>
+          <p><span>{String(i + 1).padStart(2, '0')}</span>{x.q}</p>
+          <div class="opt" role="radiogroup" aria-label={`質問${i + 1}`}>
+            {[['2', 'はい'], ['1', '一部だけ'], ['0', 'いいえ']].map(([v, l]) => (
+              <label><input type="radio" name={`q${i}`} value={v} /><b>{l}</b></label>
+            ))}
+          </div>
+        </li>
+      ))}
+    </ol>
+    <div class="act go">
+      <button class="btn" id="go" type="button">結果を見る<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></button>
+      <p class="note" id="left">10問すべてに答えると、結果を表示できます。</p>
+    </div>
+  </section>
+
+  <section class="sec res" id="res" hidden>
+    <p class="tag"><span>02</span>結果</p>
+    <h2 class="h2" id="res-h"></h2>
+    <p class="sub" id="res-p"></p>
+    <table class="tbl" id="res-t">
+      <thead><tr><th>工程</th><th>質問</th><th>生成AIを使うと</th></tr></thead>
+      <tbody></tbody>
+    </table>
+    <p class="note">この結果は、10問の回答だけに基づく目安です。資料を全件読んで診断する場合は、アセスメントをご利用ください。</p>
+    <div class="cta in">
+      <h2>資料から、どの工程に効くかを診断します。</h2>
+      <p>アセスメントでは、設計書・会議の記録・課題表を全件読み、AIチームが効く工程と、最初に手を打つ所を報告書にまとめます。</p>
+      <div class="act">
+        <a href="/contact?topic=assess&from=check" class="btn btn--inv">アセスメントを相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+        <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="link link--inv">報告書のサンプルを見る</a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
+
+<script type="application/json" id="qdata" set:html={JSON.stringify(data)} />
+
+<style>
+  .qs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+  .qs li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 30px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
+  .qs p { margin: 0; font-family: var(--mincho); font-weight: 700; font-size: 17px; line-height: 1.7; display: grid; grid-template-columns: 2.4em 1fr; }
+  .qs p span { font-family: var(--mono); font-weight: 400; color: var(--shu); font-size: 14px; padding-top: 3px; }
+  .opt { display: flex; border: 1px solid var(--ink); background: var(--paper); }
+  .opt label { cursor: pointer; border-right: 1px solid var(--ink); }
+  .opt label:last-child { border-right: 0; }
+  .opt input { position: absolute; opacity: 0; pointer-events: none; }
+  .opt b { display: block; padding: 9px 16px; font-size: 13.5px; font-weight: 500; white-space: nowrap; transition: background 0.2s, color 0.2s; }
+  .opt label:hover b { background: var(--paper-2); }
+  .opt input:checked + b { background: var(--ink); color: var(--paper); }
+  .opt input:focus-visible + b { outline: 2px solid var(--shu); outline-offset: -2px; }
+  .go { margin-top: 30px; }
+  .go .note { margin: 0; }
+  .btn[disabled] { opacity: 0.4; cursor: not-allowed; }
+  .res .tbl { margin-bottom: 14px; }
+  .res .tbl td a { white-space: nowrap; }
+  .cta.in { margin-top: 44px; }
+  @media (max-width: 900px) {
+    .qs li { grid-template-columns: 1fr; }
+    .opt b { padding: 9px 12px; }
+  }
+</style>
+
+<script>
+  type Q = { q: string; svc: string; name: string; tip: string; post: [string, string] };
+  const data: Q[] = JSON.parse(document.getElementById('qdata')!.textContent!);
+  const go = document.getElementById('go') as HTMLButtonElement;
+  const left = document.getElementById('left')!;
+  const res = document.getElementById('res')!;
+  const answers = () => data.map((_, i) => (document.querySelector(`input[name="q${i}"]:checked`) as HTMLInputElement | null)?.value ?? null);
+  const refresh = () => {
+    const n = answers().filter((v) => v === null).length;
+    go.disabled = n > 0;
+    left.textContent = n > 0 ? `あと${n}問に答えると、結果を表示できます。` : 'すべての質問に答えました。';
+  };
+  document.querySelectorAll('.opt input').forEach((el) => el.addEventListener('change', refresh));
+  refresh();
+  go.addEventListener('click', () => {
+    const a = answers().map(Number);
+    const open = data.map((x, i) => ({ ...x, v: a[i] })).filter((x) => x.v < 2);
+    const yes = a.filter((v) => v === 2).length;
+    const h = document.getElementById('res-h')!, p = document.getElementById('res-p')!;
+    const tb = res.querySelector('tbody')!;
+    const tbl = document.getElementById('res-t')!;
+    if (open.length === 0) {
+      h.textContent = '10問すべてが「はい」でした。';
+      p.textContent = '進め方の基本は、すでに行えています。生成AIは、いまの進め方を保ったまま、作業の時間を短くする所で使えます。';
+      tbl.hidden = true;
+    } else {
+      const names = [...new Set(open.map((x) => x.name))];
+      h.textContent = `「はい」は10問のうち${yes}問。${names.slice(0, 3).join('・')}${names.length > 3 ? 'など' : ''}で、生成AIが効きやすい。`;
+      p.textContent = `「一部だけ」「いいえ」と答えた${open.length}問を、下の表にまとめました。どれも、人が行うと手間がかかるために省かれやすい作業です。`;
+      tbl.hidden = false;
+      tb.innerHTML = '';
+      for (const x of open) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<th><a href="/services/${x.svc}">${x.name}</a></th><td>${x.q}<br><small>回答：${x.v === 1 ? '一部だけ' : 'いいえ'}</small></td><td>${x.tip}<br><a href="/blog/${x.post[0]}">記事を読む</a></td>`;
+        tb.appendChild(tr);
+      }
+    }
+    res.hidden = false;
+    res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    const w = window as unknown as { gtag?: (...a: unknown[]) => void };
+    w.gtag?.('event', 'self_check_done', { yes_count: yes, open_services: [...new Set(open.map((x) => x.svc))].join(',') });
+  });
+</script>

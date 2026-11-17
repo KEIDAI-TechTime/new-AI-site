@@ -1,0 +1,270 @@
+---
+/* サービスのページの冒頭に置く、工程ごとの動く図。
+   どの図も「AIが行うこと」を1つの場面で見せる。番号や数字は説明のための例。
+   動きは CSS だけ。.s は順に現れて一巡ごとに消える（--i が出る順番）。 */
+interface Props { slug: string }
+const { slug } = Astro.props;
+const cap: Record<string, string> = {
+  requirements: '会議の記録から決定を取り出し、手順の番号で要件・設計書・テストをつなぐ',
+  design: '一部だけのレビューから、全件の点検へ',
+  development: '設計書とプログラムの対応を、処理ごとに確かめる',
+  test: '検証環境で、AIが画面を操作して証跡を残す',
+  migration: '移行の前と後を、全件で照合する',
+  operations: '導入の記録から根拠を探し、回答の下書きを作る',
+  'project-management': '未決の課題から、期日に間に合う確率を計算する',
+};
+const docs = Array.from({ length: 28 }, (_, i) => i);
+const hit = [3, 9, 16, 22, 26];       // 指摘が出る設計書
+const picked = [1, 8, 15, 24];        // 一部だけのレビューで読む設計書
+const spec = ['与信の限度額を確認する', '在庫を引き当てる', '出荷の指示を作る', '受注の伝票を保存する'];
+const code = ['PERFORM check_credit.', 'PERFORM allocate_stock.', 'PERFORM write_log_ext.', 'PERFORM create_delivery.', 'PERFORM save_order.'];
+const link = [0, 1, -1, 2, 3];        // プログラムの各行が対応する設計書の行（-1 は対応なし）
+const rows = [['取引先マスタ', '12,840', true], ['品目マスタ', '48,112', true], ['未決済の債権', '3,215', false], ['在庫の残高', '9,604', true], ['購買の発注残', '1,377', true]] as const;
+const hist = [2, 5, 9, 14, 15, 13, 11, 8, 6, 4, 3, 2];
+---
+
+<figure class={`sf sf--${slug}`} aria-label={`図：${cap[slug]}`}>
+  <div class="sf__h"><span>図</span>{cap[slug]}</div>
+  <div class="sf__b">
+    {slug === 'requirements' && (
+      <div class="rq">
+        <div class="rq__rec s" style="--i:0"><b>会議の記録</b><i></i><i></i><i class="on"></i><i></i><i class="on"></i></div>
+        <div class="rq__ai s" style="--i:2"><em>AI</em></div>
+        <div class="rq__out">
+          <p class="s" style="--i:3"><b>決定</b>与信の確認は、受注の登録時に行う</p>
+          <p class="s un" style="--i:4"><b>未決</b>限度額を超えた場合の承認者</p>
+        </div>
+        <div class="rq__chain">
+          {[['業務フロー', 'F-02'], ['要件', 'R-012'], ['設計書', 'D-034'], ['プログラム', 'ZSD_CREDIT'], ['テスト', 'T-108']].map(([a, b], k) => (
+            <div class="s" style={`--i:${6 + k}`}><small>{a}</small><b>{b}</b></div>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {slug === 'design' && (
+      <div class="ds">
+        <div class="ds__grid">
+          {docs.map((d) => <i class:list={[{ pk: picked.includes(d), ht: hit.includes(d) }]} style={`--d:${d}`}></i>)}
+          <span class="ds__scan"></span>
+        </div>
+        <div class="ds__n">
+          <p class="a"><small>これまで</small>一部だけを読む<b>4<em>／28本</em></b></p>
+          <p class="b"><small>AIチーム</small>全件を点検する<b>28<em>／28本</em></b><span>指摘 5件</span></p>
+        </div>
+      </div>
+    )}
+
+    {slug === 'development' && (
+      <div class="dv">
+        <div class="dv__c"><small>設計書</small>{spec.map((t, k) => <p class="s" style={`--i:${k}`}><span>{k + 1}</span>{t}</p>)}</div>
+        <div class="dv__c dv__c--code"><small>プログラム（ABAP）</small>
+          {code.map((t, k) => (
+            <p class:list={['s', { no: link[k] < 0 }]} style={`--i:${4 + k * 1.4}`}><code>{t}</code><em>{link[k] < 0 ? '設計書に無い処理' : `設計書の ${link[k] + 1}`}</em></p>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {slug === 'test' && (
+      <div class="ts">
+        <div class="ts__scr">
+          <div class="ts__bar"><i></i><i></i><i></i><b>受注登録（検証環境）</b></div>
+          {[['受注先', '100234'], ['品目', 'A-2210'], ['数量', '40']].map(([a, b], k) => (
+            <p><span>{a}</span><u><em class="ty" style={`--i:${k}`}>{b}</em></u></p>
+          ))}
+          <div class="ts__act"><button class="s" style="--i:5" tabindex="-1">保存</button><strong class="s" style="--i:6.5">伝票 4500012877 を登録しました</strong></div>
+        </div>
+        <div class="ts__ev">
+          <small>証跡</small>
+          {['01 入力', '02 保存', '03 結果'].map((t, k) => <p class="s" style={`--i:${7.5 + k}`}><i></i>{t}<b>OK</b></p>)}
+          <p class="s who" style="--i:11">合否は人が決める</p>
+        </div>
+      </div>
+    )}
+
+    {slug === 'migration' && (
+      <div class="mg">
+        <div class="mg__hd"><span>対象</span><span>いまのシステム</span><span>SAP</span><span>照合</span></div>
+        {rows.map(([n, c, ok], k) => (
+          <div class:list={['mg__r', 's', { ng: !ok }]} style={`--i:${k * 1.3}`}>
+            <span>{n}</span><span class="m">{c}</span><span class="m">{ok ? c : '3,209'}</span><b>{ok ? '一致' : '差 6件'}</b>
+          </div>
+        ))}
+        <p class="mg__f s" style="--i:8">合わない6件を、理由ごとに分ける<em>変換の規則 4</em><em>元データ 2</em></p>
+      </div>
+    )}
+
+    {slug === 'operations' && (
+      <div class="op">
+        <p class="op__q s" style="--i:0">「この伝票が、出荷で止まっている理由は？」</p>
+        <div class="op__rec">
+          {[['設計書', 'D-034'], ['テストの記録', 'T-108'], ['決定の記録', 'K-017']].map(([a, b], k) => (
+            <div class="s" style={`--i:${2 + k}`}><small>{a}</small><b>{b}</b></div>
+          ))}
+        </div>
+        <div class="op__ans s" style="--i:6"><small>AIが作る回答の下書き</small><p>与信の限度額を超えているため、出荷の指示が保留になっています。</p><em>根拠：D-034 の 3.2、K-017</em></div>
+        <p class="op__who s" style="--i:8">担当者が確かめて、回答する</p>
+      </div>
+    )}
+
+    {slug === 'project-management' && (
+      <div class="pm">
+        <svg viewBox="0 0 420 190" aria-hidden="true">
+          <rect x="176" y="8" width="236" height="140" class="late" />
+          {hist.map((v, k) => <rect x={20 + k * 32} y={148 - v * 8.4} width="27" height={v * 8.4} class:list={['bar', { over: k >= 5 }]} style={`--i:${k * 0.5}`} />)}
+          <line x1="12" y1="148" x2="412" y2="148" class="ax" />
+          <line x1="176" y1="4" x2="176" y2="160" class="dl" />
+          <text x="176" y="176" text-anchor="middle" class="t">期日</text>
+          <text x="20" y="176" class="t2">早く終わる</text>
+          <text x="412" y="176" text-anchor="end" class="t2">遅く終わる</text>
+        </svg>
+        <div class="pm__n">
+          <p class="s" style="--i:7"><small>このままの場合</small><b>31<em>%</em></b></p>
+          <p class="s on" style="--i:10"><small>3つの課題を先に解決した場合</small><b>65<em>%</em></b></p>
+        </div>
+      </div>
+    )}
+  </div>
+  <figcaption>番号と数字は、説明のための例です。</figcaption>
+</figure>
+
+<style>
+  .sf { margin: 0; border: 1px solid var(--ink); background: var(--paper); box-shadow: 8px 8px 0 var(--paper-2); animation: pgup 1s 0.45s both; }
+  .sf__h { display: flex; gap: 12px; align-items: baseline; padding: 11px 16px; border-bottom: 1px solid var(--ink); font-size: 13px; font-weight: 700; line-height: 1.6; }
+  .sf__h span { background: var(--shu); color: var(--paper); font-family: var(--mono); font-weight: 400; font-size: 11px; padding: 1px 8px; flex: none; }
+  .sf__b { padding: 20px 18px; min-height: 300px; display: grid; align-content: center; background-image: linear-gradient(var(--hair) 1px, transparent 1px), linear-gradient(90deg, var(--hair) 1px, transparent 1px); background-size: 20px 20px; }
+  .sf figcaption { padding: 9px 16px; border-top: 1px solid var(--line); font-size: 11.5px; color: var(--ink-2); }
+  .sf small { display: block; font-size: 11px; color: var(--ink-2); font-weight: 500; }
+
+  /* 順に現れ、一巡したら消える */
+  @keyframes sfs { 0%, 3% { opacity: 0; transform: translateY(8px); } 9%, 92% { opacity: 1; transform: none; } 100% { opacity: 0; transform: none; } }
+  .sf .s { animation: sfs 12s infinite both; animation-delay: calc(var(--i, 0) * 0.45s); }
+
+  /* 要件定義 */
+  .rq { display: grid; grid-template-columns: 1fr auto 1.5fr; gap: 12px 12px; align-items: center; }
+  .rq__rec { border: 1px solid var(--ink); background: var(--paper); padding: 10px 12px; display: grid; gap: 6px; }
+  .rq__rec b { font-size: 12px; }
+  .rq__rec i { height: 5px; background: var(--line); display: block; }
+  .rq__rec i.on { background: var(--shu); }
+  .rq__ai em { font-style: normal; font-family: var(--mono); font-size: 12px; background: var(--ink); color: var(--paper); padding: 6px 9px; display: block; }
+  .rq__out { display: grid; gap: 8px; }
+  .rq__out p { margin: 0; border: 1px solid var(--ink); background: var(--paper); padding: 8px 10px; font-size: 12.5px; line-height: 1.6; }
+  .rq__out b { display: inline-block; background: var(--ink); color: var(--paper); font-size: 10.5px; padding: 0 7px; margin-right: 8px; }
+  .rq__out .un { border-style: dashed; }
+  .rq__out .un b { background: var(--shu); }
+  .rq__chain { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(5, 1fr); margin-top: 8px; border: 1px solid var(--ink); background: var(--paper); }
+  .rq__chain div { padding: 9px 6px 10px; text-align: center; border-right: 1px solid var(--line); position: relative; }
+  .rq__chain div:last-child { border-right: 0; }
+  .rq__chain div:not(:last-child)::after { content: '→'; position: absolute; right: -7px; top: 50%; translate: 0 -50%; font-size: 11px; background: var(--paper); color: var(--shu); z-index: 1; }
+  .rq__chain b { font-family: var(--mono); font-weight: 500; font-size: 12px; }
+
+  /* 設計 */
+  .ds { display: grid; gap: 16px; }
+  .ds__grid { position: relative; display: grid; grid-template-columns: repeat(7, 1fr); gap: 7px; }
+  .ds__grid i { aspect-ratio: 3 / 3.6; border: 1px solid var(--line); background: var(--paper); display: block; position: relative; animation: dsd 12s infinite both; }
+  .ds__grid i::before { content: ''; position: absolute; left: 18%; right: 18%; top: 22%; height: 2px; background: var(--line); box-shadow: 0 6px 0 var(--line), 0 12px 0 var(--line); }
+  @keyframes dsd { 0%, 6% { border-color: var(--line); background: var(--paper); } }
+  .ds__grid i.pk { animation-name: dspk; }
+  @keyframes dspk { 0%, 6% { border-color: var(--line); } 10%, 100% { border-color: var(--ink); box-shadow: 2px 2px 0 var(--ink); } }
+  .ds__grid i { animation-name: dsall; animation-delay: calc(4.2s + var(--d) * 0.12s); }
+  @keyframes dsall { 0%, 2% { border-color: var(--line); background: var(--paper); } 6%, 58% { border-color: var(--ink); background: var(--paper); } 100% { border-color: var(--ink); } }
+  .ds__grid i.ht { animation-name: dsht; }
+  @keyframes dsht { 0%, 2% { border-color: var(--line); background: var(--paper); } 6%, 60% { border-color: var(--shu); background: #f6d9d2; } 100% { border-color: var(--shu); background: #f6d9d2; } }
+  .ds__grid i.pk { animation-delay: 0s; }
+  .ds__scan { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--shu); left: 0; animation: dsscan 12s infinite both; }
+  @keyframes dsscan { 0%, 34% { left: 0; opacity: 0; } 36% { opacity: 1; } 62% { left: 100%; opacity: 1; } 64%, 100% { left: 100%; opacity: 0; } }
+  .ds__n { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); background: var(--paper); }
+  .ds__n p { margin: 0; padding: 10px 14px; font-size: 12.5px; position: relative; }
+  .ds__n p.b { border-left: 1px solid var(--ink); animation: dsb 12s infinite both; }
+  @keyframes dsb { 0%, 34% { background: var(--paper); color: var(--ink-2); } 40%, 100% { background: var(--ink); color: var(--paper); } }
+  .ds__n p.b small { color: inherit; opacity: 0.75; }
+  .ds__n b { display: block; font-family: var(--mono); font-weight: 500; font-size: 26px; line-height: 1.2; }
+  .ds__n b em { font-style: normal; font-size: 12px; font-family: var(--gothic); margin-left: 4px; }
+  .ds__n span { display: inline-block; margin-top: 6px; background: var(--shu); color: var(--paper); font-size: 11.5px; padding: 1px 8px; }
+
+  /* 開発 */
+  .dv { display: grid; grid-template-columns: 1fr 1.25fr; gap: 14px; align-items: start; }
+  .dv__c { border: 1px solid var(--ink); background: var(--paper); padding: 10px 12px 12px; display: grid; gap: 7px; }
+  .dv__c p { margin: 0; font-size: 12.5px; line-height: 1.5; display: flex; gap: 8px; align-items: baseline; }
+  .dv__c p span { font-family: var(--mono); color: var(--shu); font-size: 11.5px; }
+  .dv__c--code p { display: grid; grid-template-columns: 1fr; gap: 1px; border-left: 2px solid var(--ink); padding-left: 8px; }
+  .dv__c code { font-family: var(--mono); font-size: 11.5px; }
+  .dv__c em { font-style: normal; font-size: 10.5px; color: var(--ink-2); }
+  .dv__c .no { border-left-color: var(--shu); background: #f6d9d2; padding-block: 3px; }
+  .dv__c .no em { color: var(--shu); font-weight: 700; }
+
+  /* テスト */
+  .ts { display: grid; grid-template-columns: 1.5fr 1fr; gap: 14px; align-items: start; }
+  .ts__scr { border: 1px solid var(--ink); background: var(--paper); }
+  .ts__bar { display: flex; gap: 5px; align-items: center; padding: 7px 10px; border-bottom: 1px solid var(--ink); background: var(--paper-2); }
+  .ts__bar i { width: 7px; height: 7px; border: 1px solid var(--ink); border-radius: 50%; display: block; }
+  .ts__bar b { font-size: 11.5px; margin-left: 6px; }
+  .ts__scr p { margin: 0; display: grid; grid-template-columns: 4.5em 1fr; gap: 8px; padding: 8px 12px 0; font-size: 12px; align-items: center; }
+  .ts__scr u { text-decoration: none; border: 1px solid var(--line); height: 26px; display: flex; align-items: center; padding: 0 8px; background: #fff8; overflow: hidden; }
+  .ts__scr u em { font-style: normal; font-family: var(--mono); font-size: 12px; white-space: nowrap; overflow: hidden; width: 0; animation: tsty 12s infinite both; animation-delay: calc(0.4s + var(--i) * 0.7s); }
+  @keyframes tsty { 0%, 1% { width: 0; opacity: 1; } 6%, 90% { width: 100%; opacity: 1; } 100% { width: 100%; opacity: 0; } }
+  .ts__act { padding: 12px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .ts__act button { font: inherit; font-size: 11.5px; font-weight: 700; background: var(--ink); color: var(--paper); border: 0; padding: 5px 14px; }
+  .ts__act strong { font-size: 11.5px; color: var(--shu); }
+  .ts__ev { border: 1px solid var(--ink); background: var(--paper); padding: 10px 12px 12px; display: grid; gap: 7px; }
+  .ts__ev p { margin: 0; display: grid; grid-template-columns: auto 1fr auto; gap: 8px; align-items: center; font-size: 12px; }
+  .ts__ev i { width: 22px; height: 15px; border: 1px solid var(--ink); background: var(--paper-2); display: block; }
+  .ts__ev b { font-family: var(--mono); font-size: 11px; color: var(--paper); background: var(--ink); padding: 0 6px; }
+  .ts__ev .who { display: block; border-top: 1px solid var(--line); padding-top: 8px; font-weight: 700; font-size: 12px; }
+
+  /* 移行 */
+  .mg { border: 1px solid var(--ink); background: var(--paper); font-size: 12.5px; }
+  .mg__hd, .mg__r { display: grid; grid-template-columns: 1.3fr 1fr 1fr 0.9fr; }
+  .mg__hd { background: var(--ink); color: var(--paper); font-size: 11px; }
+  .mg__hd span, .mg__r > * { padding: 8px 10px; }
+  .mg__r { border-bottom: 1px solid var(--line); }
+  .mg .m { font-family: var(--mono); font-size: 12px; }
+  .mg__r b { font-size: 11.5px; }
+  .mg__r.ng { background: #f6d9d2; }
+  .mg__r.ng b { color: var(--shu); }
+  .mg__f { margin: 0; padding: 10px; font-size: 12px; font-weight: 700; display: flex; flex-wrap: wrap; gap: 6px 8px; align-items: center; }
+  .mg__f em { font-style: normal; font-weight: 500; font-size: 11px; border: 1px solid var(--shu); color: var(--shu); padding: 0 7px; }
+
+  /* 運用保守 */
+  .op { display: grid; gap: 12px; }
+  .op__q { margin: 0; font-family: var(--mincho); font-weight: 700; font-size: 15.5px; text-align: center; }
+  .op__rec { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .op__rec div { border: 1px solid var(--ink); background: var(--paper); padding: 8px 10px; }
+  .op__rec b { font-family: var(--mono); font-weight: 500; font-size: 12.5px; }
+  .op__ans { border: 1px solid var(--ink); background: var(--ink); color: var(--paper); padding: 11px 14px; }
+  .op__ans small { color: #c9c4b6; }
+  .op__ans p { margin: 4px 0 6px; font-size: 13px; line-height: 1.7; }
+  .op__ans em { font-style: normal; font-family: var(--mono); font-size: 11px; color: #ff8a70; }
+  .op__who { margin: 0; border: 1px dashed var(--ink); padding: 8px 12px; font-size: 12.5px; font-weight: 700; text-align: center; background: var(--paper); }
+
+  /* プロジェクト管理 */
+  .pm { display: grid; gap: 12px; }
+  .pm svg { width: 100%; height: auto; display: block; }
+  .pm .late { fill: #d4412a14; }
+  .pm .bar { fill: var(--ink); transform-box: fill-box; transform-origin: bottom; animation: pmb 12s infinite both; animation-delay: calc(var(--i) * 0.3s); }
+  .pm .bar.over { fill: var(--shu); }
+  @keyframes pmb { 0%, 2% { transform: scaleY(0); } 9%, 92% { transform: none; opacity: 1; } 100% { opacity: 0; } }
+  .pm .ax { stroke: var(--ink); stroke-width: 1; }
+  .pm .dl { stroke: var(--shu); stroke-width: 1.5; stroke-dasharray: 4 3; }
+  .pm .t { font-size: 11px; font-weight: 700; fill: var(--shu); font-family: var(--gothic); }
+  .pm .t2 { font-size: 10px; fill: var(--ink-2); font-family: var(--gothic); }
+  .pm__n { display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); background: var(--paper); }
+  .pm__n p { margin: 0; padding: 9px 14px; }
+  .pm__n p.on { background: var(--ink); color: var(--paper); border-left: 1px solid var(--ink); }
+  .pm__n p.on small { color: #c9c4b6; }
+  .pm__n b { font-family: var(--mono); font-weight: 500; font-size: 28px; line-height: 1.2; }
+  .pm__n b em { font-style: normal; font-size: 14px; margin-left: 2px; }
+
+  @media (max-width: 520px) {
+    .sf__b { padding: 16px 12px; min-height: 0; }
+    .rq { grid-template-columns: 1fr; }
+    .rq__ai em { display: inline-block; }
+    .rq__chain { grid-template-columns: 1fr 1fr; }
+    .rq__chain div { border-bottom: 1px solid var(--line); }
+    .rq__chain div::after { content: none !important; }
+    .dv, .ts { grid-template-columns: 1fr; }
+    .mg__hd span, .mg__r > * { padding: 7px 6px; }
+    .mg { font-size: 11.5px; }
+  }
+</style>

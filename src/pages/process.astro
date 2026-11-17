@@ -1,0 +1,94 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+const title = '進め方とお見積もり：相談からAIチームの組み込みまで | TechTime';
+const description = 'TechTime へのご相談から、アセスメント、AIチームの組み込みまでの進め方を説明します。お見積もりが何で決まるかと、最初のご相談で伺う内容も掲載しています。';
+const flow: [string, string, string][] = [
+  ['ご相談', '相談票に、いまの工程と、相談したい内容をご記入ください。', 'お客様'],
+  ['聞き取り', 'ご相談には、24時間以内に返信します。そのあと、オンラインで、いまの進め方と、お預かりできる資料を伺います。', '双方'],
+  ['お見積もり', '行える内容と範囲をお伝えし、お見積もりします。', 'TechTime'],
+  ['アセスメント', '資料を全件読み、AIチームが効く工程を報告書にまとめます。', 'TechTime'],
+  ['組み込み', '報告書をもとに、最初の工程を決めます。一つの機能で試してから広げます。', '双方'],
+];
+const steps: [string, string, string][] = [
+  ['現状を見る', '設計書・規約・進め方を読み、AIが効く作業を分けます。', 'AIが効く作業の一覧'],
+  ['手順を作る', 'お客様の様式と規約に合わせて、作る手順と確かめる手順を作ります。', '手順と、点検の観点'],
+  ['一機能で試す', '実際の案件の一つの機能で、最初から最後まで通します。', '試した結果と、直した手順'],
+  ['広げて、渡す', '対象を、他の機能と領域へ広げます。手順はお客様のものとして残します。', 'お客様が使える手順'],
+];
+const factors: [string, string][] = [
+  ['対象の工程と範囲', '要件定義だけか、設計からテストまでか。一つの業務領域か、全体か。'],
+  ['お預かりする資料の量', '設計書の本数、会議の記録の期間、課題の件数。'],
+  ['行う解析', 'アセスメントの場合、全件の点検、期日に間に合う確率の計算、減る工数の見込みの計算など。'],
+  ['お客様の様式と規約', '様式と規約が文章になっているか。なっていない場合は、文章にする作業から始めます。'],
+];
+const asks = ['いま進めている工程と、稼働の予定', 'プロジェクトの体制（お客様、導入ベンダー、保守ベンダー）', '困っていること', 'お預かりできる資料の種類', '生成AIの利用についての、社内の決まり'];
+const ld = [
+  {
+    '@type': 'HowTo',
+    name: 'TechTime のAIチームを、SAP のプロジェクトに組み込むまでの進め方',
+    step: flow.map(([a, b], i) => ({ '@type': 'HowToStep', position: i + 1, name: a, text: b })),
+  },
+];
+---
+
+<PageLayout title={title} description={description} mark="PROCESS" crumbs={[{ name: '進め方とお見積もり' }]} ld={ld} cta={{ href: '/contact', label: '相談する' }}>
+  <section class="top">
+    <p class="tag"><span>進め方とお見積もり</span>相談から組み込みまで</p>
+    <h1 class="h1">
+      <span class="hl"><span>相談から組み込みまで、</span></span>
+      <span class="hl"><span>5つの段階で進める。</span></span>
+    </h1>
+    <p class="lead">最初のご相談では、いまの進め方を伺います。そのうえで、行える内容と範囲をお伝えし、お見積もりします。多くの場合、最初にアセスメントを行い、どの工程から始めるかを資料から決めます。</p>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>01</span>相談のあとの流れ</p>
+    <h2 class="h2">相談のあとは、聞き取り、お見積もり、アセスメント、組み込みの順に進む。</h2>
+    <ol class="steps five">
+      {flow.map(([a, b, c], i) => <li><span>{String(i + 1).padStart(2, '0')}</span><div><b>{a}</b><p>{b}</p><em>行う人：{c}</em></div></li>)}
+    </ol>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>02</span>組み込みの進め方</p>
+    <h2 class="h2">一機能で試してから、広げる。</h2>
+    <p class="sub">最初から全体に広げません。一つの機能で、最初から最後まで通します。結果を確かめ、手順を直してから広げます。</p>
+    <ol class="steps">
+      {steps.map(([a, b, c], i) => <li><span>{String(i + 1).padStart(2, '0')}</span><div><b>{a}</b><p>{b}</p><em>残るもの：{c}</em></div></li>)}
+    </ol>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>03</span>お見積もりの決まり方</p>
+    <h2 class="h2">お見積もりは、4つの要素で決まる。</h2>
+    <p class="sub">金額は、次の4つで決まります。最初のご相談で伺ってから、お見積もりします。</p>
+    <table class="tbl">
+      <thead><tr><th>要素</th><th>伺う内容</th></tr></thead>
+      <tbody>{factors.map(([a, b]) => <tr><th>{a}</th><td>{b}</td></tr>)}</tbody>
+    </table>
+  </section>
+
+  <section class="sec">
+    <p class="tag"><span>04</span>最初のご相談で伺うこと</p>
+    <h2 class="h2">決まっていない項目があっても、相談できる。</h2>
+    <p class="sub">次の5つを伺います。分かる範囲で構いません。</p>
+    <ol class="asks">{asks.map((a) => <li>{a}</li>)}</ol>
+  </section>
+
+  <section class="cta">
+    <h2>いまの進め方を、聞かせてください。</h2>
+    <p>導入の検討中でも、途中でも、稼働したあとでも構いません。AIが効くかどうかを、お答えします。</p>
+    <div class="act">
+      <a href="/contact" class="btn btn--inv">相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
+      <a href="/assessment" class="link link--inv">アセスメントの内容を見る</a>
+    </div>
+  </section>
+</PageLayout>
+
+<style>
+  .five { grid-template-columns: repeat(5, 1fr) !important; }
+  .asks { margin: 0; padding: 0; list-style: none; counter-reset: a; border-top: 1px solid var(--ink); max-width: 760px; }
+  .asks li { counter-increment: a; padding: 13px 0 13px 3em; border-bottom: 1px solid var(--line); position: relative; }
+  .asks li::before { content: counter(a, decimal-leading-zero); position: absolute; left: 0; font-family: var(--mono); color: var(--shu); }
+  @media (max-width: 900px) { .five { grid-template-columns: 1fr !important; } }
+</style>
