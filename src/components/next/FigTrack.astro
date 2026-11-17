@@ -1,0 +1,151 @@
+---
+/* 一つの機能が本番に届くまでを、2つの進め方で並べる（横は週）。数字は架空の例 */
+const TW = 24, TX0 = 176, TX1 = 1252;
+const tx = (w: number) => TX0 + ((TX1 - TX0) * w) / TW;
+const trackA = [
+  { a: 0, b: 3, n: '要件定義' },
+  { a: 3, b: 6.5, n: '設計書を書く' },
+  { a: 6.5, b: 8.3, n: 'レビュー待ち', k: 'wait' },
+  { a: 8.3, b: 11.5, n: '開発' },
+  { a: 11.5, b: 13, n: '単体テスト' },
+  { a: 13, b: 15, n: '結合テスト' },
+  { a: 15, b: 18, n: '手戻り', k: 'back' },
+  { a: 18, b: 19.6, n: '再テスト' },
+  { a: 19.6, b: 21.6, n: '移行' },
+];
+const trackB = [
+  { a: 0, b: 2.5, n: '要件定義' },
+  { a: 2.5, b: 4.5, n: '設計' },
+  { a: 4.5, b: 7, n: '開発' },
+  { a: 7, b: 8.5, n: '単体テスト' },
+  { a: 8.5, b: 10.5, n: '結合テスト' },
+  { a: 10.5, b: 12.5, n: '移行' },
+];
+const endA = 21.6, endB = 12.5;
+const weeks = Array.from({ length: TW + 1 }, (_, i) => i);
+const dots = Array.from({ length: Math.floor((tx(10.5) - tx(2.5)) / 9) }, (_, i) => tx(2.5) + i * 9);
+---
+
+<div class="fig">
+  <p class="fig__bar"><b>一つの機能が、本番に届くまで</b>同じ機能を、2つの進め方で並べました。横は週です。</p>
+  <div class="fig__scroll">
+    <svg id="trk" viewBox="0 0 1280 372" role="img" aria-label="一つの機能が要件定義から本番稼働まで進む帯を、これまでの進め方とAIチームがいる進め方で並べた図。これまでの帯にはレビュー待ちと手戻りがあり、長い。AIチームの帯は短く、人は決める所だけに入る。">
+      <defs>
+        <pattern id="hat" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" /></pattern>
+      </defs>
+      {weeks.map((w) => (
+        <g>
+          <line class:list={['g', w % 4 === 0 && 'g--b']} x1={tx(w)} x2={tx(w)} y1="36" y2="350" />
+          {w % 2 === 0 && w > 0 && <text class="d-wk" x={tx(w)} y="26" text-anchor="middle">第{w}週</text>}
+        </g>
+      ))}
+
+      <text class="t-ttl" x="20" y="126">これまで</text>
+      <text class="t-ln" x="162" y="125" text-anchor="end">人</text>
+      <text class="t-ttl t-ttl--ai" x="20" y="262">AIチームと</text>
+      <text class="t-ln" x="162" y="262" text-anchor="end">AI</text>
+      <text class="t-ln" x="162" y="312" text-anchor="end">人</text>
+
+      <g class="grow">
+        {trackA.map((g) => (
+          <g class:list={['sg', g.k && `sg--${g.k}`]}>
+            <rect x={tx(g.a) + 1} y="98" width={tx(g.b) - tx(g.a) - 2} height="44" rx="5" />
+            <text x={(tx(g.a) + tx(g.b)) / 2} y="125" text-anchor="middle">{g.n}</text>
+          </g>
+        ))}
+        {trackB.map((g) => (
+          <g class="sg sg--ai">
+            <rect x={tx(g.a) + 1} y="236" width={tx(g.b) - tx(g.a) - 2} height="44" rx="5" />
+            <text x={(tx(g.a) + tx(g.b)) / 2} y="263" text-anchor="middle">{g.n}</text>
+            <rect class="dec" x={tx(g.b) - 20} y="296" width="19" height="24" rx="3" />
+          </g>
+        ))}
+        {dots.map((x) => <circle class="ck" cx={x + 2.5} cy="226" r="2.5" />)}
+        <line class="thr" x1={tx(0) + 1} x2={tx(endB)} y1="287" y2="287" />
+      </g>
+
+      <g class="ev">
+        <line class="ev__l" x1={tx(15)} x2={tx(15)} y1="64" y2="98" />
+        <circle class="bk" cx={tx(15)} cy="64" r="5" />
+        <text class="ev__t ev__t--miss" x={tx(15) - 12} y="69" text-anchor="end">設計の抜けが見つかり、設計と開発をやり直す</text>
+        <text class="ev__t ev__t--ai" x={tx(2.5)} y="216">AIが全件を点検</text>
+        <text class="ev__t ev__t--amber" x={tx(2.5) + 6} y="336">人は、決める所だけ</text>
+        <line class="ev__end" x1={tx(endB)} x2={tx(endB)} y1="224" y2="326" />
+        <text class="ev__go" x={tx(endB) + 10} y="263">本番稼働</text>
+        <rect class="chip" x={tx(endB) + 10} y="290" width="62" height="20" rx="10" /><text class="chip__t" x={tx(endB) + 41} y="304" text-anchor="middle">D-0142</text>
+        <text class="ev__s" x={tx(endB) + 80} y="304">決定の番号が、本番まで残る</text>
+        <line class="ev__end" x1={tx(endA)} x2={tx(endA)} y1="86" y2="154" />
+        <text class="ev__go" x={tx(endA) + 10} y="125">本番稼働</text>
+        <line class="dim" x1={tx(endB)} x2={tx(endA)} y1="188" y2="188" />
+        <path class="dim" d={`M${tx(endB)} 180v16M${tx(endA)} 180v16`} />
+        <rect class="dim__b" x={(tx(endB) + tx(endA)) / 2 - 66} y="175" width="132" height="26" rx="13" />
+        <text class="dim__t" x={(tx(endB) + tx(endA)) / 2} y="193" text-anchor="middle">この差が、日程の余裕</text>
+      </g>
+
+      <g id="mkA" data-e={endA} transform={`translate(${tx(endA)} 0)`}><path class="mk" d="M-7 84h14l-7 11z" /></g>
+      <g id="mkB" data-e={endB} transform={`translate(${tx(endB)} 0)`}><path class="mk mk--ai" d="M-7 222h14l-7 11z" /></g>
+    </svg>
+  </div>
+  <p class="fig__lg">
+    <span><i class="b"></i>人の作業</span>
+    <span><i class="b b--w"></i>待ち</span>
+    <span><i class="b b--k"></i>手戻り</span>
+    <span><i class="b b--a"></i>AIチームの作業</span>
+    <span><i class="b b--d"></i>人が決める</span>
+    <em>架空の例です。貴社でどこにどれだけ効くかは、アセスメントで数字にします。</em>
+  </p>
+</div>
+
+<script is:inline>
+  (() => {
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    const TX0 = 176, TX1 = 1252, TW = 24, tx = (w) => TX0 + ((TX1 - TX0) * w) / TW;
+    const ma = document.getElementById('mkA'), mb = document.getElementById('mkB');
+    const EA = parseFloat(ma.dataset.e), EB = parseFloat(mb.dataset.e), D = 9000, H = 2600; let s0 = null;
+    const run = (now) => {
+      if (s0 === null) s0 = now;
+      const t = Math.min(1, ((now - s0) % (D + H)) / D) * EA;
+      ma.setAttribute('transform', `translate(${tx(Math.min(t, EA))} 0)`);
+      mb.setAttribute('transform', `translate(${tx(Math.min(t, EB))} 0)`);
+      requestAnimationFrame(run);
+    };
+    requestAnimationFrame(run);
+  })();
+</script>
+
+<style is:global>
+  .sg rect { fill: #4b565b; }
+  .sg text { font-size: 12.5px; font-weight: 700; fill: #fff; }
+  .sg--wait rect { fill: url(#hat); stroke: #8b9498; }
+  #hat line { stroke: #8b9498; stroke-width: 2; }
+  .sg--wait text { fill: var(--ink); paint-order: stroke; stroke: var(--card); stroke-width: 4px; }
+  .sg--back rect { fill: var(--miss); }
+  .sg--ai rect { fill: var(--ai); }
+  .sg--ai rect.dec { fill: var(--amber); }
+  .ck { fill: var(--ai); animation: tw 2.4s linear infinite; }
+  .ck:nth-child(3n) { animation-delay: 0.8s; }
+  .ck:nth-child(3n + 1) { animation-delay: 1.6s; }
+  @keyframes tw { 0%, 70%, 100% { opacity: 1; } 85% { opacity: 0.25; } }
+  .thr { stroke: var(--amber); stroke-width: 2; }
+  .grow { animation: grow 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; transform-origin: 176px 0; }
+  @keyframes grow { from { transform: scaleX(0); } }
+  .ev { animation: evin 0.5s 0.55s both; }
+  @keyframes evin { from { opacity: 0; } }
+  .mk { fill: var(--ink); }
+  .mk--ai { fill: var(--ai); }
+  .bk { fill: var(--card); stroke: var(--miss); stroke-width: 2; }
+  .ev__l { stroke: var(--miss); stroke-width: 1.5; }
+  .ev__t { font-size: 13px; font-weight: 700; }
+  .ev__t--miss { fill: var(--miss); }
+  .ev__t--ai { fill: var(--ai); }
+  .ev__t--amber { fill: #a36d00; }
+  .ev__end { stroke: var(--ink); stroke-width: 2; }
+  .ev__go { font-size: 14px; font-weight: 900; fill: var(--ink); }
+  .ev__s { font-size: 12px; font-weight: 500; fill: var(--mute); }
+  .chip { fill: var(--amber); }
+  .chip__t { font: 500 11.5px var(--mono) !important; fill: var(--ink); }
+  .dim { fill: none; stroke: var(--ink); stroke-width: 1.2; }
+  .dim__b { fill: var(--ink); }
+  .dim__t { font-size: 12.5px; font-weight: 700; fill: #fff; }
+  @media (prefers-reduced-motion: reduce) { .grow, .ev, .ck { animation: none; } }
+</style>

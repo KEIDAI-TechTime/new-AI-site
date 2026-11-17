@@ -1,0 +1,114 @@
+---
+/* 3人が頼んだとき、出てくる設計書の形がそろうか。型（様式・手順・点検の観点）の有無で並べる。架空の例 */
+const X0 = 610, GAP = 4, H = 36;
+const lay = (ws: [string, number, string?][]) => { let x = X0; return ws.map(([n, w, k]) => { const o = { n, w, k, x }; x += w + GAP; return o; }); };
+const upY = [62, 110, 158], loY = [312, 360, 408];
+const who = ['Aさん', 'Bさん', 'Cさん'];
+const upAsk: [string, number][] = [['様式は前回と同じで、項目は一覧から拾い、例外も…', 322], ['設計書お願い', 106], ['請求の設計書。例外も書いて', 194]];
+const loAsk = ['設計書を作る ／ 受注登録', '設計書を作る ／ 出荷指示', '設計書を作る ／ 請求書発行'];
+const upOut = [
+  lay([['概要', 90], ['入力項目', 120], ['処理', 190], ['テスト', 80], ['例外がない', 92, 'none']]),
+  lay([['処理の流れ', 250], ['項目', 110], ['補足', 80]]),
+  lay([['はじめに', 80], ['概要', 90], ['入力', 100], ['処理内容', 150], ['例外', 70], ['その他', 60]]),
+];
+const form = lay([['概要', 90], ['入力項目', 120], ['処理', 160], ['例外', 90], ['テスト観点', 100]]);
+const fx = form[3].x; // 「例外」の章の左端
+---
+
+<div class="fig rv">
+  <div class="fig__scroll">
+    <svg id="frm" viewBox="0 0 1280 500" role="img" aria-label="3人が設計書を頼んだときの図。型がないときは、頼み方が人ごとに違い、出てくる設計書の章立てもばらばらで、例外の章が抜けるものもある。型があるときは、3人とも1行で頼み、同じ章立て・同じ観点の設計書が出る。1人の直しは型に入り、次から全員の初版に入る。">
+      <text class="t-ln" x="20" y="22">頼む人</text>
+      <text class="t-ln" x="92" y="22">頼み方</text>
+      <text class="t-ln" x={X0} y="22">出てくる設計書の初版（章の並び）</text>
+
+      <text class="t-ttl" x="20" y="48">型がないとき</text>
+      <rect class="fm-ai" x="470" y="62" width="40" height={H * 3 + 24} rx="10" /><text class="fm-ai__t" x="490" y="134" text-anchor="middle">AI</text>
+      {upY.map((y, i) => (
+        <g>
+          <text class="fm-who" x="20" y={y + 23}>{who[i]}</text>
+          <rect class="fm-ask" x="92" y={y} width={upAsk[i][1]} height={H} rx="18" />
+          <text class="fm-ask__t" x="106" y={y + 23}>{upAsk[i][0]}</text>
+          <line class="fm-l" x1={92 + upAsk[i][1] + 4} x2="466" y1={y + 18} y2={y + 18} />
+          <line class="fm-l" x1="514" x2={X0 - 6} y1={y + 18} y2={y + 18} />
+          {upOut[i].map((b) => (
+            <g class:list={['fm-b', b.k && 'fm-b--none']}>
+              <rect x={b.x} y={y} width={b.w} height={H} rx="6" />
+              <text x={b.x + b.w / 2} y={y + 23} text-anchor="middle">{b.n}</text>
+            </g>
+          ))}
+        </g>
+      ))}
+      <text class="fm-say fm-say--miss" x={X0} y="222">章立ても、書く深さも、頼み方で変わる。抜けは、後の工程で見つかる。</text>
+
+      <line class="g--b" x1="20" x2="1260" y1="252" y2="252" />
+
+      <text class="t-ttl t-ttl--ai" x="20" y="298">型があるとき</text>
+      <rect class="fm-ai" x="470" y="312" width="40" height={H * 3 + 24} rx="10" /><text class="fm-ai__t" x="490" y="384" text-anchor="middle">AI</text>
+      <rect class="fm-kt" x="514" y="312" width="72" height={H * 3 + 24} rx="10" />
+      <text class="fm-kt__h" x="550" y="350" text-anchor="middle">型</text>
+      <text class="fm-kt__t" x="550" y="376" text-anchor="middle">様式</text>
+      <text class="fm-kt__t" x="550" y="396" text-anchor="middle">手順</text>
+      <text class="fm-kt__t" x="550" y="416" text-anchor="middle">点検の観点</text>
+      {form.slice(1).map((b) => <line class="fm-guide" x1={b.x - 2} x2={b.x - 2} y1="304" y2="452" />)}
+      {loY.map((y, i) => (
+        <g>
+          <text class="fm-who" x="20" y={y + 23}>{who[i]}</text>
+          <rect class="fm-ask fm-ask--one" x="92" y={y} width="204" height={H} rx="18" />
+          <text class="fm-ask__t" x="106" y={y + 23}>{loAsk[i]}</text>
+          <line class="fm-l" x1="300" x2="466" y1={y + 18} y2={y + 18} />
+          <line class="fm-l" x1="590" x2={X0 - 6} y1={y + 18} y2={y + 18} />
+          {form.map((b) => (
+            <g class="fm-b fm-b--ai">
+              <rect x={b.x} y={y} width={b.w} height={H} rx="6" />
+              <text x={b.x + b.w / 2} y={y + 23} text-anchor="middle">{b.n}</text>
+            </g>
+          ))}
+          <circle class="fm-ok" cx="1204" cy={y + 18} r="13" /><path class="fm-ok__c" d={`M1198 ${y + 18}l4.5 4.5 8-9`} />
+          <text class="fm-ok__t" x="1224" y={y + 22}>点検済み</text>
+        </g>
+      ))}
+
+      <!-- 1人の直しが型に入り、全員に届く -->
+      <rect class="fm-fix" x={fx} y={loY[1]} width={form[3].w} height={H} rx="6" />
+      <path id="fm-path" class="fm-back" d={`M${fx - 2} ${loY[1] + H}V462H550V452`} />
+      <path class="fm-arw" d="M544 458l6-8 6 8z" />
+      <circle class="fm-dot" r="5"><animateMotion dur="3.6s" repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.7;1" calcMode="linear"><mpath href="#fm-path" /></animateMotion></circle>
+      {[loY[0], loY[2]].map((y) => <circle class="fm-got" cx={fx + form[3].w - 9} cy={y + 9} r="4" />)}
+      <text class="fm-say fm-say--amber" x="92" y="488">Bさんの直しは型に入り、次から全員の初版に入る。</text>
+      <text class="fm-say fm-say--ai" x={X0} y="488">誰が頼んでも、同じ章立て・同じ観点で出る。</text>
+    </svg>
+  </div>
+  <p class="fig__lg"><em>架空の例です。型は、貴社の様式と標準に合わせて作ります。</em></p>
+</div>
+
+<style is:global>
+  .fm-who { font-size: 13px; font-weight: 700; fill: var(--ink); }
+  .fm-ask { fill: var(--bg); }
+  .fm-ask--one { fill: var(--tint); }
+  .fm-ask__t { font-size: 12.5px; font-weight: 500; fill: var(--ink); }
+  .fm-l { stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 2 4; }
+  .fm-ai { fill: var(--ink); }
+  .fm-ai__t { font: 600 13px var(--mono) !important; fill: #fff; }
+  .fm-kt { fill: var(--amber); }
+  .fm-kt__h { font-size: 22px; font-weight: 900; fill: var(--ink); }
+  .fm-kt__t { font-size: 11px; font-weight: 700; fill: var(--ink); }
+  .fm-b rect { fill: #4b565b; }
+  .fm-b text { font-size: 12px; font-weight: 700; fill: #fff; }
+  .fm-b--ai rect { fill: var(--ai); }
+  .fm-b--none rect { fill: none; stroke: var(--miss); stroke-width: 1.5; stroke-dasharray: 4 3; }
+  .fm-b--none text { fill: var(--miss); }
+  .fm-guide { stroke: rgba(0, 138, 104, 0.35); stroke-width: 1; stroke-dasharray: 2 3; }
+  .fm-ok { fill: var(--ai); }
+  .fm-ok__c { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .fm-ok__t { font-size: 11px; font-weight: 700; fill: var(--ai); }
+  .fm-fix { fill: none; stroke: var(--amber); stroke-width: 3; }
+  .fm-back { fill: none; stroke: var(--amber); stroke-width: 2; }
+  .fm-arw, .fm-dot, .fm-got { fill: var(--amber); }
+  .fm-got { stroke: #fff; stroke-width: 1.5; }
+  .fm-say { font-size: 13.5px; font-weight: 700; }
+  .fm-say--miss { fill: var(--miss); }
+  .fm-say--ai { fill: var(--ai); }
+  .fm-say--amber { fill: #a36d00; }
+  @media (prefers-reduced-motion: reduce) { .fm-dot { display: none; } }
+</style>

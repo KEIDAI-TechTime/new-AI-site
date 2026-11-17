@@ -1,0 +1,101 @@
+---
+/* 16機能の線表（横は週）。数字は架空の例 */
+const GW = 26, GX0 = 150, GX1 = 1080, DEAD = 18;
+const gx = (w: number) => GX0 + ((GX1 - GX0) * w) / GW;
+const fnNames = ['受注登録', '与信確認', '在庫引当', '出荷指示', '出荷実績', '請求書発行', '入金消込', '購買依頼', '発注', '入庫', '請求照合', '支払', '生産計画', '製造指図', '原価計算', '月次締め'];
+let seed = 11;
+const rnd = () => { seed = (seed + 0x6d2b79f5) | 0; let t = Math.imul(seed ^ (seed >>> 15), 1 | seed); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; };
+const BACK = [1, 4, 7, 10];
+const buildRow = (i: number, ai: boolean) => {
+  let t = 0.4 + i * 0.5;
+  const segs: { a: number; b: number; k: string }[] = [];
+  const push = (k: string, d: number) => { segs.push({ a: t, b: t + d, k }); t += d; };
+  for (let st = 1; st <= 6; st++) {
+    push('work', ai ? 0.75 + rnd() * 0.45 : 1.1 + rnd() * 0.7);
+    if (!ai && BACK.includes(i) && st === 4) push('back', 4.2 + rnd() * 1.4);
+    if (st < 6) push(ai ? 'dec' : 'wait', ai ? 0.22 + rnd() * 0.2 : 0.3 + rnd() * 0.9);
+  }
+  return { n: fnNames[i], segs, end: t };
+};
+const rowsA = fnNames.map((_, i) => buildRow(i, false));
+const rowsB = fnNames.map((_, i) => buildRow(i, true));
+const onA = rowsA.filter((r) => r.end <= DEAD).length;
+const onB = rowsB.filter((r) => r.end <= DEAD).length;
+const YA = 70, YB = 356, PITCH = 14;
+const gweeks = Array.from({ length: GW + 1 }, (_, i) => i);
+---
+
+<div class="fig rv" id="gantt">
+  <div class="fig__scroll">
+    <svg id="gnt" viewBox="0 0 1280 606" role="img" aria-label={`16の機能の線表。これまでの進め方では、待ちと手戻りで棒が長くなり、予定日に間に合うのは16のうち${onA}。AIチームがいる進め方では棒が短く、16のうち${onB}が間に合う。`}>
+      <defs>
+        <pattern id="hat2" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="7" stroke="#8b9498" stroke-width="2" /></pattern>
+      </defs>
+      <rect class="late" x={gx(DEAD)} y={YA - 10} width={GX1 - gx(DEAD)} height={PITCH * 16 + 14} />
+      <text class="late__t" x={GX1 - 8} y={YA + 6} text-anchor="end">予定日を過ぎた分</text>
+      {gweeks.map((w) => (
+        <g>
+          <line class:list={['g', w % 4 === 0 && 'g--b']} x1={gx(w)} x2={gx(w)} y1="34" y2="590" />
+          {w % 2 === 0 && w > 0 && w !== DEAD && <text class="d-wk" x={gx(w)} y="24" text-anchor="middle">第{w}週</text>}
+        </g>
+      ))}
+      <text class="t-ttl" x="20" y={YA - 22}>これまで</text>
+      <text class="t-ttl t-ttl--ai" x="20" y={YB - 22}>AIチームと</text>
+      {[{ rows: rowsA, y: YA, c: 'ga' }, { rows: rowsB, y: YB, c: 'gb' }].map((ch) =>
+        ch.rows.map((r, i) => (
+          <g class={`gr ${ch.c}`} style={`--i:${i}`}>
+            <text class="gr__n" x="138" y={ch.y + i * PITCH + 9} text-anchor="end">{r.n}</text>
+            <g class="gr__b">
+              {r.segs.map((g) => <rect class={`k-${g.k}`} x={gx(g.a)} y={ch.y + i * PITCH} width={Math.max(1.5, gx(g.b) - gx(g.a) - 1)} height="10" rx="2" />)}
+            </g>
+          </g>
+        ))
+      )}
+      <line class="dead" x1={gx(DEAD)} x2={gx(DEAD)} y1="30" y2="590" />
+      <rect class="dead__b" x={gx(DEAD) - 50} y="6" width="100" height="24" rx="12" /><text class="dead__t" x={gx(DEAD)} y="23" text-anchor="middle">本番の予定日</text>
+
+      <g transform={`translate(1108 ${YA})`}>
+        <text class="d-lb" y="6">予定日に間に合った機能</text>
+        <text class="d-n" y="72">{onA}</text><text class="d-of" x={onA > 9 ? 68 : 40} y="72">/ 16</text>
+        <text class="d-lb" y="128">手戻り</text>
+        <text class="d-n d-n--miss" y="194">{BACK.length}</text><text class="d-of" x="40" y="194">件</text>
+      </g>
+      <g transform={`translate(1108 ${YB})`} class="c-ai">
+        <text class="d-lb" y="6">予定日に間に合った機能</text>
+        <text class="d-n" y="72">{onB}</text><text class="d-of" x={onB > 9 ? 68 : 40} y="72">/ 16</text>
+        <text class="d-lb" y="128">手戻り</text>
+        <text class="d-n" y="194">0</text><text class="d-of" x="40" y="194">件</text>
+      </g>
+    </svg>
+  </div>
+  <p class="fig__lg">
+    <span><i class="b"></i>人の作業</span>
+    <span><i class="b b--w"></i>待ち</span>
+    <span><i class="b b--k"></i>手戻り</span>
+    <span><i class="b b--a"></i>AIチームの作業</span>
+    <span><i class="b b--d"></i>人が決める</span>
+    <em>架空の例です。貴社でどこにどれだけ効くかは、アセスメントで数字にします。</em>
+  </p>
+</div>
+
+<style is:global>
+  .gr__n { font-size: 10.5px; font-weight: 500; fill: var(--mute); }
+  .k-work { fill: #4b565b; }
+  .gb .k-work { fill: var(--ai); }
+  .k-wait { fill: url(#hat2); stroke: #8b9498; stroke-width: 0.6; }
+  .k-back { fill: var(--miss); }
+  .k-dec { fill: var(--amber); }
+  .late { fill: rgba(207, 47, 102, 0.07); }
+  .late__t { font-size: 11.5px; font-weight: 700; fill: var(--miss); }
+  .dead { stroke: var(--ink); stroke-width: 2; }
+  .dead__b { fill: var(--ink); }
+  .dead__t { font-size: 12px; font-weight: 700; fill: #fff; }
+  .d-lb { font-size: 12px; font-weight: 700; fill: var(--ink); }
+  .d-n { font: 600 58px var(--num) !important; fill: var(--ink); }
+  .d-of { font: 500 20px var(--num) !important; fill: var(--mute); }
+  .c-ai .d-n { fill: var(--ai); }
+  .d-n.d-n--miss { fill: var(--miss); }
+  .gr__b { transform-box: fill-box; transform-origin: left center; transform: scaleX(0); }
+  .in .gr__b { transform: none; transition: transform 0.6s cubic-bezier(0.2, 0.7, 0.2, 1); transition-delay: calc(var(--i) * 22ms); }
+  @media (prefers-reduced-motion: reduce) { .gr__b { transform: none; } }
+</style>

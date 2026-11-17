@@ -1,0 +1,175 @@
+---
+/* 工程ごとの小さな図（開発・テスト・移行・運用保守）。どれも架空の例 */
+interface Props { slug: string }
+const { slug } = Astro.props;
+const spec = [
+  { id: '3.2-1', t: '締め日までに出荷が完了した受注を対象にする', c: 'SELECT … WHERE wadat_ist <= lv_closing', ok: true },
+  { id: '3.2-2', t: '締め日は毎月20日とする', c: "lv_closing = closing_day( iv_day = '20' )", ok: true },
+  { id: '3.2-3', t: '締め日が休日のときは前の営業日とする', c: 'rv_date = previous_workday( lv_closing )', ok: true },
+  { id: '3.3-1', t: '対象が0件のときは、請求書を作らず記録だけ残す', c: '', ok: false },
+];
+const extra = 'PERFORM send_mail_to_sales.';
+const steps = [
+  { n: '受注を登録', r: 'OK' }, { n: '与信を確認', r: 'OK' }, { n: '在庫を引き当て', r: 'OK' },
+  { n: '出荷を指示', r: 'NG' }, { n: '出荷を記録', r: '—' }, { n: '請求書を発行', r: '—' },
+];
+const cells = Array.from({ length: 360 }, (_, i) => (i % 47 === 9 ? 'ma' : i % 83 === 30 ? 'mb' : i % 131 === 77 ? 'mc' : ''));
+const why = [
+  { k: 'ma', n: '桁があふれる', v: cells.filter((c) => c === 'ma').length },
+  { k: 'mb', n: 'コードの変換先がない', v: cells.filter((c) => c === 'mb').length },
+  { k: 'mc', n: '日付の形式が違う', v: cells.filter((c) => c === 'mc').length },
+];
+const chain = [
+  { k: '問い合わせ', v: '請求の締め日は、なぜ20日なのか', d: '11/20' },
+  { k: 'テスト', v: 'TC-118　OK', d: '5/12' },
+  { k: 'プログラム', v: 'ZSD_BILLING_CLOSE', d: '4/15' },
+  { k: '設計書', v: 'SD-031　3.2', d: '4/10' },
+  { k: '決定', v: 'D-0142　業務検討会', d: '4/08' },
+];
+---
+
+{slug === 'development' && (
+  <div class="fig kf rv">
+    <p class="fig__bar"><b>設計書の一行と、プログラムの一行</b>処理ごとに、設計書のどこに基づくかを結びます。</p>
+    <div class="map">
+      <p class="map__h"><span>外部設計書 SD-031</span><span>プログラム ZSD_BILLING_CLOSE</span></p>
+      {spec.map((r) => (
+        <p class:list={['map__r', !r.ok && 'ng']}>
+          <span><i>{r.id}</i>{r.t}</span>
+          <b></b>
+          {r.ok ? <code>{r.c}</code> : <em>対応するプログラムがない</em>}
+        </p>
+      ))}
+      <p class="map__r ng ng--x"><em>設計書にない処理</em><b></b><code>{extra}</code></p>
+    </div>
+    <p class="fig__lg"><span><i class="b b--a"></i>結びついた</span><span><i class="b b--k"></i>片方にしかない（人が決める）</span><em>架空の例です。</em></p>
+  </div>
+)}
+
+{slug === 'test' && (
+  <div class="fig kf rv">
+    <p class="fig__bar"><b>結合テスト　受注から請求まで</b>AIが検証環境の画面を操作し、手順ごとに証跡を残します。</p>
+    <ol class="run">
+      {steps.map((s, i) => (
+        <li class:list={[s.r === 'NG' && 'ng', s.r === '—' && 'yet']} style={`--i:${i}`}>
+          <div class="scr"><i></i><i></i><i></i><i></i></div>
+          <span>{String(i + 1).padStart(2, '0')}</span>
+          <b>{s.n}</b>
+          <em>{s.r === '—' ? '止めて待つ' : s.r}</em>
+        </li>
+      ))}
+    </ol>
+    <div class="hyp">
+      <p><b>手順 04 が NG。AIが原因の仮説を書いて、担当者に渡す。</b></p>
+      <p>出荷指示の画面で「出荷ポイントが決まらない」。倉庫 W02 に出荷ポイントの割り当てがない可能性が高い（マスタの設定）。直すか、テストデータを変えるかは、担当者が決めます。</p>
+    </div>
+    <p class="fig__lg"><span><i class="b b--a"></i>合格の証跡</span><span><i class="b b--k"></i>NG</span><em>架空の例です。合否は人が決めます。本番の環境では動かしません。</em></p>
+  </div>
+)}
+
+{slug === 'migration' && (
+  <div class="fig kf rv">
+    <p class="fig__bar"><b>得意先マスタ　360件の照合</b>いまのシステムと SAP とで、1件ずつ突き合わせます。</p>
+    <div class="mig">
+      <div class="mig__g">{cells.map((c, i) => <i class={c} style={`--i:${i}`}></i>)}</div>
+      <div class="mig__s">
+        <p class="mig__n"><b>{cells.filter((c) => !c).length}</b>件は一致</p>
+        <p class="mig__k">合わない {cells.filter((c) => c).length} 件を、理由ごとに分ける</p>
+        <ul>{why.map((w) => <li class={w.k}><span>{w.n}</span><b>{w.v}</b>件</li>)}</ul>
+        <p class="mig__k">人が見るのは、この {cells.filter((c) => c).length} 件だけです。</p>
+      </div>
+    </div>
+    <p class="fig__lg"><span><i class="b b--a"></i>一致</span><span><i class="b b--d" style="width:18px"></i>合わない（理由ごとに色分け）</span><em>架空の例です。</em></p>
+  </div>
+)}
+
+{slug === 'operations' && (
+  <div class="fig kf rv">
+    <p class="fig__bar"><b>保守の問い合わせ（本番稼働の半年後）</b>導入時の記録を、決定までさかのぼります。</p>
+    <ol class="back">
+      {chain.map((c, i) => (
+        <li class:list={[i === 0 && 'q', i === chain.length - 1 && 'hit']} style={`--i:${i}`}>
+          <em>{c.k}</em><b>{c.v}</b><small>{c.d}</small>
+        </li>
+      ))}
+    </ol>
+    <div class="hyp hyp--ok">
+      <p><b>答え：4/08 の業務検討会で決めた（D-0142）。</b></p>
+      <p>得意先の多くが20日締めで、月末締めだと入金の確認が月初の作業に重なるため。設計書・プログラム・テストに、同じ番号が残っています。</p>
+    </div>
+    <p class="fig__lg"><em>架空の例です。記録は、導入のときに AI が読める形で残します。</em></p>
+  </div>
+)}
+
+<style is:global>
+  .kf { padding-bottom: 2px; }
+  .map { margin: 14px 22px 4px; }
+  .map__h { display: grid; grid-template-columns: 1fr 60px 1fr; font-size: 12px; font-weight: 700; color: var(--mute); }
+  .map__h span:last-child { grid-column: 3; }
+  .map__r { display: grid; grid-template-columns: 1fr 60px 1fr; align-items: center; margin-top: 8px; font-size: 13.5px; }
+  .map__r > span, .map__r > code, .map__r > em { padding: 10px 16px; border-radius: 10px; background: var(--tint); }
+  .map__r i { margin-right: 12px; font: 500 11.5px var(--mono); font-style: normal; color: var(--mute); }
+  .map__r code { font: 500 12px/1.9 var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .map__r b { height: 3px; background: var(--ai); }
+  .map__r.ng b { background: none; border-top: 3px dotted var(--miss); height: 0; }
+  .map__r.ng > span, .map__r.ng > code { background: #fbe3eb; }
+  .map__r em { font-style: normal; font-weight: 700; font-size: 12.5px; color: var(--miss); background: none; box-shadow: inset 0 0 0 1.5px var(--miss); }
+
+  .run { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 14px 22px 0; }
+  .run li { display: grid; gap: 2px; padding: 10px 12px 12px; border-radius: 12px; background: var(--tint); font-size: 13px; }
+  .scr { display: grid; gap: 4px; height: 62px; margin-bottom: 6px; padding: 8px; border-radius: 6px; background: var(--card); box-shadow: inset 0 0 0 2px var(--ai); }
+  .scr i { height: 5px; border-radius: 3px; background: var(--rule); }
+  .scr i:nth-child(2) { width: 70%; } .scr i:nth-child(3) { width: 85%; } .scr i:nth-child(4) { width: 40%; background: var(--ai); }
+  .run span { font: 500 11px var(--mono); color: var(--mute); }
+  .run b { font-size: 13.5px; }
+  .run em { justify-self: start; margin-top: 4px; padding: 0 12px; border-radius: 99px; font: 700 11.5px/1.9 var(--mono); font-style: normal; background: var(--ai); color: #fff; }
+  .run .ng { background: #fbe3eb; }
+  .run .ng .scr { box-shadow: inset 0 0 0 2px var(--miss); }
+  .run .ng .scr i:nth-child(4), .run .ng em { background: var(--miss); }
+  .run .yet { opacity: 0.55; }
+  .run .yet .scr { box-shadow: inset 0 0 0 2px var(--rule); }
+  .run .yet .scr i:nth-child(4) { background: var(--rule); }
+  .run .yet em { background: none; color: var(--mute); padding: 0; font-family: var(--sans); }
+  .hyp { margin: 12px 22px 4px; padding: 14px 18px; border-radius: 12px; background: #fdeccb; font-size: 13.5px; }
+  .hyp b { font-size: 15px; font-weight: 900; }
+  .hyp--ok { background: var(--tint); }
+
+  .mig { display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; margin: 14px 22px 4px; align-items: center; }
+  .mig__g { display: grid; grid-template-columns: repeat(36, 1fr); gap: 3px; }
+  .mig__g i { aspect-ratio: 1; border-radius: 2px; background: var(--ai); opacity: 0.9; }
+  .mig__g .ma { background: var(--amber); }
+  .mig__g .mb { background: var(--miss); }
+  .mig__g .mc { background: var(--ink); }
+  .mig__n { font-size: 14px; font-weight: 700; }
+  .mig__n b { margin-right: 6px; font: 600 54px/1 var(--num); color: var(--ai); }
+  .mig__k { margin-top: 10px; font-size: 13px; font-weight: 700; }
+  .mig li { display: flex; align-items: baseline; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--rule); font-size: 13.5px; }
+  .mig li span { flex: 1; }
+  .mig li span::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 10px; border-radius: 2px; background: var(--amber); }
+  .mig li.mb span::before { background: var(--miss); }
+  .mig li.mc span::before { background: var(--ink); }
+  .mig li b { font: 600 22px/1 var(--num); }
+
+  .back { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 26px; margin: 14px 22px 0; }
+  .back li { position: relative; display: grid; gap: 2px; padding: 12px 16px; border-radius: 12px; background: var(--tint); }
+  .back li + li::before { content: ''; position: absolute; left: -19px; top: 50%; width: 9px; height: 9px; border-top: 2.5px solid var(--amber); border-right: 2.5px solid var(--amber); transform: translateY(-50%) rotate(45deg); }
+  .back em { font-style: normal; font-size: 11.5px; font-weight: 700; color: var(--mute); }
+  .back b { font-size: 13.5px; }
+  .back li:not(.q) b { font-family: var(--mono); font-weight: 500; font-size: 12.5px; }
+  .back small { font: 500 11px var(--mono); color: var(--mute); }
+  .back .q { background: var(--ink); color: #fff; }
+  .back .q em, .back .q small { color: rgba(255, 255, 255, 0.7); }
+  .back .hit { background: var(--amber); }
+  .back .hit em, .back .hit small { color: rgba(17, 23, 26, 0.7); }
+
+  @media (max-width: 900px) {
+    .map__h { display: none; }
+    .map__r { grid-template-columns: 1fr; gap: 4px; margin-top: 14px; }
+    .map__r b { display: none; }
+    .run { grid-template-columns: repeat(2, 1fr); }
+    .mig { grid-template-columns: 1fr; }
+    .mig__g { grid-template-columns: repeat(24, 1fr); }
+    .back { grid-template-columns: 1fr; gap: 20px; }
+    .back li + li::before { left: 20px; top: -15px; transform: rotate(135deg); }
+  }
+</style>

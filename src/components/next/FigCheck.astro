@@ -1,0 +1,96 @@
+---
+/* 設計書の全件点検。架空の例 */
+const views = [
+  { n: '要件との対応', f: '' },
+  { n: '項目の桁数と型', f: '指摘 1' },
+  { n: '命名のきまり', f: '' },
+  { n: '他の設計書との食い違い', f: '指摘 1' },
+  { n: '例外の扱い', f: '指摘 1' },
+  { n: 'テストへのつながり', f: '' },
+];
+---
+
+<div class="chk rv">
+  <div class="sheet">
+    <p class="sheet__h"><b>外部設計書 SD-031</b><span>請求書発行</span><span class="sheet__n">031 / 214</span></p>
+    <div class="sheet__b">
+      <i class="scan"></i>
+      <p class="t">3.1　入力項目</p>
+      <p class="row"><span>得意先コード</span><span>CHAR 10</span><span>必須</span></p>
+      <p class="row f f1"><span>請求金額</span><span>CURR 11,2</span><span>必須</span><em>受注側は 13,2。桁が合わない</em></p>
+      <p class="row"><span>締め日</span><span>NUMC 2</span><span>必須</span></p>
+      <p class="row"><span>支払条件</span><span>CHAR 4</span><span>任意</span></p>
+      <p class="t">3.2　請求の対象と締め日</p>
+      <p class="bar" style="--w:92%"></p>
+      <p class="bar f f2" style="--w:46%"><em>SD-027 は「出荷指示の時点」と書いている</em></p>
+      <p class="bar" style="--w:86%"></p>
+      <p class="t">3.3　例外の扱い</p>
+      <p class="bar" style="--w:80%"></p>
+      <p class="bar f f3" style="--w:38%"><em>締め日に請求の対象が0件のときの扱いがない</em></p>
+      <p class="bar" style="--w:68%"></p>
+    </div>
+    <div class="all">
+      <p><b>214</b>本の設計書を、同じ6つの観点で読む</p>
+      <div class="all__g">{Array.from({ length: 214 }, (_, i) => <i class:list={[i % 31 === 7 && 'w']} style={`--i:${i}`}></i>)}</div>
+    </div>
+  </div>
+
+  <div class="vw">
+    <p class="vw__h">点検の観点</p>
+    <ul>
+      {views.map((v, i) => (
+        <li class:list={[v.f && 'flag']} style={`--i:${i}`}>
+          <span class="vw__n">{v.n}</span>
+          <span class="vw__r">{v.f || '済'}</span>
+        </li>
+      ))}
+    </ul>
+    <div class="vw__out">
+      <p><b>人に渡すのは、指摘のあった3か所だけ。</b>設計者は指摘を読み、直すかどうかを決めます。点検の記録は、設計書と一緒に残ります。</p>
+    </div>
+    <p class="note">架空の例です。観点は、貴社の設計の標準に合わせて決めます。</p>
+  </div>
+</div>
+
+<style is:global>
+  .chk { display: grid; grid-template-columns: 1.15fr 1fr; margin-top: clamp(22px, 3.2vw, 44px); border-radius: var(--r); background: var(--card); overflow: hidden; }
+  .sheet { padding: clamp(16px, 2.6vw, 34px); background: var(--tint); }
+  .sheet__h { display: flex; gap: 16px; padding: 10px 18px; border-radius: 12px 12px 0 0; background: var(--card); font-size: 13px; box-shadow: inset 0 -1px 0 var(--rule); }
+  .sheet__n { margin-left: auto; font: 500 12px/2 var(--mono); color: var(--ai); }
+  .sheet__b { position: relative; padding: 10px 18px 20px; border-radius: 0 0 12px 12px; background: var(--card); overflow: hidden; }
+  .sheet__b .t { margin: 10px 0 6px; font-size: 12.5px; font-weight: 700; }
+  .sheet__b .row { position: relative; display: grid; grid-template-columns: 1.3fr 1fr 0.6fr; padding: 4px 10px; border-bottom: 1px solid var(--rule); font-size: 12.5px; }
+  .sheet__b .row span + span { font-family: var(--mono); font-size: 11.5px; color: var(--mute); }
+  .sheet__b .bar { position: relative; height: 9px; margin: 9px 0; }
+  .sheet__b .bar::before { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 5px; background: #dfe3e1; }
+  .scan { position: absolute; left: 0; right: 0; top: 0; z-index: 2; height: 46px; border-bottom: 2px solid var(--ai); background: linear-gradient(transparent, rgba(0, 138, 104, 0.16)); animation: scan 9s linear infinite; }
+  @keyframes scan { 0% { transform: translateY(-46px); } 70%, 100% { transform: translateY(420px); } }
+  /* 指摘は最初から出ている。走る線は飾り */
+  .f em { position: absolute; right: 8px; top: 50%; z-index: 3; transform: translateY(-50%); padding: 1px 12px; border-radius: 99px; background: var(--amber); font: 700 11.5px/1.8 var(--sans); font-style: normal; white-space: nowrap; }
+  .f.bar em { right: auto; left: calc(var(--w) + 10px); }
+  .f.row { background: #fdeccb; }
+  .f.bar::before { background: var(--amber); }
+  .all { margin-top: 16px; padding: 12px 16px 14px; border-radius: 12px; background: var(--card); }
+  .all p { font-size: 12.5px; font-weight: 700; }
+  .all b { margin-right: 4px; font: 600 26px/1 var(--num); color: var(--ai); }
+  .all__g { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 8px; }
+  .all__g i { width: 5px; height: 15px; border-radius: 2px; background: var(--ai); animation: all 9s linear infinite; animation-delay: calc(var(--i) * 28ms); }
+  .all__g i.w { background: var(--amber); }
+  @keyframes all { 0%, 2% { opacity: 0.3; } 4%, 100% { opacity: 1; } }
+  .vw { display: flex; flex-direction: column; padding: clamp(16px, 2.6vw, 34px); }
+  .vw__h { font-size: 12.5px; font-weight: 700; color: var(--mute); }
+  .vw ul { margin-top: 6px; }
+  .vw li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 11px 0; border-bottom: 1px solid var(--rule); font-weight: 700; font-size: clamp(14px, 1.3vw, 17px); }
+  .vw__r { padding: 0 14px; border-radius: 99px; font: 700 12px/2 var(--sans); color: #fff; background: var(--ai); }
+  .vw .flag .vw__r { background: var(--amber); color: var(--ink); }
+  .vw__out { margin-top: auto; padding-top: 22px; }
+  .vw__out p { padding: 14px 18px; border-radius: 12px; background: #fdeccb; font-size: 14.5px; }
+  .vw__out b { display: block; font-size: clamp(16px, 1.5vw, 20px); font-weight: 900; }
+  @media (max-width: 900px) {
+    .chk { grid-template-columns: 1fr; }
+    .f em { position: static; display: block; margin-top: 4px; transform: none; white-space: normal; grid-column: 1 / -1; border-radius: 8px; }
+    .f.bar { height: auto; padding-top: 14px; }
+    .f.bar::before { height: 9px; inset: 0 auto auto 0; }
+  }
+  @media (prefers-reduced-motion: reduce) { .scan, .all__g i { animation: none; } }
+</style>

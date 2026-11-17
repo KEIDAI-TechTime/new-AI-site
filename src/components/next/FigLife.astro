@@ -1,0 +1,51 @@
+---
+/* 一つの成果物ができるまで。AIチームの受け持ちと、人の受け持ち。 */
+const ai = [
+  { x: 176, w: 190, n: '材料を読む', s: '会議の記録・前の工程の成果物' },
+  { x: 386, w: 190, n: '初版を作る', s: '決まった様式と手順で' },
+  { x: 596, w: 190, n: '全件を点検する', s: '同じ観点で、毎回' },
+  { x: 1016, w: 190, n: '記録に残す', s: '次の工程と保守の材料になる' },
+];
+---
+
+<div class="fig rv">
+  <div class="fig__scroll">
+    <svg id="lif" viewBox="0 0 1280 250" role="img" aria-label="一つの成果物ができるまでの流れ。AIチームが材料を読み、初版を作り、全件を点検する。人は、指摘を読んで決める。決めたことはAIチームが記録に残し、次の工程の材料になる。">
+      <text class="t-ttl t-ttl--ai" x="20" y="78">AIチーム</text>
+      <text class="t-ttl" x="20" y="186">人</text>
+      <line class="g--b" x1="20" x2="1260" y1="126" y2="126" />
+      {ai.map((b) => (
+        <g class="lf lf--ai">
+          <rect x={b.x} y="44" width={b.w} height="56" rx="10" />
+          <text class="lf__n" x={b.x + b.w / 2} y="70" text-anchor="middle">{b.n}</text>
+          <text class="lf__s" x={b.x + b.w / 2} y="88" text-anchor="middle">{b.s}</text>
+        </g>
+      ))}
+      <g class="lf lf--man">
+        <rect x="806" y="152" width="190" height="56" rx="10" />
+        <text class="lf__n" x="901" y="178" text-anchor="middle">指摘を読み、決める</text>
+        <text class="lf__s" x="901" y="196" text-anchor="middle">直すか、作るか、合格か</text>
+      </g>
+      <path id="lf-path" class="lf__p" d="M176 72H796V180H1006V72H1206" />
+      <path class="lf__a" d="M786 72h10v108h10M996 180h10V72h10M373 66l6 6-6 6M583 66l6 6-6 6" />
+      <circle class="lf__d" r="6"><animateMotion dur="5s" repeatCount="indefinite"><mpath href="#lf-path" /></animateMotion></circle>
+      <text class="fm-say fm-say--ai" x="176" y="30">読む・作る・点検するは、AIチームが受け持つ</text>
+      <text class="fm-say fm-say--amber" x="176" y="186">人の時間は、決めることに使う</text>
+      <text class="lf__k" x="176" y="208">業務のあり方、作るかどうか、合否は、人が決めます。</text>
+    </svg>
+  </div>
+</div>
+
+<style is:global>
+  .lf rect { fill: var(--ai); }
+  .lf--man rect { fill: var(--amber); }
+  .lf__n { font-size: 14.5px; font-weight: 900; fill: #fff; }
+  .lf__s { font-size: 10.5px; font-weight: 500; fill: rgba(255, 255, 255, 0.86); }
+  .lf--man .lf__n { fill: var(--ink); }
+  .lf--man .lf__s { fill: rgba(17, 23, 26, 0.75); }
+  .lf__p { fill: none; stroke: none; }
+  .lf__a { fill: none; stroke: var(--ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .lf__d { fill: #fff; stroke: var(--ink); stroke-width: 2.5; }
+  .lf__k { font-size: 12px; font-weight: 500; fill: var(--mute); }
+  @media (prefers-reduced-motion: reduce) { .lf__d { display: none; } }
+</style>

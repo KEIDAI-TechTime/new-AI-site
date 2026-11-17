@@ -1,0 +1,205 @@
+---
+/* 一つの決定を、会議から保守まで追う。上の糸に6つの場面が常に並び、下で一つずつ中身を見せる。架空の例 */
+const chapters = [
+  { d: '4/08', n: '会議', k: '発言', cap: '会議で決まったことを、AIチームが記録から拾います。発言した人が議事録に書き写すのを待ちません。' },
+  { d: '4/08', n: '決定の一覧', k: 'D-0142', cap: '決定に番号を付け、一覧に載せます。どの設計書とどのテストに関わるかも、同じ行に入れます。' },
+  { d: '4/10', n: '設計書', k: 'SD-031', cap: '関わる設計書の初版を AIチームが直し、設計者が読んで確定します。変えた所には決定の番号が残ります。' },
+  { d: '4/15', n: 'プログラム', k: 'ZSD_BILLING', cap: '設計書の変更から、プログラムの直しを作ります。どの決定による変更かが、コードの中でわかります。' },
+  { d: '5/12', n: 'テスト', k: 'TC-118', cap: 'テストケースにも同じ番号が付きます。決定がテストまで届いたことを、記録で確かめられます。' },
+  { d: '11/20', n: '保守', k: '問い合わせ', cap: '半年後、保守の担当が「なぜこの作りか」を引くと、会議の決定までさかのぼれます。' },
+];
+---
+
+<div class="tr rv" id="trace-fig">
+  <p class="tr__top"><span class="tr__id">決定 D-0142</span><b>請求の締め日を、月末から毎月20日に変える</b><em>架空の例</em></p>
+
+  <div class="tr__line" role="tablist" aria-label="場面">
+    {chapters.map((c, i) => (
+      <button role="tab" data-i={i} aria-selected={i === 0 ? 'true' : 'false'}>
+        <span class="tr__d">{c.d}</span>
+        <i></i>
+        <span class="tr__n">{c.n}</span>
+        <span class="tr__k">{c.k}</span>
+      </button>
+    ))}
+  </div>
+
+  <div class="stage">
+    <div class="scene on" data-i="0">
+      <p class="sc-k">会議の記録（文字起こし）</p>
+      <div class="talk">
+        <p class="a" style="--t:.1s"><b>経理</b>月末締めだと、翌月の入金の確認が月初の作業に重なります。</p>
+        <p class="a" style="--t:.5s"><b>営業</b>得意先の多くは20日締めです。合わせたほうが問い合わせも減ります。</p>
+        <p class="a hit" style="--t:.9s"><b>PM</b>では、請求の締め日は毎月20日にします。月末締めはやめます。</p>
+        <p class="a" style="--t:1.3s"><b>経理</b>承知しました。移行の初月だけ確認させてください。</p>
+      </div>
+      <div class="pick a" style="--t:1.8s"><i>AI</i>決定を拾い、<b>D-0142</b> として記録</div>
+    </div>
+
+    <div class="scene" data-i="1">
+      <p class="sc-k">決定の一覧</p>
+      <table class="tb">
+        <thead><tr><th>番号</th><th>決めたこと</th><th>決めた場</th><th>関わる成果物</th></tr></thead>
+        <tbody>
+          <tr class="a dim" style="--t:.1s"><td>D-0139</td><td>出荷指示は倉庫ごとにまとめて出す</td><td>4/01 業務検討会</td><td>SD-027　TC-104</td></tr>
+          <tr class="a dim" style="--t:.2s"><td>D-0140</td><td>与信の確認は受注の登録時に行う</td><td>4/03 業務検討会</td><td>SD-012　TC-088</td></tr>
+          <tr class="a dim" style="--t:.3s"><td>D-0141</td><td>値引きの承認は部長までとする</td><td>4/03 業務検討会</td><td>SD-015　TC-091</td></tr>
+          <tr class="a new" style="--t:.8s"><td>D-0142</td><td>請求の締め日を毎月20日にする</td><td>4/08 業務検討会</td><td><span class="a" style="--t:1.4s">SD-031</span>　<span class="a" style="--t:1.8s">TC-118</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="scene" data-i="2">
+      <p class="sc-k">外部設計書 SD-031　請求書発行</p>
+      <div class="doc">
+        <p class="a" style="--t:.1s"><em>3.2</em>請求の対象と締め日</p>
+        <p class="a ln" style="--t:.2s">請求の対象は、締め日までに出荷が完了した受注とする。</p>
+        <p class="a ln chg" style="--t:.4s">締め日は、<s>月末</s><ins class="a" style="--t:1.2s">毎月20日</ins>とする。<mark class="a" style="--t:1.6s">D-0142</mark></p>
+        <p class="a ln" style="--t:.6s">締め日が休日のときは、前の営業日を締め日とする。</p>
+        <p class="a ln" style="--t:.8s">請求書の発行日は、締め日の翌営業日とする。</p>
+      </div>
+      <div class="pick a" style="--t:2.0s"><i>AI</i>初版を直す　→　<b>設計者が確定</b></div>
+    </div>
+
+    <div class="scene" data-i="3">
+      <p class="sc-k">プログラム ZSD_BILLING_CLOSE</p>
+      <pre class="code"><span class="a" style="--t:.1s">  METHOD get_closing_date.</span>
+<span class="a" style="--t:.2s">    DATA lv_closing TYPE d.</span>
+<span class="a del" style="--t:.4s">-   lv_closing = last_day_of_month( iv_date ).</span>
+<span class="a add" style="--t:1.1s">+   lv_closing = closing_day( iv_date = iv_date</span>
+<span class="a add" style="--t:1.3s">+                             iv_day  = '20' ).  " D-0142</span>
+<span class="a" style="--t:.6s">    rv_date = previous_workday( lv_closing ).</span>
+<span class="a" style="--t:.7s">  ENDMETHOD.</span></pre>
+      <div class="pick a" style="--t:1.9s"><i>AI</i>設計書の変更から直しを作る　→　<b>開発者がレビュー</b></div>
+    </div>
+
+    <div class="scene" data-i="4">
+      <p class="sc-k">結合テスト　請求</p>
+      <ul class="tc">
+        <li class="a" style="--t:.1s"><span>TC-117</span>出荷が完了した受注だけが請求の対象になる<b class="a" style="--t:.9s">OK</b></li>
+        <li class="a hit" style="--t:.3s"><span>TC-118</span>20日までの出荷が、当月の請求に入る<mark>D-0142</mark><b class="a" style="--t:1.4s">OK</b></li>
+        <li class="a" style="--t:.5s"><span>TC-119</span>締め日が休日のとき、前の営業日で締まる<b class="a" style="--t:1.9s">OK</b></li>
+      </ul>
+    </div>
+
+    <div class="scene" data-i="5">
+      <p class="sc-k">保守の問い合わせ（半年後）</p>
+      <p class="ask"><span class="type">請求の締め日は、なぜ20日なのか</span></p>
+      <ol class="chain">
+        <li class="a" style="--t:1.0s"><em>テスト</em>TC-118　OK<small>5/12</small></li>
+        <li class="a" style="--t:1.3s"><em>プログラム</em>ZSD_BILLING_CLOSE<small>4/15</small></li>
+        <li class="a" style="--t:1.6s"><em>設計書</em>SD-031　3.2<small>4/10</small></li>
+        <li class="a hit" style="--t:1.9s"><em>決定</em>D-0142　業務検討会<small>4/08</small></li>
+      </ol>
+    </div>
+  </div>
+
+  <p class="tr__cap" id="cap">{chapters[0].cap}</p>
+</div>
+
+<script is:inline define:vars={{ caps: chapters.map((c) => c.cap) }}>
+  (() => {
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const fig = document.getElementById('trace-fig');
+    const scenes = [...fig.querySelectorAll('.scene')], tabs = [...fig.querySelectorAll('.tr__line button')];
+    const cap = document.getElementById('cap');
+    let cur = 0, timer, seen = false;
+    const show = (i) => {
+      cur = i;
+      scenes.forEach((s, j) => { s.classList.remove('on'); if (j === i) { void s.offsetWidth; s.classList.add('on'); } });
+      tabs.forEach((t, j) => { t.setAttribute('aria-selected', j === i ? 'true' : 'false'); t.classList.toggle('past', j < i); });
+      cap.textContent = caps[i];
+    };
+    const play = () => { clearInterval(timer); if (!still) timer = setInterval(() => seen && show((cur + 1) % scenes.length), 5200); };
+    tabs.forEach((t, i) => t.addEventListener('click', () => { show(i); play(); }));
+    new IntersectionObserver((e) => { const v = e[0].isIntersecting; if (v && !seen) { show(0); play(); } seen = v; }, { threshold: 0.35 }).observe(fig);
+  })();
+</script>
+
+<style is:global>
+  .tr { margin-top: clamp(22px, 3.2vw, 44px); border-radius: var(--r); background: var(--card); overflow: hidden; }
+  .tr__top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 18px 24px 0; font-size: 14.5px; }
+  .tr__id { padding: 0 12px; border-radius: 99px; font: 500 12.5px/1.9 var(--mono); background: var(--amber); }
+  .tr__top em { margin-left: auto; font-style: normal; font-size: 12px; color: var(--mute); }
+
+  /* 糸：6つの場面が常に見えている */
+  .tr__line { position: relative; display: grid; grid-template-columns: repeat(6, 1fr); padding: 14px 12px 6px; }
+  .tr__line button { position: relative; display: grid; justify-items: center; gap: 1px; padding: 6px 4px 10px; border-radius: 12px; color: var(--mute); transition: background 0.25s, color 0.25s; }
+  .tr__line button:hover { background: var(--bg); }
+  .tr__line button::before { content: ''; position: absolute; left: -50%; right: 50%; top: 43px; height: 3px; background: var(--rule); }
+  .tr__line button:first-child::before { display: none; }
+  .tr__line .past::before, .tr__line [aria-selected='true']::before { background: var(--amber); }
+  .tr__line i { position: relative; z-index: 1; width: 18px; height: 18px; margin: 4px 0; border-radius: 50%; background: var(--card); border: 3px solid var(--rule); transition: transform 0.3s; }
+  .tr__line .past i { border-color: var(--amber); background: var(--amber); }
+  .tr__line [aria-selected='true'] { color: var(--ink); }
+  .tr__line [aria-selected='true'] i { border-color: var(--amber); transform: scale(1.3); box-shadow: 0 0 0 5px rgba(229, 154, 0, 0.22); }
+  .tr__d { font: 600 19px/1.2 var(--num); }
+  .tr__n { font-size: 13.5px; font-weight: 700; color: var(--ink); }
+  .tr__k { font: 500 11px/1.5 var(--mono); }
+
+  .stage { position: relative; height: clamp(300px, 27vw, 350px); margin: 0 12px; border-radius: 12px; background: var(--bg); overflow: hidden; }
+  .scene { position: absolute; inset: 0; display: none; flex-direction: column; justify-content: center; gap: 14px; padding: 22px clamp(16px, 6vw, 96px); }
+  .scene.on { display: flex; }
+  .scene .a { opacity: 0; }
+  .scene.on .a { animation: up 0.45s var(--t, 0s) cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  @keyframes up { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+  .sc-k { font-size: 12.5px; font-weight: 700; color: var(--mute); }
+  .talk p { padding: 7px 16px; border-radius: 10px; background: var(--card); font-size: clamp(13.5px, 1.2vw, 15.5px); }
+  .talk p + p { margin-top: 6px; }
+  .talk b { display: inline-block; min-width: 3.4em; margin-right: 12px; font-size: 12px; color: var(--mute); }
+  .talk .hit { background: #fdeccb; box-shadow: inset 4px 0 0 var(--amber); font-weight: 700; }
+  .pick { align-self: flex-end; display: inline-flex; align-items: center; gap: 12px; font-size: 13.5px; font-weight: 500; }
+  .pick i { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 50%; background: var(--ai); font: 600 12px var(--mono); font-style: normal; color: #fff; }
+  .pick b { color: #a36d00; }
+  .tb { width: 100%; border-collapse: separate; border-spacing: 0 5px; font-size: clamp(12.5px, 1.1vw, 14.5px); }
+  .tb th { padding: 0 14px; text-align: left; font-size: 11.5px; font-weight: 500; color: var(--mute); }
+  .tb td { padding: 8px 14px; background: var(--card); }
+  .tb td:first-child { border-radius: 10px 0 0 10px; }
+  .tb td:last-child { border-radius: 0 10px 10px 0; }
+  .tb td:first-child, .tb td:last-child { font-family: var(--mono); font-size: 0.92em; white-space: nowrap; }
+  .tb .dim { color: var(--mute); }
+  .tb .new td { background: #fdeccb; font-weight: 700; }
+  .tb .new td:first-child { box-shadow: inset 4px 0 0 var(--amber); }
+  .doc { padding: 18px 24px; border-radius: 12px; background: var(--card); font-size: clamp(13px, 1.2vw, 15.5px); }
+  .doc p:first-child { margin-bottom: 6px; font-weight: 700; }
+  .doc em { margin-right: 12px; font: 500 0.9em var(--mono); font-style: normal; color: var(--mute); }
+  .doc .ln { padding: 3px 0 3px 2.6em; }
+  .doc .chg { background: #fdeccb; box-shadow: inset 4px 0 0 var(--amber); }
+  .doc s { color: var(--miss); margin-right: 4px; }
+  .doc ins { font-weight: 700; text-decoration: none; border-bottom: 2px solid var(--ai); }
+  .tr mark { margin-left: 10px; padding: 0 9px; border-radius: 99px; font: 500 0.82em/1.7 var(--mono); background: var(--amber); color: var(--ink); }
+  .code { padding: 14px 0; border-radius: 12px; background: var(--card); font: 400 clamp(11.5px, 1.1vw, 14px)/1.95 var(--mono); overflow-x: auto; }
+  .code span { display: block; padding: 0 22px; white-space: pre; }
+  .code .del { background: rgba(207, 47, 102, 0.12); color: #a01f4c; }
+  .code .add { background: rgba(0, 138, 104, 0.14); color: #00644c; }
+  .tc li { display: flex; align-items: center; gap: 16px; padding: 11px 16px; border-radius: 10px; background: var(--card); font-size: clamp(13px, 1.2vw, 15.5px); }
+  .tc li + li { margin-top: 7px; }
+  .tc span { font: 500 0.88em var(--mono); color: var(--mute); }
+  .tc .hit { background: #fdeccb; box-shadow: inset 4px 0 0 var(--amber); font-weight: 700; }
+  .tc b { margin-left: auto; padding: 0 14px; border-radius: 99px; font: 500 12px/2 var(--mono); background: var(--ai); color: #fff; }
+  .tc mark { margin-left: 0; }
+  .ask { padding: 11px 20px; border-radius: 99px; background: var(--card); font-size: clamp(14px, 1.4vw, 18px); font-weight: 700; }
+  .ask::before { content: '検索'; margin-right: 16px; font-size: 11.5px; font-weight: 500; color: var(--mute); }
+  .type { display: inline-block; clip-path: inset(0 100% 0 0); }
+  .scene.on .type { animation: type 0.8s 0.1s steps(16) forwards; }
+  @keyframes type { to { clip-path: inset(0 0 0 0); } }
+  .chain { display: grid; grid-template-columns: repeat(4, 1fr); gap: 22px; }
+  .chain li { position: relative; padding: 12px 16px; border-radius: 12px; background: var(--card); font: 500 clamp(12px, 1.1vw, 14px) var(--mono); }
+  .chain li + li::before { content: '←'; position: absolute; left: -22px; top: 50%; transform: translateY(-50%); width: 22px; text-align: center; color: #a36d00; font-family: var(--sans); font-weight: 700; }
+  .chain em { display: block; margin-bottom: 4px; font: 500 11px var(--sans); color: var(--mute); }
+  .chain small { display: block; margin-top: 4px; color: var(--mute); }
+  .chain .hit { background: var(--amber); }
+  .chain .hit em, .chain .hit small { color: rgba(17, 23, 26, 0.7); }
+  .tr__cap { min-height: 4.4em; padding: 14px 24px 18px; font-size: 14.5px; font-weight: 500; }
+
+  @media (max-width: 900px) {
+    .tr__line { grid-template-columns: repeat(6, minmax(84px, 1fr)); overflow-x: auto; }
+    .tr__k { display: none; }
+    .chain { grid-template-columns: 1fr 1fr; gap: 10px 22px; }
+    .stage { height: 440px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .scene .a { opacity: 1 !important; animation: none !important; }
+    .type { clip-path: none; }
+  }
+</style>
