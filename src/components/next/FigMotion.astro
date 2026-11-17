@@ -1,0 +1,249 @@
+---
+/* 工程ごとの動く図（開発・テスト・移行・運用保守）。開くと自分で流れ、繰り返す。どれも架空の例 */
+interface Props { slug: string }
+const { slug } = Astro.props;
+const caps: Record<string, string[]> = {
+  development: ['設計書から、プログラムの初版を作る。', '処理ごとに、設計書の行と結ぶ。', '片方にしかない行を、見つける。', '残すか、足りない分を作るかは、人が決める。'],
+  test: ['AIが、検証環境の画面を操作する。', '手順ごとに、証跡を残す。', 'NG が出たら、そこで止める。', '原因の仮説を付けて、担当者に渡す。'],
+  migration: ['全件を、1件ずつ照合する。', '合わない件だけが、残る。', '合わない件を、理由ごとに分ける。', '人が見るのは、この15件だけ。'],
+  operations: ['本番稼働の半年後、問い合わせが来る。', '導入時の記録を、さかのぼる。', '決めた場と理由まで、届く。', '作った人を探さずに、答えられる。'],
+};
+const cap = caps[slug];
+const spec = [
+  { id: '3.2-1', t: '締め日までに出荷が完了した受注を対象にする', c: 'SELECT … WHERE wadat_ist <= lv_closing' },
+  { id: '3.2-2', t: '締め日は毎月20日とする', c: "lv_closing = closing_day( iv_day = '20' )" },
+  { id: '3.2-3', t: '締め日が休日のときは前の営業日とする', c: 'rv_date = previous_workday( lv_closing )' },
+  { id: '3.3-1', t: '対象が0件のときは、請求書を作らず記録だけ残す', c: '' },
+  { id: '', t: '', c: 'PERFORM send_mail_to_sales.' },
+];
+const steps = ['受注を登録', '与信を確認', '在庫を引き当て', '出荷を指示', '出荷を記録', '請求書を発行'];
+const cells = Array.from({ length: 360 }, (_, i) => (i % 47 === 9 ? 'ma' : i % 83 === 30 ? 'mb' : i % 131 === 77 ? 'mc' : ''));
+const cnt = (k: string) => cells.filter((c) => c === k).length;
+const bad = cells.filter((c) => c).length;
+const why = [{ k: 'ma', n: '桁があふれる' }, { k: 'mb', n: 'コードの変換先がない' }, { k: 'mc', n: '日付の形式が違う' }];
+const chain = [
+  { k: 'テスト', v: 'TC-118　OK', d: '5/12' },
+  { k: 'プログラム', v: 'ZSD_BILLING_CLOSE', d: '4/15' },
+  { k: '設計書', v: 'SD-031　3.2', d: '4/10' },
+  { k: '決定', v: 'D-0142　業務検討会', d: '4/08' },
+];
+---
+
+{cap && (
+  <div class={`fig mo mo-${slug}`} data-mo data-caps={JSON.stringify(cap)}>
+    <div class="mo__h">
+      <p class="mo__cap">{cap[0]}</p>
+      <ol class="mo__seg" aria-hidden="true">{cap.map(() => <li></li>)}</ol>
+    </div>
+
+    {slug === 'development' && (
+      <div class="dv">
+        <p class="dv__t"><span>外部設計書 SD-031</span><span></span><span>プログラム ZSD_BILLING_CLOSE</span></p>
+        {spec.map((r, i) => (
+          <p class:list={['dv__r', (!r.c || !r.t) && 'odd']} style={`--i:${i}`}>
+            {r.t ? <span class="dv__d"><i>{r.id}</i>{r.t}</span> : <span class="dv__none">設計書にない処理</span>}
+            <b></b>
+            {r.c ? <code class="dv__c">{r.c}</code> : <span class="dv__none">対応するプログラムがない</span>}
+            {(!r.c || !r.t) && <em class="dv__man">{r.c ? '人：消すと決める' : '人：作ると決める'}</em>}
+          </p>
+        ))}
+      </div>
+    )}
+
+    {slug === 'test' && (
+      <div class="ts">
+        <ol class="ts__run">
+          {steps.map((n, i) => (
+            <li class:list={[i === 3 && 'ng', i > 3 && 'yet']} style={`--i:${i}`}>
+              <div class="ts__scr"><i></i><i></i><i></i><i></i><u></u></div>
+              <span>{String(i + 1).padStart(2, '0')}</span>
+              <b>{n}</b>
+              <em>{i < 3 ? 'OK' : i === 3 ? 'NG' : '実施しない'}</em>
+              <small>証跡</small>
+            </li>
+          ))}
+        </ol>
+        <div class="ts__hyp">
+          <p><b>手順 04 の原因の仮説</b></p>
+          <p>出荷指示の画面で「出荷ポイントが決まらない」。倉庫 W02 に出荷ポイントの割り当てがない可能性が高い（マスタの設定）。直すか、テストデータを変えるかは、担当者が決めます。</p>
+        </div>
+      </div>
+    )}
+
+    {slug === 'migration' && (
+      <div class="mg">
+        <div class="mg__g">{cells.map((c, i) => <i class={c} style={`--i:${i}`}></i>)}</div>
+        <div class="mg__s">
+          <p class="mg__n"><b data-t={JSON.stringify(['360', String(360 - bad), String(360 - bad), String(360 - bad)])}>360</b><span data-t={JSON.stringify(['件を照合', '件は一致', '件は一致', '件は一致'])}>件を照合</span></p>
+          <p class="mg__k">合わない <b>{bad}</b> 件</p>
+          <ul>{why.map((w, j) => <li class={w.k} style={`--j:${j}`}><span>{w.n}</span><u style={`--n:${cnt(w.k)}`}></u><b>{cnt(w.k)}</b>件</li>)}</ul>
+          <p class="mg__m">人が見るのは、この {bad} 件だけ</p>
+        </div>
+      </div>
+    )}
+
+    {slug === 'operations' && (
+      <div class="op">
+        <p class="op__q"><em>保守の問い合わせ</em><span>請求の締め日は、なぜ20日なのか</span></p>
+        <ol class="op__c">
+          {chain.map((c, i) => <li class:list={[i === chain.length - 1 && 'hit']} style={`--i:${i}`}><em>{c.k}</em><b>{c.v}</b><small>{c.d}</small></li>)}
+        </ol>
+        <div class="op__a">
+          <p><b>答え：4/08 の業務検討会で決めた（D-0142）。</b></p>
+          <p>得意先の多くが20日締めで、月末締めだと入金の確認が月初の作業に重なるため。</p>
+          <em>担当者が確認して回答</em>
+        </div>
+      </div>
+    )}
+    <p class="fig__lg"><em>架空の例です。{slug === 'test' && '合否は人が決めます。本番の環境では動かしません。'}</em></p>
+  </div>
+)}
+
+<script is:inline>
+  (() => {
+    const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    document.querySelectorAll('[data-mo]').forEach((el) => {
+      const caps = JSON.parse(el.dataset.caps), cap = el.querySelector('.mo__cap'), segs = [...el.querySelectorAll('.mo__seg li')], texts = [...el.querySelectorAll('[data-t]')];
+      const DUR = [3400, 3400, 3400, 4600];
+      let s = -1, timer, started = false;
+      const set = (n) => {
+        s = n;
+        for (let k = 0; k < caps.length; k++) el.classList.toggle('k' + k, k <= n);
+        cap.textContent = caps[n]; cap.classList.remove('in'); void cap.offsetWidth; cap.classList.add('in');
+        segs.forEach((e, i) => e.classList.toggle('on', i === n));
+        texts.forEach((e) => { e.textContent = JSON.parse(e.dataset.t)[n]; });
+      };
+      const next = () => {
+        if (s === caps.length - 1) { for (let k = 0; k < caps.length; k++) el.classList.remove('k' + k); timer = setTimeout(() => { set(0); timer = setTimeout(next, DUR[0]); }, 500); return; }
+        set(s + 1); timer = setTimeout(next, DUR[s]);
+      };
+      if (still) { set(caps.length - 1); return; }
+      new IntersectionObserver((e) => { if (e[0].isIntersecting && !started) { started = true; set(0); timer = setTimeout(next, DUR[0]); } }, { threshold: 0.25 }).observe(el);
+    });
+  })();
+</script>
+
+<style is:global>
+  .mo__h { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 22px 26px 0; }
+  .mo__cap { font-size: clamp(19px, 2.5vw, 34px); font-weight: 900; line-height: 1.4; }
+  .mo__cap.in { animation: mocap 0.5s both; }
+  @keyframes mocap { from { opacity: 0; transform: translateY(8px); } }
+  .mo__seg { display: flex; gap: 6px; flex: none; }
+  .mo__seg li { width: 26px; height: 5px; border-radius: 3px; background: var(--rule); transition: background 0.3s, width 0.3s; }
+  .mo__seg li.on { width: 46px; background: var(--key); }
+  .mo * { transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+  /* 開発：設計書の行と、プログラムの行 */
+  .dv { margin: 22px 26px 6px; }
+  .dv__t, .dv__r { display: grid; grid-template-columns: 1fr 70px 1fr; align-items: center; }
+  .dv__t { font-size: 12px; font-weight: 700; color: var(--mute); }
+  .dv__r { position: relative; margin-top: 10px; font-size: clamp(13.5px, 1.2vw, 16px); }
+  .dv__d, .dv__c, .dv__none { padding: 16px 20px; border-radius: 10px; background: var(--bg); transition: background 0.5s, opacity 0.5s, clip-path 0.7s; }
+  .dv__d i { margin-right: 12px; font: 500 11.5px var(--mono); font-style: normal; color: var(--mute); }
+  .dv__c { font: 500 clamp(12px, 1.05vw, 14px)/1.9 var(--mono); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; background: var(--tint); clip-path: inset(0 100% 0 0 round 10px); }
+  .k0 .dv__c { clip-path: inset(0 0 0 0 round 10px); transition-delay: calc(var(--i) * 0.45s); }
+  .dv__r b { height: 5px; background: var(--key); transform: scaleX(0); transform-origin: left; transition: transform 0.5s; }
+  .k1 .dv__r:not(.odd) b { transform: none; transition-delay: calc(var(--i) * 0.5s + 0.2s); }
+  .dv__none { background: none; box-shadow: inset 0 0 0 2px var(--miss); color: var(--miss); font-weight: 700; font-size: 14px; opacity: 0; }
+  .k2 .dv__none { opacity: 1; }
+  .k2 .odd .dv__d, .k2 .odd .dv__c { background: #fbe3eb; }
+  .dv__man { position: absolute; right: 10px; top: 50%; padding: 0 14px; border-radius: 99px; background: var(--ink); color: #fff; font: 700 13px/2.4 var(--sans); font-style: normal; opacity: 0; transform: translate(10px, -50%); transition: opacity 0.4s, transform 0.4s; }
+  .dv__r.odd:last-child .dv__man { right: auto; left: 10px; }
+  .k3 .dv__man { opacity: 1; transform: translate(0, -50%); transition-delay: calc((var(--i) - 3) * 0.6s + 0.3s); }
+
+  /* テスト：画面を操作し、証跡を残す */
+  .ts { margin: 18px 26px 4px; }
+  .ts__run { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; }
+  .ts__run li { display: grid; gap: 3px; padding: 12px 14px 16px; border-radius: 14px; background: var(--bg); font-size: 14px; transition: background 0.4s; }
+  .ts__scr { position: relative; display: grid; gap: 7px; height: clamp(84px, 9vw, 128px); align-content: start; margin-bottom: 8px; padding: 14px; border-radius: 6px; background: var(--card); box-shadow: inset 0 0 0 2px var(--rule); transition: box-shadow 0.4s; }
+  .ts__scr i { height: 8px; border-radius: 4px; background: var(--rule); }
+  .ts__scr i:nth-child(2) { width: 70%; } .ts__scr i:nth-child(3) { width: 85%; } .ts__scr i:nth-child(4) { width: 40%; transition: background 0.4s; }
+  .ts__scr u { position: absolute; left: 10px; top: 10px; width: 16px; height: 16px; border-radius: 50%; background: var(--ink); opacity: 0; }
+  .ts__run span { font: 500 11px var(--mono); color: var(--mute); }
+  .ts__run b { font-size: clamp(14px, 1.3vw, 17px); }
+  .ts__run em { justify-self: start; margin-top: 4px; padding: 0 12px; border-radius: 99px; font: 700 13px/2 var(--mono); font-style: normal; background: var(--key); opacity: 0; transition: opacity 0.3s; }
+  .ts__run small { justify-self: start; margin-top: 4px; padding: 0 10px 0 22px; border-radius: 6px; background: var(--ink) radial-gradient(circle at 11px 50%, #fff 0 3px, transparent 4px); color: #fff; font-size: 12px; line-height: 2.1; opacity: 0; transform: translateY(-6px); transition: opacity 0.35s, transform 0.35s; }
+  .ts__run .yet small, .ts__run .ng small { visibility: hidden; }
+  .k0 .ts__run li:not(.ng):not(.yet) .ts__scr { box-shadow: inset 0 0 0 2px var(--key); transition-delay: calc(var(--i) * 0.9s + 0.8s); }
+  .k0 .ts__run li:not(.ng):not(.yet) .ts__scr i:nth-child(4) { background: var(--key); transition-delay: calc(var(--i) * 0.9s + 0.8s); }
+  .k0 .ts__run li:not(.ng):not(.yet) em { opacity: 1; transition-delay: calc(var(--i) * 0.9s + 0.8s); }
+  .k0 .ts__run li:not(.yet) .ts__scr u { animation: tsptr 0.9s calc(var(--i) * 0.9s) both; }
+  .k2 .ts__run .ng .ts__scr u { animation: tsptr 0.9s both; }
+  .ts__run .ng .ts__scr u { animation: none !important; }
+  .k2 .ts__run .ng .ts__scr u { animation: tsptr 0.9s both !important; }
+  @keyframes tsptr { 0% { opacity: 0; transform: translate(0, 0); } 15% { opacity: 1; } 55% { transform: translate(90px, 18px); } 85% { opacity: 1; transform: translate(40px, 56px); } 100% { opacity: 0; transform: translate(40px, 56px); } }
+  .k1 .ts__run small { opacity: 1; transform: none; transition-delay: calc(var(--i) * 0.35s + 0.2s); }
+  .k2 .ts__run .ng { background: #fbe3eb; transition-delay: 0.8s; }
+  .k2 .ts__run .ng .ts__scr { box-shadow: inset 0 0 0 2px var(--miss); transition-delay: 0.8s; }
+  .k2 .ts__run .ng .ts__scr i:nth-child(4) { background: var(--miss); transition-delay: 0.8s; }
+  .k2 .ts__run .ng em { opacity: 1; background: var(--miss); color: #fff; transition-delay: 0.8s; }
+  .k2 .ts__run .yet { opacity: 0.5; transition: opacity 0.4s 1.2s; }
+  .k2 .ts__run .yet em { opacity: 1; background: none; padding: 0; color: var(--mute); font-family: var(--sans); transition-delay: 1.2s; }
+  .ts__hyp { margin-top: 14px; padding: 18px 22px; border-radius: 14px; background: var(--tint); font-size: 15px; opacity: 0; transform: translateY(12px); transition: opacity 0.5s, transform 0.5s; }
+  .ts__hyp b { font-size: 18px; font-weight: 900; }
+  .k3 .ts__hyp { opacity: 1; transform: none; }
+
+  /* 移行：全件の照合 */
+  .mg { display: grid; grid-template-columns: 1.5fr 1fr; gap: 30px; margin: 18px 26px 4px; align-items: center; }
+  .mg__g { display: grid; grid-template-columns: repeat(36, 1fr); gap: 3px; }
+  .mg__g i { aspect-ratio: 1; border-radius: 3px; background: var(--rule); transition: background 0.25s, opacity 0.5s, transform 0.4s; }
+  .k0 .mg__g i { background: var(--key); transition-delay: calc(var(--i) * 6ms); }
+  .k1 .mg__g i.ma, .k1 .mg__g i.mb, .k1 .mg__g i.mc { background: var(--ink); transform: scale(1.35); transition-delay: 0s; }
+  .k2 .mg__g i.mb { background: var(--miss); }
+  .k2 .mg__g i.mc { background: #8a8f94; }
+  .k3 .mg__g i:not(.ma):not(.mb):not(.mc) { opacity: 0.25; transition-delay: 0s; }
+  .mg__n { font-size: 17px; font-weight: 700; }
+  .mg__n b { margin-right: 6px; font: 600 clamp(58px, 7vw, 96px)/1 var(--num); }
+  .mg__k { margin-top: 8px; font-size: 17px; font-weight: 700; opacity: 0; transition: opacity 0.4s; }
+  .mg__k b { font: 600 36px/1 var(--num); }
+  .k1 .mg__k { opacity: 1; }
+  .mg li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px solid var(--rule); font-size: 15.5px; opacity: 0; transform: translateX(14px); transition: opacity 0.4s, transform 0.4s; }
+  .k2 .mg li { opacity: 1; transform: none; transition-delay: calc(var(--j) * 0.45s + 0.1s); }
+  .mg li span { flex: 1; }
+  .mg li u { width: calc(var(--n) * 14px); height: 14px; border-radius: 3px; background: var(--ink); }
+  .mg li.mb u { background: var(--miss); }
+  .mg li.mc u { background: #8a8f94; }
+  .mg li b { font: 600 28px/1 var(--num); }
+  .mg__m { display: inline-block; margin-top: 12px; padding: 2px 16px; border-radius: 99px; background: var(--ink); color: #fff; font-size: 15.5px; line-height: 2.2; font-weight: 700; opacity: 0; transition: opacity 0.4s; }
+  .k3 .mg__m { opacity: 1; }
+
+  /* 運用保守：記録をさかのぼる */
+  .op { margin: 18px 26px 4px; }
+  .op__q { display: flex; align-items: center; gap: 18px; padding: 18px 28px; border-radius: 99px; background: var(--ink); color: #fff; font-size: clamp(16px, 2vw, 26px); font-weight: 700; }
+  .op__q em { font-style: normal; font-size: 11.5px; font-weight: 500; opacity: 0.7; white-space: nowrap; }
+  .op__q span { clip-path: inset(0 100% 0 0); }
+  .k0 .op__q span { clip-path: inset(0 0 0 0); transition: clip-path 1.2s steps(16) 0.3s; }
+  .op__c { display: grid; grid-template-columns: repeat(4, 1fr); gap: 34px; margin-top: 18px; }
+  .op__c li { position: relative; display: grid; gap: 4px; padding: 20px 22px; border-radius: 14px; background: var(--bg); opacity: 0.35; transition: opacity 0.4s, background 0.4s, transform 0.4s; }
+  .op__c li::before { content: ''; position: absolute; left: -34px; top: 50%; width: 34px; height: 4px; margin-top: -2px; background: var(--key); transform: scaleX(0); transform-origin: left; transition: transform 0.4s; }
+  .op__c li:first-child::before { left: 30px; top: -18px; width: 4px; height: 18px; margin: 0; transform: scaleY(0); transform-origin: top; }
+  .k1 .op__c li { opacity: 1; transition-delay: calc(var(--i) * 0.7s + 0.4s); }
+  .k1 .op__c li::before { transform: none; transition-delay: calc(var(--i) * 0.7s); }
+  .op__c em { font-style: normal; font-size: 13.5px; font-weight: 700; color: var(--mute); }
+  .op__c b { font: 500 clamp(13px, 1.25vw, 16px) var(--mono); }
+  .op__c small { font: 500 12.5px var(--mono); color: var(--mute); }
+  .k2 .op__c .hit { background: var(--key); transform: scale(1.04); transition-delay: 0s; }
+  .k2 .op__c .hit em, .k2 .op__c .hit small { color: rgba(21, 23, 26, 0.7); }
+  .op__a { position: relative; margin-top: 16px; padding: 20px 24px; border-radius: 14px; background: var(--tint); font-size: 15px; opacity: 0; transform: translateY(12px); transition: opacity 0.5s, transform 0.5s; }
+  .op__a b { font-size: clamp(16px, 1.7vw, 21px); font-weight: 900; }
+  .k2 .op__a { opacity: 1; transform: none; transition-delay: 0.4s; }
+  .op__a em { position: absolute; right: 16px; top: 14px; padding: 0 14px 0 30px; border-radius: 99px; background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3 8.5l3.2 3.2L13 5' fill='none' stroke='%23fff' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") 10px 50% / 14px no-repeat; color: #fff; font: 700 12px/2.2 var(--sans); font-style: normal; opacity: 0; transition: opacity 0.4s; }
+  .k3 .op__a em { opacity: 1; }
+
+  @media (max-width: 900px) {
+    .mo__h { flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px 18px 0; }
+    .dv, .ts, .mg, .op { margin-left: 18px; margin-right: 18px; }
+    .dv__t { display: none; }
+    .dv__r { grid-template-columns: 1fr; gap: 4px; margin-top: 14px; }
+    .dv__r b { display: none; }
+    .dv__man, .dv__r.odd:last-child .dv__man { position: static; justify-self: start; transform: none; }
+    .ts__run { grid-template-columns: repeat(2, 1fr); }
+    .mg { grid-template-columns: 1fr; }
+    .mg__g { grid-template-columns: repeat(24, 1fr); }
+    .op__q { border-radius: 16px; flex-direction: column; align-items: flex-start; gap: 2px; }
+    .op__c { grid-template-columns: 1fr; gap: 14px; }
+    .op__c li::before, .op__c li:first-child::before { left: 30px; top: -18px; width: 4px; height: 18px; margin: 0; transform: scaleY(0); transform-origin: top; }
+    .op__a em { position: static; display: inline-block; margin-top: 8px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .mo *, .mo *::before { transition: none !important; animation: none !important; } }
+</style>
