@@ -1,7 +1,7 @@
 ---
 /* 新しいサイトの案の共通の枠。公開前の確認用で、検索には載せない */
-interface Props { title: string; description: string; cur?: string; ask?: string; live?: boolean }
-const { title, description, cur = '', ask = 'いまの工程と、困っていることを聞かせてください。', live = false } = Astro.props;
+interface Props { title: string; description: string; cur?: string; ask?: string; live?: boolean; og?: string; type?: 'website' | 'article'; published?: string; ld?: object[]; noEnd?: boolean }
+const { title, description, cur = '', ask = 'いまの工程と、困っていることを聞かせてください。', live = true, og = 'site.jpg', type = 'website', published, ld = [], noEnd = false } = Astro.props;
 const menu = live
   ? [
       { k: 'kotei', n: '工程', h: '/services' },
@@ -11,13 +11,13 @@ const menu = live
     ]
   : [
       { k: 'shikumi', n: 'しくみ', h: '/next/shikumi' },
-      { k: 'kotei', n: '工程', h: '/next/kotei' },
+      { k: 'kotei', n: '工程', h: '/services' },
       { k: 'assessment', n: 'アセスメント', h: '/assessment' },
       { k: 'blog', n: '記事', h: '/blog' },
     ];
 const SITE = 'https://techtime-jp.com';
 const canonical = new URL(Astro.url.pathname.replace(/\/$/, '') || '/', SITE).href;
-const ogImage = `${SITE}/og/site.jpg`;
+const ogImage = `${SITE}/og/${og}`;
 const graph = [
   {
     '@type': 'Organization', '@id': `${SITE}/#org`, name: 'TechTime株式会社', alternateName: 'TechTime', url: `${SITE}/`, logo: `${SITE}/images/logo.png`,
@@ -26,6 +26,7 @@ const graph = [
     address: { '@type': 'PostalAddress', addressCountry: 'JP', addressRegion: '東京都', addressLocality: '渋谷区', postalCode: '150-0002', streetAddress: '渋谷2-19-15 宮益坂ビルディング609' },
   },
   { '@type': 'WebSite', '@id': `${SITE}/#site`, name: 'TechTime', url: `${SITE}/`, inLanguage: 'ja', publisher: { '@id': `${SITE}/#org` } },
+  ...ld.map(({ ['@context']: _, ...g }: any) => g),
 ];
 ---
 
@@ -46,8 +47,16 @@ const graph = [
           function gtag(){dataLayer.push(arguments);}
           gtag('js', new Date());
           gtag('config', 'G-V7Q3QV7HGR');
+          document.addEventListener('click', function (e) {
+            var a = e.target && e.target.closest ? e.target.closest('a[href$=".pdf"], a[href$=".xlsx"]') : null;
+            if (!a) return;
+            var sec = a.closest('[id]'), part = a.closest('header, footer, aside');
+            var where = sec ? '#' + sec.id : (part ? '(' + part.tagName.toLowerCase() + ')' : '');
+            gtag('event', 'sample_download', { file_name: a.getAttribute('href').split('/').pop(), link_place: location.pathname + where, link_text: (a.textContent || '').replace(/\s+/g, ' ').trim().slice(0, 40) });
+          }, true);
         </script>
-        <meta property="og:type" content="website" />
+        <meta property="og:type" content={type} />
+        {published && <meta property="article:published_time" content={published} />}
         <meta property="og:url" content={canonical} />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={description} />
@@ -87,6 +96,7 @@ const graph = [
 
     <main>
       <slot />
+      {!noEnd && (
       <section class="end rv" data-st="相談">
         <h2>{ask}</h2>
         <div class="act">
@@ -94,15 +104,17 @@ const graph = [
           <span>24時間以内に、メールで返信します。</span>
         </div>
       </section>
+      )}
+      {noEnd && <div style="height:var(--pad)"></div>}
     </main>
 
     <footer class="ft">
       <span class="logo"><svg viewBox="0 0 28 28"><circle cx="14" cy="14" r="12.5" /><path d="M14 5v9l6 3.6" /></svg>TechTime</span>
       <nav>
         {!live && <a href="/next/shikumi">しくみ</a>}
-        <a href={live ? '/services' : '/next/kotei'}>工程</a><a href="/assessment">アセスメント</a><a href="/blog">記事</a><a href="/glossary">用語集</a><a href="/resources">ひな形</a><a href="/check">自己診断</a><a href="/process">進め方</a><a href="/faq">よくある質問</a><a href="/company">会社概要</a><a href="/contact">相談する</a>
+        <a href="/services">工程</a><a href="/assessment">アセスメント</a><a href="/blog">記事</a><a href="/glossary">用語集</a><a href="/resources">ひな形</a><a href="/check">自己診断</a><a href="/process">進め方</a><a href="/faq">よくある質問</a><a href="/company">会社概要</a><a href="/contact">相談する</a>
       </nav>
-      <small>© TechTime Co., Ltd.</small>
+      <small>TechTime株式会社　東京都渋谷区渋谷2-19-15 宮益坂ビルディング609　© TechTime Co., Ltd.</small>
     </footer>
 
     <script is:inline>
@@ -136,9 +148,9 @@ const graph = [
     --mute: #5f6b70;
     --rule: #cdd3d0;
     --hair: rgba(17, 23, 26, 0.1);
-    --ai: #008a68;
-    --ai-2: #5fc7a6;
-    --amber: #e59a00;
+    --ai: #f2a900;
+    --ai-2: #f2a900;
+    --amber: #f2a900;
     --miss: #cf2f66;
     --pad: clamp(18px, 4.4vw, 64px);
     --r: 16px;
@@ -248,7 +260,7 @@ const graph = [
   .d-n.d-n--miss { fill: var(--miss); }
   .fm-say { font-size: 13.5px; font-weight: 700; }
   .fm-say--miss { fill: var(--miss); }
-  .fm-say--ai { fill: var(--ai); }
+  .fm-say--ai { fill: var(--ink); }
   .fm-say--amber { fill: #a36d00; }
 
   /* 相談 */

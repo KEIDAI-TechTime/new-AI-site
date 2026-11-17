@@ -54,7 +54,7 @@ const compare = [
         ))}
       </div>
     </div>
-    <p class="fig__c">数字は例です。朱の部分が、調べる時間です。自社の内訳は、次の章の方法で測ってください。</p>
+    <p class="fig__c">数字は例です。黄色の部分が、調べる時間です。自社の内訳は、次の章の方法で測ってください。</p>
   </figure>
 
   <p>直す作業と確かめる作業は、原因と影響範囲が分かれば、必要な時間を見積もれます。調べる作業は、原因が分かるまで、必要な時間を見積もれません。そのため、作業時間が予定より長くなる場合、長くなるのは調べる時間であることが多いです。</p>
@@ -157,7 +157,7 @@ const compare = [
         ))}
       </div>
     </div>
-    <p class="fig__c">数字は例です。減るのは、朱の調べる時間です。減る量は、記録の残り方と、問い合わせの種類によって変わります。</p>
+    <p class="fig__c">数字は例です。減るのは、黄色の調べる時間です。減る量は、記録の残り方と、問い合わせの種類によって変わります。</p>
   </figure>
 
   <p>調べる時間が減らなかった場合は、AIが作った下書きを、担当者が使ったかどうかを確認します。担当者が下書きを使わなかった問い合わせでは、根拠になる記録が不足しています。不足している記録を追加してから、もう一度測ります。</p>
@@ -186,41 +186,41 @@ const compare = [
   .a20f1 .rows, .a20f4 .rows { display: grid; gap: 24px; }
   .a20f1 .k, .a20f4 .k { margin: 0 0 6px; display: flex; flex-wrap: wrap; gap: 2px 14px; align-items: baseline; font-size: 13px; }
   .a20f1 .k b, .a20f4 .k b { font-weight: 700; background: none; }
-  .a20f1 .k span, .a20f4 .k span { font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
-  .a20f1 .bar, .a20f4 .bar { display: flex; height: 30px; border: 1px solid var(--ink); background: var(--paper); }
-  .a20f1 .bar i, .a20f4 .bar i { display: block; flex: none; width: var(--w); height: 100%; border-right: 1px solid var(--paper); }
+  .a20f1 .k span, .a20f4 .k span { font-family: var(--mono); font-size: 12px; color: var(--mute); }
+  .a20f1 .bar, .a20f4 .bar { display: flex; height: 30px; border-radius: 8px; background: var(--bg); overflow: hidden; }
+  .a20f1 .bar i, .a20f4 .bar i { display: block; flex: none; width: var(--w); height: 100%; border-right: 1px solid #fff; }
   .a20f1 .bar i:last-child { border-right: 0; }
-  .a20f1 .bar .s0, .a20f4 .bar .s0 { background: var(--shu); }
+  .a20f1 .bar .s0, .a20f4 .bar .s0 { background: var(--key); color: var(--ink); }
   .a20f1 .bar .s1, .a20f4 .bar .s1 { background: var(--ink); }
-  .a20f1 .bar .s2, .a20f4 .bar .s2 { background: var(--ink-2); }
+  .a20f1 .bar .s2, .a20f4 .bar .s2 { background: var(--gry); }
   .a20f1 .leg, .a20f4 .leg { list-style: none; margin: 8px 0 0; padding: 0; border: 0; display: flex; flex-wrap: wrap; gap: 4px 20px; }
   .a20f1 .leg li, .a20f4 .leg li { padding: 0; border: 0; display: flex; align-items: center; gap: 6px; font-size: 12.5px; line-height: 1.6; }
   .a20f1 .leg li::before, .a20f4 .leg li::before { content: none; }
-  .a20f1 .leg u, .a20f4 .leg u { width: 11px; height: 11px; display: block; text-decoration: none; background: var(--ink); }
-  .a20f1 .leg .s0 u, .a20f4 .leg .s0 u { background: var(--shu); }
-  .a20f1 .leg .s2 u, .a20f4 .leg .s2 u { background: var(--ink-2); }
+  .a20f1 .leg u, .a20f4 .leg u { border-radius: 3px; width: 11px; height: 11px; display: block; text-decoration: none; background: var(--ink); }
+  .a20f1 .leg .s0 u, .a20f4 .leg .s0 u { background: var(--key); color: var(--ink); }
+  .a20f1 .leg .s2 u, .a20f4 .leg .s2 u { background: var(--gry); }
   .a20f1 .leg em, .a20f4 .leg em { font-style: normal; font-family: var(--mono); font-size: 13px; }
-  .a20f1 .leg .s0, .a20f4 .leg .s0 { font-weight: 700; color: var(--shu); }
+  .a20f1 .leg .s0, .a20f4 .leg .s0 { font-weight: 700; color: var(--acc); }
   .a20f2 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .a20f2 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
-  .a20f2 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
-  .a20f2 h4 { margin: 0; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .a20f2 .c { border: 0; border-radius: 10px; background: var(--bg); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .a20f2 .c > b { font-family: var(--num); font-weight: 600; font-size: 26px; color: var(--acc); line-height: 1; background: none; }
+  .a20f2 h4 { margin: 0; font-family: var(--sans); font-size: 16.5px; line-height: 1.55; }
   .a20f2 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
-  .a20f2 .c em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--shu); border-top: 1px solid var(--line); padding-top: 7px; }
-  .a20f3 .q { margin: 0 0 18px; font-family: var(--mincho); font-weight: 700; font-size: 16px; text-align: center; line-height: 1.7; }
+  .a20f2 .c em { font-style: normal; font-size: 12px; font-weight: 700; color: var(--acc); border-top: 1px solid var(--rule); padding-top: 7px; }
+  .a20f3 .q { margin: 0 0 18px; font-family: var(--sans); font-weight: 700; font-size: 16px; text-align: center; line-height: 1.7; }
   .a20f3 .flow { display: grid; grid-template-columns: 1.15fr auto 1.1fr auto 0.8fr; gap: 12px; align-items: center; }
   .a20f3 .st { min-width: 0; }
-  .a20f3 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
+  .a20f3 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--mute); }
   .a20f3 .chain { list-style: none; margin: 0; padding: 0; border: 0; display: grid; gap: 6px; }
-  .a20f3 .chain li { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: baseline; border: 1px solid var(--ink); background: var(--paper); padding: 5px 10px; position: relative; }
-  .a20f3 .chain li + li::before { content: ''; position: absolute; left: 18px; bottom: 100%; width: 2px; height: 7px; background: var(--shu); }
-  .a20f3 .chain em { font-style: normal; font-size: 12px; color: var(--ink-2); }
+  .a20f3 .chain li { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: baseline; border: 0; border-radius: 10px; background: var(--bg); padding: 5px 10px; position: relative; }
+  .a20f3 .chain li + li::before { content: ''; position: absolute; left: 18px; bottom: 100%; width: 2px; height: 7px; background: var(--key); color: var(--ink); }
+  .a20f3 .chain em { font-style: normal; font-size: 12px; color: var(--mute); }
   .a20f3 .chain b { font-family: var(--mono); font-weight: 500; font-size: 12.5px; background: none; }
   .a20f3 .arr { width: 40px; height: 12px; fill: none; stroke: var(--ink); stroke-width: 1.5; }
-  .a20f3 .out { display: grid; gap: 2px; border: 1.5px solid var(--ink); background: var(--paper); padding: 8px 12px; margin-bottom: 7px; }
-  .a20f3 .out b { font-size: 14px; color: var(--shu); background: none; }
-  .a20f3 .out span { font-size: 12px; color: var(--ink-2); line-height: 1.6; }
-  .a20f3 .st--man { border: 1px dashed var(--ink-2); background: var(--paper); padding: 10px 12px; }
+  .a20f3 .out { display: grid; gap: 2px; border: 0; border-radius: 10px; padding: 8px 12px; margin-bottom: 7px; background: var(--tint); }
+  .a20f3 .out b { font-size: 14px; color: var(--acc); background: none; }
+  .a20f3 .out span { font-size: 12px; color: var(--mute); line-height: 1.6; }
+  .a20f3 .st--man { border: 2px dashed var(--gry); border-radius: 10px; padding: 10px 12px; }
   .a20f3 .do { margin: 0; font-size: 13px; font-weight: 700; line-height: 1.7; }
   @media (max-width: 760px) {
     .a20f2 .three { grid-template-columns: 1fr; }

@@ -144,7 +144,7 @@ const carry = [['価格の例外の扱い', 5], ['返品の伝票の処理', 4],
         ))}
       </div>
     </div>
-    <p class="fig__c">数字は説明のための例です。図で朱色にした3つの議題は、同じ会議で議論を続けても決まりません。決める人か、前提の議題を変える必要があります。</p>
+    <p class="fig__c">数字は説明のための例です。図で黄色にした3つの議題は、同じ会議で議論を続けても決まりません。決める人か、前提の議題を変える必要があります。</p>
   </figure>
 
   <p>PM は、毎週、次の2つの数字を確認します。</p>
@@ -173,41 +173,41 @@ const carry = [['価格の例外の扱い', 5], ['返品の伝票の処理', 4],
 
 <style is:global>
   .b16f1 .two { display: grid; grid-template-columns: 0.75fr 1.25fr; gap: 18px; align-items: stretch; }
-  .b16f1 .card { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; }
-  .b16f1 .card--on { border: 1.5px solid var(--ink); }
-  .b16f1 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
-  .b16f1 .card--on .card__k { color: var(--shu); }
-  .b16f1 .card__q { margin: 0 0 14px; font-family: var(--mincho); font-weight: 500; font-size: 16px; line-height: 1.9; }
-  .b16f1 .card__n { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.8; border-top: 1px solid var(--line); padding-top: 10px; }
+  .b16f1 .card { border: 0; border-radius: 10px; background: var(--bg); padding: 16px 18px; }
+  .b16f1 .card--on { border: 0; border-radius: 10px; background: var(--tint); }
+  .b16f1 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--mute); }
+  .b16f1 .card--on .card__k { color: var(--acc); }
+  .b16f1 .card__q { margin: 0 0 14px; font-family: var(--sans); font-weight: 500; font-size: 16px; line-height: 1.9; }
+  .b16f1 .card__n { margin: 0; font-size: 13px; color: var(--mute); line-height: 1.8; border-top: 1px solid var(--rule); padding-top: 10px; }
   .b16f1 dl { margin: 0; }
-  .b16f1 dl div { display: grid; grid-template-columns: 10em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); align-items: baseline; }
-  .b16f1 dt { font-size: 12px; color: var(--ink-2); }
+  .b16f1 dl div { display: grid; grid-template-columns: 10em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--rule); align-items: baseline; }
+  .b16f1 dt { font-size: 12px; color: var(--mute); }
   .b16f1 dd { margin: 0; font-size: 14px; font-weight: 700; line-height: 1.7; }
-  .b16f1 dl div:first-child dd { color: var(--shu); }
+  .b16f1 dl div:first-child dd { color: var(--acc); }
   .b16f2 .maps { display: grid; gap: 10px; }
   .b16f2 .map { display: grid; grid-template-columns: 1fr auto 1.1fr; gap: 14px; align-items: center; }
-  .b16f2 .map p { margin: 0; padding: 10px 14px; border: 1px solid var(--ink); background: var(--paper); }
-  .b16f2 .map b { display: block; font-family: var(--mincho); font-size: 16px; line-height: 1.55; background: none; }
-  .b16f2 .map span { font-size: 12px; color: var(--ink-2); }
-  .b16f2 .from { background: var(--shu) !important; border-color: var(--shu) !important; color: var(--paper); }
-  .b16f2 .from span { color: #ffd9cf; }
-  .b16f2 .to b { font-family: var(--gothic); font-size: 13.5px; }
+  .b16f2 .map p { margin: 0; padding: 10px 14px; border: 0; border-radius: 10px; background: var(--bg); }
+  .b16f2 .map b { display: block; font-family: var(--sans); font-size: 16px; line-height: 1.55; background: none; }
+  .b16f2 .map span { font-size: 12px; color: var(--mute); }
+  .b16f2 .from { background: var(--key) !important; color: var(--ink); }
+  .b16f2 .from span { color: var(--ink); }
+  .b16f2 .to b { font-family: var(--sans); font-size: 13.5px; }
   .b16f2 .map svg { width: 60px; height: 12px; fill: none; stroke: var(--ink); stroke-width: 1.5; }
   .b16f3 .res { display: grid; gap: 8px; }
-  .b16f3 .row { display: grid; grid-template-columns: 1.1fr 5.5em 1.2fr; gap: 12px; align-items: center; border: 1px solid var(--ink); background: var(--paper); padding: 9px 14px; }
+  .b16f3 .row { display: grid; grid-template-columns: 1.1fr 5.5em 1.2fr; gap: 12px; align-items: center; border: 0; border-radius: 10px; background: var(--bg); padding: 9px 14px; }
   .b16f3 .q { font-size: 13.5px; font-weight: 700; line-height: 1.6; }
-  .b16f3 .row b { font-size: 12.5px; text-align: center; padding: 2px 0; background: var(--shu); color: var(--paper); }
-  .b16f3 .row.ok b { background: var(--ink); }
-  .b16f3 .c { font-size: 12.5px; line-height: 1.65; color: var(--ink-2); }
-  .b16f3 .row:not(.ok) .c { color: var(--shu); font-weight: 700; }
+  .b16f3 .row b { font-size: 12.5px; text-align: center; padding: 2px 0; border-radius: 99px; background: var(--key); color: var(--ink); }
+  .b16f3 .row.ok b { background: var(--ink); color: #fff; }
+  .b16f3 .c { font-size: 12.5px; line-height: 1.65; color: var(--mute); }
+  .b16f3 .row:not(.ok) .c { color: var(--acc); font-weight: 700; }
   .b16f4 .bars { display: grid; gap: 8px; }
   .b16f4 .row { display: grid; grid-template-columns: 10em 1fr; gap: 12px; align-items: center; font-size: 13px; }
   .b16f4 .row div { display: flex; align-items: center; gap: 10px; }
-  .b16f4 .row i { display: block; height: 22px; width: var(--w); background: var(--ink); flex: none; }
-  .b16f4 .row.top i { background: var(--shu); }
+  .b16f4 .row i { display: block; height: 22px; width: var(--w); background: var(--ink); flex: none; border-radius: 5px; }
+  .b16f4 .row.top i { background: var(--key); color: var(--ink); }
   .b16f4 .row.top span { font-weight: 700; }
   .b16f4 .row b { font-family: var(--mono); font-weight: 500; background: none; }
-  .b16f4 .row.top b { color: var(--shu); }
+  .b16f4 .row.top b { color: var(--acc); }
   @media (max-width: 760px) {
     .b16f1 .two { grid-template-columns: 1fr; }
     .b16f1 dl div { grid-template-columns: 1fr; gap: 0; }

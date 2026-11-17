@@ -1,19 +1,30 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
-import ServiceFig from '@/components/ServiceFig.astro';
-import { services } from '@/data/services';
-import { posts } from '@/data/posts';
-import { termBySlug } from '@/data/glossary';
+/* 工程ごとのページ */
+import NextLayout from '../../layouts/NextLayout.astro';
+import FigTrace from '../../components/next/FigTrace.astro';
+import FigCheck from '../../components/next/FigCheck.astro';
+import FigForecast from '../../components/next/FigForecast.astro';
+import FigKotei from '../../components/next/FigKotei.astro';
+import { services } from '../../data/services';
+import { posts } from '../../data/posts';
+import { termBySlug } from '../../data/glossary';
 
 export function getStaticPaths() {
   return services.map((s) => ({ params: { slug: s.slug }, props: { s } }));
 }
 const { s } = Astro.props;
+const copy: Record<string, { h1: [string, string]; h2: [string, string]; p: string }> = {
+  requirements: { h1: ['決めたことが、', 'テストまで届く。'], h2: ['一つの決定を、', '最後まで追う。'], p: '会議で決まったことが、設計書に、プログラムに、テストに届いたか。AIチームは決定に番号を付け、その番号をすべての成果物に残します。上の点を押すと、その場面を見られます。' },
+  design: { h1: ['設計書は、全件を', '同じ観点で読む。'], h2: ['214本を読み、', '人に渡すのは指摘だけ。'], p: '人が読める量には限りがあり、レビューは抜き取りになりがちです。AIチームは全件を同じ観点で読み、気になる所だけを人に渡します。' },
+  development: { h1: ['設計書の一行と、', 'プログラムの一行を結ぶ。'], h2: ['片方にしかない行を、', '見つける。'], p: 'AIが書いたプログラムには、設計書にない処理が入ることがあります。処理ごとに設計書との対応を確かめ、片方にしかない行だけを人に渡します。' },
+  test: { h1: ['テストを流し、', '証跡を残す。'], h2: ['NG は、原因の仮説を', '付けて渡す。'], p: '検証環境で、AIが SAP の画面を操作して結合テストを実施します。NG が出たら、そこで止め、原因の仮説を書いて担当者に渡します。' },
+  migration: { h1: ['移行データを、', '一件ずつ突き合わせる。'], h2: ['合わない件だけを、', '理由ごとに分ける。'], p: '抜き取りではなく、全件を照合します。合わない件は理由ごとに分け、人は判断の要る件だけを確かめます。' },
+  operations: { h1: ['「なぜこの作りか」に、', '記録で答える。'], h2: ['問い合わせから、', '決定までさかのぼる。'], p: '導入時の設計書、テストの記録、決定の記録を、AIが読める形で残します。保守の担当者は、作った人を探さずに、経緯を引けます。' },
+  'project-management': { h1: ['間に合う見込みを、', '毎朝の幅で見る。'], h2: ['見込みは、1つの日付ではなく', '幅で出す。'], p: 'AIが、会議とチャットの記録から課題とリスクを毎朝取り出し、完了の見込みを「早ければ〜遅ければ」の幅で計算します。PM は、見込みを最も早める課題から手を打ちます。' },
+};
+const c = copy[s.slug];
 const SITE = 'https://techtime-jp.com';
 const url = `${SITE}/services/${s.slug}`;
-const rel = s.posts.map((x) => posts.find((p) => p.slug === x)!).filter(Boolean);
-const tms = s.terms.map(termBySlug).filter(Boolean);
-const others = services.filter((x) => x.slug !== s.slug);
 const ld = [
   {
     '@type': 'Service',
@@ -30,97 +41,154 @@ const ld = [
     mainEntity: s.faqs.map(([q, a]) => ({ '@type': 'Question', name: q, acceptedAnswer: { '@type': 'Answer', text: a } })),
   },
 ];
+
+const rel = s.posts.map((x) => posts.find((p) => p.slug === x)!).filter(Boolean);
+const tms = s.terms.map(termBySlug).filter(Boolean);
+const i = services.findIndex((x) => x.slug === s.slug);
 ---
 
-<PageLayout title={s.title} description={s.description} mark={s.mark} crumbs={[{ name: 'サービス', href: '/services' }, { name: s.name }]} ld={ld}>
-  <section class="top top--fig">
-    <div>
-    <p class="tag"><span>{s.name}</span>SAP の導入と運用保守</p>
-    <h1 class="h1">
-      <span class="hl"><span>{s.h1[0]}</span></span>
-      <span class="hl"><span>{s.h1[1]}</span></span>
-    </h1>
-    <p class="lead">{s.lead}</p>
-    <ul class="pts">{s.pts.map(([a, b]) => <li><b>{a}</b>{b}</li>)}</ul>
-    <div class="act">
-      <a href={`/contact?from=${s.slug}`} class="btn">{s.name}の進め方を相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-      <a href="/assessment" class="link">アセスメントの内容を見る</a>
+<NextLayout title={s.title} description={s.description} cur="kotei" ld={ld} ask={`いまの${s.name}の進め方を、聞かせてください。`}>
+  <section class="hero" data-st={s.name}>
+    <div class="hero__top">
+      <div>
+        <p class="kick"><a href="/services">工程</a>／{s.name}</p>
+        <h1>{c.h1[0]}<br />{c.h1[1]}</h1>
+      </div>
+      <div class="hero__side">
+        <p>{s.lead}</p>
+        <div class="act">
+          <a href={`/contact?from=${s.slug}`} class="btn">{s.name}の進め方を相談する<i></i></a>
+        </div>
+      </div>
     </div>
-    <p class="note">ご相談には、24時間以内に返信します。</p>
-    </div>
-    <ServiceFig slug={s.slug} />
-  </section>
-
-  <section class="sec">
-    <p class="tag"><span>01</span>{s.name}で起きていること</p>
-    <h2 class="h2">次のことに、心当たりはありませんか。</h2>
-    <div class="cards">
-      {s.pains.map(([a, b], i) => <div><span>{String(i + 1).padStart(2, '0')}</span><b>{a}</b><p>{b}</p></div>)}
-    </div>
-  </section>
-
-  <section class="sec">
-    <p class="tag"><span>02</span>AIが行うこと、人が決めること</p>
-    <h2 class="h2">AIが作って確かめ、人が決める。</h2>
-    <p class="sub">作業ごとに、AIの受け持ちと、人の受け持ちを分けます。業務の内容と合否は、人が決めます。</p>
-    <table class="tbl">
-      <thead><tr><th>作業</th><th>AIが行うこと</th><th>人が決めること</th></tr></thead>
-      <tbody>{s.roles.map(([a, b, c]) => <tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>)}</tbody>
-    </table>
-  </section>
-
-  <section class="sec">
-    <p class="tag"><span>03</span>組み込み方</p>
-    <h2 class="h2">小さく試してから、広げる。</h2>
-    <p class="sub">お客様の様式と規約に合わせて手順を作ります。最初は小さな範囲で試し、結果を確かめてから広げます。</p>
-    <ol class="steps">
-      {s.steps.map(([a, b], i) => <li><span>{String(i + 1).padStart(2, '0')}</span><div><b>{a}</b><p>{b}</p></div></li>)}
+    <ol class="rail" aria-label="工程">
+      {services.map((x, j) => <li class:list={[j === i && 'on', j < i && 'past']}><a href={`/services/${x.slug}`}>{x.name}</a></li>)}
     </ol>
   </section>
 
-  <section class="sec">
-    <p class="tag"><span>04</span>プロジェクトに残るもの</p>
-    <h2 class="h2">手順と記録が、お客様の側に残る。</h2>
-    <table class="tbl">
-      <thead><tr><th>残るもの</th><th>内容</th></tr></thead>
-      <tbody>{s.gets.map(([a, b]) => <tr><th>{a}</th><td>{b}</td></tr>)}</tbody>
-    </table>
+  <section class="sec sec--near" data-st="図">
+    <div class="head rv">
+      <h2>{c.h2[0]}<br />{c.h2[1]}</h2>
+      <p class="head__p">{c.p}</p>
+    </div>
+    {s.slug === 'requirements' && <FigTrace />}
+    {s.slug === 'design' && <FigCheck />}
+    {s.slug === 'project-management' && <FigForecast />}
+    <FigKotei slug={s.slug} />
+    <ul class="pts rv">{s.pts.map(([a, b]) => <li><b>{a}</b>{b}</li>)}</ul>
   </section>
 
-  <section class="sec">
-    <p class="tag"><span>05</span>よくある質問</p>
-    <h2 class="h2">{s.name}について、よくいただく質問。</h2>
-    <dl class="faq">{s.faqs.map(([q, a]) => <div><dt>{q}</dt><dd>{a}</dd></div>)}</dl>
+  <section class="sec" data-st="起きていること">
+    <div class="head rv">
+      <p class="kick">{s.name}で起きていること</p>
+      <h2>次のことに、<br />心当たりはありませんか。</h2>
+    </div>
+    <div class="pain rv">{s.pains.map(([a, b]) => <div><b>{a}</b><p>{b}</p></div>)}</div>
   </section>
 
-  <section class="cta">
-    <h2>いまの{s.name}の進め方を、聞かせてください。</h2>
-    <p>AIが効くかどうかを、お答えします。資料をお預かりして、全件を読んで診断するアセスメントもあります。</p>
-    <div class="act">
-      <a href={`/contact?from=${s.slug}`} class="btn btn--inv">相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-      <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="link link--inv">アセスメントの報告書のサンプルを見る</a>
+  <section class="sec" data-st="受け持ち">
+    <div class="head rv">
+      <p class="kick">受け持ち</p>
+      <h2>AIチームがすること、<br />人が決めること。</h2>
+      <p class="head__p">作業ごとに、受け持ちを分けます。業務の内容と合否は、人が決めます。</p>
+    </div>
+    <div class="role rv">
+      <p class="role__h"><span>作業</span><span>AIチームがすること</span><span>人が決めること</span></p>
+      {s.roles.map(([a, b, d]) => <p class="role__r"><b>{a}</b><span class="ai">{b}</span><span class="man">{d}</span></p>)}
     </div>
   </section>
 
-  <section class="list">
-    <p class="tag"><span>ブログ</span>{s.name}の進め方を、詳しく読む</p>
-    <ul>{rel.map((p) => <li><a href={`/blog/${p.slug}`}><small>{p.cat}</small>{p.title}</a></li>)}</ul>
+  <section class="sec" data-st="組み込み方">
+    <div class="head rv">
+      <p class="kick">組み込み方と、残るもの</p>
+      <h2>小さく試してから、<br />広げる。</h2>
+      <p class="head__p">お客様の様式と規約に合わせて手順を作ります。手順と記録は、お客様の側に残ります。</p>
+    </div>
+    <div class="two rv">
+      <ol class="stp">{s.steps.map(([a, b]) => <li><b>{a}</b><p>{b}</p></li>)}</ol>
+      <ul class="get">
+        <li class="get__h">プロジェクトに残るもの</li>
+        {s.gets.map(([a, b]) => <li><b>{a}</b><p>{b}</p></li>)}
+      </ul>
+    </div>
   </section>
 
-  {tms.length > 0 && (
-    <section class="list">
-      <p class="tag"><span>用語</span>このページに関係する言葉</p>
-      <ul>{tms.map((t) => <li><a href={`/glossary/${t!.slug}`}><small>用語集</small>{t!.word}</a></li>)}</ul>
-    </section>
-  )}
-
-  <section class="list">
-    <p class="tag"><span>サービス</span>ほかの工程</p>
-    <ul>{others.map((o) => <li><a href={`/services/${o.slug}`}><small>{o.name}</small>{o.h1.join('')}</a></li>)}</ul>
+  <section class="sec" data-st="質問">
+    <div class="head rv">
+      <p class="kick">よくある質問</p>
+      <h2>{s.name}について、<br />よくいただく質問。</h2>
+    </div>
+    <dl class="qa rv">{s.faqs.map(([q, a]) => <div><dt>{q}</dt><dd>{a}</dd></div>)}</dl>
   </section>
-</PageLayout>
 
-<style>
-  .top--fig { max-width: none !important; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 0.92fr); gap: clamp(28px, 4.5vw, 70px); align-items: center; }
-  @media (max-width: 900px) { .top--fig { grid-template-columns: 1fr; } }
+  <section class="sec" data-st="続き">
+    <div class="rel rv">
+      <div>
+        <p class="kick">{s.name}の進め方を、詳しく読む</p>
+        <ul>{rel.map((p) => <li><a href={`/blog/${p.slug}`}>{p.title}</a></li>)}</ul>
+      </div>
+      <div>
+        <p class="kick">関係する言葉</p>
+        <ul class="rel__t">{tms.map((t) => <li><a href={`/glossary/${t!.slug}`}>{t!.word}</a></li>)}</ul>
+        <p class="kick" style="margin-top:26px">最初の一歩</p>
+        <p class="rel__a">貴社の資料を読み、{s.name}でどれだけ効くかを報告書にします。<br /><a href="/assessment" class="more">アセスメントを見る</a></p>
+      </div>
+    </div>
+  </section>
+</NextLayout>
+
+<style is:global>
+  .kick a { text-decoration: underline; text-underline-offset: 4px; }
+  .rail { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: clamp(22px, 3.2vw, 44px); }
+  .rail a { display: block; padding: 7px 4px; border-radius: 99px; background: var(--card); text-align: center; font-size: 13px; font-weight: 700; color: var(--mute); transition: background 0.2s, color 0.2s; }
+  .rail a:hover { background: var(--tint); color: var(--ink); }
+  .rail .on a { background: var(--ink); color: #fff; }
+  .sec--near { padding-top: clamp(40px, 5vw, 72px); }
+  .pts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 14px; }
+  .pts li { padding: 18px 22px; border-radius: var(--r); background: var(--tint); font-size: 14px; }
+  .pts b { display: block; font-size: 17px; font-weight: 900; }
+  .pain { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: clamp(22px, 3.2vw, 44px); }
+  .pain div { padding: 24px 26px; border-radius: var(--r); background: var(--card); box-shadow: inset 0 5px 0 var(--miss); }
+  .pain b { display: block; font-size: clamp(16px, 1.5vw, 19px); font-weight: 900; line-height: 1.6; }
+  .pain p { margin-top: 10px; font-size: 14px; color: var(--mute); }
+  .role { margin-top: clamp(22px, 3.2vw, 44px); }
+  .role__h, .role__r { display: grid; grid-template-columns: 0.9fr 1.6fr 1.3fr; gap: 8px; }
+  .role__h { padding: 0 0 4px; font-size: 12px; font-weight: 700; color: var(--mute); }
+  .role__h span { padding: 0 20px; }
+  .role__r { margin-top: 8px; }
+  .role__r > * { padding: 16px 20px; border-radius: 12px; background: var(--card); font-size: 14.5px; }
+  .role__r b { font-size: 16px; font-weight: 900; }
+  .role__r .ai { box-shadow: inset 5px 0 0 var(--ai); }
+  .role__r .man { background: var(--tint); box-shadow: inset 5px 0 0 var(--ink); font-weight: 700; }
+  .two { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px; margin-top: clamp(22px, 3.2vw, 44px); }
+  .stp { display: grid; gap: 8px; counter-reset: s; }
+  .stp li { display: grid; grid-template-columns: 44px 1fr; align-items: start; padding: 16px 22px; border-radius: 12px; background: var(--card); counter-increment: s; }
+  .stp li::before { content: counter(s); grid-row: 1 / span 2; display: grid; place-items: center; width: 30px; height: 30px; margin-top: 2px; border-radius: 50%; background: var(--ai); color: var(--ink); font: 600 16px var(--num); }
+  .stp b { font-size: 16px; font-weight: 900; }
+  .stp p { grid-column: 2; font-size: 14px; color: var(--mute); }
+  .get { padding: 22px 26px; border-radius: var(--r); background: var(--ink); color: #fff; }
+  .get__h { font-size: 13px; font-weight: 700; opacity: 0.85; }
+  .get li + li { margin-top: 14px; }
+  .get b { font-size: 16.5px; font-weight: 900; }
+  .get p { font-size: 13.5px; opacity: 0.92; }
+  .qa { display: grid; gap: 8px; margin-top: clamp(22px, 3.2vw, 44px); }
+  .qa div { display: grid; grid-template-columns: 1fr 1.3fr; gap: 24px; padding: 20px 26px; border-radius: 12px; background: var(--card); }
+  .qa dt { font-weight: 900; font-size: 16px; }
+  .qa dd { font-size: 14.5px; }
+  .rel { display: grid; grid-template-columns: 1.3fr 1fr; gap: 18px 40px; }
+  .rel ul { margin-top: 10px; }
+  .rel li a { display: block; padding: 12px 0; border-bottom: 1px solid var(--rule); font-weight: 700; transition: color 0.2s, padding 0.25s; }
+  .rel li a:hover { padding-left: 8px; box-shadow: inset 0 -3px 0 var(--key); }
+  .rel__t { display: flex; flex-wrap: wrap; gap: 6px; }
+  .rel__t li a { padding: 3px 14px; border: 0; border-radius: 99px; background: var(--card); font-size: 13px; }
+  .rel__t li a:hover { padding-left: 14px; background: var(--ink); color: #fff; box-shadow: none; }
+  .rel__a { margin-top: 8px; font-size: 14.5px; }
+  @media (max-width: 900px) {
+    .rail { grid-template-columns: repeat(7, auto); overflow-x: auto; }
+    .rail a { padding: 7px 14px; white-space: nowrap; }
+    .pts, .pain, .two, .rel { grid-template-columns: 1fr; }
+    .role__h { display: none; }
+    .role__r { grid-template-columns: 1fr; gap: 4px; margin-top: 16px; }
+    .qa div { grid-template-columns: 1fr; gap: 6px; }
+  }
 </style>

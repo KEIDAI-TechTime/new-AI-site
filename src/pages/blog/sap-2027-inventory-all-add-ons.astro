@@ -177,54 +177,54 @@ const kinds = [
 </PostLayout>
 
 <style is:global>
-  .a18f1 .tl { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid var(--ink); background: var(--paper); }
-  .a18f1 .tl li { padding: 14px 18px; display: grid; gap: 4px; align-content: start; border-right: 1px solid var(--ink); }
-  .a18f1 .tl li:last-child { border-right: 0; background: repeating-linear-gradient(-45deg, rgba(212, 65, 42, 0.12) 0 6px, transparent 6px 12px); }
-  .a18f1 .tl time { font-family: var(--mono); font-size: 22px; font-weight: 500; color: var(--shu); line-height: 1.3; }
-  .a18f1 .tl b { font-family: var(--mincho); font-size: 17px; line-height: 1.5; background: none; }
-  .a18f1 .tl span { font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
+  .a18f1 .tl { list-style: none; margin: 0 0 16px; padding: 0; display: grid; grid-template-columns: 1fr 1fr; border: 0; border-radius: 10px; background: var(--bg); }
+  .a18f1 .tl li { padding: 14px 18px; display: grid; gap: 4px; align-content: start; border-right: 1px solid var(--rule); }
+  .a18f1 .tl li:last-child { border-right: 0; background: repeating-linear-gradient(-45deg, rgba(242, 169, 0, 0.29) 0 6px, transparent 6px 12px); }
+  .a18f1 .tl time { font-family: var(--num); font-size: 22px; font-weight: 600; color: var(--acc); line-height: 1.3; }
+  .a18f1 .tl b { font-family: var(--sans); font-size: 17px; line-height: 1.5; background: none; }
+  .a18f1 .tl span { font-size: 12.5px; line-height: 1.7; color: var(--mute); }
   .a18f1 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .a18f1 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
-  .a18f1 .c > b { font-family: var(--mono); font-weight: 500; font-size: 24px; color: var(--shu); line-height: 1; background: none; }
-  .a18f1 h4 { margin: 0; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .a18f1 .c { border: 0; border-radius: 10px; background: var(--bg); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .a18f1 .c > b { font-family: var(--num); font-weight: 600; font-size: 24px; color: var(--acc); line-height: 1; background: none; }
+  .a18f1 h4 { margin: 0; font-family: var(--sans); font-size: 16.5px; line-height: 1.55; }
   .a18f1 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
 
   .a18f2 .cmp { display: grid; gap: 14px; }
-  .a18f2 .blk { border: 1px solid var(--ink); background: var(--paper); padding: 14px 18px; display: grid; gap: 8px; }
-  .a18f2 .k { margin: 0 0 2px; font-family: var(--mincho); font-weight: 700; font-size: 16px; }
-  .a18f2 .k em { font-style: normal; font-family: var(--gothic); font-weight: 500; font-size: 12px; color: var(--ink-2); margin-left: 12px; }
+  .a18f2 .blk { border: 0; border-radius: 10px; background: var(--bg); padding: 14px 18px; display: grid; gap: 8px; }
+  .a18f2 .k { margin: 0 0 2px; font-family: var(--sans); font-weight: 700; font-size: 16px; }
+  .a18f2 .k em { font-style: normal; font-family: var(--sans); font-weight: 500; font-size: 12px; color: var(--mute); margin-left: 12px; }
   .a18f2 .row { display: grid; grid-template-columns: 5em 1fr; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
   .a18f2 .track { display: flex; align-items: center; height: 26px; }
-  .a18f2 .track i { display: block; height: 100%; width: var(--w); background: var(--ink); flex: none; }
-  .a18f2 .track i.add { background: var(--shu); }
+  .a18f2 .track i { display: block; height: 100%; width: var(--w); background: var(--ink); flex: none; border-radius: 5px; }
+  .a18f2 .track i.add { background: var(--key); color: var(--ink); }
   .a18f2 .track b { font-family: var(--mono); font-weight: 500; font-size: 13px; background: none; margin-left: 10px; white-space: nowrap; }
-  .a18f2 .track b.on { color: var(--shu); }
+  .a18f2 .track b.on { color: var(--acc); }
   .a18f2 .note { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 12.5px; padding-left: calc(5em + 12px); }
-  .a18f2 .note i { width: 14px; height: 14px; background: var(--shu); display: block; flex: none; }
+  .a18f2 .note i { width: 14px; height: 14px; background: var(--key); display: block; flex: none; color: var(--ink); }
 
   .a18f3 .res { display: grid; gap: 12px; }
   .a18f3 .r { display: grid; grid-template-columns: 11.5em 1fr; gap: 12px; align-items: center; font-size: 13.5px; font-weight: 700; }
   .a18f3 .r div { display: flex; align-items: center; gap: 10px; }
-  .a18f3 .r i { display: block; height: 26px; width: var(--w); background: var(--shu); flex: none; }
+  .a18f3 .r i { display: block; height: 26px; width: var(--w); background: var(--key); flex: none; border-radius: 5px; color: var(--ink); }
   .a18f3 .r i.b { background: var(--ink); }
   .a18f3 .r b { font-family: var(--mono); font-weight: 500; background: none; white-space: nowrap; }
-  .a18f3 .sum { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--ink); font-size: 13.5px; font-weight: 700; }
-  .a18f3 .sum b { font-family: var(--mono); font-weight: 500; font-size: 17px; color: var(--shu); background: none; }
+  .a18f3 .sum { margin: 16px 0 0; padding-top: 12px; border-top: 1px solid var(--rule); font-size: 13.5px; font-weight: 700; }
+  .a18f3 .sum b { font-family: var(--mono); font-weight: 500; font-size: 17px; color: var(--acc); background: none; }
 
   .a18f4 .flow { display: grid; grid-template-columns: 1fr 1fr 1.35fr; gap: 26px; align-items: stretch; }
-  .a18f4 .flow > div { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; position: relative; }
+  .a18f4 .flow > div { border: 0; border-radius: 10px; background: var(--bg); padding: 14px 16px; position: relative; }
   .a18f4 .flow > div + div::before { content: ''; position: absolute; left: -20px; top: 50%; width: 0; height: 0; border: 7px solid transparent; border-left: 10px solid var(--ink); transform: translateY(-50%); }
-  .a18f4 .k { margin: 0 0 6px; font-size: 11.5px; font-weight: 700; color: var(--ink-2); }
-  .a18f4 h4 { margin: 0 0 6px; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .a18f4 .k { margin: 0 0 6px; font-size: 11.5px; font-weight: 700; color: var(--mute); }
+  .a18f4 h4 { margin: 0 0 6px; font-family: var(--sans); font-size: 16.5px; line-height: 1.55; }
   .a18f4 .src p:last-child { margin: 0; font-size: 13px; line-height: 1.75; }
-  .a18f4 .mid ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
-  .a18f4 .mid li { padding: 5px 0 5px 16px; border-bottom: 1px solid var(--line); font-size: 13px; font-weight: 700; position: relative; }
-  .a18f4 .mid li::before { content: ''; position: absolute; left: 2px; top: 1em; width: 6px; height: 6px; background: var(--shu); }
+  .a18f4 .mid ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--rule); }
+  .a18f4 .mid li { padding: 5px 0 5px 16px; border-bottom: 1px solid var(--rule); font-size: 13px; font-weight: 700; position: relative; }
+  .a18f4 .mid li::before { content: ''; position: absolute; left: 2px; top: 1em; width: 6px; height: 6px; background: var(--key); color: var(--ink); }
   .a18f4 .out { border-width: 1.5px !important; }
-  .a18f4 .out .k { color: var(--shu); }
-  .a18f4 dl { margin: 0; display: grid; grid-template-columns: 6.2em 1fr; font-size: 13px; line-height: 1.7; border-top: 1px solid var(--line); }
-  .a18f4 dt, .a18f4 dd { margin: 0; padding: 5px 0; border-bottom: 1px solid var(--line); }
-  .a18f4 dt { font-size: 11.5px; font-weight: 700; color: var(--ink-2); padding-top: 7px; }
+  .a18f4 .out .k { color: var(--acc); }
+  .a18f4 dl { margin: 0; display: grid; grid-template-columns: 6.2em 1fr; font-size: 13px; line-height: 1.7; border-top: 1px solid var(--rule); }
+  .a18f4 dt, .a18f4 dd { margin: 0; padding: 5px 0; border-bottom: 1px solid var(--rule); }
+  .a18f4 dt { font-size: 11.5px; font-weight: 700; color: var(--mute); padding-top: 7px; }
   .a18f4 dd { font-weight: 700; }
   .a18f4 dd.mo { font-family: var(--mono); font-weight: 500; }
 

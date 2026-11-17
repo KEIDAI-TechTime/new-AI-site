@@ -1,80 +1,58 @@
 ---
-import PageLayout from '@/layouts/PageLayout.astro';
-import { services } from '@/data/services';
-const SITE = 'https://techtime-jp.com';
-const title = 'サービス：SAP の導入と運用保守に、生成AIのチームを組み込む | TechTime';
-const description =
-  'TechTime のサービスの一覧です。SAP の導入と運用保守の工程ごとに、生成AIのチームを組み込みます。要件定義・設計・開発・テスト・移行・運用保守・プロジェクト管理の7つのページで、AIが行うことと人が決めることを説明します。';
-const ld = [
-  {
-    '@type': 'ItemList',
-    name: 'TechTime のサービス',
-    itemListElement: services.map((s, i) => ({ '@type': 'ListItem', position: i + 1, name: s.name, url: `${SITE}/services/${s.slug}` })),
-  },
-];
-const diffs = [
-  ['提供するもの', '人の作業時間', '手順と点検の観点。プロジェクトに残る'],
-  ['確かめる範囲', '一部を選んで確かめる', 'AIが全件を確かめ、人が判断する'],
-  ['担当が替わったとき', '出来が変わる', '同じ手順で、同じ形の成果物が出る'],
-  ['稼働したあと', '導入のメンバーが離れ、経緯が分からなくなる', '導入の記録を、保守でそのまま使う'],
-];
+/* 工程の一覧 */
+import NextLayout from '../../layouts/NextLayout.astro';
+import { services } from '../../data/services';
+const does: Record<string, [string, string, string]> = {
+  requirements: ['会議の記録から決定と宿題を拾い、番号を付けて一覧に載せる', '番号の付いた決定の一覧', '一つの決定を、会議から保守まで追う'],
+  design: ['設計書の初版を作り、全件を同じ観点で点検する', '設計書と、点検の記録', '214本の設計書を読み、指摘だけを渡す'],
+  development: ['設計書から、プログラムと単体テストの初版を作る', 'プログラムと、元の設計との対応', '設計書の一行と、プログラムの一行を結ぶ'],
+  test: ['テストケースを起こし、検証環境で実施して証跡を残す', 'ケース・結果・証跡', 'NG に、原因の仮説を付けて渡す'],
+  migration: ['移行データを全件で突き合わせ、合わない件を理由ごとに分ける', '対応表と、照合の結果', '360件を照合し、合わない件だけを分ける'],
+  operations: ['導入時の記録から、経緯と影響範囲を引き当てる', '問い合わせと対応の記録', '問い合わせから、決定までさかのぼる'],
+  'project-management': ['記録から課題とリスクを拾い、完了の見込みを毎朝出す', '課題の一覧と、見込みの推移', '毎朝の見込みを、幅で並べる'],
+};
+const title = '工程ごとに、AIチームがすること | TechTime';
+const description = 'SAP 導入の要件定義・設計・開発・テスト・移行・運用保守・プロジェクト管理。どの工程にも、受け持つAIチームがいます。工程ごとに、AIチームがすることと、プロジェクトに残るものを並べました。';
 ---
 
-<PageLayout title={title} description={description} mark="SERVICES" crumbs={[{ name: 'サービス' }]} ld={ld}>
-  <section class="top">
-    <p class="tag"><span>サービス</span>SAP の導入と運用保守</p>
-    <h1 class="h1">
-      <span class="hl"><span>工程ごとに、</span></span>
-      <span class="hl"><span><em>AIチーム</em>を組み込む。</span></span>
-    </h1>
-    <p class="lead">設計、開発、テスト、点検、進捗管理を受け持つAIを、SAP の導入と運用保守のプロジェクトに組み込みます。お客様の様式と規約に合わせて手順を作り、手順はお客様のものとして残します。</p>
-    <div class="act">
-      <a href="/assessment" class="btn">最初の一歩：アセスメント<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-      <a href="/check" class="link">10問で自己診断する</a>
+<NextLayout title={title} description={description} cur="kotei">
+  <section class="hero" data-st="工程">
+    <div class="hero__top">
+      <div>
+        <p class="kick">工程</p>
+        <h1>どの工程にも、<br />受け持つAIチームがいる。</h1>
+      </div>
+      <div class="hero__side">
+        <p>要件定義から運用保守まで、工程ごとにAIチームを組み込みます。その工程ですることを、それぞれのページで図にしました。困っている工程から見てください。</p>
+      </div>
     </div>
-  </section>
-
-  <section class="sec">
-    <p class="tag"><span>01</span>工程から選ぶ</p>
-    <h2 class="h2">いま進めている工程から始められる。</h2>
-    <p class="sub">導入の途中でも、稼働したあとでも始められます。工程ごとに、AIが行うことと、人が決めることを説明します。</p>
-    <div class="cards">
+    <div class="kl">
+      <p class="kl__h"><span>工程</span><span>AIチームがすること</span><span>プロジェクトに残るもの</span><span>このページの図</span></p>
       {services.map((s, i) => (
-        <a class="card" href={`/services/${s.slug}`}>
-          <span>{String(i + 1).padStart(2, '0')}</span>
+        <a href={`/services/${s.slug}`} class="kl__r rv" style={`transition-delay:${i * 50}ms`}>
           <b>{s.name}</b>
-          <p>{s.h1.join('')}</p>
+          <span>{does[s.slug][0]}</span>
+          <span class="kl__l">{does[s.slug][1]}</span>
+          <span class="more">{does[s.slug][2]}</span>
         </a>
       ))}
     </div>
   </section>
+</NextLayout>
 
-  <section class="sec">
-    <p class="tag"><span>02</span>工数の提供との違い</p>
-    <h2 class="h2">人の作業時間ではなく、仕組みを提供する。</h2>
-    <p class="sub">人を増やす方法では、その人が離れると作業が止まります。TechTime は、手順と点検の観点を作り、プロジェクトに残します。支援会社を比べるときに聞く質問は、<a href="/blog/choose-sap-partner-by-what-remains">ブログの記事</a>にまとめています。</p>
-    <table class="tbl">
-      <thead><tr><th></th><th>工数の提供</th><th>仕組みの提供（TechTime）</th></tr></thead>
-      <tbody>{diffs.map(([a, b, c]) => <tr><th>{a}</th><td>{b}</td><td>{c}</td></tr>)}</tbody>
-    </table>
-  </section>
-
-  <section class="sec">
-    <p class="tag"><span>03</span>守ること</p>
-    <h2 class="h2">決めるのは人。AIには決めさせない。</h2>
-    <div class="cards">
-      <div><span>01</span><b>結果は人が確かめて決める</b><p>AIは、材料と下書きを作ります。業務の内容と合否は、人が決めます。</p></div>
-      <div><span>02</span><b>本番環境では、AIに操作させない</b><p>AIが画面を操作するのは、検証環境だけです。</p></div>
-      <div><span>03</span><b>情報を、AIの学習に使わせない</b><p>お客様の情報は、AIの学習に使われない設定で扱います。</p></div>
-    </div>
-  </section>
-
-  <section class="cta">
-    <h2>どの工程から始めるかを、資料から決めます。</h2>
-    <p>アセスメントでは、設計書・会議の記録・課題表を全件読み、AIチームが効く工程を報告書にまとめます。</p>
-    <div class="act">
-      <a href="/contact?topic=assess" class="btn btn--inv">アセスメントを相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-      <a href="/process" class="link link--inv">進め方とお見積もりを見る</a>
-    </div>
-  </section>
-</PageLayout>
+<style is:global>
+  .kl { margin-top: clamp(22px, 3.2vw, 44px); }
+  .kl__h, .kl__r { display: grid; grid-template-columns: 1.1fr 2fr 1.2fr 1.5fr; gap: 22px; align-items: center; }
+  .kl__h { padding: 0 26px 6px; font-size: 12px; font-weight: 700; color: var(--mute); }
+  .kl__r { margin-top: 8px; padding: 20px 26px; border-radius: var(--r); background: var(--card); font-size: 14.5px; transition: opacity 0.8s, transform 0.5s, background 0.25s, color 0.25s; }
+  .kl__r b { font-size: clamp(18px, 1.6vw, 22px); font-weight: 900; white-space: nowrap; }
+  .kl__l { color: var(--mute); }
+  .kl__r .more { font-size: 13.5px; justify-content: space-between; }
+  .kl__r:hover { background: var(--ink); color: #fff; }
+  .kl__r:hover .kl__l { color: #c9cdd0; }
+  .kl__r:hover .more { color: #fff; }
+  @media (max-width: 900px) {
+    .kl__h { display: none; }
+    .kl__r { grid-template-columns: 1fr; gap: 4px; }
+  }
+</style>

@@ -45,7 +45,7 @@ const rh = [['1回目', 4820, 100], ['2回目', 610, 13], ['3回目', 38, 1.5]];
         </div>
       </div>
     </div>
-    <p class="fig__c">マスの数は説明のための例です。朱の点線の枠が、照合されなかった誤りです。誤りは、同じ条件を持つデータにまとまって発生します。</p>
+    <p class="fig__c">マスの数は説明のための例です。黄色の点線の枠が、照合されなかった誤りです。誤りは、同じ条件を持つデータにまとまって発生します。</p>
   </figure>
 
   <p>移行の誤りは、データ全体に均等には発生しません。変換のルールが想定していなかった条件のデータで、まとまって発生します。たとえば、コードの桁数が違うデータ、古い時期に登録されたデータ、項目が空欄のデータです。</p>
@@ -163,45 +163,45 @@ const rh = [['1回目', 4820, 100], ['2回目', 610, 13], ['3回目', 38, 1.5]];
 <style is:global>
   .b9f1 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
   .b9f1 .k { margin: 0 0 10px; font-size: 13px; font-weight: 700; }
-  .b9f1 .k--on { color: var(--shu); }
+  .b9f1 .k--on { color: var(--acc); }
   .b9f1 .cells { display: grid; grid-template-columns: repeat(14, 1fr); gap: 4px; }
-  .b9f1 .cells i { display: block; aspect-ratio: 1 / 1.2; border: 1px solid var(--line); background: var(--paper); }
-  .b9f1 .cells i.s { background: var(--ink); border-color: var(--ink); }
-  .b9f1 .cells i.b:not(.s) { border: 2px dashed var(--shu); }
-  .b9f1 .cells--all i { background: var(--ink); border-color: var(--ink); }
-  .b9f1 .cells--all i.b { background: var(--shu); border: 1px solid var(--shu); }
+  .b9f1 .cells i { display: block; aspect-ratio: 1 / 1.2; border: 0; border-radius: 10px; background: var(--bg); }
+  .b9f1 .cells i.s { background: var(--ink); }
+  .b9f1 .cells i.b:not(.s) { border: 2px dashed var(--key); }
+  .b9f1 .cells--all i { background: var(--ink); }
+  .b9f1 .cells--all i.b { background: var(--key); border: 0; border-radius: 10px; color: var(--ink); }
   .b9f1.run .cells i.s, .b9f1.run .cells--all i { animation: b9in 0.3s var(--t) both; }
   .b9f1.run .cells:not(.cells--all) i.b:not(.s) { animation: ffade 0.5s 3.2s both; }
-  @keyframes b9in { from { background: var(--paper); border-color: var(--line); } }
-  .b9f1 .r { margin: 12px 0 0; font-family: var(--mono); font-size: 12px; color: var(--ink-2); }
-  .b9f1 .r b { color: var(--shu); background: none; }
-  .b9f2 .box rect, .b9f2 .spec rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
-  .b9f2 .prg rect { fill: var(--ink); }
-  .b9f2 .prg text { fill: var(--paper); }
-  .b9f2 .chk rect { fill: var(--shu); }
-  .b9f2 .chk text { fill: var(--paper); }
+  @keyframes b9in { from { background: var(--bg); border-color: var(--rule); } }
+  .b9f1 .r { margin: 12px 0 0; font-family: var(--mono); font-size: 12px; color: var(--mute); }
+  .b9f1 .r b { color: var(--acc); background: none; }
+  .b9f2 .box rect, .b9f2 .spec rect { fill: var(--bg); rx: 10px; }
+  .b9f2 .prg rect { rx: 10px; fill: var(--ink); }
+  .b9f2 .prg text { fill: #fff; }
+  .b9f2 .chk rect { rx: 10px; fill: var(--key); }
+  .b9f2 .chk text { fill: var(--ink); }
   .b9f2 .sm2 { font-size: 11px !important; }
-  .b9f2 .prg .sm2 { fill: #c9c4b6; }
-  .b9f2 .chk .sm2 { fill: #ffd9cf; }
+  .b9f2 .prg .sm2 { fill: var(--mute); }
+  .b9f2 .chk .sm2 { fill: var(--ink); }
   .b9f2 .ln { fill: none; stroke: var(--ink); stroke-width: 1.4; }
-  .b9f2 .ln2 { fill: none; stroke: var(--shu); stroke-width: 2; }
+  .b9f2 .ln2 { fill: none; stroke: var(--key); stroke-width: 2; }
   .b9f2 .ln3 { fill: none; stroke: var(--ink); stroke-width: 1.2; stroke-dasharray: 0.06 0.06; }
-  .b9f2 .lb { fill: var(--shu) !important; font-weight: 700; }
+  .b9f2 .lb { fill: var(--acc) !important; font-weight: 700; }
   .b9f2 .prg, .b9f2 .spec, .b9f2 .chk { transform-box: fill-box; transform-origin: center; }
   .b9f3 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .b9f3 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
-  .b9f3 .c > b { font-family: var(--mono); font-weight: 500; font-size: 24px; line-height: 1.1; background: none; }
-  .b9f3 h4 { margin: 0; font-family: var(--mincho); font-size: 17px; line-height: 1.5; }
+  .b9f3 .c { border: 0; border-radius: 10px; background: var(--bg); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b9f3 .c > b { font-family: var(--num); font-weight: 600; font-size: 24px; line-height: 1.1; background: none; }
+  .b9f3 h4 { margin: 0; font-family: var(--sans); font-size: 17px; line-height: 1.5; }
   .b9f3 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
-  .b9f3 .c em { font-style: normal; font-size: 12px; font-weight: 700; border-top: 1px solid var(--line); padding-top: 7px; color: var(--ink-2); }
-  .b9f3 .c.h { background: var(--shu); border-color: var(--shu); color: var(--paper); }
-  .b9f3 .c.h em { color: var(--paper); border-top-color: #ffd9cf; }
+  .b9f3 .c em { font-style: normal; font-size: 12px; font-weight: 700; border-top: 1px solid var(--rule); padding-top: 7px; color: var(--mute); }
+  .b9f3 .c.h { background: var(--key); color: var(--ink); }
+  .b9f3 .c.h em { color: var(--ink); border-top-color: var(--ink); }
   .b9f4 .bars { display: grid; gap: 12px; }
   .b9f4 .row { display: grid; grid-template-columns: 8.5em 1fr; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
   .b9f4 .row div { display: flex; align-items: center; gap: 10px; }
-  .b9f4 .row i { display: block; height: 26px; width: var(--w); min-width: 4px; max-width: 80%; background: var(--ink); flex: none; }
-  .b9f4 .row.last i { background: var(--shu); }
-  .b9f4 .row.last b { color: var(--shu); }
+  .b9f4 .row i { display: block; height: 26px; width: var(--w); min-width: 4px; max-width: 80%; background: var(--ink); flex: none; border-radius: 5px; }
+  .b9f4 .row.last i { background: var(--key); color: var(--ink); }
+  .b9f4 .row.last b { color: var(--acc); }
   .b9f4 .row b { font-family: var(--mono); font-weight: 500; background: none; white-space: nowrap; }
   @media (max-width: 760px) {
     .b9f1 .two { grid-template-columns: 1fr; }

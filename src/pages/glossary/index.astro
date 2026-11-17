@@ -14,29 +14,30 @@ const ld = [
 ];
 ---
 
-<PageLayout title={title} description={description} mark="GLOSSARY" crumbs={[{ name: '用語集' }]} ld={ld}>
-  <section class="top">
-    <p class="tag"><span>用語集</span>{terms.length}語</p>
-    <h1 class="h1">
-      <span class="hl"><span>SAP 導入の言葉を、</span></span>
-      <span class="hl"><span>短く説明する。</span></span>
-    </h1>
-    <p class="lead">SAP の導入と運用保守で使う言葉をまとめました。言葉ごとに、意味と、生成AIを使うと何が変わるかを説明します。</p>
-  </section>
-
+<PageLayout
+  title={title}
+  description={description}
+  crumbs={[{ name: '用語集' }]}
+  tag={`${terms.length}語`}
+  h1={['SAP 導入の言葉を、', '短く説明する。']}
+  lead="SAP の導入と運用保守で使う言葉をまとめました。言葉ごとに、意味と、生成AIを使うと何が変わるかを説明します。"
+  ld={ld}
+>
   {groups.map((g, gi) => (
-    <section class="sec">
-      <p class="tag"><span>{String(gi + 1).padStart(2, '0')}</span>{g}</p>
-      <dl class="faq gl">
-        {terms.filter((t) => t.group === g).map((t) => (
-          <div><dt><a href={`/glossary/${t.slug}`}>{t.word}</a></dt><dd>{t.def}</dd></div>
-        ))}
-      </dl>
+    <section class:list={['sec', gi === 0 && 'pg-near']} data-st={g}>
+      <div class="pg-grp rv">
+        <h2>{g}</h2>
+        <dl class="pg-qa gl">
+          {terms.filter((t) => t.group === g).map((t) => (
+            <div><dt><a href={`/glossary/${t.slug}`} class="pg-lnk">{t.word}</a></dt><dd>{t.def}</dd></div>
+          ))}
+        </dl>
+      </div>
     </section>
   ))}
 </PageLayout>
 
-<style>
-  .gl dt::before { content: none !important; }
-  .gl dt a { border-bottom: 1px solid var(--shu); }
+<style is:global>
+  .gl div { grid-template-columns: 1fr 2fr; }
+  @media (max-width: 900px) { .gl div { grid-template-columns: 1fr; } }
 </style>

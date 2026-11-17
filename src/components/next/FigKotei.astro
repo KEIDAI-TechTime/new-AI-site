@@ -79,7 +79,7 @@ const chain = [
         <p class="mig__k">人が見るのは、この {cells.filter((c) => c).length} 件だけです。</p>
       </div>
     </div>
-    <p class="fig__lg"><span><i class="b b--a"></i>一致</span><span><i class="b b--d" style="width:18px"></i>合わない（理由ごとに色分け）</span><em>架空の例です。</em></p>
+    <p class="fig__lg"><span><i class="b b--a"></i>一致</span><span><i class="b" style="background:var(--ink)"></i>合わない（理由ごとに色分け）</span><em>架空の例です。</em></p>
   </div>
 )}
 
@@ -122,10 +122,11 @@ const chain = [
   .scr i:nth-child(2) { width: 70%; } .scr i:nth-child(3) { width: 85%; } .scr i:nth-child(4) { width: 40%; background: var(--ai); }
   .run span { font: 500 11px var(--mono); color: var(--mute); }
   .run b { font-size: 13.5px; }
-  .run em { justify-self: start; margin-top: 4px; padding: 0 12px; border-radius: 99px; font: 700 11.5px/1.9 var(--mono); font-style: normal; background: var(--ai); color: #fff; }
+  .run em { justify-self: start; margin-top: 4px; padding: 0 12px; border-radius: 99px; font: 700 11.5px/1.9 var(--mono); font-style: normal; background: var(--ai); color: var(--ink); }
   .run .ng { background: #fbe3eb; }
   .run .ng .scr { box-shadow: inset 0 0 0 2px var(--miss); }
   .run .ng .scr i:nth-child(4), .run .ng em { background: var(--miss); }
+  .run .ng em { color: #fff; }
   .run .yet { opacity: 0.55; }
   .run .yet .scr { box-shadow: inset 0 0 0 2px var(--rule); }
   .run .yet .scr i:nth-child(4) { background: var(--rule); }
@@ -137,17 +138,17 @@ const chain = [
   .mig { display: grid; grid-template-columns: 1.5fr 1fr; gap: 28px; margin: 14px 22px 4px; align-items: center; }
   .mig__g { display: grid; grid-template-columns: repeat(36, 1fr); gap: 3px; }
   .mig__g i { aspect-ratio: 1; border-radius: 2px; background: var(--ai); opacity: 0.9; }
-  .mig__g .ma { background: var(--amber); }
+  .mig__g .ma { background: var(--ink); }
   .mig__g .mb { background: var(--miss); }
-  .mig__g .mc { background: var(--ink); }
+  .mig__g .mc { background: #8a8f94; }
   .mig__n { font-size: 14px; font-weight: 700; }
-  .mig__n b { margin-right: 6px; font: 600 54px/1 var(--num); color: var(--ai); }
+  .mig__n b { margin-right: 6px; font: 600 54px/1 var(--num); color: var(--ink); }
   .mig__k { margin-top: 10px; font-size: 13px; font-weight: 700; }
   .mig li { display: flex; align-items: baseline; gap: 8px; padding: 7px 0; border-bottom: 1px solid var(--rule); font-size: 13.5px; }
   .mig li span { flex: 1; }
-  .mig li span::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 10px; border-radius: 2px; background: var(--amber); }
+  .mig li span::before { content: ''; display: inline-block; width: 10px; height: 10px; margin-right: 10px; border-radius: 2px; background: var(--ink); }
   .mig li.mb span::before { background: var(--miss); }
-  .mig li.mc span::before { background: var(--ink); }
+  .mig li.mc span::before { background: #8a8f94; }
   .mig li b { font: 600 22px/1 var(--num); }
 
   .back { display: grid; grid-template-columns: 1.5fr repeat(4, 1fr); gap: 26px; margin: 14px 22px 0; }

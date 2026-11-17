@@ -162,35 +162,35 @@ const weeks = [48, 45, 51, 44, 63, 71, 78, 82];
   .b10f1 .bars { display: grid; gap: 7px; }
   .b10f1 .row { display: grid; grid-template-columns: 11em 1fr; gap: 12px; align-items: center; font-size: 13px; }
   .b10f1 .row div { display: flex; align-items: center; gap: 10px; }
-  .b10f1 .row i { display: block; height: 20px; width: var(--w); max-width: 78%; background: var(--ink); flex: none; }
-  .b10f1 .row.top i { background: var(--shu); }
+  .b10f1 .row i { display: block; height: 20px; width: var(--w); max-width: 78%; background: var(--ink); flex: none; border-radius: 5px; }
+  .b10f1 .row.top i { background: var(--key); color: var(--ink); }
   .b10f1 .row.top span { font-weight: 700; }
-  .b10f1 .row.etc i { background: var(--line); }
+  .b10f1 .row.etc i { background: var(--rule); }
   .b10f1 .row b { font-family: var(--mono); font-weight: 500; font-size: 13px; background: none; white-space: nowrap; }
-  .b10f1 .row.top b { color: var(--shu); }
-  .b10f1 .row small { font-size: 11px; color: var(--ink-2); margin-left: 6px; }
+  .b10f1 .row.top b { color: var(--acc); }
+  .b10f1 .row small { font-size: 11px; color: var(--mute); margin-left: 6px; }
   .b10f2 .hub { display: grid; grid-template-columns: 0.8fr 1.5fr; gap: 22px; align-items: center; }
-  .b10f2 .who { background: var(--shu); color: var(--paper); padding: 18px 16px; text-align: center; }
-  .b10f2 .who b { display: block; font-family: var(--mincho); font-size: 17px; line-height: 1.5; background: none; }
-  .b10f2 .who span { font-size: 12.5px; color: #ffd9cf; }
+  .b10f2 .who { border-radius: 10px; background: var(--key); color: var(--ink); padding: 18px 16px; text-align: center; }
+  .b10f2 .who b { display: block; font-family: var(--sans); font-size: 17px; line-height: 1.5; background: none; }
+  .b10f2 .who span { font-size: 12.5px; color: var(--ink); }
   .b10f2 .waits { display: grid; gap: 10px; }
-  .b10f2 .w { display: grid; grid-template-columns: 6em 1fr auto; gap: 12px; align-items: center; border: 1px solid var(--ink); background: var(--paper); padding: 10px 14px; position: relative; }
-  .b10f2 .w::before { content: ''; position: absolute; right: 100%; top: 50%; width: 22px; height: 2px; background: var(--shu); }
-  .b10f2 .w em { font-style: normal; font-size: 12px; color: var(--ink-2); }
+  .b10f2 .w { display: grid; grid-template-columns: 6em 1fr auto; gap: 12px; align-items: center; border: 0; border-radius: 10px; background: var(--bg); padding: 10px 14px; position: relative; }
+  .b10f2 .w::before { content: ''; position: absolute; right: 100%; top: 50%; width: 22px; height: 2px; background: var(--key); color: var(--ink); }
+  .b10f2 .w em { font-style: normal; font-size: 12px; color: var(--mute); }
   .b10f2 .w b { font-size: 14px; background: none; }
-  .b10f2 .w span { font-size: 12px; color: var(--ink-2); white-space: nowrap; }
-  .b10f2 .w u { text-decoration: none; font-family: var(--mono); color: var(--shu); font-size: 14px; }
+  .b10f2 .w span { font-size: 12px; color: var(--mute); white-space: nowrap; }
+  .b10f2 .w u { text-decoration: none; font-family: var(--mono); color: var(--acc); font-size: 14px; }
   .b10f3 .maps { display: grid; gap: 10px; }
   .b10f3 .map { display: grid; grid-template-columns: 0.85fr auto 1.25fr; gap: 14px; align-items: center; }
-  .b10f3 .map p { margin: 0; padding: 10px 14px; border: 1px solid var(--ink); background: var(--paper); }
-  .b10f3 .map b { display: block; font-family: var(--mincho); font-size: 16px; line-height: 1.55; background: none; }
-  .b10f3 .map span { font-size: 12px; color: var(--ink-2); }
-  .b10f3 .from { background: var(--paper-2) !important; }
-  .b10f3 .to b { color: var(--shu); }
+  .b10f3 .map p { margin: 0; padding: 10px 14px; border: 0; border-radius: 10px; background: var(--bg); }
+  .b10f3 .map b { display: block; font-family: var(--sans); font-size: 16px; line-height: 1.55; background: none; }
+  .b10f3 .map span { font-size: 12px; color: var(--mute); }
+  .b10f3 .from { background: var(--bg) !important; }
+  .b10f3 .to b { color: var(--acc); }
   .b10f3 .map svg { width: 60px; height: 12px; fill: none; stroke: var(--ink); stroke-width: 1.5; }
   .b10f4 .ax { stroke: var(--ink); stroke-width: 1; }
-  .b10f4 .bar { fill: var(--ink); }
-  .b10f4 .bar.on { fill: var(--shu); }
+  .b10f4 .bar { rx: 4px; fill: var(--ink); }
+  .b10f4 .bar.on { rx: 4px; fill: var(--key); }
   .b10f4 .dl { stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 5 4; }
   @media (max-width: 760px) {
     .b10f1 .row { grid-template-columns: 1fr; gap: 2px; }

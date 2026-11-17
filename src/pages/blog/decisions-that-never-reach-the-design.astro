@@ -40,7 +40,7 @@ const days = [1, 2, 2, 3, 5, 6, 8, 9, 9, 10, 12, 14, 17, 19];
         <g class="ai p" style="--t:3.3s"><rect x="398" y="100" width="70" height="52" /><text x="433" y="122" text-anchor="middle" class="mo">AI</text><text x="433" y="140" text-anchor="middle" class="sm2">修正案</text></g>
       </svg>
     </div>
-    <p class="fig__c">朱の線は、AIが議事録から修正案を作り、各資料の担当者に渡す手順です。多くのプロジェクトには、この手順がありません。</p>
+    <p class="fig__c">黄色の線は、AIが議事録から修正案を作り、各資料の担当者に渡す手順です。多くのプロジェクトには、この手順がありません。</p>
   </figure>
 
   <p>議事録は1つの文書です。一方、決定によって直す資料は、要件一覧、設計書、見積もり、課題表と複数あります。議事録の決定を、それぞれの資料に書き写す担当がいません。</p>
@@ -182,54 +182,54 @@ const days = [1, 2, 2, 3, 5, 6, 8, 9, 9, 10, 12, 14, 17, 19];
 </PostLayout>
 
 <style is:global>
-  .a1f1 .box rect, .a1f1 .doc rect { fill: var(--paper); stroke: var(--ink); stroke-width: 1.4; }
+  .a1f1 .box rect, .a1f1 .doc rect { fill: var(--bg); rx: 10px; }
   .a1f1 .ln { stroke: var(--ink); stroke-width: 1.4; }
-  .a1f1 .ln2 { fill: none; stroke: var(--shu); stroke-width: 2.2; }
+  .a1f1 .ln2 { fill: none; stroke: var(--key); stroke-width: 2.2; }
   .a1f1 .tok { fill: var(--ink); }
   .a1f1.run .tok { animation: a1tok 1.2s 0.3s cubic-bezier(0.5, 0, 0.3, 1) both; }
   @keyframes a1tok { 0% { transform: translateX(0); opacity: 1; } 80% { transform: translateX(68px); opacity: 1; } 100% { transform: translateX(68px); opacity: 0; } }
-  .a1f1 .stop { fill: var(--shu); font-weight: 700; transform-box: fill-box; }
-  .a1f1 .old { fill: var(--ink-2); }
+  .a1f1 .stop { fill: var(--acc); font-weight: 700; transform-box: fill-box; }
+  .a1f1 .old { fill: var(--mute); }
   .a1f1.run .old { animation: a1old 0.4s 4.9s both; }
   @keyframes a1old { to { opacity: 0; } }
-  .a1f1 .ai rect { fill: var(--ink); }
-  .a1f1 .ai text { fill: var(--paper); font-size: 15px; }
-  .a1f1 .ai .sm2 { font-size: 10.5px; fill: #c9c4b6; }
+  .a1f1 .ai rect { rx: 10px; fill: var(--ink); }
+  .a1f1 .ai text { fill: #fff; font-size: 15px; }
+  .a1f1 .ai .sm2 { font-size: 10.5px; fill: var(--mute); }
   .a1f1 .ai, .a1f1 .stamp { transform-box: fill-box; transform-origin: center; }
-  .a1f1 .stamp circle { fill: var(--paper); stroke: var(--shu); stroke-width: 1.8; }
-  .a1f1 .stamp text { fill: var(--shu); font-family: var(--mincho); font-weight: 800; font-size: 12px; }
+  .a1f1 .stamp circle { fill: #fff; stroke: var(--key); stroke-width: 1.8; }
+  .a1f1 .stamp text { fill: var(--acc); font-family: var(--sans); font-weight: 900; font-size: 12px; }
 
   .a1f2 .two { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: 18px; align-items: stretch; }
-  .a1f2 .card { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; }
-  .a1f2 .card--on { border: 1.5px solid var(--ink); }
-  .a1f2 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
-  .a1f2 .card--on .card__k { color: var(--shu); }
-  .a1f2 .card__q { margin: 0 0 14px; font-family: var(--mincho); font-weight: 500; font-size: 16px; line-height: 1.9; }
-  .a1f2 .card__n { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.8; border-top: 1px solid var(--line); padding-top: 10px; }
+  .a1f2 .card { border: 0; border-radius: 10px; background: var(--bg); padding: 16px 18px; }
+  .a1f2 .card--on { border: 0; border-radius: 10px; background: var(--tint); }
+  .a1f2 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--mute); }
+  .a1f2 .card--on .card__k { color: var(--acc); }
+  .a1f2 .card__q { margin: 0 0 14px; font-family: var(--sans); font-weight: 500; font-size: 16px; line-height: 1.9; }
+  .a1f2 .card__n { margin: 0; font-size: 13px; color: var(--mute); line-height: 1.8; border-top: 1px solid var(--rule); padding-top: 10px; }
   .a1f2 dl { margin: 0; }
-  .a1f2 dl div { display: grid; grid-template-columns: 8.5em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); align-items: baseline; }
-  .a1f2 dt { font-size: 12px; color: var(--ink-2); }
+  .a1f2 dl div { display: grid; grid-template-columns: 8.5em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--rule); align-items: baseline; }
+  .a1f2 dt { font-size: 12px; color: var(--mute); }
   .a1f2 dd { margin: 0; font-size: 14.5px; font-weight: 700; line-height: 1.7; }
-  .a1f2 dl div:nth-child(4) dd { color: var(--shu); }
+  .a1f2 dl div:nth-child(4) dd { color: var(--acc); }
 
   .a1f3 .rows { display: grid; gap: 14px; }
   .a1f3 .row { display: grid; grid-template-columns: 1.25fr auto 1fr; gap: 14px; align-items: center; }
-  .a1f3 .bub { margin: 0; background: var(--paper); border: 1px solid var(--ink); padding: 12px 16px; font-family: var(--mincho); font-weight: 500; font-size: 15px; line-height: 1.8; }
-  .a1f3 .bub small { display: block; font-family: var(--gothic); font-size: 11.5px; color: var(--ink-2); margin-top: 4px; }
-  .a1f3 .arr { color: var(--shu); font-size: 18px; }
-  .a1f3 .res { margin: 0; padding: 10px 14px; font-size: 13.5px; line-height: 1.7; border: 1px solid var(--ink); }
-  .a1f3 .res b { display: block; font-family: var(--mincho); font-size: 18px; background: none; }
-  .a1f3 .res--ok { background: var(--ink); color: var(--paper); }
-  .a1f3 .res--no { border-style: dashed; color: var(--ink-2); background: var(--paper); }
+  .a1f3 .bub { margin: 0; background: var(--bg); border: 0; border-radius: 10px; padding: 12px 16px; font-family: var(--sans); font-weight: 500; font-size: 15px; line-height: 1.8; }
+  .a1f3 .bub small { display: block; font-family: var(--sans); font-size: 11.5px; color: var(--mute); margin-top: 4px; }
+  .a1f3 .arr { color: var(--acc); font-size: 18px; }
+  .a1f3 .res { margin: 0; padding: 10px 14px; font-size: 13.5px; line-height: 1.7; border: 0; border-radius: 10px; background: var(--bg); }
+  .a1f3 .res b { display: block; font-family: var(--sans); font-size: 18px; background: none; }
+  .a1f3 .res--ok { background: var(--tint); color: var(--ink); }
+  .a1f3 .res--no { border-style: dashed; color: var(--mute); background: var(--bg); }
   .a1f3 .res--no b { color: var(--ink); }
-  .a1f3 .res--hw { background: var(--paper); border-color: var(--shu); }
-  .a1f3 .res--hw b { color: var(--shu); }
+  .a1f3 .res--hw { background: var(--bg); }
+  .a1f3 .res--hw b { color: var(--acc); }
 
   .a1f4 .ax { stroke: var(--ink); stroke-width: 1; }
   .a1f4 .dot { fill: var(--ink); transform-box: fill-box; transform-origin: center; }
   .a1f4 .med line { stroke: var(--ink); stroke-width: 1.4; stroke-dasharray: 5 4; }
-  .a1f4 .goal line { stroke: var(--shu); stroke-width: 1.8; }
-  .a1f4 .goal text { fill: var(--shu); }
+  .a1f4 .goal line { stroke: var(--key); stroke-width: 1.8; }
+  .a1f4 .goal text { fill: var(--acc); }
 
   @media (max-width: 760px) {
     .a1f2 .two { grid-template-columns: 1fr; }

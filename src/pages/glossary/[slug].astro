@@ -19,52 +19,63 @@ const ld = [
 ];
 ---
 
-<PageLayout title={title} description={t.def} mark="GLOSSARY" crumbs={[{ name: '用語集', href: '/glossary' }, { name: t.word }]} ld={ld}>
-  <section class="top">
-    <p class="tag"><span>用語集</span>{t.group}</p>
-    <h1 class="h1"><span class="hl"><span>{t.word}とは</span></span></h1>
-    <p class="lead def">{t.def}</p>
-  </section>
-
+<PageLayout
+  title={title}
+  description={t.def}
+  crumbs={[{ name: '用語集', href: '/glossary' }, { name: t.word }]}
+  tag={t.group}
+  h1={[`${t.word}とは`]}
+  lead={t.def}
+  ld={ld}
+>
   {t.body.length > 0 && (
-    <section class="sec">
-      <p class="tag"><span>01</span>くわしく</p>
-      <div class="prose">{t.body.map((b) => <p>{b}</p>)}</div>
+    <section class="sec pg-near" data-st="くわしく">
+      <div class="pg-grp rv">
+        <h2>くわしく</h2>
+        <div class="pg-prose">{t.body.map((b) => <p>{b}</p>)}</div>
+      </div>
     </section>
   )}
 
-  <section class="sec">
-    <p class="tag"><span>02</span>生成AIを使うと</p>
-    <div class="prose">
-      <p>{t.ai}</p>
-      {svc && <p><a href={`/services/${svc.slug}`}>{svc.name}のサービスのページ</a>で、AIが行うことと、人が決めることを説明しています。</p>}
+  <section class:list={['sec', t.body.length === 0 && 'pg-near']} data-st="生成AIを使うと">
+    <div class="pg-grp rv">
+      <h2>生成AIを使うと</h2>
+      <div class="pg-prose">
+        <p>{t.ai}</p>
+        {svc && <p><a href={`/services/${svc.slug}`}>{svc.name}のサービスのページ</a>で、AIが行うことと、人が決めることを説明しています。</p>}
+      </div>
     </div>
   </section>
 
-  {rel.length > 0 && (
-    <section class="list">
-      <p class="tag"><span>ブログ</span>この言葉が出てくる記事</p>
-      <ul>{rel.map((p) => <li><a href={`/blog/${p.slug}`}><small>{p.cat}</small>{p.title}</a></li>)}</ul>
+  {(rel.length > 0 || see.length > 0) && (
+    <section class="sec" data-st="続き">
+      <div class="pg-rel rv">
+        {rel.length > 0 && (
+          <div>
+            <p class="kick">この言葉が出てくる記事</p>
+            <ul>{rel.map((p) => <li><a href={`/blog/${p.slug}`}><small>{p.cat}</small>{p.title}</a></li>)}</ul>
+          </div>
+        )}
+        {see.length > 0 && (
+          <div>
+            <p class="kick">関係する言葉</p>
+            <ul class="pg-chips">{see.map((x) => <li><a href={`/glossary/${x!.slug}`}>{x!.word}</a></li>)}</ul>
+          </div>
+        )}
+      </div>
     </section>
   )}
 
-  {see.length > 0 && (
-    <section class="list">
-      <p class="tag"><span>用語</span>関係する言葉</p>
-      <ul>{see.map((x) => <li><a href={`/glossary/${x!.slug}`}><small>用語集</small>{x!.word}</a></li>)}</ul>
-    </section>
-  )}
-
-  <section class="cta">
-    <h2>SAP の導入と運用保守に、AIチームを組み込みます。</h2>
-    <p>最初の一歩は、アセスメントです。プロジェクトの資料を全件読み、AIチームが効く工程を報告書にまとめます。</p>
-    <div class="act">
-      <a href="/assessment" class="btn btn--inv">アセスメントの内容を見る<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-      <a href="/services" class="link link--inv">サービスの一覧を見る</a>
+  <section class="sec" data-st="アセスメント">
+    <div class="pg-nx rv">
+      <h2>SAP の導入と運用保守に、AIチームを組み込みます。</h2>
+      <div>
+        <p>最初の一歩は、アセスメントです。プロジェクトの資料を全件読み、AIチームが効く工程を報告書にまとめます。</p>
+        <div class="act">
+          <a href="/assessment" class="btn">アセスメントの内容を見る<i></i></a>
+          <a href="/services" class="more">サービスの一覧を見る</a>
+        </div>
+      </div>
     </div>
   </section>
 </PageLayout>
-
-<style>
-  .def { color: var(--ink) !important; font-size: 17.5px !important; max-width: 760px !important; }
-</style>

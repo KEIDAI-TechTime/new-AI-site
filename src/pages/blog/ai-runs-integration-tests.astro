@@ -29,7 +29,7 @@ const envs = [
       </div>
       <div class="legend"><span class="f" style="--t:1.4s"><i class="a"></i>AIに任せられる作業</span><span class="f" style="--t:2.3s"><i></i>人が行う作業</span></div>
     </div>
-    <p class="fig__c">割合は説明のための例です。図で朱色にした2つの作業は、手順が決まっていれば、誰が行っても結果が同じになります。</p>
+    <p class="fig__c">割合は説明のための例です。図で黄色にした2つの作業は、手順が決まっていれば、誰が行っても結果が同じになります。</p>
   </figure>
 
   <p>画面の操作と証跡の作成は、担当者の知識を必要としません。テストケースに書かれた手順を、順番に実行する作業です。一方、合否の判断と不具合の調査には、業務とシステムの知識が必要です。</p>
@@ -157,42 +157,42 @@ const envs = [
 </PostLayout>
 
 <style is:global>
-  .b7f1 .stack { display: flex; height: 76px; border: 1px solid var(--ink); background: var(--paper); }
-  .b7f1 .seg { width: var(--w); border-right: 1px solid var(--paper); background: var(--ink); color: var(--paper); display: grid; place-content: center; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.4; padding: 0 4px; overflow: hidden; }
-  .b7f1 .seg.a { background: var(--shu); }
+  .b7f1 .stack { display: flex; height: 76px; border-radius: 10px; overflow: hidden; }
+  .b7f1 .seg { width: var(--w); border-right: 1px solid #fff; background: var(--ink); color: #fff; display: grid; place-content: center; text-align: center; font-size: 12px; font-weight: 700; line-height: 1.4; padding: 0 4px; overflow: hidden; }
+  .b7f1 .seg.a { background: var(--key); color: var(--ink); }
   .b7f1 .seg b { font-family: var(--mono); font-weight: 500; font-size: 15px; background: none; }
   .b7f1 .legend { display: flex; flex-wrap: wrap; gap: 6px 24px; margin-top: 12px; font-size: 12.5px; }
   .b7f1 .legend span { display: flex; align-items: center; gap: 8px; }
-  .b7f1 .legend i { width: 14px; height: 14px; background: var(--ink); display: block; }
-  .b7f1 .legend i.a { background: var(--shu); }
+  .b7f1 .legend i { border-radius: 4px; width: 14px; height: 14px; background: var(--ink); display: block; }
+  .b7f1 .legend i.a { background: var(--key); color: var(--ink); }
   .b7f2 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
-  .b7f2 .col { border: 1px solid var(--ink); background: var(--paper); padding: 16px 18px; }
-  .b7f2 .col--hu { background: var(--ink); color: var(--paper); }
-  .b7f2 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--shu); }
-  .b7f2 .col--hu .k { color: #ff8a70; }
+  .b7f2 .col { border: 0; border-radius: 10px; background: var(--bg); padding: 16px 18px; }
+  .b7f2 .col--hu { background: var(--tint); color: var(--ink); }
+  .b7f2 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--acc); }
+  .b7f2 .col--hu .k { color: var(--acc); }
   .b7f2 ul { list-style: none; margin: 0; padding: 0; }
-  .b7f2 li { padding: 8px 0 8px 18px; border-top: 1px solid var(--line); font-size: 13.5px; line-height: 1.7; position: relative; }
-  .b7f2 .col--hu li { border-top-color: #55524a; }
-  .b7f2 li::before { content: ''; position: absolute; left: 2px; top: 1.15em; width: 6px; height: 6px; background: var(--shu); }
+  .b7f2 li { padding: 8px 0 8px 18px; border-top: 1px solid var(--rule); font-size: 13.5px; line-height: 1.7; position: relative; }
+  .b7f2 .col--hu li { border-top-color: var(--rule); }
+  .b7f2 li::before { content: ''; position: absolute; left: 2px; top: 1.15em; width: 6px; height: 6px; background: var(--key); color: var(--ink); }
   .b7f3 .envs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .b7f3 .env { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
-  .b7f3 .env__n { margin: 0; font-family: var(--mincho); font-weight: 700; font-size: 18px; }
-  .b7f3 .env__r { margin: 0; font-size: 12.5px; font-weight: 700; color: var(--shu); }
-  .b7f3 .env__d { margin: 0; font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
-  .b7f3 .env.na { border-style: dashed; border-color: var(--ink-2); }
-  .b7f3 .env.na .env__n, .b7f3 .env.na .env__r { color: var(--ink-2); }
-  .b7f3 .env.ng { background: repeating-linear-gradient(-45deg, rgba(212, 65, 42, 0.14) 0 6px, transparent 6px 12px); border: 2px solid var(--shu); }
-  .b7f3 .gate { margin: 14px 0 0; border: 1px solid var(--ink); background: var(--ink); color: var(--paper); padding: 12px 16px; font-size: 13px; line-height: 1.8; }
-  .b7f3 .gate b { display: block; color: #ff8a70; background: none; font-size: 12.5px; }
+  .b7f3 .env { border: 0; border-radius: 10px; background: var(--bg); padding: 14px 16px; display: grid; gap: 4px; align-content: start; }
+  .b7f3 .env__n { margin: 0; font-family: var(--sans); font-weight: 700; font-size: 18px; }
+  .b7f3 .env__r { margin: 0; font-size: 12.5px; font-weight: 700; color: var(--acc); }
+  .b7f3 .env__d { margin: 0; font-size: 12.5px; line-height: 1.7; color: var(--mute); }
+  .b7f3 .env.na { border-style: dashed; border-color: var(--mute); }
+  .b7f3 .env.na .env__n, .b7f3 .env.na .env__r { color: var(--mute); }
+  .b7f3 .env.ng { background: repeating-linear-gradient(-45deg, rgba(242, 169, 0, 0.34) 0 6px, transparent 6px 12px); border: 0; border-radius: 10px; }
+  .b7f3 .gate { background: var(--tint); margin: 14px 0 0; border: 0; border-radius: 10px; color: var(--ink); padding: 12px 16px; font-size: 13px; line-height: 1.8; }
+  .b7f3 .gate b { display: block; color: var(--acc); background: none; font-size: 12.5px; }
   .b7f4 .ms { display: grid; grid-template-columns: 1fr 1fr; gap: 26px; }
   .b7f4 .m__k { margin: 0 0 10px; font-size: 13px; font-weight: 700; }
   .b7f4 .m__r { display: grid; grid-template-columns: 5.5em 1fr auto; gap: 10px; align-items: center; font-size: 12.5px; margin-bottom: 8px; }
-  .b7f4 .m__r i { display: block; height: 22px; width: var(--w); background: var(--ink); }
-  .b7f4 .m__r.on i { background: var(--shu); }
+  .b7f4 .m__r i { display: block; height: 22px; width: var(--w); background: var(--ink); border-radius: 5px; }
+  .b7f4 .m__r.on i { background: var(--key); color: var(--ink); }
   .b7f4 .m__r b { font-family: var(--mono); font-weight: 500; font-size: 14px; background: none; }
   @media (max-width: 760px) {
     .b7f1 .stack { height: auto; flex-direction: column; }
-    .b7f1 .seg { width: 100% !important; padding: 8px; border-right: 0; border-bottom: 1px solid var(--paper); }
+    .b7f1 .seg { width: 100% !important; padding: 8px; border-right: 0; border-bottom: 1px solid #fff; }
     .b7f2 .two { grid-template-columns: 1fr; }
     .b7f3 .envs { grid-template-columns: 1fr; }
     .b7f4 .ms { grid-template-columns: 1fr; }

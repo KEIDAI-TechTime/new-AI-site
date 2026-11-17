@@ -19,23 +19,23 @@ const qs: { q: string; svc: string; tip: string; post: [string, string] }[] = [
 const data = qs.map((x) => ({ ...x, name: serviceBySlug(x.svc).name }));
 ---
 
-<PageLayout title={title} description={description} mark="SELF CHECK" crumbs={[{ name: 'AI活用の自己診断' }]}>
-  <section class="top">
-    <p class="tag"><span>自己診断</span>10問・約2分</p>
-    <h1 class="h1">
-      <span class="hl"><span>いまの進め方を、</span></span>
-      <span class="hl"><span>10問で確かめる。</span></span>
-    </h1>
-    <p class="lead">SAP の導入と運用保守の進め方について、10問に答えてください。生成AIが効きやすい工程と、関係する記事を、その場で表示します。お名前などの入力は要りません。回答は、どこにも送信されません。</p>
-  </section>
-
-  <section class="sec" id="quiz">
-    <p class="tag"><span>01</span>質問</p>
-    <h2 class="h2">いまのプロジェクトに、当てはまるものを選ぶ。</h2>
-    <ol class="qs">
+<PageLayout
+  title={title}
+  description={description}
+  crumbs={[{ name: 'AI活用の自己診断' }]}
+  tag="10問・約2分"
+  h1={['いまの進め方を、', '10問で確かめる。']}
+  lead="SAP の導入と運用保守の進め方について、10問に答えてください。生成AIが効きやすい工程と、関係する記事を、その場で表示します。お名前などの入力は要りません。回答は、どこにも送信されません。"
+>
+  <section class="sec pg-near" id="quiz" data-st="質問">
+    <div class="head">
+      <p class="kick">質問</p>
+      <h2>いまのプロジェクトに、<br />当てはまるものを選ぶ。</h2>
+    </div>
+    <ol class="qs pg-body">
       {data.map((x, i) => (
         <li>
-          <p><span>{String(i + 1).padStart(2, '0')}</span>{x.q}</p>
+          <p>{x.q}</p>
           <div class="opt" role="radiogroup" aria-label={`質問${i + 1}`}>
             {[['2', 'はい'], ['1', '一部だけ'], ['0', 'いいえ']].map(([v, l]) => (
               <label><input type="radio" name={`q${i}`} value={v} /><b>{l}</b></label>
@@ -45,26 +45,30 @@ const data = qs.map((x) => ({ ...x, name: serviceBySlug(x.svc).name }));
       ))}
     </ol>
     <div class="act go">
-      <button class="btn" id="go" type="button">結果を見る<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></button>
+      <button class="btn" id="go" type="button">結果を見る<i></i></button>
       <p class="note" id="left">10問すべてに答えると、結果を表示できます。</p>
     </div>
   </section>
 
   <section class="sec res" id="res" hidden>
-    <p class="tag"><span>02</span>結果</p>
-    <h2 class="h2" id="res-h"></h2>
-    <p class="sub" id="res-p"></p>
-    <table class="tbl" id="res-t">
+    <div class="head">
+      <p class="kick">結果</p>
+      <h2 id="res-h"></h2>
+      <p class="head__p" id="res-p"></p>
+    </div>
+    <table class="pg-tbl pg-body" id="res-t">
       <thead><tr><th>工程</th><th>質問</th><th>生成AIを使うと</th></tr></thead>
       <tbody></tbody>
     </table>
     <p class="note">この結果は、10問の回答だけに基づく目安です。資料を全件読んで診断する場合は、アセスメントをご利用ください。</p>
-    <div class="cta in">
+    <div class="pg-nx res__nx">
       <h2>資料から、どの工程に効くかを診断します。</h2>
-      <p>アセスメントでは、設計書・会議の記録・課題表を全件読み、AIチームが効く工程と、最初に手を打つ所を報告書にまとめます。</p>
-      <div class="act">
-        <a href="/contact?topic=assess&from=check" class="btn btn--inv">アセスメントを相談する<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-        <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="link link--inv">報告書のサンプルを見る</a>
+      <div>
+        <p>アセスメントでは、設計書・会議の記録・課題表を全件読み、AIチームが効く工程と、最初に手を打つ所を報告書にまとめます。</p>
+        <div class="act">
+          <a href="/contact?topic=assess&from=check" class="btn">アセスメントを相談する<i></i></a>
+          <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="more">報告書のサンプルを見る</a>
+        </div>
       </div>
     </div>
   </section>
@@ -72,28 +76,32 @@ const data = qs.map((x) => ({ ...x, name: serviceBySlug(x.svc).name }));
 
 <script type="application/json" id="qdata" set:html={JSON.stringify(data)} />
 
-<style>
-  .qs { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
-  .qs li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 14px 30px; align-items: center; padding: 18px 0; border-bottom: 1px solid var(--line); }
-  .qs p { margin: 0; font-family: var(--mincho); font-weight: 700; font-size: 17px; line-height: 1.7; display: grid; grid-template-columns: 2.4em 1fr; }
-  .qs p span { font-family: var(--mono); font-weight: 400; color: var(--shu); font-size: 14px; padding-top: 3px; }
-  .opt { display: flex; border: 1px solid var(--ink); background: var(--paper); }
-  .opt label { cursor: pointer; border-right: 1px solid var(--ink); }
-  .opt label:last-child { border-right: 0; }
+<style is:global>
+  .qs { display: grid; gap: 8px; counter-reset: q; }
+  .qs li { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; gap: 10px 0; align-items: center; padding: 16px 22px; border-radius: 12px; background: var(--card); counter-increment: q; }
+  .qs li::before { content: counter(q); display: grid; place-items: center; width: 30px; height: 30px; border-radius: 50%; background: var(--key); color: var(--ink); font: 600 16px var(--num); }
+  .qs p { padding-right: 26px; font-weight: 700; font-size: 16px; line-height: 1.7; }
+  .opt { display: flex; gap: 2px; padding: 4px; border-radius: 99px; background: var(--bg); }
+  .opt label { cursor: pointer; }
   .opt input { position: absolute; opacity: 0; pointer-events: none; }
-  .opt b { display: block; padding: 9px 16px; font-size: 13.5px; font-weight: 500; white-space: nowrap; transition: background 0.2s, color 0.2s; }
-  .opt label:hover b { background: var(--paper-2); }
-  .opt input:checked + b { background: var(--ink); color: var(--paper); }
-  .opt input:focus-visible + b { outline: 2px solid var(--shu); outline-offset: -2px; }
-  .go { margin-top: 30px; }
-  .go .note { margin: 0; }
-  .btn[disabled] { opacity: 0.4; cursor: not-allowed; }
-  .res .tbl { margin-bottom: 14px; }
-  .res .tbl td a { white-space: nowrap; }
-  .cta.in { margin-top: 44px; }
+  .opt b { display: block; padding: 5px 18px; border-radius: 99px; font-size: 13.5px; font-weight: 700; white-space: nowrap; transition: background 0.2s, color 0.2s; }
+  .opt label:hover b { background: var(--tint); }
+  .opt input:checked + b { background: var(--ink); color: #fff; }
+  .opt input:focus-visible + b { outline: 2px solid var(--ink); outline-offset: 2px; }
+  .go { margin-top: 26px; gap: 14px 22px; }
+  .go .note { margin: 0; font-size: 13px; }
+  .btn[disabled], .btn[disabled]:hover { opacity: 0.4; cursor: not-allowed; background: var(--key); color: var(--ink); }
+  .btn[disabled]:hover i { transform: none; }
+  .res #res-h { font-size: clamp(22px, 2.6vw, 36px); line-height: 1.45; }
+  .res .pg-tbl tbody th { width: 14%; white-space: nowrap; }
+  .res .pg-tbl td a { white-space: nowrap; }
+  .res__nx { margin-top: clamp(30px, 4vw, 56px); background: var(--tint); }
   @media (max-width: 900px) {
-    .qs li { grid-template-columns: 1fr; }
-    .opt b { padding: 9px 12px; }
+    .qs li { grid-template-columns: 44px minmax(0, 1fr); }
+    .qs p { padding-right: 0; }
+    .opt { grid-column: 1 / -1; }
+    .opt label { flex: 1; text-align: center; }
+    .opt b { padding: 7px 8px; }
   }
 </style>
 
@@ -135,6 +143,7 @@ const data = qs.map((x) => ({ ...x, name: serviceBySlug(x.svc).name }));
       }
     }
     res.hidden = false;
+    res.dataset.st = '結果';
     res.scrollIntoView({ behavior: 'smooth', block: 'start' });
     const w = window as unknown as { gtag?: (...a: unknown[]) => void };
     w.gtag?.('event', 'self_check_done', { yes_count: yes, open_services: [...new Set(open.map((x) => x.svc))].join(',') });

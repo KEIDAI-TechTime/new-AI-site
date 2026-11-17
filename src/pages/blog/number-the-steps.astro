@@ -156,45 +156,45 @@ const steps = [
 </PostLayout>
 
 <style is:global>
-  .b4f1 .q { margin: 0 0 16px; font-family: var(--mincho); font-weight: 700; font-size: 17px; text-align: center; line-height: 1.7; }
+  .b4f1 .q { margin: 0 0 16px; font-family: var(--sans); font-weight: 700; font-size: 17px; text-align: center; line-height: 1.7; }
   .b4f1 .two, .b4f2 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: stretch; }
-  .b4f1 .col { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; }
-  .b4f1 .col--on { border: 1.5px solid var(--ink); }
-  .b4f1 .k { margin: 0 0 12px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
-  .b4f1 .col--on .k { color: var(--shu); }
+  .b4f1 .col { border: 0; border-radius: 10px; background: var(--bg); padding: 16px 18px; }
+  .b4f1 .col--on { border: 0; border-radius: 10px; background: var(--tint); }
+  .b4f1 .k { margin: 0 0 12px; font-size: 12.5px; font-weight: 700; color: var(--mute); }
+  .b4f1 .col--on .k { color: var(--acc); }
   .b4f1 .docs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
-  .b4f1 .docs i { font-style: normal; border: 1px solid var(--line); padding: 10px 8px; font-size: 12.5px; color: var(--ink-2); display: flex; justify-content: space-between; align-items: center; }
-  .b4f1 .docs u { text-decoration: none; font-family: var(--mono); color: var(--shu); font-size: 15px; }
+  .b4f1 .docs i { font-style: normal; border: 0; border-radius: 10px; padding: 10px 8px; font-size: 12.5px; color: var(--mute); display: flex; justify-content: space-between; align-items: center; background: var(--bg); }
+  .b4f1 .docs u { text-decoration: none; font-family: var(--mono); color: var(--acc); font-size: 15px; }
   .b4f1 .chain { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
-  .b4f1 .chain li { display: grid; grid-template-columns: 6.5em 1fr; gap: 10px; align-items: baseline; border: 1px solid var(--ink); padding: 6px 12px; position: relative; }
-  .b4f1 .chain li + li::before { content: ''; position: absolute; left: 20px; bottom: 100%; width: 2px; height: 7px; background: var(--shu); }
-  .b4f1 .chain em { font-style: normal; font-size: 12px; color: var(--ink-2); }
+  .b4f1 .chain li { display: grid; grid-template-columns: 6.5em 1fr; gap: 10px; align-items: baseline; border: 0; border-radius: 10px; padding: 6px 12px; position: relative; background: var(--bg); }
+  .b4f1 .chain li + li::before { content: ''; position: absolute; left: 20px; bottom: 100%; width: 2px; height: 7px; background: var(--key); color: var(--ink); }
+  .b4f1 .chain em { font-style: normal; font-size: 12px; color: var(--mute); }
   .b4f1 .chain b { font-family: var(--mono); font-weight: 500; font-size: 14px; background: none; }
   .b4f1 .r { margin: 12px 0 0; font-size: 12.5px; font-weight: 700; }
-  .b4f1 .col--on .r { color: var(--shu); }
-  .b4f2 .card { border: 1px solid var(--line); background: var(--paper); padding: 16px 18px; }
-  .b4f2 .card--on { border: 1.5px solid var(--ink); }
-  .b4f2 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--ink-2); }
-  .b4f2 .card--on .card__k { color: var(--shu); }
+  .b4f1 .col--on .r { color: var(--acc); }
+  .b4f2 .card { border: 0; border-radius: 10px; background: var(--bg); padding: 16px 18px; }
+  .b4f2 .card--on { border: 0; border-radius: 10px; background: var(--tint); }
+  .b4f2 .card__k { margin: 0 0 10px; font-size: 12px; font-weight: 700; color: var(--mute); }
+  .b4f2 .card--on .card__k { color: var(--acc); }
   .b4f2 dl { margin: 0 0 12px; }
-  .b4f2 dl div { display: grid; grid-template-columns: 9em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--line); align-items: baseline; }
-  .b4f2 dt { font-size: 12px; color: var(--ink-2); }
+  .b4f2 dl div { display: grid; grid-template-columns: 9em 1fr; gap: 10px; padding: 7px 0; border-top: 1px solid var(--rule); align-items: baseline; }
+  .b4f2 dt { font-size: 12px; color: var(--mute); }
   .b4f2 dd { margin: 0; font-size: 14.5px; font-weight: 700; }
-  .b4f2 dd.ng { color: var(--ink-2); text-decoration: underline wavy var(--shu); text-underline-offset: 5px; }
-  .b4f2 dd.ok { color: var(--shu); }
-  .b4f2 .card__n { margin: 0; font-size: 13px; color: var(--ink-2); line-height: 1.8; border-top: 1px solid var(--line); padding-top: 10px; }
-  .b4f3 .steps { width: 100%; border-collapse: collapse; background: var(--paper); font-size: 13.5px; }
-  .b4f3 .steps th, .b4f3 .steps td { border: 1px solid var(--ink); padding: 9px 12px; text-align: left; }
-  .b4f3 .steps thead th { background: var(--ink); color: var(--paper); font-size: 12px; }
-  .b4f3 .steps .m { font-family: var(--mono); color: var(--shu); white-space: nowrap; }
+  .b4f2 dd.ng { color: var(--mute); text-decoration: underline wavy var(--key); text-underline-offset: 5px; }
+  .b4f2 dd.ok { color: var(--acc); }
+  .b4f2 .card__n { margin: 0; font-size: 13px; color: var(--mute); line-height: 1.8; border-top: 1px solid var(--rule); padding-top: 10px; }
+  .b4f3 .steps { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  .b4f3 .steps th, .b4f3 .steps td { border: 0; border-bottom: 1px solid var(--rule); padding: 9px 12px; text-align: left; }
+  .b4f3 .steps thead th { color: var(--mute); border-bottom: 2px solid var(--ink); font-size: 12px; }
+  .b4f3 .steps .m { font-family: var(--mono); color: var(--acc); white-space: nowrap; }
   .b4f3 .steps .b { font-weight: 700; }
   .b4f4 .gs { display: grid; gap: 22px; }
   .b4f4 .g__k { margin: 0 0 6px; font-size: 13px; font-weight: 700; }
-  .b4f4 .g__bar { height: 22px; border: 1px solid var(--ink); background: var(--paper); }
-  .b4f4 .g__bar i { display: block; height: 100%; width: var(--w); background: var(--ink); }
-  .b4f4 .g__bar--b i { background: var(--shu); }
-  .b4f4 .g__n { margin: 6px 0 0; font-size: 13px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
-  .b4f4 .g__n b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--ink); background: none; }
+  .b4f4 .g__bar { height: 22px; border: 0; border-radius: 10px; background: var(--bg); }
+  .b4f4 .g__bar i { display: block; height: 100%; width: var(--w); background: var(--ink); border-radius: 5px; }
+  .b4f4 .g__bar--b i { background: var(--key); color: var(--ink); }
+  .b4f4 .g__n { margin: 6px 0 0; font-size: 13px; color: var(--mute); display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; }
+  .b4f4 .g__n b { font-family: var(--num); font-weight: 600; font-size: 26px; color: var(--ink); background: none; }
   .b4f4 .g__n em { font-style: normal; font-size: 12.5px; }
   @media (max-width: 760px) {
     .b4f1 .two, .b4f2 .two { grid-template-columns: 1fr; }

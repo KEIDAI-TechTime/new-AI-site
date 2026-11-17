@@ -62,7 +62,7 @@ const areas = [['販売', 91], ['購買', 84], ['生産', 38], ['会計', 77]];
       <div class="flow flow--on"><i class="p" style="--t:1.8s">設計書を作る</i><u>→</u><i class="p hot" style="--t:2.2s">AIの点検の結果を添える</i><u>→</u><i class="p" style="--t:2.6s">レビューを依頼する</i><u>→</u><i class="p" style="--t:3s">レビューする</i></div>
       <p class="r r--on">点検の結果が無い設計書は、レビューを受け付けない。レビューする人は、結果を読んでから始める</p>
     </div>
-    <p class="fig__c">図で朱色にした手順が、新しく追加する手順です。レビューする人は、AIが見つけた指摘を先に読めるので、レビューの時間も短くなります。</p>
+    <p class="fig__c">図で黄色にした手順が、新しく追加する手順です。レビューする人は、AIが見つけた指摘を先に読めるので、レビューの時間も短くなります。</p>
   </figure>
 
   <p>この方法では、担当者だけでなく、レビューする人にも利点があります。レビューする人は、記載の抜けを探す作業を AI に任せ、設計の内容の確認に時間を使えます。利点がある人が増えると、手順は続きます。</p>
@@ -134,36 +134,36 @@ const areas = [['販売', 91], ['購買', 84], ['生産', 38], ['会計', 77]];
 </PostLayout>
 
 <style is:global>
-  .b13f1 .wk { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; height: 170px; align-items: end; border-bottom: 1px solid var(--ink); }
+  .b13f1 .wk { display: grid; grid-template-columns: repeat(12, 1fr); gap: 6px; height: 170px; align-items: end; border-bottom: 1px solid var(--rule); }
   .b13f1 .w { display: grid; grid-template-rows: 1fr auto; height: 100%; position: relative; }
-  .b13f1 .w i { align-self: end; display: block; height: var(--h); background: var(--ink); }
-  .b13f1 .w:nth-child(n + 4) i { background: var(--shu); }
-  .b13f1 .w span { position: absolute; top: 100%; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--ink-2); padding-top: 4px; }
-  .b13f1 .ax { margin: 24px 0 0; text-align: right; font-size: 12px; color: var(--ink-2); }
+  .b13f1 .w i { align-self: end; display: block; height: var(--h); background: var(--ink); border-radius: 5px; }
+  .b13f1 .w:nth-child(n + 4) i { background: var(--key); color: var(--ink); }
+  .b13f1 .w span { position: absolute; top: 100%; left: 0; right: 0; text-align: center; font-family: var(--mono); font-size: 11px; color: var(--mute); padding-top: 4px; }
+  .b13f1 .ax { margin: 24px 0 0; text-align: right; font-size: 12px; color: var(--mute); }
   .b13f1 .note, .b13f4 .note { margin: 8px 0 0; font-size: 13px; line-height: 1.7; }
-  .b13f1 .note b { background: var(--shu); color: var(--paper); font-family: var(--mono); font-weight: 500; padding: 1px 10px; margin-right: 10px; }
+  .b13f1 .note b { border-radius: 99px; background: var(--key); color: var(--ink); font-family: var(--mono); font-weight: 500; padding: 1px 10px; margin-right: 10px; }
   .b13f2 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .b13f2 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
-  .b13f2 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
-  .b13f2 h4 { margin: 0; font-family: var(--mincho); font-size: 16.5px; line-height: 1.55; }
+  .b13f2 .c { border: 0; border-radius: 10px; background: var(--bg); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b13f2 .c > b { font-family: var(--num); font-weight: 600; font-size: 26px; color: var(--acc); line-height: 1; background: none; }
+  .b13f2 h4 { margin: 0; font-family: var(--sans); font-size: 16.5px; line-height: 1.55; }
   .b13f2 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
-  .b13f3 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
-  .b13f3 .k--on { color: var(--shu); margin-top: 18px; }
+  .b13f3 .k { margin: 0 0 8px; font-size: 12.5px; font-weight: 700; color: var(--mute); }
+  .b13f3 .k--on { color: var(--acc); margin-top: 18px; }
   .b13f3 .flow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-  .b13f3 .flow i { font-style: normal; border: 1px solid var(--line); background: var(--paper); padding: 9px 14px; font-size: 13.5px; font-weight: 700; }
-  .b13f3 .flow--on i { border-color: var(--ink); }
-  .b13f3 .flow i.hot { background: var(--shu); border-color: var(--shu); color: var(--paper); }
-  .b13f3 .flow u { text-decoration: none; color: var(--ink-2); }
-  .b13f3 .r { margin: 8px 0 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.7; }
+  .b13f3 .flow i { font-style: normal; border: 0; border-radius: 10px; background: var(--bg); padding: 9px 14px; font-size: 13.5px; font-weight: 700; }
+  .b13f3 .flow--on i { }
+  .b13f3 .flow i.hot { background: var(--key); color: var(--ink); }
+  .b13f3 .flow u { text-decoration: none; color: var(--mute); }
+  .b13f3 .r { margin: 8px 0 0; font-size: 12.5px; color: var(--mute); line-height: 1.7; }
   .b13f3 .r--on { color: var(--ink); font-weight: 700; }
   .b13f4 .ar { display: grid; gap: 10px; }
   .b13f4 .row { display: grid; grid-template-columns: 4em 1fr 3.4em; gap: 12px; align-items: center; font-size: 13px; font-weight: 700; }
-  .b13f4 .row div { height: 24px; border: 1px solid var(--ink); background: var(--paper); }
-  .b13f4 .row i { display: block; height: 100%; width: var(--w); background: var(--ink); }
-  .b13f4 .row.low i { background: var(--shu); }
+  .b13f4 .row div { height: 24px; border: 0; border-radius: 10px; background: var(--bg); }
+  .b13f4 .row i { display: block; height: 100%; width: var(--w); background: var(--ink); border-radius: 5px; }
+  .b13f4 .row.low i { background: var(--key); color: var(--ink); }
   .b13f4 .row b { font-family: var(--mono); font-weight: 500; background: none; text-align: right; }
-  .b13f4 .row.low b { color: var(--shu); }
-  .b13f4 .note { border-left: 3px solid var(--shu); padding-left: 12px; margin-top: 14px; }
+  .b13f4 .row.low b { color: var(--acc); }
+  .b13f4 .note { border-left: 3px solid var(--key); padding-left: 12px; margin-top: 14px; }
   @media (max-width: 760px) {
     .b13f1 .wk { gap: 3px; height: 130px; }
     .b13f1 .w span { font-size: 9px; }

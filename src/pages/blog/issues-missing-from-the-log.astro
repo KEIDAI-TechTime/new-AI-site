@@ -36,7 +36,7 @@ const stale = [['移行データ', 11], ['連携', 7], ['生産', 5], ['会計',
         </div>
       </div>
     </div>
-    <p class="fig__c">数字は説明のための例です。朱の点線の枠が、起票されていない事項です。課題表の件数が少ないことは、未決の事項が少ないことを意味しません。</p>
+    <p class="fig__c">数字は説明のための例です。黄色の点線の枠が、起票されていない事項です。課題表の件数が少ないことは、未決の事項が少ないことを意味しません。</p>
   </figure>
 
   <p>起票されていない事項は、進捗報告にも書かれません。報告は、課題表を元に作られるからです。PM が気づくのは、後の工程で問題として見つかったときです。</p>
@@ -158,35 +158,35 @@ const stale = [['移行データ', 11], ['連携', 7], ['生産', 5], ['会計',
 
 <style is:global>
   .b14f1 .two, .b14f2 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; align-items: start; }
-  .b14f1 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
-  .b14f1 .k--on { color: var(--shu); }
+  .b14f1 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--mute); }
+  .b14f1 .k--on { color: var(--acc); }
   .b14f1 .dots { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; max-width: 300px; }
-  .b14f1 .dots i { display: block; aspect-ratio: 1.5 / 1; background: var(--ink); border: 1px solid var(--ink); }
-  .b14f1 .dots i.off { background: transparent; border: 2px dashed var(--shu); }
+  .b14f1 .dots i { display: block; aspect-ratio: 1.5 / 1; background: var(--ink); border: 0; border-radius: 10px; }
+  .b14f1 .dots i.off { background: transparent; border: 2px dashed var(--key); }
   .b14f1 .r { margin: 12px 0 0; font-size: 13px; font-weight: 700; }
-  .b14f1 .r--on { color: var(--shu); }
+  .b14f1 .r--on { color: var(--acc); }
   .b14f2 .two { align-items: stretch; }
-  .b14f2 .card { border: 1.5px solid var(--ink); background: var(--paper); padding: 16px 18px; }
-  .b14f2 .card__k { margin: 0 0 10px; font-family: var(--mincho); font-weight: 700; font-size: 17px; color: var(--shu); }
+  .b14f2 .card { border: 0; border-radius: 10px; padding: 16px 18px; background: var(--tint); }
+  .b14f2 .card__k { margin: 0 0 10px; font-family: var(--sans); font-weight: 700; font-size: 17px; color: var(--acc); }
   .b14f2 .card__q { margin: 0 0 12px; font-size: 13.5px; line-height: 1.85; }
   .b14f2 dl { margin: 0; }
-  .b14f2 dl div { padding: 8px 0; border-top: 1px solid var(--line); }
-  .b14f2 dt { font-size: 11.5px; color: var(--ink-2); font-weight: 700; }
+  .b14f2 dl div { padding: 8px 0; border-top: 1px solid var(--rule); }
+  .b14f2 dt { font-size: 11.5px; color: var(--mute); font-weight: 700; }
   .b14f2 dd { margin: 0; font-size: 13.5px; line-height: 1.7; }
   .b14f3 .rows { display: grid; gap: 12px; }
   .b14f3 .row { display: grid; grid-template-columns: 1.1fr auto 1fr; gap: 14px; align-items: center; }
-  .b14f3 .bub { margin: 0; background: var(--paper); border: 1px solid var(--ink); padding: 11px 16px; font-family: var(--mincho); font-weight: 500; font-size: 15px; line-height: 1.8; }
-  .b14f3 .arr { color: var(--shu); font-size: 18px; }
-  .b14f3 .res { margin: 0; padding: 9px 14px; font-size: 13px; line-height: 1.7; border: 1px solid var(--shu); background: var(--paper); }
-  .b14f3 .res b { display: block; font-family: var(--mincho); font-size: 16.5px; color: var(--shu); background: none; }
+  .b14f3 .bub { margin: 0; background: var(--bg); border: 0; border-radius: 10px; padding: 11px 16px; font-family: var(--sans); font-weight: 500; font-size: 15px; line-height: 1.8; }
+  .b14f3 .arr { color: var(--acc); font-size: 18px; }
+  .b14f3 .res { margin: 0; padding: 9px 14px; font-size: 13px; line-height: 1.7; border: 0; border-radius: 10px; background: var(--tint); }
+  .b14f3 .res b { display: block; font-family: var(--sans); font-size: 16.5px; color: var(--acc); background: none; }
   .b14f4 .bars { display: grid; gap: 8px; }
   .b14f4 .row { display: grid; grid-template-columns: 7em 1fr; gap: 12px; align-items: center; font-size: 13px; }
   .b14f4 .row div { display: flex; align-items: center; gap: 10px; }
-  .b14f4 .row i { display: block; height: 22px; width: var(--w); background: var(--ink); flex: none; }
-  .b14f4 .row.top i { background: var(--shu); }
+  .b14f4 .row i { display: block; height: 22px; width: var(--w); background: var(--ink); flex: none; border-radius: 5px; }
+  .b14f4 .row.top i { background: var(--key); color: var(--ink); }
   .b14f4 .row.top span { font-weight: 700; }
   .b14f4 .row b { font-family: var(--mono); font-weight: 500; background: none; }
-  .b14f4 .row.top b { color: var(--shu); }
+  .b14f4 .row.top b { color: var(--acc); }
   @media (max-width: 760px) {
     .b14f1 .two, .b14f2 .two { grid-template-columns: 1fr; }
     .b14f3 .row { grid-template-columns: 1fr; gap: 6px; }

@@ -4,7 +4,7 @@ import NextLayout from '../../layouts/NextLayout.astro';
 import { services } from '../../data/services';
 interface Props { live?: boolean }
 const { live = false } = Astro.props;
-const kotei = live ? '/services' : '/next/kotei';
+const kotei = '/services';
 const title = live ? 'TechTime | SAP 導入を、速く。抜けなく。' : 'SAP 導入を、速く。抜けなく。| TechTime';
 const description = 'SAP の導入と保守に、AIチームを組み込みます。設計書やテストの初版は AI が作り、全件を点検します。決めたことは、要件からテストまで同じ番号でつなぎます。';
 ---

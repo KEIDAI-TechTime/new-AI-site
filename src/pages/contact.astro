@@ -1,5 +1,6 @@
 ---
-import DraftLayout from '@/layouts/DraftLayout.astro';
+/* 相談する。相談票の動き（入力の確かめ・送信先・記録）は前のまま */
+import NextLayout from '@/layouts/NextLayout.astro';
 
 const title = '相談する | TechTime';
 const description = 'SAP の導入と保守に AIチームを組み込むご相談を受け付けています。導入の検討中でも、途中でも、稼働したあとでも構いません。';
@@ -19,311 +20,237 @@ const after = [
 ];
 ---
 
-<DraftLayout title={title} description={description} og="contact.jpg">
+<NextLayout noEnd title={title} description={description} og="contact.jpg" ask="導入の検討中でも、途中でも、稼働したあとでも構いません。">
   <script is:inline>if (new URLSearchParams(location.search).get("topic") === "assess") document.documentElement.classList.add("is-asm");</script>
-  <div class="grid-bg" aria-hidden="true"></div>
-  <div class="frame" aria-hidden="true">
-    <span class="frame__tl">TECHTIME CO., LTD.</span>
-    <span class="frame__tr">相談票</span>
-  </div>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true"><filter id="ct-tone" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1.256 -0.518 0.369 0 -0.024  0.759 -0.021 0.369 0 -0.024  -0.391 1.129 0.369 0 -0.024  0 0 0 1 0" /></filter></svg>
 
-  <header class="nav">
-    <a href="/" class="nav__logo">TechTime<i></i></a>
-    <a href="/" class="nav__back"><svg viewBox="0 0 40 10"><path d="M40 5H2M7 1 2 5l5 4" /></svg>トップへ戻る</a>
-  </header>
+  <section class="hero" data-st="相談票">
+    <div class="ct">
+      <div class="ct-side">
+        <div class="ct-gen">
+          <p class="kick">相談／SAP の導入と保守に、AIチームを</p>
+          <h1>いまの進め方を、<br />聞かせてください。</h1>
+          <p class="ct-lead">導入の検討中でも、途中でも、稼働したあとでも構いません。</p>
 
-  <main class="wrap">
-    <section class="side">
-      <div class="side__gen">
-      <p class="tag"><span>相談</span>SAP の導入と保守に、AIチームを</p>
-      <h1 class="h1">
-        <span class="hl"><span>いまの進め方を、</span></span>
-        <span class="hl"><span>聞かせてください。</span></span>
-      </h1>
-      <p class="lead">導入の検討中でも、途中でも、稼働したあとでも構いません。</p>
-
-      <ol class="after">
-        {after.map((a, i) => (
-          <li style={`--d:${0.5 + i * 0.15}s`}>
-            <span>{a.no}</span>
-            <div>
-              <h2>{a.name}</h2>
-              <p>{a.body}</p>
-            </div>
-          </li>
-        ))}
-      </ol>
-
-      <dl class="direct">
-        <div><dt>電話</dt><dd><a href="tel:0342223363">03-4222-3363</a><small>月〜金　9〜19時</small></dd></div>
-        <div><dt>メール</dt><dd><a href="mailto:kdm@techtime-link.com">kdm@techtime-link.com</a></dd></div>
-      </dl>
-      </div>
-
-      <div class="side__asm">
-        <p class="tag"><span>アセスメント</span>最初の一歩は、アセスメント</p>
-        <h2 class="h1 h1--s">
-          <span class="hl"><span>貴社の資料を読み、</span></span>
-          <span class="hl"><span>どこに効くかを報告書にする。</span></span>
-        </h2>
-        <p class="lead">設計書や会議の記録をお預かりし、AIチームが効く工程と、最初に手を打つ所を報告書にまとめます。</p>
-
-        <a class="deck" id="deck" href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" aria-label="アセスメント結果報告書のサンプルを開く">
-          {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.webp`} alt={i === 0 ? 'アセスメント結果報告書のサンプルの頁' : ''} width="1120" height="792" style={`--i:${i}`} />)}
-        </a>
-        <div class="asmact">
-          <a href="/downloads/techtime-assessment-sample.pdf" download="TechTime_アセスメント結果報告書_サンプル.pdf" class="btn btn--s">サンプルをダウンロード<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-          <span>PDF・29枚・約2MB。入力は要りません。</span>
-          <a href="/assessment" class="asmlink">アセスメントの内容を詳しく見る</a>
-        </div>
-
-        <ul class="pts">
-          <li><b>全件を読む</b>抜き取りではなく、預かった資料をすべて</li>
-          <li><b>統計で測る</b>期日に間に合う確率、減る工数の見込み</li>
-          <li><b>根拠を並べる</b>所見ごとに、資料の抜粋を添える</li>
-        </ul>
-
-        <ol class="after">
-          {asmFlow.map((a, i) => (
-            <li style={`--d:${0.5 + i * 0.15}s`}>
-              <span>{a.no}</span>
-              <div>
+          <ol class="ct-stp">
+            {after.map((a) => (
+              <li>
                 <h2>{a.name}</h2>
                 <p>{a.body}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-        <dl class="direct">
-          <div><dt>電話</dt><dd><a href="tel:0342223363">03-4222-3363</a><small>月〜金　9〜19時</small></dd></div>
-          <div><dt>メール</dt><dd><a href="mailto:kdm@techtime-link.com">kdm@techtime-link.com</a></dd></div>
-        </dl>
-      </div>
-    </section>
+              </li>
+            ))}
+          </ol>
 
-    <section class="slip" id="slip">
-      <div class="slip__head">
-        <b>相談票</b>
-        <span>No. <i id="slipNo">000000</i></span>
-        <div class="stamp" id="stamp" aria-hidden="true"><span>受付</span></div>
-      </div>
-
-      <form id="form" novalidate>
-        <div class="row row--2">
-          <label class="f"><span>会社名<em>必須</em></span><input name="company" type="text" required autocomplete="organization" /></label>
-          <label class="f"><span>お名前<em>必須</em></span><input name="name" type="text" required autocomplete="name" /></label>
-        </div>
-        <div class="row row--2">
-          <label class="f"><span>メールアドレス<em>必須</em></span><input name="email" type="email" required autocomplete="email" /></label>
-          <label class="f"><span>電話番号</span><input name="phone" type="tel" autocomplete="tel" /></label>
+          <dl class="ct-direct">
+            <div><dt>電話</dt><dd><a href="tel:0342223363">03-4222-3363</a><small>月〜金　9〜19時</small></dd></div>
+            <div><dt>メール</dt><dd><a href="mailto:kdm@techtime-link.com">kdm@techtime-link.com</a></dd></div>
+          </dl>
         </div>
 
-        <fieldset class="f">
-          <legend>いまの状況<em>必須</em></legend>
-          <div class="opts">
-            {situations.map((s) => <label class="opt"><input type="radio" name="systemType" value={s} required /><span>{s}</span></label>)}
+        <div class="ct-asm">
+          <p class="kick">アセスメント／最初の一歩は、アセスメント</p>
+          <h2 class="ct-h">貴社の資料を読み、<br />どこに効くかを報告書にする。</h2>
+          <p class="ct-lead">設計書や会議の記録をお預かりし、AIチームが効く工程と、最初に手を打つ所を報告書にまとめます。</p>
+
+          <a class="ct-deck" id="deck" href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" aria-label="アセスメント結果報告書のサンプルを開く">
+            {['01', '03', '07', '10', '12', '20'].map((n, i) => <img src={`/images/assess/p${n}.webp`} alt={i === 0 ? 'アセスメント結果報告書のサンプルの頁' : ''} width="1120" height="792" style={`--i:${i}`} />)}
+          </a>
+          <div class="ct-asmact">
+            <a href="/downloads/techtime-assessment-sample.pdf" download="TechTime_アセスメント結果報告書_サンプル.pdf" class="btn">サンプルをダウンロード<i></i></a>
+            <span>PDF・29枚・約2MB。入力は要りません。</span>
+            <a href="/assessment" class="more">アセスメントの内容を詳しく見る</a>
           </div>
-        </fieldset>
 
-        <fieldset class="f">
-          <legend>相談したい工程<small>いくつでも</small></legend>
-          <div class="opts">
-            {phases.map((p) => <label class="opt"><input type="checkbox" name="phase" value={p} /><span>{p}</span></label>)}
-          </div>
-        </fieldset>
+          <ul class="ct-pts">
+            <li><b>全件を読む</b>抜き取りではなく、預かった資料をすべて</li>
+            <li><b>統計で測る</b>期日に間に合う確率、減る工数の見込み</li>
+            <li><b>根拠を並べる</b>所見ごとに、資料の抜粋を添える</li>
+          </ul>
 
-        <fieldset class="f">
-          <legend>始めたい時期<em>必須</em></legend>
-          <div class="opts">
-            {timelines.map((t) => <label class="opt"><input type="radio" name="timeline" value={t} required /><span>{t}</span></label>)}
-          </div>
-        </fieldset>
-
-        <label class="f">
-          <span>相談の内容<em>必須</em></span>
-          <textarea name="message" rows="6" maxlength="500" required placeholder="いま時間がかかっている工程や、困っていることをお書きください。"></textarea>
-          <small class="count"><i id="count">0</i> / 500</small>
-        </label>
-
-        <p class="err" id="err" role="alert"></p>
-
-        <button type="submit" class="btn" id="send">
-          <span id="sendLabel">送信する</span>
-          <svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg>
-        </button>
-        <p class="reply">24時間以内に、メールで返信します。</p>
-      </form>
-
-      <div class="done" id="done" role="status">
-        <p class="done__h">受け付けました。</p>
-        <p>24時間以内に、担当からメールで返信します。</p>
-        <p class="done__n">ご連絡までの間に、次の資料をご覧いただけます。</p>
-        <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="link">アセスメント結果報告書のサンプル（PDF・29枚）</a>
-        <a href="/process" class="link">相談のあとの進め方</a>
-        <a href="/blog" class="link">ブログ</a>
-        <a href="/" class="link">トップへ戻る</a>
+          <ol class="ct-stp">
+            {asmFlow.map((a) => (
+              <li>
+                <h2>{a.name}</h2>
+                <p>{a.body}</p>
+              </li>
+            ))}
+          </ol>
+          <dl class="ct-direct">
+            <div><dt>電話</dt><dd><a href="tel:0342223363">03-4222-3363</a><small>月〜金　9〜19時</small></dd></div>
+            <div><dt>メール</dt><dd><a href="mailto:kdm@techtime-link.com">kdm@techtime-link.com</a></dd></div>
+          </dl>
+        </div>
       </div>
-    </section>
-  </main>
 
-  <footer class="foot">
-    <p class="foot__n">TechTime株式会社</p>
-    <p>東京都渋谷区渋谷2-19-15 宮益坂ビルディング609</p>
-    <p><a href="/services">サービス</a></p>
-    <p><a href="/assessment">アセスメント</a></p>
-    <p><a href="/blog">ブログ</a></p>
-    <p><a href="/glossary">用語集</a></p>
-    <p><a href="/resources">資料とひな形</a></p>
-    <p><a href="/faq">よくある質問</a></p>
-    <p><a href="/company">会社概要</a></p>
-    <p class="foot__c">© TechTime Co., Ltd.</p>
-  </footer>
-</DraftLayout>
+      <section class="ct-slip" id="slip">
+        <div class="ct-slip__head">
+          <b>相談票</b>
+          <span>No. <i id="slipNo">000000</i></span>
+          <div class="ct-stamp" id="stamp" aria-hidden="true"><span>受付</span></div>
+        </div>
 
-<style>
-  .grid-bg {
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    background-image:
-      linear-gradient(var(--hair) 1px, transparent 1px),
-      linear-gradient(90deg, var(--hair) 1px, transparent 1px),
-      linear-gradient(rgba(28, 27, 24, 0.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(28, 27, 24, 0.035) 1px, transparent 1px);
-    background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
-  }
-  .frame { position: fixed; inset: 10px; border: 1px solid var(--ink); pointer-events: none; z-index: 40; font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-2); }
-  .frame span { position: absolute; top: -9px; background: var(--paper); padding: 2px 10px; line-height: 1.4; }
-  .frame__tl { left: 22px; }
-  .frame__tr { right: 22px; font-family: var(--gothic); }
+        <form id="form" novalidate>
+          <div class="ct-row">
+            <label class="ct-f"><span>会社名<em>必須</em></span><input name="company" type="text" required autocomplete="organization" /></label>
+            <label class="ct-f"><span>お名前<em>必須</em></span><input name="name" type="text" required autocomplete="name" /></label>
+          </div>
+          <div class="ct-row">
+            <label class="ct-f"><span>メールアドレス<em>必須</em></span><input name="email" type="email" required autocomplete="email" /></label>
+            <label class="ct-f"><span>電話番号</span><input name="phone" type="tel" autocomplete="tel" /></label>
+          </div>
 
-  .nav { position: fixed; top: 10px; left: 10px; right: 10px; z-index: 30; display: flex; justify-content: space-between; align-items: center; padding: 22px var(--gutter) 14px; background: linear-gradient(var(--paper) 55%, transparent); }
-  .nav__logo { font-family: var(--mincho); font-weight: 800; font-size: 21px; letter-spacing: 0.02em; display: flex; align-items: center; gap: 7px; }
-  .nav__logo i { width: 8px; height: 8px; background: var(--shu); display: block; }
-  .nav__back { font-size: 13.5px; font-weight: 500; display: flex; align-items: center; gap: 12px; }
-  svg[viewBox='0 0 40 10'] { width: 40px; height: 10px; fill: none; stroke: currentColor; stroke-width: 1.2; flex: none; transition: transform 0.35s; }
-  .nav__back:hover svg { transform: translateX(-6px); }
+          <fieldset class="ct-f">
+            <legend>いまの状況<em>必須</em></legend>
+            <div class="ct-opts">
+              {situations.map((s) => <label class="ct-opt"><input type="radio" name="systemType" value={s} required /><span>{s}</span></label>)}
+            </div>
+          </fieldset>
 
-  .wrap { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); gap: clamp(30px, 6vw, 100px); align-items: start; padding: 150px calc(var(--gutter) + 10px) clamp(80px, 10vw, 140px); }
-  .side { position: sticky; top: 130px; }
-  .tag { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; color: var(--ink-2); margin: 0 0 26px; display: flex; align-items: center; gap: 14px; }
-  .tag span { color: var(--paper); background: var(--ink); padding: 1px 9px; font-family: var(--gothic); }
-  .h1 { font-family: var(--mincho); font-weight: 800; font-size: clamp(30px, 4.2vw, 68px); line-height: 1.3; margin: 0 0 22px; white-space: nowrap; }
-  .hl { display: block; overflow: hidden; padding-bottom: 0.06em; }
-  .hl > span { display: inline-block; transform: translateY(108%); animation: rise 1.1s cubic-bezier(0.16, 0.9, 0.2, 1) forwards; }
-  .hl:nth-child(2) > span { animation-delay: 0.16s; }
-  @keyframes rise { to { transform: none; } }
-  @keyframes up { from { opacity: 0; transform: translateY(22px); } }
-  .lead { margin: 0 0 clamp(30px, 4vw, 56px); color: var(--ink-2); animation: up 0.9s 0.4s both; }
-  .after { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
-  .after li { display: grid; grid-template-columns: 3em 1fr; gap: 10px; padding: 18px 0; border-bottom: 1px solid var(--line); animation: up 0.8s var(--d) both; }
-  .after span { font-family: var(--mono); font-size: 12px; color: var(--shu); letter-spacing: 0.1em; padding-top: 5px; }
-  .after h2 { margin: 0 0 4px; font-family: var(--mincho); font-weight: 700; font-size: clamp(17px, 1.6vw, 21px); line-height: 1.6; }
-  .after p { margin: 0; font-size: 14px; color: var(--ink-2); }
-  .direct { margin: 30px 0 0; display: grid; gap: 10px; animation: up 0.8s 1s both; }
-  .direct div { display: grid; grid-template-columns: 4.2em 1fr; align-items: baseline; }
-  .direct dt { font-size: 12px; color: var(--ink-2); }
-  .direct dd { margin: 0; font-family: var(--mono); font-size: 16px; }
-  .direct a { border-bottom: 1px solid var(--line); transition: border-color 0.25s; }
-  .direct a:hover { border-color: var(--ink); }
-  .direct small { font-family: var(--gothic); font-size: 12px; color: var(--ink-2); margin-left: 14px; }
+          <fieldset class="ct-f">
+            <legend>相談したい工程<small>いくつでも</small></legend>
+            <div class="ct-opts">
+              {phases.map((p) => <label class="ct-opt"><input type="checkbox" name="phase" value={p} /><span>{p}</span></label>)}
+            </div>
+          </fieldset>
+
+          <fieldset class="ct-f">
+            <legend>始めたい時期<em>必須</em></legend>
+            <div class="ct-opts">
+              {timelines.map((t) => <label class="ct-opt"><input type="radio" name="timeline" value={t} required /><span>{t}</span></label>)}
+            </div>
+          </fieldset>
+
+          <label class="ct-f">
+            <span>相談の内容<em>必須</em></span>
+            <textarea name="message" rows="6" maxlength="500" required placeholder="いま時間がかかっている工程や、困っていることをお書きください。"></textarea>
+            <small class="ct-count"><i id="count">0</i> / 500</small>
+          </label>
+
+          <p class="ct-err" id="err" role="alert"></p>
+
+          <div class="ct-send">
+            <button type="submit" class="btn" id="send">
+              <span id="sendLabel">送信する</span>
+              <i></i>
+            </button>
+            <p class="ct-reply">24時間以内に、メールで返信します。</p>
+          </div>
+        </form>
+
+        <div class="ct-done" id="done" role="status">
+          <p class="ct-done__h">受け付けました。</p>
+          <p>24時間以内に、担当からメールで返信します。</p>
+          <p class="ct-done__n">ご連絡までの間に、次の資料をご覧いただけます。</p>
+          <a href="/downloads/techtime-assessment-sample.pdf" target="_blank" rel="noopener" class="more">アセスメント結果報告書のサンプル（PDF・29枚）</a>
+          <a href="/process" class="more">相談のあとの進め方</a>
+          <a href="/blog" class="more">ブログ</a>
+          <a href="/" class="more">トップへ戻る</a>
+        </div>
+      </section>
+    </div>
+  </section>
+</NextLayout>
+
+<style is:global>
+  .ct { display: grid; grid-template-columns: minmax(0, 0.85fr) minmax(0, 1fr); gap: clamp(24px, 5vw, 80px); align-items: start; }
+  .ct-side { position: sticky; top: 108px; }
+  @keyframes ct-up { from { opacity: 0; transform: translateY(18px); } }
+  .ct-side h1 { animation: ct-up 0.8s both; }
+  .ct-h { margin-top: 14px; font-size: clamp(23px, 2.5vw, 36px); line-height: 1.36; animation: ct-up 0.8s both; }
+  .ct-lead { margin-top: 16px; font-size: clamp(15px, 1.25vw, 17px); font-weight: 500; animation: ct-up 0.8s 0.1s both; }
+
+  /* 相談のあとの流れ。番号の丸が、順に光って繰り返す */
+  .ct-stp { display: grid; gap: 8px; margin-top: clamp(22px, 3vw, 40px); counter-reset: s; }
+  .ct-stp li { position: relative; display: grid; grid-template-columns: 44px 1fr; align-items: start; padding: 16px 22px; border-radius: 12px; background: var(--card); counter-increment: s; animation: ct-up 0.7s both; }
+  .ct-stp li:nth-child(1) { animation-delay: 0.2s; }
+  .ct-stp li:nth-child(2) { animation-delay: 0.32s; }
+  .ct-stp li:nth-child(3) { animation-delay: 0.44s; }
+  .ct-stp li::before { content: counter(s); grid-row: 1 / span 2; display: grid; place-items: center; width: 30px; height: 30px; margin-top: 2px; border-radius: 50%; background: var(--key); color: var(--ink); font: 600 16px var(--num); animation: ct-ring 6s infinite; }
+  .ct-stp li:nth-child(2)::before { animation-delay: 2s; }
+  .ct-stp li:nth-child(3)::before { animation-delay: 4s; }
+  @keyframes ct-ring { 0%, 34%, 100% { box-shadow: 0 0 0 0 rgba(242, 169, 0, 0); } 6% { box-shadow: 0 0 0 0 rgba(242, 169, 0, 0.55); } 30% { box-shadow: 0 0 0 12px rgba(242, 169, 0, 0); } }
+  .ct-stp li + li::after { content: ''; position: absolute; left: 36px; top: -8px; width: 2px; height: 8px; background: var(--key); }
+  .ct-stp h2 { font-size: clamp(16px, 1.4vw, 18px); font-weight: 900; line-height: 1.6; }
+  .ct-stp p { grid-column: 2; font-size: 14px; color: var(--mute); }
+
+  .ct-direct { display: grid; gap: 4px; margin-top: 18px; padding: 16px 22px; border-radius: 12px; background: var(--tint); animation: ct-up 0.7s 0.56s both; }
+  .ct-direct div { display: grid; grid-template-columns: 4.2em 1fr; align-items: baseline; }
+  .ct-direct dt { font-size: 12.5px; font-weight: 700; }
+  .ct-direct dd { font: 600 22px/1.5 var(--num); letter-spacing: 0.02em; overflow-wrap: anywhere; }
+  .ct-direct dd a { text-decoration: underline; text-decoration-color: var(--key); text-decoration-thickness: 3px; text-underline-offset: 5px; }
+  .ct-direct small { margin-left: 14px; font: 500 12px var(--sans); color: var(--mute); }
 
   /* アセスメントの相談として開いたとき */
-  .side__asm { display: none; }
-  :global(html.is-asm) .side__gen { display: none; }
-  :global(html.is-asm) .side__asm { display: block; }
-  :global(html.is-asm) .side { position: static; }
-  .h1--s { font-size: clamp(24px, 2.75vw, 42px); }
-  .deck { position: relative; display: block; aspect-ratio: 1120 / 850; margin: 6px 52px 34px 0; animation: up 0.9s 0.5s both; }
-  .deck img { position: absolute; inset: 0; width: 100%; height: auto; border: 1px solid var(--ink); background: var(--paper); box-shadow: 0 8px 24px rgba(28, 27, 24, 0.16);
+  .ct-asm { display: none; }
+  html.is-asm .ct-gen { display: none; }
+  html.is-asm .ct-asm { display: block; }
+  html.is-asm .ct-side { position: static; }
+  .ct-deck { position: relative; display: block; aspect-ratio: 1120 / 850; margin: 26px 52px 30px 0; animation: ct-up 0.9s 0.2s both; }
+  .ct-deck img { position: absolute; inset: 0; width: 100%; height: auto; border-radius: 10px; background: var(--card); filter: url(#ct-tone); box-shadow: 0 10px 26px -12px rgba(17, 23, 26, 0.35);
     transform: translate(calc(var(--i) * 10px), calc(var(--i) * 8px)) rotate(calc(var(--i) * 0.5deg)); z-index: calc(10 - var(--i)); opacity: calc(1 - var(--i) * 0.07); transition: transform 0.9s cubic-bezier(0.2, 0.8, 0.2, 1), opacity 0.9s; }
-  .deck img.out { transform: translate(-46%, -6%) rotate(-7deg); opacity: 0; transition: transform 0.6s cubic-bezier(0.6, 0, 0.9, 0.4), opacity 0.5s 0.1s; }
-  .asmact { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; margin-bottom: 30px; font-size: 12.5px; color: var(--ink-2); animation: up 0.8s 0.6s both; }
-  .btn--s { background: var(--shu); padding: 13px 22px 13px 26px; font-size: 14.5px; text-decoration: none; }
-  .btn--s::before { background: var(--ink); }
-  .asmlink { font-size: 13px; font-weight: 500; color: var(--ink); border-bottom: 1px solid var(--ink); }
-  .pts { list-style: none; margin: 0 0 30px; padding: 0; border-top: 1px solid var(--ink); animation: up 0.8s 0.7s both; }
-  .pts li { display: grid; grid-template-columns: 7.5em 1fr; gap: 10px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-2); align-items: baseline; }
-  .pts b { font-family: var(--mincho); font-size: 15.5px; color: var(--ink); }
+  .ct-deck img.out { transform: translate(-46%, -6%) rotate(-7deg); opacity: 0; transition: transform 0.6s cubic-bezier(0.6, 0, 0.9, 0.4), opacity 0.5s 0.1s; }
+  .ct-asmact { display: flex; align-items: center; gap: 12px 18px; flex-wrap: wrap; font-size: 12.5px; color: var(--mute); }
+  .ct-pts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 26px; }
+  .ct-pts li { padding: 14px 16px; border-radius: 12px; background: var(--tint); font-size: 13px; line-height: 1.7; }
+  .ct-pts b { display: block; font-size: 16px; font-weight: 900; }
 
   /* 相談票 */
-  .slip { background: var(--paper); border: 1px solid var(--ink); box-shadow: 12px 12px 0 var(--paper-2), 12px 12px 0 1px var(--ink); position: relative; animation: up 1s 0.3s both; }
-  .slip__head { display: flex; align-items: baseline; gap: 20px; padding: 18px clamp(18px, 2.6vw, 36px); border-bottom: 1px solid var(--ink); position: relative; }
-  .slip__head b { font-family: var(--mincho); font-weight: 800; font-size: 22px; letter-spacing: 0.3em; }
-  .slip__head span { font-family: var(--mono); font-size: 12px; color: var(--ink-2); letter-spacing: 0.06em; }
-  .slip__head i { font-style: normal; color: var(--ink); }
-  .stamp { position: absolute; right: clamp(18px, 2.6vw, 36px); top: 8px; width: 64px; height: 64px; border-radius: 50%; border: 2.4px solid var(--shu); color: var(--shu); display: grid; place-items: center; font-family: var(--mincho); font-weight: 800; font-size: 19px; letter-spacing: 0.08em; background: var(--paper); opacity: 0; transform: rotate(-12deg) scale(2); }
-  .slip.is-done .stamp { opacity: 1; transform: rotate(-12deg) scale(1); transition: opacity 0.12s 0.2s, transform 0.4s 0.2s cubic-bezier(0.3, 1.7, 0.5, 1); }
-  form { padding: clamp(18px, 2.6vw, 36px); display: grid; gap: 26px; transition: opacity 0.4s; }
-  .slip.is-done form { display: none; }
-  .row--2 { display: grid; grid-template-columns: 1fr 1fr; gap: 26px clamp(16px, 2vw, 30px); }
-  .f { display: block; border: 0; margin: 0; padding: 0; min-width: 0; position: relative; }
-  .f > span, .f > legend { display: flex; align-items: center; gap: 10px; font-size: 12.5px; font-weight: 700; margin-bottom: 6px; padding: 0; }
-  .f em { font-style: normal; font-size: 10.5px; font-weight: 500; color: var(--shu); border: 1px solid var(--shu); padding: 0 6px; line-height: 1.6; }
-  .f legend small { font-weight: 400; color: var(--ink-2); font-size: 11.5px; }
-  input[type='text'], input[type='email'], input[type='tel'], textarea {
-    width: 100%;
-    font: inherit;
-    font-size: 16px;
-    color: var(--ink);
-    background: transparent;
-    border: 0;
-    border-bottom: 1px solid var(--ink);
-    border-radius: 0;
-    padding: 8px 2px;
-    outline: none;
-    transition: border-color 0.25s, box-shadow 0.25s, background 0.25s;
-  }
-  textarea { border: 1px solid var(--ink); padding: 12px 14px; resize: vertical; line-height: 1.8; display: block; background: linear-gradient(transparent calc(1.8em - 1px), var(--hair) 0) 0 12px / 100% 1.8em local; }
-  input:focus, textarea:focus { border-color: var(--shu); box-shadow: 0 1px 0 var(--shu); }
-  textarea:focus { box-shadow: 0 0 0 1px var(--shu); }
-  ::placeholder { color: var(--line); }
-  .opts { display: flex; flex-wrap: wrap; gap: 8px; }
-  .opt { position: relative; cursor: pointer; }
-  .opt input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
-  .opt span { display: flex; align-items: center; gap: 9px; border: 1px solid var(--ink); padding: 7px 16px 7px 12px; font-size: 14px; transition: background 0.2s, color 0.2s; }
-  .opt span::before { content: ''; width: 10px; height: 10px; border: 1px solid currentColor; flex: none; transition: background 0.2s; }
-  .opt input[type='radio'] + span::before { border-radius: 50%; }
-  .opt:hover span { background: var(--paper-2); }
-  .opt input:checked + span { background: var(--ink); color: var(--paper); }
-  .opt input:checked + span::before { background: var(--shu); border-color: var(--shu); }
-  .opt input:focus-visible + span { outline: 2px solid var(--shu); outline-offset: 2px; }
-  .count { display: block; text-align: right; font-family: var(--mono); font-size: 11px; color: var(--ink-2); margin-top: 4px; }
-  .count i { font-style: normal; color: var(--ink); }
-  .f.bad > span, .f.bad > legend { color: var(--shu); }
-  .f.bad input[type='text'], .f.bad input[type='email'], .f.bad textarea { border-color: var(--shu); }
-  .err { margin: -6px 0 0; color: var(--shu); font-size: 13.5px; font-weight: 700; min-height: 1.6em; }
-  .btn { justify-self: start; display: inline-flex; align-items: center; gap: 22px; background: var(--ink); color: var(--paper); border: 0; padding: 17px 30px 17px 36px; font: inherit; font-weight: 700; font-size: 16px; letter-spacing: 0.08em; cursor: pointer; position: relative; overflow: hidden; isolation: isolate; }
-  .btn::before { content: ''; position: absolute; inset: 0; background: var(--shu); transform: translateX(-101%); transition: transform 0.45s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: -1; }
-  .btn:hover::before, .btn.busy::before { transform: none; }
-  .btn:hover svg { transform: translateX(6px); }
-  .btn.busy { pointer-events: none; }
-  .btn.busy svg { animation: go 0.8s linear infinite; }
-  @keyframes go { from { transform: translateX(-8px); opacity: 0; } 50% { opacity: 1; } to { transform: translateX(10px); opacity: 0; } }
-  .done { display: none; padding: clamp(40px, 6vw, 80px) clamp(18px, 2.6vw, 36px); }
-  .slip.is-done .done { display: block; animation: up 0.7s 0.5s both; }
-  .done__h { font-family: var(--mincho); font-weight: 800; font-size: clamp(28px, 3.4vw, 46px); margin: 0 0 10px; }
-  .done p { margin: 0 0 26px; }
-  .reply { margin: 14px 0 0; font-size: 13px; color: var(--ink-2); }
-  .done__n { margin: 0 0 12px !important; font-size: 14px; color: var(--ink-2); }
-  .done .link { display: table; margin: 0 0 12px; }
-  .link { font-size: 14px; font-weight: 500; border-bottom: 1px solid var(--ink); padding-bottom: 2px; }
-
-  .foot { margin: 0 calc(var(--gutter) + 10px) 40px; border-top: 1px solid var(--ink); padding-top: 20px; font-size: 12.5px; color: var(--ink-2); display: flex; gap: 8px 30px; flex-wrap: wrap; align-items: baseline; }
-  .foot p { margin: 0; }
-  .foot__n { font-weight: 700; color: var(--ink); }
-  .foot__c { margin-left: auto !important; font-family: var(--mono); font-size: 10.5px; }
+  .ct-slip { position: relative; border-radius: var(--r); background: var(--card); animation: ct-up 0.9s 0.15s both; }
+  .ct-slip__head { position: relative; display: flex; align-items: baseline; gap: 18px; padding: clamp(18px, 2.4vw, 30px) clamp(18px, 2.6vw, 36px) 0; }
+  .ct-slip__head b { font-size: 21px; font-weight: 900; letter-spacing: 0.12em; }
+  .ct-slip__head > span { font: 500 12px var(--mono); color: var(--mute); }
+  .ct-slip__head i { font-style: normal; color: var(--ink); }
+  .ct-stamp { position: absolute; right: clamp(18px, 2.6vw, 36px); top: 14px; display: grid; place-items: center; width: 60px; height: 60px; border-radius: 50%; background: var(--key); color: var(--ink); font-size: 17px; font-weight: 900; opacity: 0; transform: rotate(-10deg) scale(1.8); }
+  .ct-slip.is-done .ct-stamp { opacity: 1; transform: rotate(-10deg) scale(1); transition: opacity 0.12s 0.2s, transform 0.4s 0.2s cubic-bezier(0.3, 1.7, 0.5, 1); }
+  .ct-slip form { display: grid; gap: 24px; padding: clamp(18px, 2.4vw, 30px) clamp(18px, 2.6vw, 36px) clamp(22px, 2.8vw, 38px); }
+  .ct-slip.is-done form { display: none; }
+  .ct-row { display: grid; grid-template-columns: 1fr 1fr; gap: 24px clamp(14px, 1.6vw, 24px); }
+  .ct-f { position: relative; display: block; min-width: 0; border: 0; }
+  .ct-f > span, .ct-f > legend { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; font-size: 13.5px; font-weight: 700; }
+  .ct-f em { padding: 0 9px; border-radius: 99px; background: var(--tint); font-style: normal; font-size: 11px; font-weight: 700; line-height: 1.8; }
+  .ct-f legend small { font-size: 12px; font-weight: 500; color: var(--mute); }
+  .ct-slip input[type='text'], .ct-slip input[type='email'], .ct-slip input[type='tel'], .ct-slip textarea { display: block; width: 100%; padding: 11px 14px; border: 0; border-radius: 10px; outline: none; background: var(--bg); box-shadow: inset 0 0 0 2px transparent; font: inherit; font-size: 16px; color: var(--ink); transition: background 0.2s, box-shadow 0.2s; }
+  .ct-slip textarea { resize: vertical; line-height: 1.8; }
+  .ct-slip input:focus, .ct-slip textarea:focus { background: #fff; box-shadow: inset 0 0 0 2px var(--key); }
+  .ct-slip ::placeholder { color: #8a8f94; }
+  .ct-opts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .ct-opt { position: relative; cursor: pointer; }
+  .ct-opt input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .ct-opt span { display: flex; align-items: center; gap: 9px; padding: 6px 17px 6px 12px; border-radius: 99px; background: var(--bg); font-size: 14px; font-weight: 500; transition: background 0.2s, color 0.2s; }
+  .ct-opt span::before { content: ''; flex: none; width: 12px; height: 12px; border-radius: 3px; background: #fff; box-shadow: inset 0 0 0 2px #8a8f94; transition: background 0.2s, box-shadow 0.2s; }
+  .ct-opt input[type='radio'] + span::before { border-radius: 50%; }
+  .ct-opt:hover span { background: var(--tint); }
+  .ct-opt input:checked + span { background: var(--ink); color: #fff; }
+  .ct-opt input:checked + span::before { background: var(--key); box-shadow: none; }
+  .ct-opt input:focus-visible + span { outline: 3px solid var(--key); outline-offset: 2px; }
+  .ct-count { display: block; margin-top: 4px; text-align: right; font: 500 11.5px var(--mono); color: var(--mute); }
+  .ct-count i { font-style: normal; color: var(--ink); }
+  .ct-f.bad > span, .ct-f.bad > legend { color: var(--miss); }
+  .ct-f.bad input[type='text'], .ct-f.bad input[type='email'], .ct-f.bad textarea { box-shadow: inset 0 0 0 2px var(--miss); }
+  .ct-f.bad .ct-opt span { box-shadow: inset 0 0 0 2px var(--miss); }
+  .ct-err { min-height: 1.6em; margin-top: -8px; font-size: 13.5px; font-weight: 700; color: var(--miss); }
+  .ct-send { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 20px; }
+  .ct-send .btn.busy { pointer-events: none; background: var(--ink); color: #fff; }
+  .ct-send .btn.busy i { animation: ct-go 0.8s linear infinite; }
+  @keyframes ct-go { from { transform: translateX(-5px); opacity: 0.3; } 50% { opacity: 1; } to { transform: translateX(6px); opacity: 0.3; } }
+  .ct-reply { font-size: 13px; color: var(--mute); }
+  .ct-done { display: none; padding: clamp(30px, 5vw, 64px) clamp(18px, 2.6vw, 36px) clamp(34px, 5vw, 64px); }
+  .ct-slip.is-done .ct-done { display: block; animation: ct-up 0.7s 0.5s both; }
+  .ct-done__h { margin-bottom: 8px; font-size: clamp(28px, 3.4vw, 46px); font-weight: 900; line-height: 1.3; }
+  .ct-done__n { margin: 26px 0 6px; font-size: 14px; color: var(--mute); }
+  .ct-done .more { display: flex; width: fit-content; margin-top: 12px; }
 
   @media (max-width: 900px) {
-    .wrap { grid-template-columns: 1fr; padding-top: 120px; }
-    .side { position: static; }
-    .pts li { grid-template-columns: 1fr; gap: 0; }
-    .deck { margin-right: 40px; }
-    .slip { box-shadow: none; }
-    .row--2 { grid-template-columns: 1fr; }
-    .btn { justify-self: stretch; justify-content: space-between; }
-    .stamp { width: 52px; height: 52px; font-size: 15px; top: 6px; }
-    .foot__c { margin-left: 0 !important; }
+    .ct { grid-template-columns: 1fr; }
+    .ct-side { position: static; }
+    .ct-deck { margin-right: 40px; }
+    .ct-pts, .ct-row { grid-template-columns: 1fr; }
+    .ct-stamp { width: 50px; height: 50px; font-size: 14.5px; top: 10px; }
+    .ct-send .btn { flex: 1 1 100%; justify-content: space-between; }
+    .ct-asmact .btn { flex: 1 1 100%; justify-content: space-between; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ct-stp li::before, .ct-side h1, .ct-h, .ct-lead, .ct-stp li, .ct-direct, .ct-deck, .ct-slip { animation: none; }
   }
 </style>
 
@@ -365,7 +292,7 @@ const after = [
   }
 
   msg.addEventListener('input', () => (count.textContent = String(msg.value.length)));
-  form.addEventListener('input', (e) => (e.target as HTMLElement).closest('.f')?.classList.remove('bad'));
+  form.addEventListener('input', (e) => (e.target as HTMLElement).closest('.ct-f')?.classList.remove('bad'));
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
@@ -374,17 +301,17 @@ const after = [
     const val = (k: string) => String(fd.get(k) ?? '').trim();
     const missing: string[] = [];
     const need: [string, string][] = [['company', '会社名'], ['name', 'お名前'], ['email', 'メールアドレス'], ['systemType', 'いまの状況'], ['timeline', '始めたい時期'], ['message', '相談の内容']];
-    form.querySelectorAll('.f').forEach((f) => f.classList.remove('bad'));
+    form.querySelectorAll('.ct-f').forEach((f) => f.classList.remove('bad'));
     for (const [k, label] of need) {
       const ok = k === 'email' ? /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val(k)) : val(k) !== '';
       if (!ok) {
         missing.push(label);
-        form.querySelector(`[name="${k}"]`)?.closest('.f')?.classList.add('bad');
+        form.querySelector(`[name="${k}"]`)?.closest('.ct-f')?.classList.add('bad');
       }
     }
     if (missing.length) {
       err.textContent = `次の欄を確かめてください：${missing.join('、')}`;
-      (form.querySelector('.f.bad input, .f.bad textarea') as HTMLElement | null)?.focus();
+      (form.querySelector('.ct-f.bad input, .ct-f.bad textarea') as HTMLElement | null)?.focus();
       return;
     }
     const phases = fd.getAll('phase').map(String);

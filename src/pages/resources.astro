@@ -10,50 +10,53 @@ const items = [
 ];
 ---
 
-<PageLayout title={title} description={description} mark="RESOURCES" crumbs={[{ name: '資料とひな形' }]}>
-  <section class="top">
-    <p class="tag"><span>資料とひな形</span>入力なしでダウンロードできます</p>
-    <h1 class="h1">
-      <span class="hl"><span>SAP 導入で使える、</span></span>
-      <span class="hl"><span>資料とひな形。</span></span>
-    </h1>
-    <p class="lead">ブログで説明している進め方を、すぐに試せる形にしました。お名前などの入力は要りません。ひな形は、自由に書き換えてお使いください。</p>
-  </section>
-
-  <section class="sec">
-    <p class="tag"><span>01</span>ダウンロード</p>
-    <div class="dl">
+<PageLayout
+  title={title}
+  description={description}
+  crumbs={[{ name: '資料とひな形' }]}
+  tag="入力なしでダウンロードできます"
+  h1={['SAP 導入で使える、', '資料とひな形。']}
+  lead="ブログで説明している進め方を、すぐに試せる形にしました。お名前などの入力は要りません。ひな形は、自由に書き換えてお使いください。"
+>
+  <section class="sec pg-near" data-st="ダウンロード">
+    <p class="kick rv">ダウンロード</p>
+    <div class="dl rv">
       {items.map((x) => (
         <article>
-          <p class="k">{x.tag}</p>
+          <p class="dl__k">{x.tag}</p>
           <h2>{x.name}</h2>
           <p>{x.body}</p>
-          <div>
-            <a class="btn" href={x.file} download={x.save} data-dl>ダウンロード<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-            <a class="link" href={x.more[0]}>{x.more[1]}</a>
+          <div class="act">
+            <a class="btn" href={x.file} download={x.save} data-dl>ダウンロード<i></i></a>
+            <a class="more" href={x.more[0]}>{x.more[1]}</a>
           </div>
         </article>
       ))}
     </div>
   </section>
 
-  <section class="cta">
-    <h2>貴社の設計書と移行データで、点検と照合を全件行います。</h2>
-    <p>ひな形は、人が記録するための表です。AIチームを組み込むと、点検と照合を全件で行えます。</p>
-    <div class="act">
-      <a href="/assessment" class="btn btn--inv">アセスメントの内容を見る<svg viewBox="0 0 40 10"><path d="M0 5h38M33 1l5 4-5 4" /></svg></a>
-      <a href="/services" class="link link--inv">サービスの一覧を見る</a>
+  <section class="sec" data-st="アセスメント">
+    <div class="pg-nx rv">
+      <h2>貴社の設計書と移行データで、点検と照合を全件行います。</h2>
+      <div>
+        <p>ひな形は、人が記録するための表です。AIチームを組み込むと、点検と照合を全件で行えます。</p>
+        <div class="act">
+          <a href="/assessment" class="btn">アセスメントの内容を見る<i></i></a>
+          <a href="/services" class="more">サービスの一覧を見る</a>
+        </div>
+      </div>
     </div>
   </section>
 </PageLayout>
 
-<style>
-  .dl { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--ink); background: var(--paper); }
-  .dl article { padding: 26px 28px 30px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); margin: 0 -1px -1px 0; display: grid; gap: 10px; align-content: start; }
-  .dl .k { margin: 0; font-family: var(--mono); font-size: 12px; color: var(--shu); }
-  .dl h2 { margin: 0; font-family: var(--mincho); font-weight: 800; font-size: 22px; line-height: 1.5; }
-  .dl p { margin: 0; font-size: 14.5px; line-height: 1.9; color: var(--ink-2); }
-  .dl div { display: flex; gap: 20px; align-items: center; flex-wrap: wrap; margin-top: 10px; }
-  .dl .btn { padding: 12px 18px 12px 22px; font-size: 14px; }
+<style is:global>
+  .dl { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+  .dl article { display: flex; flex-direction: column; gap: 10px; padding: 26px 28px 28px; border-radius: var(--r); background: var(--card); }
+  .dl__k { align-self: flex-start; padding: 1px 12px; border-radius: 99px; background: var(--tint); font-size: 12px; font-weight: 700; }
+  .dl h2 { font-size: clamp(19px, 1.8vw, 24px); line-height: 1.5; }
+  .dl article > p:not(.dl__k) { font-size: 14.5px; color: var(--mute); }
+  .dl .act { margin-top: auto; padding-top: 12px; gap: 14px 22px; }
+  .dl .btn { height: 48px; font-size: 14px; }
+  .dl .more { font-size: 13.5px; }
   @media (max-width: 900px) { .dl { grid-template-columns: 1fr; } }
 </style>

@@ -140,38 +140,38 @@ const people = [['担当者A', 88], ['担当者B', 46], ['担当者C', 67], ['�
 
 <style is:global>
   .b6f1 .two, .b6f3 .two { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; align-items: start; }
-  .b6f1 .k, .b6f3 .k, .b6f4 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--ink-2); }
-  .b6f1 .k--on, .b6f3 .k--on, .b6f4 .k--on { color: var(--shu); }
+  .b6f1 .k, .b6f3 .k, .b6f4 .k { margin: 0 0 10px; font-size: 12.5px; font-weight: 700; color: var(--mute); }
+  .b6f1 .k--on, .b6f3 .k--on, .b6f4 .k--on { color: var(--acc); }
   .b6f1 .bars { display: grid; gap: 8px; }
   .b6f1 .row { display: grid; grid-template-columns: 5em 1fr; gap: 10px; align-items: center; font-size: 12.5px; }
-  .b6f1 .row i { display: block; height: 20px; width: var(--w); background: var(--ink); }
-  .b6f1 .bars--on .row i { background: var(--shu); }
-  .b6f1 .r, .b6f3 .r { margin: 12px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--ink-2); }
-  .b6f1 .r--on, .b6f3 .r--on { color: var(--shu); font-weight: 700; }
+  .b6f1 .row i { display: block; height: 20px; width: var(--w); background: var(--ink); border-radius: 5px; }
+  .b6f1 .bars--on .row i { background: var(--key); color: var(--ink); }
+  .b6f1 .r, .b6f3 .r { margin: 12px 0 0; font-size: 12.5px; line-height: 1.7; color: var(--mute); }
+  .b6f1 .r--on, .b6f3 .r--on { color: var(--acc); font-weight: 700; }
   .b6f2 .three { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-  .b6f2 .c { border: 1px solid var(--ink); background: var(--paper); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
-  .b6f2 .c > b { font-family: var(--mono); font-weight: 500; font-size: 26px; color: var(--shu); line-height: 1; background: none; }
-  .b6f2 h4 { margin: 0; font-family: var(--mincho); font-size: 18px; }
+  .b6f2 .c { border: 0; border-radius: 10px; background: var(--bg); padding: 14px 16px; display: grid; gap: 6px; align-content: start; }
+  .b6f2 .c > b { font-family: var(--num); font-weight: 600; font-size: 26px; color: var(--acc); line-height: 1; background: none; }
+  .b6f2 h4 { margin: 0; font-family: var(--sans); font-size: 18px; }
   .b6f2 .c p { margin: 0; font-size: 13px; line-height: 1.75; }
-  .b6f2 .c em { font-style: normal; font-size: 12px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 7px; line-height: 1.7; }
+  .b6f2 .c em { font-style: normal; font-size: 12px; color: var(--mute); border-top: 1px solid var(--rule); padding-top: 7px; line-height: 1.7; }
   .b6f3 .memos { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .b6f3 .memos i { font-style: normal; border: 1px dashed var(--ink-2); padding: 12px 10px; font-size: 12.5px; color: var(--ink-2); text-align: center; background: var(--paper); }
+  .b6f3 .memos i { font-style: normal; border: 2px dashed var(--gry); border-radius: 10px; padding: 12px 10px; font-size: 12.5px; color: var(--mute); text-align: center; background: var(--bg); }
   .b6f3 .memos i:nth-child(2) { transform: rotate(1.5deg); }
   .b6f3 .memos i:nth-child(3) { transform: rotate(-1.2deg); }
-  .b6f3 .one { border: 1.5px solid var(--ink); background: var(--ink); color: var(--paper); padding: 12px 14px; text-align: center; }
-  .b6f3 .one b { display: block; font-family: var(--mincho); font-size: 17px; background: none; }
-  .b6f3 .one span { font-size: 12px; color: #c9c4b6; }
+  .b6f3 .one { border: 0; border-radius: 10px; color: var(--ink); padding: 12px 14px; text-align: center; background: var(--tint); }
+  .b6f3 .one b { display: block; font-family: var(--sans); font-size: 17px; background: none; }
+  .b6f3 .one span { font-size: 12px; color: var(--mute); }
   .b6f3 .users { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; position: relative; }
-  .b6f3 .users i { font-style: normal; border: 1px solid var(--ink); background: var(--paper); text-align: center; padding: 6px 0; font-family: var(--mono); font-size: 13px; position: relative; }
-  .b6f3 .users i::before { content: ''; position: absolute; left: 50%; bottom: 100%; width: 1px; height: 16px; background: var(--shu); }
+  .b6f3 .users i { font-style: normal; border: 0; border-radius: 10px; background: var(--bg); text-align: center; padding: 6px 0; font-family: var(--mono); font-size: 13px; position: relative; }
+  .b6f3 .users i::before { content: ''; position: absolute; left: 50%; bottom: 100%; width: 1px; height: 16px; background: var(--key); color: var(--ink); }
   .b6f4 .seq { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
-  .b6f4 .seq div { border: 1px solid var(--line); background: var(--paper); padding: 10px 14px; }
-  .b6f4 .seq b { display: block; font-family: var(--mono); font-weight: 500; font-size: 12.5px; color: var(--ink-2); background: none; }
+  .b6f4 .seq div { border: 0; border-radius: 10px; background: var(--bg); padding: 10px 14px; }
+  .b6f4 .seq b { display: block; font-family: var(--mono); font-weight: 500; font-size: 12.5px; color: var(--mute); background: none; }
   .b6f4 .seq span { font-size: 14px; font-weight: 700; line-height: 1.6; }
   .b6f4 .seq--on { margin-bottom: 0; }
-  .b6f4 .seq--on div { border-color: var(--ink); }
-  .b6f4 .seq--on .up2 { background: var(--shu); border-color: var(--shu); color: var(--paper); }
-  .b6f4 .seq--on .up2 b { color: #ffd9cf; }
+  .b6f4 .seq--on div { }
+  .b6f4 .seq--on .up2 { background: var(--key); color: var(--ink); }
+  .b6f4 .seq--on .up2 b { color: var(--ink); }
   @media (max-width: 760px) {
     .b6f1 .two, .b6f3 .two { grid-template-columns: 1fr; }
     .b6f2 .three { grid-template-columns: 1fr; }
