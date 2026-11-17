@@ -1,5 +1,7 @@
 ---
 /* 毎朝の完了の見込みを、幅（早ければ〜遅ければ）で並べる。架空の例 */
+interface Props { bare?: boolean }
+const { bare = false } = Astro.props;
 const DX0 = 250, DAY = 25, DEAD = 14; // 12/1 を 0 日目とする。予定日は 12/15
 const dx = (d: number) => DX0 + d * DAY;
 const md = (d: number) => `12/${d + 1}`;
@@ -23,7 +25,7 @@ const levers = [
 ];
 ---
 
-<div class="fig rv">
+{bare ? (
   <div class="fig__scroll">
     <svg id="fct" viewBox="0 0 1280 400" role="img" aria-label="毎朝の完了の見込みを幅で並べた図。11月10日は12月13日から25日の幅で、予定日の12月15日を大きく過ぎていた。課題を解決するたびに幅が左へ動いて狭くなり、今朝は12月7日から17日。右に、解けると見込みが最も早まる課題を3つ並べている。">
       <text class="t-ln" x="20" y="22">朝</text>
@@ -53,9 +55,9 @@ const levers = [
       })}
       <line class="dead" x1={dx(DEAD)} x2={dx(DEAD)} y1="34" y2="346" />
       <rect class="dead__b" x={dx(DEAD) - 60} y="8" width="120" height="24" rx="12" /><text class="dead__t" x={dx(DEAD)} y="25" text-anchor="middle">予定日 {md(DEAD)}</text>
-      <text class="fm-say fm-say--ai" x={DX0} y="378">課題を解くたびに、幅が左へ動き、狭くなる。</text>
+      {!bare && <text class="fm-say fm-say--ai" x={DX0} y="378">課題を解くたびに、幅が左へ動き、狭くなる。</text>}
 
-      <g transform="translate(948 60)">
+      <g class="fc__side" transform="translate(948 60)">
         <text class="d-lb" y="6">今朝の見込み</text>
         <text class="d-n" y="66">{md(now.lo)} 〜 {md(now.hi)}</text>
         <text class="fc__s" y="92">予定日を過ぎるおそれが、まだ {now.hi - DEAD} 日分ある</text>
@@ -71,12 +73,62 @@ const levers = [
       </g>
     </svg>
   </div>
+) : (
+  <div class="fig rv">
+    <div class="fig__scroll">
+    <svg id="fct" viewBox="0 0 1280 400" role="img" aria-label="毎朝の完了の見込みを幅で並べた図。11月10日は12月13日から25日の幅で、予定日の12月15日を大きく過ぎていた。課題を解決するたびに幅が左へ動いて狭くなり、今朝は12月7日から17日。右に、解けると見込みが最も早まる課題を3つ並べている。">
+      <text class="t-ln" x="20" y="22">朝</text>
+      <text class="t-ln" x="96" y="22">前の日に起きたこと</text>
+      <text class="t-ln" x={DX0} y="22">その朝の完了の見込み（早ければ 〜 遅ければ）</text>
+      <rect class="late" x={dx(DEAD)} y="50" width={dx(26) - dx(DEAD)} height="296" />
+      <text class="late__t" x={dx(26)} y="364" text-anchor="end">予定日を過ぎる分</text>
+      {Array.from({ length: 27 }, (_, d) => <line class:list={['g', d % 5 === 0 && 'g--b']} x1={dx(d)} x2={dx(d)} y1="50" y2="346" />)}
+      {ticks.map((d) => <text class="d-wk" x={dx(d)} y="44" text-anchor="middle">{md(d)}</text>)}
+      {rows.map((r, i) => {
+        const y = Y0 + i * P;
+        const cut = Math.min(r.hi, DEAD);
+        return (
+          <g class:list={['fc', r.now && 'fc--now']} style={`--i:${i}`}>
+            {r.now && <rect class="fc__bg" x="10" y={y - 9} width={dx(26) - 4} height="32" rx="8" />}
+            <text class="fc__m" x="20" y={y + 12}>{r.m}</text>
+            {r.now && <text class="fc__ev fc__ev--now" x="96" y={y + 12}>今朝</text>}
+            {r.ev && <text class:list={['fc__ev', r.bad && 'fc__ev--bad']} x="96" y={y + 12}>{r.ev}</text>}
+            <g class="fc__b">
+              <rect class="fc__ok" x={dx(r.lo)} y={y} width={dx(cut) - dx(r.lo)} height="14" rx="3" />
+              {r.hi > DEAD && <rect class="fc__ng" x={dx(DEAD)} y={y} width={dx(r.hi) - dx(DEAD)} height="14" rx="3" />}
+            </g>
+            <text class="fc__e" x={dx(r.lo) - 6} y={y + 12} text-anchor="end">{md(r.lo)}</text>
+            <text class="fc__e" x={dx(r.hi) + 6} y={y + 12}>{md(r.hi)}</text>
+          </g>
+        );
+      })}
+      <line class="dead" x1={dx(DEAD)} x2={dx(DEAD)} y1="34" y2="346" />
+      <rect class="dead__b" x={dx(DEAD) - 60} y="8" width="120" height="24" rx="12" /><text class="dead__t" x={dx(DEAD)} y="25" text-anchor="middle">予定日 {md(DEAD)}</text>
+      {!bare && <text class="fm-say fm-say--ai" x={DX0} y="378">課題を解くたびに、幅が左へ動き、狭くなる。</text>}
+
+      <g class="fc__side" transform="translate(948 60)">
+        <text class="d-lb" y="6">今朝の見込み</text>
+        <text class="d-n" y="66">{md(now.lo)} 〜 {md(now.hi)}</text>
+        <text class="fc__s" y="92">予定日を過ぎるおそれが、まだ {now.hi - DEAD} 日分ある</text>
+        <text class="d-lb" y="140">解けると、見込みが最も早まる課題</text>
+        {levers.map((l, i) => (
+          <g transform={`translate(0 ${162 + i * 44})`}>
+            <text class="fc__id" y="12">{l.id}</text>
+            <text class="fc__n" x="52" y="12">{l.n}</text>
+            <rect class="fc__lv" x="0" y="20" width={l.d * 44} height="10" rx="5" />
+            <text class="fc__ld" x={l.d * 44 + 8} y="30">{l.d} 日 早まる</text>
+          </g>
+        ))}
+      </g>
+    </svg>
+    </div>
   <p class="fig__lg">
     <span><i class="b b--a"></i>予定日までに終わる分</span>
     <span><i class="b b--k"></i>予定日を過ぎる分</span>
     <em>架空の例です。見込みは、課題とリスクの一覧から毎朝計算します。</em>
   </p>
-</div>
+  </div>
+)}
 
 <style is:global>
   .fc__m { font: 500 12.5px var(--mono) !important; fill: var(--ink); }

@@ -1,8 +1,12 @@
 ---
 /* 工程ごとの動く図（開発・テスト・移行・運用保守）。開くと自分で流れ、繰り返す。どれも架空の例 */
+import FigForecast from './FigForecast.astro';
 interface Props { slug: string }
 const { slug } = Astro.props;
 const caps: Record<string, string[]> = {
+  requirements: ['会議で決まったことを、AIが取り出す。', '決定に番号を付け、一覧に載せる。', '設計書・プログラム・テストに、同じ番号が残る。', '保守まで、同じ番号でたどれる。'],
+  design: ['AIが、設計書の初版を作る。', '214本すべてを、同じ6つの観点で読む。', '指摘は、3か所だけ。', '直すかどうかは、人が決める。'],
+  'project-management': ['毎朝、記録から課題とリスクを取り出す。', '完了の見込みを、幅で出す。', '課題を解くたびに、幅が左へ動く。', '見込みを最も早める課題から、手を打つ。'],
   development: ['設計書から、プログラムの初版を作る。', '処理ごとに、設計書の行と結ぶ。', '片方にしかない行を、見つける。', '残すか、足りない分を作るかは、人が決める。'],
   test: ['AIが、検証環境の画面を操作する。', '手順ごとに、証跡を残す。', 'NG が出たら、そこで止める。', '原因の仮説を付けて、担当者に渡す。'],
   migration: ['全件を、1件ずつ照合する。', '合わない件だけが、残る。', '合わない件を、理由ごとに分ける。', '人が見るのは、この15件だけ。'],
@@ -21,6 +25,20 @@ const cells = Array.from({ length: 360 }, (_, i) => (i % 47 === 9 ? 'ma' : i % 8
 const cnt = (k: string) => cells.filter((c) => c === k).length;
 const bad = cells.filter((c) => c).length;
 const why = [{ k: 'ma', n: '桁があふれる' }, { k: 'mb', n: 'コードの変換先がない' }, { k: 'mc', n: '日付の形式が違う' }];
+const yarn = [
+  { d: '4/08', n: '会議', k: '業務検討会', t: '「請求の締め日は、毎月20日にします」', s: 0 },
+  { d: '4/08', n: '決定の一覧', k: 'D-0142', t: '請求の締め日を毎月20日にする', s: 1 },
+  { d: '4/10', n: '設計書', k: 'SD-031 3.2', t: '締め日は、毎月20日とする', s: 2 },
+  { d: '4/15', n: 'プログラム', k: 'ZSD_BILLING_CLOSE', t: "iv_day = '20'", s: 2 },
+  { d: '5/12', n: 'テスト', k: 'TC-118', t: '20日までの出荷が当月の請求に入る　OK', s: 2 },
+  { d: '11/20', n: '保守', k: '問い合わせ', t: '「なぜ20日なのか」に、決定の記録で答える', s: 3 },
+];
+const views = ['要件との対応', '項目の桁数と型', '命名のきまり', '他の設計書との食い違い', '例外の扱い', 'テストへのつながり'];
+const vflag = [1, 3, 4];
+const doc = [
+  { w: 92 }, { w: 64, f: '受注側は 13,2。桁が合わない' }, { w: 86 }, { w: 78 },
+  { w: 46, f: 'SD-027 は「出荷指示の時点」と書いている' }, { w: 88 }, { w: 38, f: '対象が0件のときの扱いがない' }, { w: 70 },
+];
 const chain = [
   { k: 'テスト', v: 'TC-118　OK', d: '5/12' },
   { k: 'プログラム', v: 'ZSD_BILLING_CLOSE', d: '4/15' },
@@ -30,11 +48,38 @@ const chain = [
 ---
 
 {cap && (
-  <div class={`fig mo mo-${slug}`} data-mo data-caps={JSON.stringify(cap)}>
+  <div class={`fig mo mo-${slug}`} data-mo data-caps={JSON.stringify(cap)} data-dur={slug === 'requirements' ? '[1700,1700,2600,2600]' : undefined}>
     <div class="mo__h">
       <p class="mo__cap">{cap[0]}</p>
       <ol class="mo__seg" aria-hidden="true">{cap.map(() => <li></li>)}</ol>
     </div>
+
+    {slug === 'requirements' && (
+      <ol class="rq">
+        {yarn.map((y, i) => (
+          <li class={`rq${y.s}`} style={`--i:${i}`}>
+            <span>{y.d}</span><i></i><b>{y.n}</b>
+            <div><small>{y.k}</small><p>{y.t}</p>{i > 0 && <em>D-0142</em>}</div>
+          </li>
+        ))}
+      </ol>
+    )}
+
+    {slug === 'design' && (
+      <div class="dg">
+        <div class="dg__doc">
+          <p class="dg__h"><b>外部設計書 SD-031</b>請求書発行<span>031 / 214</span></p>
+          <div class="dg__b"><u></u>{doc.map((d, i) => <p class:list={[d.f && 'f']} style={`--w:${d.w}%;--i:${i}`}>{d.f && <em>{d.f}</em>}</p>)}</div>
+          <div class="dg__all">{Array.from({ length: 214 }, (_, i) => <i class:list={[i % 31 === 7 && 'w']} style={`--i:${i}`}></i>)}</div>
+        </div>
+        <div class="dg__v">
+          <ul>{views.map((v, i) => <li class:list={[vflag.includes(i) && 'flag']} style={`--i:${i}`}><span>{v}</span><b>{vflag.includes(i) ? '指摘 1' : '済'}</b></li>)}</ul>
+          <p class="dg__out"><b>人に渡すのは、指摘のあった3か所だけ。</b>設計者が読み、直すかどうかを決めます。</p>
+        </div>
+      </div>
+    )}
+
+    {slug === 'project-management' && <div class="pm"><FigForecast bare /></div>}
 
     {slug === 'development' && (
       <div class="dv">
@@ -103,8 +148,9 @@ const chain = [
   (() => {
     const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
     document.querySelectorAll('[data-mo]').forEach((el) => {
+      if (el.dataset.run) return; el.dataset.run = '1';
       const caps = JSON.parse(el.dataset.caps), cap = el.querySelector('.mo__cap'), segs = [...el.querySelectorAll('.mo__seg li')], texts = [...el.querySelectorAll('[data-t]')];
-      const DUR = [3400, 3400, 3400, 4600];
+      const DUR = el.dataset.dur ? JSON.parse(el.dataset.dur) : [3400, 3400, 3400, 4600];
       let s = -1, timer, started = false;
       const set = (n) => {
         s = n;
@@ -132,6 +178,71 @@ const chain = [
   .mo__seg li { width: 26px; height: 5px; border-radius: 3px; background: var(--rule); transition: background 0.3s, width 0.3s; }
   .mo__seg li.on { width: 46px; background: var(--key); }
   .mo * { transition-timing-function: cubic-bezier(0.2, 0.7, 0.2, 1); }
+
+  /* 要件定義：同じ番号が6つの場所に残る */
+  .rq { display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin: 22px 26px 6px; }
+  .rq li { position: relative; display: grid; justify-items: center; gap: 2px; opacity: 0.3; transition: opacity 0.3s; }
+  .rq li::before { content: ''; position: absolute; left: calc(-50% - 5px); right: 50%; top: 41px; height: 4px; background: var(--key); transform: scaleX(0); transform-origin: left; transition: transform 0.3s; }
+  .rq li:first-child::before { display: none; }
+  .rq li > span { font: 600 22px/1.2 var(--num); color: var(--mute); }
+  .rq li > i { position: relative; z-index: 1; width: 22px; height: 22px; margin: 6px 0; border-radius: 50%; background: var(--rule); box-shadow: 0 0 0 5px var(--card); transition: background 0.4s, transform 0.4s; }
+  .rq li > b { font-size: clamp(14px, 1.4vw, 18px); font-weight: 900; }
+  .rq li > div { position: relative; width: 100%; min-height: 150px; margin-top: 10px; padding: 16px 16px 44px; border-radius: 14px; background: var(--bg); text-align: left; transition: background 0.4s; }
+  .rq small { font: 500 11.5px var(--mono); color: var(--mute); }
+  .rq p { margin-top: 4px; font-size: clamp(13px, 1.1vw, 15px); font-weight: 700; line-height: 1.7; }
+  .rq em { position: absolute; left: 14px; bottom: 12px; padding: 0 12px; border-radius: 99px; background: var(--ink); color: #fff; font: 500 12px/2 var(--mono); font-style: normal; opacity: 0; transform: scale(0.6); transition: opacity 0.35s, transform 0.35s; }
+  .k0 .rq0, .k1 .rq1, .k2 .rq2, .k3 .rq3 { opacity: 1; }
+  .k0 .rq0 > i, .k1 .rq1 > i, .k2 .rq2 > i, .k3 .rq3 > i { background: var(--key); transform: scale(1.2); }
+  .k1 .rq1::before, .k2 .rq2::before, .k3 .rq3::before { transform: none; }
+  .k1 .rq1 em, .k2 .rq2 em, .k3 .rq3 em { opacity: 1; transform: none; transition-delay: 0.25s; }
+  .k2 .rq2, .k2 .rq2 > i, .k2 .rq2::before { transition-delay: calc((var(--i) - 2) * 0.4s); }
+  .k2 .rq2 em { transition-delay: calc((var(--i) - 2) * 0.4s + 0.25s); }
+  .k0 .rq0 > div, .k3 .rq3 > div { background: var(--tint); }
+
+  /* 設計：全件を同じ観点で読む */
+  .dg { display: grid; grid-template-columns: 1.15fr 1fr; gap: 26px; margin: 22px 26px 6px; }
+  .dg__doc { padding: 20px; border-radius: 14px; background: var(--bg); }
+  .dg__h { display: flex; gap: 14px; padding: 10px 16px; border-radius: 10px 10px 0 0; background: var(--card); font-size: 13.5px; box-shadow: inset 0 -1px 0 var(--rule); }
+  .dg__h span { margin-left: auto; font: 500 12px/2 var(--mono); color: var(--mute); }
+  .dg__b { position: relative; padding: 14px 16px 16px; border-radius: 0 0 10px 10px; background: var(--card); overflow: hidden; }
+  .dg__b p { position: relative; height: 12px; margin: 11px 0; }
+  .dg__b p::before { content: ''; position: absolute; inset: 0 auto 0 0; width: var(--w); border-radius: 6px; background: #dfe1dd; transform: scaleX(0); transform-origin: left; transition: transform 0.5s, background 0.4s; }
+  .k0 .dg__b p::before { transform: none; transition-delay: calc(var(--i) * 0.22s); }
+  .dg__b u { position: absolute; left: 0; right: 0; top: 0; z-index: 2; height: 40px; border-bottom: 3px solid var(--key); background: linear-gradient(transparent, rgba(242, 169, 0, 0.25)); transform: translateY(-44px); }
+  .k1 .dg__b u { animation: dgscan 2.6s linear both; }
+  @keyframes dgscan { to { transform: translateY(260px); } }
+  .k2 .dg__b u, .k3 .dg__b u { animation: none; }
+  .dg__b em { position: absolute; left: calc(var(--w) + 10px); top: 50%; z-index: 3; padding: 0 14px; border-radius: 99px; background: var(--ink); color: #fff; font: 700 12.5px/2.1 var(--sans); font-style: normal; white-space: nowrap; opacity: 0; transform: translate(-8px, -50%); transition: opacity 0.4s, transform 0.4s; }
+  .k2 .dg__b .f::before { background: var(--ink); }
+  .k2 .dg__b em { opacity: 1; transform: translate(0, -50%); transition-delay: calc(var(--i) * 0.12s); }
+  .dg__all { display: flex; flex-wrap: wrap; gap: 3px; margin-top: 14px; }
+  .dg__all i { width: 6px; height: 18px; border-radius: 2px; background: #dfe1dd; transition: background 0.2s; }
+  .k1 .dg__all i { background: var(--key); transition-delay: calc(var(--i) * 11ms); }
+  .k2 .dg__all i.w { background: var(--ink); transition-delay: 0s; }
+  .dg__v { display: flex; flex-direction: column; }
+  .dg__v li { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); font-weight: 700; font-size: clamp(14px, 1.35vw, 18px); }
+  .dg__v li b { padding: 0 16px; border-radius: 99px; background: var(--key); font: 700 12.5px/2.1 var(--sans); opacity: 0; transform: scale(0.6); transition: opacity 0.3s, transform 0.3s, background 0.3s, color 0.3s; }
+  .dg__v li.flag b { font-size: 0; }
+  .dg__v li.flag b::after { content: '済'; font-size: 12.5px; }
+  .k1 .dg__v li b { opacity: 1; transform: none; transition-delay: calc(var(--i) * 0.38s + 0.3s); }
+  .k2 .dg__v li.flag b { background: var(--ink); color: #fff; font-size: 12.5px; transition-delay: 0s; }
+  .k2 .dg__v li.flag b::after { content: none; }
+  .dg__out { margin-top: auto; padding: 16px 20px; border-radius: 14px; background: var(--tint); font-size: 14.5px; opacity: 0; transform: translateY(12px); transition: opacity 0.5s, transform 0.5s; }
+  .dg__out b { display: block; font-size: clamp(16px, 1.6vw, 21px); font-weight: 900; }
+  .k3 .dg__out { opacity: 1; transform: none; }
+
+  /* プロジェクト管理：毎朝の見込みの幅 */
+  .pm { margin: 8px 20px 0; }
+  .mo .fc__b { transform-box: fill-box; transform-origin: left center; transform: scaleX(0); transition: transform 0.6s; }
+  .mo .fc__m, .mo .fc__ev { opacity: 0; transition: opacity 0.4s; }
+  .mo.k0 .fc__m, .mo.k0 .fc__ev { opacity: 1; transition-delay: calc(var(--i) * 0.3s); }
+  .mo .fc__e, .mo .fc__bg, .mo .fc__side { opacity: 0; transition: opacity 0.4s; }
+  .mo.k1 .fc:first-of-type .fc__b { transform: none; }
+  .mo.k1 .fc:first-of-type .fc__e { opacity: 1; transition-delay: 0.5s; }
+  .mo.k2 .fc .fc__b { transform: none; transition-delay: calc(var(--i) * 0.36s); }
+  .mo.k2 .fc .fc__e { opacity: 1; transition-delay: calc(var(--i) * 0.36s + 0.4s); }
+  .mo.k1 .fc:first-of-type .fc__b, .mo.k1 .fc:first-of-type .fc__e { transition-delay: 0.1s; }
+  .mo.k3 .fc__bg, .mo.k3 .fc__side { opacity: 1; }
 
   /* 開発：設計書の行と、プログラムの行 */
   .dv { margin: 22px 26px 6px; }
@@ -232,7 +343,14 @@ const chain = [
 
   @media (max-width: 900px) {
     .mo__h { flex-direction: column; align-items: flex-start; gap: 10px; padding: 18px 18px 0; }
-    .dv, .ts, .mg, .op { margin-left: 18px; margin-right: 18px; }
+    .dv, .ts, .mg, .op, .rq, .dg { margin-left: 18px; margin-right: 18px; }
+    .rq { grid-template-columns: 1fr 1fr; row-gap: 22px; }
+    .rq li::before { display: none; }
+    .rq li > div { min-height: 0; }
+    .dg { grid-template-columns: 1fr; }
+    .dg__b em { position: static; display: inline-block; margin: 16px 0 0; transform: none; white-space: normal; border-radius: 8px; }
+    .dg__b p.f { height: auto; }
+    .dg__b p.f::before { height: 12px; inset: 0 auto auto 0; }
     .dv__t { display: none; }
     .dv__r { grid-template-columns: 1fr; gap: 4px; margin-top: 14px; }
     .dv__r b { display: none; }

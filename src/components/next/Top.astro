@@ -2,10 +2,13 @@
 /* 新しいトップの案。約束を一目で伝え、3つの行き先へ送る */
 import NextLayout from '../../layouts/NextLayout.astro';
 import { services } from '../../data/services';
+import { copy } from '../../data/koteiCopy';
+import FigMotion from './FigMotion.astro';
 interface Props { live?: boolean }
 const { live = false } = Astro.props;
 const kotei = '/services';
 const title = live ? 'TechTime | SAP 導入を、速く。抜けなく。' : 'SAP 導入を、速く。抜けなく。| TechTime';
+const flow = ['受注', '与信の確認', '在庫の引当', '出荷', '請求', '入金'];
 const description = 'SAP の導入と保守に、AIチームを組み込みます。設計書やテストの初版は AI が作り、全件を点検します。決めたことは、要件からテストまで同じ番号でつなぎます。';
 ---
 
@@ -18,171 +21,210 @@ const description = 'SAP の導入と保守に、AIチームを組み込みま�
         <h1>SAP 導入を、<br />速く。抜けなく。</h1>
       </div>
       <div class="hero__side">
+        <p>設計書やテストの初版は、AIチームが作り、全件を点検します。人は、決めることに集中できます。</p>
         <div class="act">
           <a href="/contact" class="btn">相談する<i></i></a>
-          {live ? <a href="/services" class="btn btn--sub">工程ごとに見る</a> : <a href="/next/shikumi" class="btn btn--sub">しくみを見る</a>}
+          <a href="#requirements" class="btn btn--sub">工程ごとに見る</a>
+          <a href="/downloads/techtime-assessment-sample.pdf" download class="btn btn--ink">アセスメントのサンプル<small>PDF・29枚</small><i class="dli"></i></a>
         </div>
       </div>
     </div>
     <div class="reel" id="reel">
-      <div class="reel__b">
-        <p id="sub">初版は、AIチームが作る。</p>
-        <ol id="seg" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li></ol>
-      </div>
-      <canvas id="cv" aria-hidden="true"></canvas>
-      <p class="reel__n">架空の例です</p>
+      <svg id="flow" viewBox="0 0 1200 330" role="img" aria-label="受注から入金までの業務の流れを伝票が流れ続け、AIチームが手順から手順へ移りながら点検していく図">
+        <defs>
+          <clipPath id="fl-c0"><rect id="fl-r0" x="0" y="0" width="150" height="330" /></clipPath>
+          <clipPath id="fl-c1"><rect id="fl-r1" x="150" y="0" width="1050" height="330" /></clipPath>
+        </defs>
+        <path id="fl-p" class="fl__path" d="M30 190C150 80 290 80 410 180S670 290 790 180S1050 80 1170 190" />
+        {['fl-c0', 'fl-c1'].map((c, g) => (
+          <g class={`fl__dots fl__dots--${g}`} clip-path={`url(#${c})`}>
+            {Array.from({ length: 30 }, (_, i) => (
+              <circle r="4.5"><animateMotion dur="15s" begin={`${-(i * 0.5).toFixed(2)}s`} repeatCount="indefinite"><mpath href="#fl-p" /></animateMotion></circle>
+            ))}
+          </g>
+        ))}
+        {flow.map((n, i) => (
+          <g class="fl__st" data-i={i}>
+            <rect x="-66" y="-30" width="132" height="60" rx="30" />
+            <text y="7" text-anchor="middle">{n}</text>
+            <g class="fl__ok" transform="translate(52 -26)"><circle r="11" /><path d="M-5 0l3.5 3.5L5 -4" /></g>
+          </g>
+        ))}
+        {[0, 1, 2].map((k) => <g class="fl__ai" data-k={k}><line y1="20" y2="34" /><circle r="20" /><text y="6" text-anchor="middle">AI</text></g>)}
+      </svg>
+      <p class="fl__lg">
+        <span><i class="fl__d"></i>伝票の流れ（受注から入金まで）</span>
+        <span><i class="fl__a"></i>AIチームの点検</span>
+        <span class="fl__n">点検した伝票<b id="flN">0</b>件</span>
+        <em>架空の例です</em>
+      </p>
     </div>
   </section>
 
-  <section class="sec" data-st="行き先" style="padding-top:clamp(40px,6vw,90px)">
-    <div class="go">
-      {!live && (
-      <a href="/next/shikumi" class="go__c rv">
-        <p class="kick">しくみ</p>
-        <h2>なぜ速く、<br />抜けなくなるのか。</h2>
-        <p>AIチームが作り、人が決める。型で出来をそろえ、記録を保守まで残す。4つのしくみを、図で説明します。</p>
-        <svg class="go__g" viewBox="0 0 300 74" aria-hidden="true">
-          {[0, 1, 2].map((r) => [[0, 46], [50, 62], [116, 84], [204, 44], [252, 48]].map(([x, w]) => <rect x={x} y={r * 26} width={w} height="20" rx="4" />))}
-        </svg>
-        <span class="more">しくみを見る</span>
-      </a>
-      )}
-      <div class="go__c rv">
-        <p class="kick">工程</p>
-        <h2>工程ごとに、<br />何をするのか。</h2>
-        <p>どの工程にも、担当するAIチームがいます。その工程ですることを、図で具体的に見られます。</p>
-        <ul class="go__l">{services.map((s) => <li><a href={`${kotei}/${s.slug}`}>{s.name}</a></li>)}</ul>
-        <a href={kotei} class="more">工程の一覧を見る</a>
+  <section class="smp rv" id="assessment-sample" data-st="サンプル">
+    <div class="smp__pg" aria-hidden="true">
+      {[0, 1, 2].map((k) => (
+        <div class={`pg pg${k}`}>
+          <b></b><i></i><i></i><i></i>
+          <span>{[34, 58, 26, 70, 44, 52].map((h) => <u style={`height:${h}%`}></u>)}</span>
+        </div>
+      ))}
+    </div>
+    <div class="smp__t">
+      <p class="kick">アセスメントの報告書（サンプル）</p>
+      <h2>貴社では、どこにどれだけ効くのか。<br />報告書の実物を、見てください。</h2>
+      <p>架空の会社を題材にした、29枚の報告書です。結論・数字・根拠・進め方まで、そのまま読めます。</p>
+    </div>
+    <div class="smp__a">
+      <a href="/downloads/techtime-assessment-sample.pdf" download class="btn btn--ink btn--big">サンプルをダウンロード<i class="dli"></i></a>
+      <p>PDF・29枚・約2MB。お名前などの入力は要りません。</p>
+      <a href="/assessment" class="more">アセスメントの内容を見る</a>
+    </div>
+  </section>
+
+  {services.map((sv, i) => (
+    <section class="sec tp" id={sv.slug} data-st={sv.name}>
+      <div class="tp__h rv">
+        <p class="kick">工程 {i + 1}／{sv.name}</p>
+        <h2>{copy[sv.slug].h1[0]}{copy[sv.slug].h1[1]}</h2>
+        <a href={`/services/${sv.slug}`} class="more">{sv.name}のページへ</a>
       </div>
-      <a href="/assessment" class="go__c rv">
+      <FigMotion slug={sv.slug} />
+    </section>
+  ))}
+
+  <section class="sec" data-st="次の一歩">
+    <div class="go go--2">
+      <div class="go__c rv" id="sample">
         <p class="kick">アセスメント</p>
         <h2>貴社では、どこに<br />どれだけ効くのか。</h2>
-        <p>貴社の資料を読み、効く所を数字にした報告書を出します。最初の一歩は、ここからです。</p>
+        <p>貴社の資料を読み、効く所を数字にした報告書を出します。架空の会社を題材にした報告書のサンプルを、そのままダウンロードできます。お名前などの入力は要りません。</p>
         <svg class="go__g go__g--r" viewBox="0 0 300 74" aria-hidden="true">
           <rect class="p" x="0" y="0" width="58" height="74" rx="4" /><path class="l" d="M9 14h40M9 26h30M9 38h40M9 50h22" />
           {[30, 52, 22, 64, 40, 48, 16].map((h, i) => <rect x={84 + i * 31} y={74 - h} width="22" height={h} rx="4" />)}
         </svg>
-        <span class="more">報告書のサンプルを見る</span>
-      </a>
-      {live && (
-        <div class="go__c rv">
-          <p class="kick">読みもの</p>
-          <h2>現場で起きることを、<br />書いています。</h2>
-          <p>SAP 導入の現場で起きることと、その進め方を、記事・用語集・ひな形にまとめています。</p>
-          <ul class="go__l"><li><a href="/blog">記事</a></li><li><a href="/glossary">用語集</a></li><li><a href="/resources">ひな形</a></li><li><a href="/check">自己診断</a></li></ul>
-          <a href="/blog" class="more">記事の一覧を見る</a>
+        <div class="act">
+          <a href="/downloads/techtime-assessment-sample.pdf" download class="btn">サンプルをダウンロード<i></i></a>
+          <a href="/assessment" class="more">アセスメントの内容を見る</a>
         </div>
-      )}
+      </div>
+      <div class="go__c rv">
+        <p class="kick">読みもの</p>
+        <h2>現場で起きることを、<br />書いています。</h2>
+        <p>SAP 導入の現場で起きることと、その進め方を、記事・用語集・ひな形にまとめています。</p>
+        <ul class="go__l"><li><a href="/blog">記事</a></li><li><a href="/glossary">用語集</a></li><li><a href="/resources">ひな形</a></li><li><a href="/check">自己診断</a></li></ul>
+        <a href="/blog" class="more">記事の一覧を見る</a>
+      </div>
     </div>
   </section>
 </NextLayout>
 
 <script is:inline>
   (() => {
-    const reel = document.getElementById('reel'), cv = document.getElementById('cv'), ctx = cv.getContext('2d');
-    const sub = document.getElementById('sub'), segs = [...document.querySelectorAll('#seg li')];
-    const SUB = ['初版は、AIチームが作る。', '全件を、同じ観点で点検する。', '人は、決めることに集中する。', '決めたことは、番号でつながる。', '差は、日程に出る。'];
-    const N = 214, S = 5, SEC = 3.8, MOVE = 1.1;
-    const css = getComputedStyle(document.documentElement), rgb = (v) => { const h = css.getPropertyValue(v).trim().slice(1); return [0, 2, 4].map((i) => parseInt(h.slice(i, i + 2), 16)); };
-    const KEY = rgb('--key'), INK = rgb('--ink'), GREY = [138, 143, 148], MISS = rgb('--miss'), PALE = [208, 210, 206];
-    const FLAG = []; for (let i = 0; i < N; i++) if (i % 31 === 7) FLAG.push(i);
-    const cl = (v) => Math.max(0, Math.min(1, v)), ez = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2), lp = (a, b, t) => a + (b - a) * t;
-    let W = 0, H = 0, G, L = [], X = {}, wide = true;
-
-    const build = () => {
-      const r = cv.getBoundingClientRect(), dpr = Math.min(2, devicePixelRatio || 1); W = r.width; H = r.height; wide = W > 700;
-      cv.width = W * dpr; cv.height = H * dpr; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      G = { x: W * 0.05, y: H * 0.17, w: W * 0.9, h: H * 0.7 };
-      const cols = wide ? 27 : 14, rows = Math.ceil(N / cols), cell = Math.min(G.w / cols, G.h / rows), t = cell * 0.76;
-      const gx0 = G.x + (G.w - cols * cell) / 2, gy0 = G.y + (G.h - rows * cell) / 2;
-      const grid = (i) => ({ x: gx0 + (i % cols) * cell + (cell - t) / 2, y: gy0 + Math.floor(i / cols) * cell + (cell - t) / 2 });
-      L = Array.from({ length: S }, () => []);
-      for (let i = 0; i < N; i++) { const g = grid(i); L[0].push({ x: g.x, y: g.y, w: t, h: t, c: KEY, a: 1 }); }
-      for (let i = 0; i < N; i++) { const g = grid(i), f = FLAG.includes(i), k = f ? 1.5 : 1; L[1].push({ x: g.x - (t * (k - 1)) / 2, y: g.y - (t * (k - 1)) / 2, w: t * k, h: t * k, c: f ? INK : KEY, a: f ? 1 : 0.3 }); }
-      const cw = Math.min(118, (G.w - 60) / 7), ch = cw * 0.62, cx0 = G.x + (G.w - (7 * cw + 60)) / 2, cy = G.y + G.h - ch, sc = 0.66;
-      X.card = { cx0, cy }; X.gridBottom = G.y + rows * cell * sc;
-      for (let i = 0; i < N; i++) { const g = grid(i), fi = FLAG.indexOf(i);
-        if (fi >= 0) L[2].push({ x: cx0 + fi * (cw + 10), y: cy, w: cw, h: ch, c: INK, a: 1, fi });
-        else L[2].push({ x: W / 2 + (g.x - W / 2) * sc, y: G.y + (g.y - gy0) * sc, w: t * sc, h: t * sc, c: KEY, a: 0.3 }); }
-      const cwid = G.w / 6, m = Math.min((cwid * 0.7) / 6, (G.h * 0.7) / 6), mt = m * 0.74, my0 = G.y + (G.h - 6 * m) / 2 + 10; X.col = []; X.cwid = cwid; X.my0 = my0;
-      for (let i = 0; i < N; i++) { const col = i % 6, j = Math.floor(i / 6), hi = j === 14, bx = G.x + col * cwid + (cwid - 6 * m) / 2, x = bx + (j % 6) * m, y = my0 + Math.floor(j / 6) * m, k = hi ? 2.1 : 1;
-        if (hi) X.col[col] = { x: x + mt / 2, y: y + mt / 2 };
-        L[3].push({ x: x - (mt * (k - 1)) / 2, y: y - (mt * (k - 1)) / 2, w: mt * k, h: mt * k, c: hi ? KEY : GREY, a: hi ? 1 : 0.28 }); }
-      const lab = wide ? 130 : 0, u = Math.min((G.w - lab) / 46, (G.h * 0.5) / 7), bx = G.x + lab, ty = G.y + G.h * 0.2, by = ty + u * 3 + G.h * 0.22, ut = u * 0.84;
-      X.bar = { u, bx, ty, by, dead: bx + 36 * u, endA: bx + 44 * u, endB: bx + 28 * u };
-      for (let i = 0; i < N; i++) {
-        if (i < 132) { const col = Math.floor(i / 3), row = i % 3; L[4].push({ x: bx + col * u, y: ty + row * u, w: ut, h: ut, c: col >= 28 && col < 36 ? MISS : col >= 14 && col < 19 ? PALE : GREY, a: 1 }); }
-        else { const k = i - 132, col = Math.floor(k / 3), row = k % 3; L[4].push({ x: bx + col * u, y: by + row * u, w: ut, h: ut, c: KEY, a: 1 }); }
-      }
-    };
-
-    const rr = (x, y, w, h, r) => { ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h); ctx.fill(); };
-    const txt = (s, x, y, px, col, al, wt, fam) => { ctx.globalAlpha = al; ctx.fillStyle = col; ctx.font = `${wt || 700} ${px}px ${fam || '"Noto Sans JP", sans-serif'}`; ctx.fillText(s, x, y); };
-    const NUM = '"Barlow Condensed", "Noto Sans JP", sans-serif', ink = `rgb(${INK})`;
-    let t0 = null, shown = -1;
-
-    const draw = (now) => {
-      if (t0 === null) t0 = now;
-      const time = ((now - t0) / 1000) % (S * SEC), s = Math.floor(time / SEC), lt = time - s * SEC, nx = (s + 1) % S;
-      const k = s === S - 1 ? 0 : ez(cl((lt - (SEC - MOVE)) / MOVE));
-      const out = s === S - 1 ? cl((SEC - lt) / 0.5) : 1; // 最後の場面は消えて、最初へ戻る
-      const wt = new Array(S).fill(0); wt[s] = (1 - k) * out; if (s < S - 1) wt[nx] = k;
-      const fs = wide ? 14 : 11.5;
-      ctx.clearRect(0, 0, W, H);
-      if (wt[4] > 0.01) { const b = X.bar; ctx.globalAlpha = wt[4] * 0.09; ctx.fillStyle = `rgb(${MISS})`; ctx.fillRect(b.dead, b.ty - b.u, b.endA - b.dead + b.u, b.u * 5); }
-      if (wt[3] > 0.01) { ctx.textAlign = 'center'; ['会議', '決定の一覧', '設計書', 'プログラム', 'テスト', '保守'].forEach((n, c) => txt(n, G.x + (c + 0.5) * X.cwid, X.my0 - 14, fs + 1, ink, wt[3])); ctx.textAlign = 'left'; }
-      for (let i = 0; i < N; i++) {
-        const a = L[s][i], b = s < S - 1 ? L[nx][i] : a;
-        let al = lp(a.a, b.a, k) * out;
-        if (s === 0) al *= cl((lt - (i / N) * 1.3) / 0.15); // 初版が順にできていく
-        let c = [lp(a.c[0], b.c[0], k), lp(a.c[1], b.c[1], k), lp(a.c[2], b.c[2], k)];
-        const x = lp(a.x, b.x, k), y = lp(a.y, b.y, k), w = lp(a.w, b.w, k), h = lp(a.h, b.h, k);
-        let done = 0;
-        if (s === 2 && a.fi !== undefined) { done = cl((lt - 0.5 - a.fi * 0.22) / 0.25) * (1 - k); c = [lp(c[0], KEY[0], done), lp(c[1], KEY[1], done), lp(c[2], KEY[2], done)]; }
-        ctx.globalAlpha = al; ctx.fillStyle = `rgb(${c[0] | 0},${c[1] | 0},${c[2] | 0})`; rr(x, y, w, h, Math.min(w, h) * 0.2);
-        if (done > 0) { ctx.globalAlpha = done; ctx.strokeStyle = ink; ctx.lineWidth = 3; ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.beginPath(); const mx = x + w / 2, my = y + h / 2, q = h * 0.2; ctx.moveTo(mx - q, my); ctx.lineTo(mx - q * 0.3, my + q * 0.7); ctx.lineTo(mx + q, my - q * 0.7); ctx.stroke(); }
-      }
-      ctx.textAlign = 'right';
-      if (wt[0] > 0.01) { const n = s === 0 ? Math.round(N * cl(lt / 1.3)) : N; txt(String(n), G.x + G.w - (wide ? 140 : 108), G.y - 12, wide ? 56 : 40, ink, wt[0], 600, NUM); txt('本の設計書の初版', G.x + G.w, G.y - 16, fs, ink, wt[0]); }
-      if (wt[1] > 0.01) { txt('7', G.x + G.w - (wide ? 100 : 80), G.y - 12, wide ? 56 : 40, ink, wt[1], 600, NUM); txt('本だけに指摘', G.x + G.w, G.y - 16, fs, ink, wt[1]); }
-      ctx.textAlign = 'left';
-      if (wt[1] > 0.01 && s === 1) { const xx = G.x + cl(lt / 1.6) * G.w; if (lt < 1.6) { ctx.globalAlpha = wt[1]; ctx.fillStyle = ink; ctx.fillRect(xx, G.y, 2, G.h); } }
-      if (wt[2] > 0.01) { txt('AIチームが点検した 214本', G.x, X.gridBottom + 22, fs, ink, wt[2] * 0.7); txt('人が決める 7本', X.card.cx0, X.card.cy - 12, fs, ink, wt[2]); }
-      if (wt[3] > 0.01) { const pts = X.col, q = s === 3 ? cl(lt / 1.4) : 0, endX = lp(pts[0].x, pts[5].x, q); ctx.globalAlpha = wt[3]; ctx.strokeStyle = ink; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(pts[0].x, pts[0].y); ctx.lineTo(endX, pts[0].y); ctx.stroke();
-        if (q > 0) { ctx.fillStyle = ink; rr(endX - 36, pts[0].y - 40, 72, 24, 12); ctx.textAlign = 'center'; txt('D-0142', endX, pts[0].y - 23, 12, '#fff', wt[3], 500, '"JetBrains Mono", monospace'); ctx.textAlign = 'left'; } }
-      if (wt[4] > 0.01) { const b = X.bar, a5 = wt[4]; ctx.globalAlpha = a5; ctx.fillStyle = ink; ctx.fillRect(b.dead - 1, b.ty - b.u * 1.6, 2, b.by + b.u * 4 - b.ty + b.u * 1.6);
-        ctx.textAlign = 'center'; txt('本番の予定日', b.dead, b.ty - b.u * 1.6 - 8, fs, ink, a5); ctx.textAlign = 'left';
-        if (wide) { txt('これまで', G.x, b.ty + b.u * 1.9, fs + 4, ink, a5, 900); txt('AIチームと', G.x, b.by + b.u * 1.9, fs + 4, ink, a5, 900); }
-        else { txt('これまで', b.bx, b.ty - 8, fs + 2, ink, a5, 900); txt('AIチームと', b.bx, b.by - 8, fs + 2, ink, a5, 900); }
-        txt('手戻り', b.bx + 28 * b.u, b.ty + b.u * 3 + fs + 4, fs, `rgb(${MISS})`, a5); txt('待ち', b.bx + 14 * b.u, b.ty + b.u * 3 + fs + 4, fs, '#6b7075', a5);
-        const gy = b.by + b.u * 3 + 26, mid = (b.endB + b.endA) / 2; ctx.globalAlpha = a5; ctx.strokeStyle = ink; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(b.endB, gy); ctx.lineTo(b.endA, gy); ctx.moveTo(b.endB, gy - 8); ctx.lineTo(b.endB, gy + 8); ctx.moveTo(b.endA, gy - 8); ctx.lineTo(b.endA, gy + 8); ctx.stroke();
-        ctx.textAlign = 'center'; txt('この差が、余裕', mid, gy + fs + 10, fs + 1, ink, a5, 900); ctx.textAlign = 'left'; }
-      ctx.globalAlpha = 1;
-      const act = k > 0.5 ? nx : s;
-      if (act !== shown) { shown = act; sub.textContent = SUB[act]; sub.classList.remove('in'); void sub.offsetWidth; sub.classList.add('in'); segs.forEach((e, i) => e.classList.toggle('on', i === act)); }
-      requestAnimationFrame(draw);
-    };
-    addEventListener('resize', build);
-    build(); requestAnimationFrame(draw);
-    if (document.fonts) document.fonts.ready.then(build);
+    const svg = document.getElementById('flow'), path = document.getElementById('fl-p');
+    // 画面が狭いときは、縦に流す
+    if (innerWidth < 700) {
+      svg.setAttribute('viewBox', '0 0 400 600');
+      path.setAttribute('d', 'M110 20C110 90 290 80 290 150S110 220 110 290S290 360 290 430S110 500 110 590');
+      const r0 = document.getElementById('fl-r0'), r1 = document.getElementById('fl-r1');
+      r0.setAttribute('width', 400); r0.setAttribute('height', 62); r1.setAttribute('x', 0); r1.setAttribute('y', 62); r1.setAttribute('width', 400); r1.setAttribute('height', 540);
+      svg.classList.add('tall');
+    }
+    const L = path.getTotalLength();
+    const sts = [...document.querySelectorAll('.fl__st')], ais = [...document.querySelectorAll('.fl__ai')], out = document.getElementById('flN');
+    const pts = sts.map((g, i) => { const p = path.getPointAtLength(L * (0.07 + i * 0.172)); g.setAttribute('transform', `translate(${p.x} ${p.y})`); return p; });
+    const tall = svg.classList.contains('tall');
+    const put = (g, i) => { g.style.transform = tall ? `translate(${pts[i].x + (pts[i].x < 200 ? -1 : 1) * 0}px, ${pts[i].y - 58}px)` : `translate(${pts[i].x}px, ${pts[i].y - 64}px)`; };
+    const pos = [0, 2, 4]; let n = 0;
+    ais.forEach((g, k) => put(g, pos[k]));
+    const visit = (i) => { const g = sts[i]; g.classList.add('ok'); g.classList.remove('hit'); void g.getBBox(); g.classList.add('hit'); };
+    pos.forEach(visit);
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) { sts.forEach((_, i) => visit(i)); return; }
+    document.getElementById('reel').classList.add('live');
+    // 点検した件数は、止まらずに増えていく
+    setInterval(() => { n += 3; out.textContent = n.toLocaleString('ja-JP'); }, 90);
+    // AI は順に、次の手順へ移る
+    let turn = 0;
+    setInterval(() => {
+      const k = turn++ % 3, g = ais[k], to = (pos[k] + 1) % sts.length;
+      if (to === 0) { g.classList.add('jump'); setTimeout(() => { put(g, 0); setTimeout(() => { g.classList.remove('jump'); visit(0); }, 60); }, 300); }
+      else { put(g, to); setTimeout(() => visit(to), 650); }
+      pos[k] = to;
+    }, 800);
   })();
 </script>
 
 <style is:global>
-  .reel { position: relative; margin-top: clamp(20px, 3vw, 40px); border-radius: var(--r); background: var(--card); overflow: hidden; }
-  #cv { display: block; width: 100%; height: clamp(280px, 46vh, 500px); }
-  .reel__b { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 20px 5% 0; }
-  #sub { font-size: clamp(20px, 2.8vw, 38px); font-weight: 900; line-height: 1.4; }
-  #sub.in { animation: subin 0.5s both; }
-  @keyframes subin { from { opacity: 0; transform: translateY(8px); } }
-  #seg { display: flex; gap: 6px; flex: none; }
-  #seg li { width: 26px; height: 5px; border-radius: 3px; background: var(--rule); transition: background 0.3s, width 0.3s; }
-  #seg li.on { width: 46px; background: var(--key); }
-  .reel__n { position: absolute; left: 5%; bottom: 10px; font-size: 11.5px; color: var(--mute); }
-  @media (max-width: 900px) { .reel__b { flex-direction: column; align-items: flex-start; gap: 10px; } }
-</style>
+  .reel { position: relative; margin-top: clamp(16px, 2.4vw, 32px); padding: clamp(10px, 2vw, 26px) clamp(8px, 2vw, 26px) 0; border-radius: var(--r); background: var(--card); overflow: hidden; }
+  #flow { display: block; width: 100%; height: auto; overflow: visible; }
+  .fl__path { fill: none; stroke: var(--bg); stroke-width: 22; stroke-linecap: round; }
+  .fl__dots--0 circle { fill: #8a8f94; }
+  .fl__dots--1 circle { fill: var(--key); }
+  .fl__st rect { fill: var(--card); stroke: var(--rule); stroke-width: 2.5; transition: stroke 0.4s; }
+  .fl__st text { font-family: var(--sans); font-size: 21px; font-weight: 900; fill: var(--ink); }
+  .fl__st.ok rect { stroke: var(--key); }
+  .fl__st.hit rect { animation: flhit 0.8s both; }
+  @keyframes flhit { 0% { stroke-width: 12; stroke: var(--key); } 100% { stroke-width: 2.5; } }
+  .fl__ok { opacity: 0; transition: opacity 0.3s; }
+  .fl__ok circle { fill: var(--ink); }
+  .fl__ok path { fill: none; stroke: #fff; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+  .fl__st.ok .fl__ok { opacity: 1; }
+  .fl__ai { transition: transform 0.65s cubic-bezier(0.5, 0, 0.2, 1), opacity 0.25s; }
+  .fl__ai.jump { opacity: 0; transition: opacity 0.25s; }
+  .fl__ai circle { fill: var(--key); }
+  .fl__ai line { stroke: var(--key); stroke-width: 4; stroke-linecap: round; }
+  .fl__ai text { font-family: var(--mono); font-size: 15px; font-weight: 600; fill: var(--ink); }
+  .live .fl__ai circle { animation: flai 1.6s ease-in-out infinite; }
+  @keyframes flai { 0%, 100% { stroke: rgba(242, 169, 0, 0.5); stroke-width: 0; } 50% { stroke: rgba(242, 169, 0, 0); stroke-width: 22; } }
+  .fl__lg { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 26px; padding: 6px 12px 16px; font-size: 13px; }
+  .fl__lg span { display: inline-flex; align-items: center; gap: 8px; }
+  .fl__d { margin: 0 3px; }
+  .fl__d { width: 10px; height: 10px; border-radius: 50%; background: #8a8f94; }
+  .fl__a { width: 16px; height: 16px; border-radius: 50%; background: var(--key); }
+  .fl__n { margin-left: auto; font-weight: 700; }
+  .fl__n b { min-width: 3.2em; font: 600 clamp(24px, 2.6vw, 36px)/1 var(--num); text-align: right; }
+  .fl__lg em { font-style: normal; font-size: 11.5px; color: var(--mute); }
+  @media (max-width: 900px) {
+    .fl__path { stroke-width: 16; }
+    .fl__n { margin-left: 0; width: 100%; }
+  }
 
-<style is:global>
+  .tp { padding-top: clamp(56px, 8vw, 120px); }
+  .tp__h { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 26px; }
+  .tp__h .kick { width: 100%; }
+  .tp__h h2 { font-size: clamp(26px, 3.6vw, 50px); }
+  .tp__h .more { margin-left: auto; }
+  .tp .fig { margin-top: clamp(14px, 2vw, 26px); }
+  .go--2 { grid-template-columns: repeat(2, 1fr) !important; }
+  .btn--ink { background: var(--ink); color: #fff; }
+  .btn--ink:hover { background: var(--key); color: var(--ink); }
+  .btn--ink small { font-size: 11.5px; font-weight: 500; opacity: 0.75; }
+  .btn--ink i { background: rgba(255, 255, 255, 0.18); }
+  .dli::before { left: 11px !important; top: 8px !important; transform: rotate(135deg) !important; }
+  .dli::after { content: ''; position: absolute; left: 9px; right: 9px; bottom: 8px; height: 2px; background: currentColor; }
+  .btn--big { height: 66px; padding: 0 16px 0 32px; font-size: 18px; }
+  .btn--big i { width: 40px; height: 40px; }
+  .btn--big .dli::before { left: 15px !important; top: 11px !important; }
+  .btn--big .dli::after { left: 12px; right: 12px; bottom: 11px; }
+  /* 報告書のサンプルの面 */
+  .smp { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: clamp(20px, 3.4vw, 56px); margin-top: clamp(18px, 2.4vw, 32px); padding: clamp(24px, 3.2vw, 46px) clamp(22px, 3.6vw, 56px); border-radius: var(--r); background: var(--key); }
+  .smp h2 { margin-top: 8px; font-size: clamp(22px, 2.5vw, 34px); line-height: 1.45; }
+  .smp__t > p:last-child { margin-top: 8px; font-size: 15px; font-weight: 500; }
+  .smp .kick::before { border-right-color: #fff; }
+  .smp__a { display: grid; justify-items: start; gap: 8px; }
+  .smp__a p { font-size: 12.5px; font-weight: 500; }
+  .smp__a .more { text-decoration-color: var(--ink); }
+  .smp__pg { position: relative; width: clamp(120px, 12vw, 170px); aspect-ratio: 1.3; }
+  .pg { position: absolute; inset: 0; display: grid; align-content: start; gap: 7px; padding: 14px 14px 0; border-radius: 6px; background: #fff; box-shadow: 0 6px 18px -8px rgba(21, 23, 26, 0.5); transform-origin: 50% 120%; animation: pgfan 6s ease-in-out infinite; }
+  .pg b { height: 10px; width: 62%; border-radius: 3px; background: var(--ink); }
+  .pg i { height: 5px; border-radius: 2px; background: var(--rule); }
+  .pg i:nth-of-type(2) { width: 80%; } .pg i:nth-of-type(3) { width: 55%; }
+  .pg span { display: flex; align-items: flex-end; gap: 5px; height: clamp(30px, 3.4vw, 48px); margin-top: 4px; }
+  .pg u { flex: 1; border-radius: 2px 2px 0 0; background: var(--key); }
+  .pg u:nth-child(4) { background: var(--ink); }
+  .pg0 { --a: -9deg; } .pg1 { --a: 0deg; animation-delay: 0.15s; } .pg2 { --a: 9deg; animation-delay: 0.3s; }
+  @keyframes pgfan { 0%, 100% { transform: rotate(0); } 35%, 70% { transform: rotate(var(--a)); } }
+  .go .act { margin-top: 8px; gap: 12px 22px; }
   .go { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
   .go__c { display: flex; flex-direction: column; gap: 12px; padding: clamp(22px, 2.6vw, 36px); border-radius: var(--r); background: var(--card); }
   a.go__c { transition: transform 0.3s, box-shadow 0.3s; }
@@ -197,5 +239,6 @@ const description = 'SAP の導入と保守に、AIチームを組み込みま�
   .go__l a { display: block; padding: 3px 14px; border-radius: 99px; background: var(--tint); font-size: 13px; font-weight: 700; transition: background 0.2s, color 0.2s; }
   .go__l a:hover { background: var(--ink); color: #fff; }
   .go .more { margin-top: 6px; }
-  @media (max-width: 900px) { .go { grid-template-columns: 1fr; } }
+  @media (max-width: 900px) { .go, .go--2 { grid-template-columns: 1fr !important; } .tp__h .more { margin-left: 0; } .smp { grid-template-columns: 1fr; } .smp__pg { margin: 0 auto 6px; } .smp h2 br { display: none; } .btn--big { font-size: 16px; } }
+  @media (prefers-reduced-motion: reduce) { .pg { animation: none; transform: rotate(var(--a)); } }
 </style>
